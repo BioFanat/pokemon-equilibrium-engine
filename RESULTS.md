@@ -26,7 +26,7 @@ in the section "Relation to prior work", after the literature review.
    cells are missing. Treating it as a payoff matrix silently breaks every equilibrium method; our
    first round of experiments (E1–E3) was invalidated this way.
 5. **Plain self-play RL is cheap per decision but weak.** After 30M decisions (25 min on a laptop),
-   PPO wins 5–13% against MCTS (200 iterations), in a simpler 12-species, full-information setting.
+   PPO wins 5–13% against MCTS (200 iterations) (actually 1,000; poke-engine rounds up to multiples of 1,000), in a simpler 12-species, full-information setting.
 
 ## Setup
 
@@ -128,7 +128,7 @@ Every agent-form and PIMC decision in E4's sampled play was logged: 46,890 decis
 
 - **Setup:** PPO self-play with a 256-256 MLP, full information, the 12-species hand-built pool;
   30M decisions in 25 min on 12 cores.
-- **Result:** beats random at about 95%, but wins only 5–13% against MCTS (200 iterations), rising
+- **Result:** beats random at about 95%, but wins only 5–13% against MCTS (200 iterations) (actually 1,000; poke-engine rounds up to multiples of 1,000), rising
   slowly.
 - **Comparability:** it ran in a simpler setting than everything above, so it is a cost and
   learning-curve reference only.
@@ -169,9 +169,9 @@ battles, choosing among whole strategies is an experts/bandit problem (L6 in
 | Proposal goal | Formal statement | Evidence | Status |
 |---|---|---|---|
 | No-regret search approaches equilibrium | L1: RM+ average → Nash of the per-turn game, gap O(R/√T) | Gap 2·10⁻⁴·R at T=1000; RM+100 ≈ LP in play (pruned matrix) | Holds, per-turn game only. Says nothing about the full game (L4). |
-| Nash gap ≤ solver + belief + value error | L2: v(b) − f_b(x̂) ≤ ε_T + 2R·TV(b, b̂) + 2‖M − M̂‖_∞ | Random instances: max ratio 0.48. In play: solver term ≈ 0; belief term ≈ the 0.10–0.12 oracle gap; value term dominates (X1, V1) | Bound checked; the ranking of terms is measured, not proved |
+| Nash gap ≤ solver + belief + value error | L2: v(b) − f_b(x̂) ≤ ε_T + 2Δ·TV (Δ = payoff range; = 4·TV on [−1,1])(b, b̂) + 2‖M − M̂‖_∞ | Random instances: max ratio 0.48. In play: solver term ≈ 0; belief term ≈ the 0.10–0.12 oracle gap; value term dominates (X1, V1) | Bound checked; the ranking of terms is measured, not proved |
 | Optimizing per hidden set is exploitable | Strategy fusion; blend loss ≤ 4·δ_H (hand: 2·δ_H) | Agent-form beats PIMC 0.585 [0.540, 0.630]; bound holds on 46,890 decisions | Strongest result; the 2·δ_H proof still needs the `prove` workflow |
-| Memory sufficiency / compression | Belief-state theorem (cite); L2′ marginals loss ≤ 2R·TV | Belief is the exact joint posterior over Random Battle roles; no marginals ablation run | Not tested |
+| Memory sufficiency / compression | Belief-state theorem (cite); L2′ marginals loss ≤ 2Δ·TV (Δ = payoff range; = 4·TV on [−1,1]) | Belief is the exact joint posterior over Random Battle roles; no marginals ablation run | Not tested |
 | Value of information | L3: v(b) convex, VOI ≥ 0, = 0 iff the prior optimum stays optimal | Oracle gap bounds total VOI at ≈ 0.1 score; no probing experiment | Not tested |
 | Behavioural evidence / bluffing | L4 (safe resolving, public belief states), L5 (Aumann–Maschler cav u) | Hard evidence only; leaves ignore beliefs, so concealment has zero value in our model | Not tested; needs belief-dependent leaves |
 | When to randomize | Value of randomization v(b) − max_a f_b(e_a) | Top move beats sampled vs fixed MCTS (0.58 vs 0.44); vs a one-turn exploiter sampled 0.475, top move 0.317 (E6q) | Tested (quick): mixing costs vs fixed opponents, protects vs exploiters |
@@ -368,7 +368,7 @@ Ours are three things: the H̄ = best-response-length refinement with its counte
 
 ### Hedge over experts: safety theorem (`theory/hedge_experts.md`)
 - **Proposition E1 (safety, holds against any adaptive opponent).** With a fixed reward normaliser Δ̄ and an ε_s-equilibrium expert in the pool, the surrogate payoff of the played mixtures p_t against the opponent's realised moves is at least Σ_t (val(Â_t) − ε_s) minus Δ̄·Reg_S.
-- **Theorem E2.** Averaged over N games, V* − E[u] ≤ H̄_σ(ε_s + 2ε_v) + Δ̄√(H ln k/(2N)) for every opponent σ, where H̄_σ is the mean game length against σ (η fixed and tuned to N·H; anytime tuning doubles the regret term, Cesa-Bianchi & Lugosi 2006 Thm 2.3). It bounds the average over games, not the exploitability of any single game's policy.
+- **Theorem E2.** Averaged over N games, V* − E[u] ≤ H̄_σ(ε_s + 2ε_v) + Δ̄√(H ln k/(2N)) for every opponent σ, where H̄_σ is the mean game length against σ (η fixed and tuned to N·H; anytime tuning (the code's indexing) multiplies the tuned-η term by 3/2 and adds Δ̄√(ln k/8)/N, Cesa-Bianchi & Lugosi 2006 Thm 2.3). It bounds the average over games, not the exploitability of any single game's policy.
 - **Proposition E3 (exploitation).** The learner matches the best expert only along the realized trajectory. That is external regret, not policy regret (Arora, Dekel & Tewari 2012).
 - **Two parts of the original sketch were false:**
   - The code's per-turn normaliser range(A_t) has a linear-regret counterexample: alternating A and 0.01·A loses S/3.
@@ -377,7 +377,7 @@ Ours are three things: the H̄ = best-response-length refinement with its counte
   - Lean, `theory/lean/FullGame/Hedge.lean`: no `sorry`, standard axioms only. The per-step Hoeffding inequality is a hypothesis.
   - Numerics, `theory/checks/hedge_check.py`: 0/32 violations, and the counterexample confirmed.
   - Checked by an independent verifier (2026-11-14). E1–E3 hold for constant η. The anytime update as first coded did not satisfy them; it is now fixed (below).
-- **Code (`exp3_live.Learner`):** rewards (q_e·A[:,b] − min A)/400, clipped to [0,1]. Clipping binds on about 1–2% of positions (ptp > 400; an independent resample of 2,272 positions gives p99 ≈ 405–417 and median ≈ 230, not the 166/203 quoted earlier). The anytime step was first coded as `logw += η_t r_t`, which is not anytime Hedge and has linear regret (0.40·T on a phase-switch sequence; E1(b) fails at S=100). It is now fixed to the FTRL form `logw = η_t·Σ_s r_s`: regret on the same sequence is 1.46 at T = 10³–10⁵. H1 and the first persistent-weights run used the flawed update; both were rerun with the fix (Hedge bullet below).
+- **Code (`exp3_live.Learner`):** rewards (q_e·A[:,b] − min A)/400, clipped to [0,1]. range(Â) > 400 (the clipping term is nonzero) on about 6% of learner turns (95% CI 3–10%) and 8.5% of random start positions; a reward is actually clipped on about 0.5% of learner turns (verifier scratch runs, 2026-11-15, not yet a logged experiment; an independent resample of 2,272 positions gives p99 ≈ 405–417 and median ≈ 230, not the 166/203 quoted earlier). The anytime step was first coded as `logw += η_t r_t`, which is not anytime Hedge and has linear regret (0.40·T on a phase-switch sequence; E1(b) fails at S=100). It is now fixed to the FTRL form `logw = η_t·Σ_s r_s`: regret on the same sequence is 1.46 at T = 10³–10⁵. H1 and the first persistent-weights run used the flawed update; both were rerun with the fix (Hedge bullet below).
   - X6 is reproduced by `--eta 0.2 --alpha 0.002 --scale 0`.
 
 ### Exact endgames: leaf error and bound tightness (`endgame_eps.py`, `results/endgame/eps.jsonl`)
@@ -473,7 +473,7 @@ Ours are three things: the H̄ = best-response-length refinement with its counte
 
     95% CIs are about ±0.02–0.04 per win rate. Wall time 0.73 h; the budget meter estimated $2.65 against a $1.19 plan. The meter is conservative: it bills min(inputs, 64) warm containers per map, and actual task time was 8.3 core-hours. Check the real bill in the Modal dashboard.
   - **Reading: not informative yet.** The best response stays far below 0.5 against every target, so the PPO arm's lower bounds are negative. Any fixed exploiter gives a valid lower bound, so LBR's scores were valid positive bounds throughout (win rate − 0.5: top move ≥ 0.18, foul-play 2,000 it ≥ 0.22, sampled ≈ 0.03, n.s.). The gains are within noise, except possibly against foul-play (z ≈ 2.4 under independence; seeds are shared, so a paired test would be tighter).
-  - The pilot net is too weak a starting point; it won 5–13% against MCTS-200 in the pilot. A useful RL exploitability measurement needs a much stronger base policy, or a far larger budget. A white-box search exploiter is the better tool (below).
+  - The pilot net is too weak a starting point; it won 5–13% against MCTS-200 (actually 1,000; poke-engine rounds up to multiples of 1,000) in the pilot. A useful RL exploitability measurement needs a much stronger base policy, or a far larger budget. A white-box search exploiter is the better tool (below).
 - **RL best response at scale (rlbr_scale)** (`results/psro/rlbr_scale/curve_full.json`, logs `results/psro/run_rlbr_scale.log` and `results/psro/run_rlbr_scale_resume.log`, configs `configs/rlbr_scale.json` and `configs/rlbr_scale_resume.json`):
   - Setup: PPO best response vs foul-play-style MCTS (`foulplay_it:2000`), warm-started from the PPO pilot net, planned for 8M decisions; 200 held-out games per curve point, same seeds throughout.
 
@@ -497,6 +497,19 @@ Ours are three things: the H̄ = best-response-length refinement with its counte
   - Interpretation limits, fixed in advance:
     - The gray-box net gets q only. The white-box exploiter gets q plus the exact stage matrix. A null result therefore means "q without a value model is not enough", not "knowing the policy doesn't matter".
     - Confound: the black-box curve was two runs (games_per_input 8, then 16 with a fresh Adam state). This is one run.
+  - **Result (2026-11-15, `results/psro/rlbr_gray/rl_br_foulplay_it_2000.json`, log `results/psro/run_rlbr_gray.log`):**
+
+    | Decisions | Gray-box win rate | 95% CI | Black-box (rlbr_scale) |
+    |---|---|---|---|
+    | 0 | 0.055 | [0.033, 0.077] | 0.060 |
+    | 1.01M | 0.0925 | [0.062, 0.123] | 0.065 |
+    | 3.01M | 0.0975 | [0.070, 0.125] | 0.090 |
+    | 5.00M | 0.0825 | [0.057, 0.108] | 0.100 |
+    | 6.00M | 0.0825 | [0.056, 0.110] | 0.1225 |
+    | 8.01M | 0.075 | [0.051, 0.099] | 0.125 |
+
+    - 146,432 training games; Modal estimate $1.90, 13.7 worker core-hours, 1.8 h wall.
+    - Reading: the gray-box net leads early, then flattens and ends below black-box (unpaired difference −0.05, about 2.7 SE; single runs). Point 0 is 0.055 vs 0.060: the same zero-padded policy, different MCTS randomness. As written above before the run, this says the opponent's distribution alone is not enough without a payoff model; it does not say knowing the policy is useless.
 - **Hedge** (fixed FTRL-form anytime learner; the runs with the flawed update are archived in `results/experiments/buggy_anytime_hedge/`). H1 rows above are the rerun.
   - Per-game Hedge (weights reset each game; median 32–39 turns, p90 51–64): 0.560 vs MCTS, 0.408 vs the white-box exploiter that knows its mixture. Mean final weight on the MCTS expert 0.46 vs MCTS, 0.38 vs the exploiter.
   - **Weights carried across games** (`hedge_stream.py`, the setting Thm E2 covers; 4 seeds × 30 games vs MCTS, then 30 vs the white-box exploiter, same game seeds as a per-game-reset control; `results/experiments/hedge_stream_seed*.jsonl`):
@@ -555,6 +568,23 @@ Scripts and logs: `/private/tmp/claude-501/-Users-biofanat-Documents-classes-f26
   - Caveat: the 80% support truncation only affects the sampled cell, since the argmax target has a single support action. So part of the gap may come from pruning. A K=5/95% rerun of the sampled cell would separate the two.
   - Reading: the preliminary small-sample reading (a depth-2 exploiter exploits equilibrium sampled about as much as top move, 0.850 at 10 pairs) is refuted. With 100 pairs on fresh seeds, top move is clearly more exploitable. Sampling does buy robustness against a depth-2 white-box exploiter too, not only against one-turn LBR.
   - Both targets now have certified positive exploitability lower bounds: ≥ 0.25 for top move and ≥ 0.09 for sampled, at 95% with one pre-registered exploiter, so no selection correction is needed. This is the bracket's lower side; the upper side stays vacuous.
+
+### Safe exploitation and leaf rescaling (2026-11-15; `results/experiments/{SX,LF,SXW}.jsonl`, log `run_SX_LF_SXW.log`)
+- **Safe-exploit bot (`safex:0.02`).** Each turn: v* = LP value of the full matrix A; predicted opponent column q = argmin of A's column means (best response to our uniform mix); play max x·A·q subject to (xA)_j ≥ v* − 0.02·range(A) for every column j (`nash.safex_strategy`; idea from Ganzfried & Sandholm 2015). Worst-case stage loss vs the equilibrium is at most 2% of the matrix range by construction.
+- **SX: vs MCTS 2,000 iterations, 100 pairs, same seeds for all three bots (paired):**
+
+  | Bot | Score | 95% CI | ms/move |
+  |---|---|---|---|
+  | Equilibrium, top move | 0.580 | [0.518, 0.642] | 71 |
+  | Safe exploit, ε = 2% | 0.530 | [0.466, 0.594] | 63 |
+  | Equilibrium, sampled | 0.510 | [0.449, 0.571] | 70 |
+
+  Paired: safe exploit − top move −0.050 [−0.134, +0.034]; safe exploit − sampled +0.020 [−0.066, +0.106]. Both n.s. Sampled scores 0.510 here vs 0.44 in E1fix (different seeds and n).
+- **SXW: white-box depth-2 exploiter (`wb2:safex:0.02:4:0.8`, knows the bot's algorithm) vs the safe-exploit bot, 100 pairs:** exploiter scores **0.767** [0.718, 0.817]; Hoeffding 95% lower bound 0.645, so exploitability ≥ 0.145 in score units. W1 on different seeds: 0.873 vs top move, 0.713 vs sampled (unpaired).
+- **LF: leaf rescaling vs foul-play 75 ms, 100 pairs, paired seeds:** current leaf 0.355 [0.301, 0.409]; tanh(h/400) with exact ±1 terminals 0.315 [0.259, 0.371]; paired difference −0.040 [−0.098, +0.018], n.s.
+- **Reading:**
+  - The safe-exploit bot's per-turn gain does not show as a win-rate gain at 100 pairs. Its exploitability sits between top move and sampled: the 2% stage-level cap bounds loss only in the estimated matrix, and the exploiter wins through the leaf error, as predicted in `lit/next_directions.md`.
+  - Rescaling the heuristic leaf toward the TD-residual minimiser does not help; the leaf bottleneck is not a scale problem.
 
 ## Next experiments
 

@@ -1,0 +1,37 @@
+SX: 300 pairs to play (0 already done), 4 workers
+  20/300 pairs, 36s
+  40/300 pairs, 88s
+  60/300 pairs, 139s
+  80/300 pairs, 175s
+  100/300 pairs, 238s
+  120/300 pairs, 302s
+  140/300 pairs, 349s
+  160/300 pairs, 403s
+  180/300 pairs, 445s
+  200/300 pairs, 511s
+  220/300 pairs, 541s
+  240/300 pairs, 598s
+  260/300 pairs, 660s
+  280/300 pairs, 724s
+  300/300 pairs, 763s
+DONE SX
+LF: 200 pairs to play (0 already done), 4 workers
+  20/200 pairs, 89s
+  40/200 pairs, 187s
+  60/200 pairs, 286s
+  80/200 pairs, 377s
+  100/200 pairs, 508s
+  120/200 pairs, 603s
+  140/200 pairs, 725s
+  160/200 pairs, 807s
+  180/200 pairs, 943s
+  200/200 pairs, 1104s
+DONE LF
+SXW: 100 pairs to play (0 already done), 4 workers
+  20/100 pairs, 409s
+  40/100 pairs, 754s
+  60/100 pairs, 1128s
+  80/100 pairs, 1412s
+  100/100 pairs, 1875s
+DONE SXW
+EXIT 0

@@ -1,0 +1,13 @@
+# Bot venv for the real-Showdown harness (Python 3.12). poke-engine must be built from source with Tera:
+#   uv pip install --python <venv>/bin/python --no-binary poke-engine "poke-engine==0.0.48" \
+#     --config-settings 'build-args=--features poke-engine/terastallization --no-default-features'
+certifi==2026.10.23
+charset-normalizer==3.5.2
+idna==3.20
+numpy==2.5.4
+python-dateutil==2.8.0
+requests==2.33.0
+scipy==1.18.1
+six==1.17.0
+urllib3==2.8.0
+websockets==14.1

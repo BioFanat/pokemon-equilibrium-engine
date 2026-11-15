@@ -133,6 +133,24 @@ def full_matrix(state: pe.State, leaf: str = "mid"):
     return M, s1, s2
 
 
+def squash_matrix(state: pe.State, tau: float):
+    """full_matrix with a squashed leaf: a child where a side has no mon left scores exactly +1 / -1
+    from side one's view (0 if both), every other child tanh(_leaf(child, 'mid') / tau). Entries in
+    [-1, 1]. Ported from the leaf prototype (scratchpad leaf/mini_match.py)."""
+    s1, s2 = pb.options(state)
+    M = np.zeros((len(s1), len(s2)))
+    for i, a in enumerate(s1):
+        for j, b in enumerate(s2):
+            for br in pe.generate_instructions(state, a, b):
+                c, p = state.apply_instructions(br), br.percentage / 100.0
+                a1, a2 = pb.alive(c.side_one), pb.alive(c.side_two)
+                if a1 == 0 or a2 == 0:
+                    M[i, j] += p * (0.0 if a1 == a2 else (1.0 if a1 else -1.0))
+                else:
+                    M[i, j] += p * np.tanh(_leaf(c, "mid") / tau)
+    return M, s1, s2
+
+
 def engine_matrix(state: pe.State, ms: int = 50, legacy: bool = False):
     """Payoff matrix (rows = side one's options, cols = side two's; side-one perspective).
 
@@ -153,13 +171,14 @@ def engine_matrix(state: pe.State, ms: int = 50, legacy: bool = False):
 
 
 def nash_policy(solver: str = "rm_plus", ms: int = 50, iters: int = 1000,
-                pick: str = "sample", legacy: bool = False):
+                pick: str = "sample", legacy: bool = False, leaf_tau: float | None = None):
     """pick='sample' plays the equilibrium mix; 'argmax' its most likely action (better against
-    non-adaptive opponents, exploitable by adaptive ones)."""
+    non-adaptive opponents, exploitable by adaptive ones). leaf_tau: solve squash_matrix(state, leaf_tau)
+    (exact +-1 terminals, tanh-squashed leaf) instead of engine_matrix."""
     def pol(state, opts, side, rng):
         if len(opts) == 1:
             return opts[0]
-        M, s1, s2 = engine_matrix(state, ms, legacy)
+        M, s1, s2 = engine_matrix(state, ms, legacy) if leaf_tau is None else squash_matrix(state, leaf_tau)
         if solver == "lp":
             x, y, _ = lp(M)
         elif solver == "omwu":
@@ -222,9 +241,46 @@ def safest_policy(ms: int = 50, legacy: bool = False):
     return pol
 
 
+def safex_strategy(A: np.ndarray, eps: float) -> np.ndarray:
+    """eps-safe exploitation (the safe-exploitation idea of Ganzfried & Sandholm 2015, one stage game).
+    A is the deciding player's own-perspective matrix (rows = own actions, maximiser). Predict the
+    opponent's move as q = one-hot on argmin_j mean_i A[i, j] (its best reply to our uniform mix), then
+    solve  max_x x.A q  s.t.  (x^T A)_j >= v - eps * r for every column j, x in the simplex,
+    with v = the exact game value (lp) and r = ptp(A) (1 if 0).
+    Guarantee: against ANY opponent move the stage payoff is at least v - eps * r, i.e. the worst-case
+    loss relative to the equilibrium value is at most eps times the payoff range; eps = 0 gives the best
+    equilibrium strategy against q. Falls back to lp's equilibrium x if the LP fails."""
+    m, n = A.shape
+    x_eq, _, v = lp(A)
+    r = float(np.ptp(A)) or 1.0
+    q = np.zeros(n); q[int(A.mean(axis=0).argmin())] = 1
+    res = linprog(-(A @ q), A_ub=-A.T, b_ub=-(v - eps * r) * np.ones(n), A_eq=np.ones((1, m)), b_eq=[1],
+                  bounds=[(0, None)] * m, method="highs")
+    return res.x if res.status == 0 else x_eq
+
+
+def safex_policy(eps: float, pick: str = "sample"):
+    """Each turn: safex_strategy on full_matrix from our own perspective (side two: -M.T); sample the
+    eps-safe mix, or play its most likely action with pick='argmax'."""
+    def pol(state, opts, side, rng):
+        if len(opts) == 1:
+            return opts[0]
+        M, s1, s2 = full_matrix(state)
+        A, acts = (M, s1) if side == 1 else (-M.T, s2)
+        p = np.clip(safex_strategy(A, eps), 0, None)
+        if pick == "argmax":
+            return acts[int(p.argmax())]
+        return rng.choices(acts, weights=p / p.sum())[0]
+    return pol
+
+
 def target_strategy(M: np.ndarray, side: int, target: str, iters: int = 1000) -> np.ndarray:
     """The mixed strategy a full-information matrix agent plays on M from `side`
-    ('argmax' / 'sample' = nash_policy picks, 'safest' = safest_policy). Deterministic given M."""
+    ('argmax' / 'sample' = nash_policy picks, 'safest' = safest_policy, 'safex:<eps>' = safex_policy
+    sampled). Deterministic given M."""
+    if target.startswith("safex:"):
+        p = np.clip(safex_strategy(M if side == 1 else -M.T, float(target.split(":")[1])), 0, None)
+        return p / p.sum()
     if target == "safest":
         k = int(M.min(1).argmax()) if side == 1 else int(M.max(0).argmin())
         q = np.zeros(M.shape[side - 1]); q[k] = 1
@@ -291,7 +347,8 @@ def lbr_policy(target: str, iters: int = 1000):
 
 
 def wb2_policy(target: str, K: int = 5, mass: float = 0.95, supp_mass: float = 0.95, iters: int = 1000):
-    """White-box depth-2 exploiter of a full-matrix agent of type `target` ('argmax' / 'sample').
+    """White-box depth-2 exploiter of a full-matrix agent of type `target` ('argmax' / 'sample' /
+    'safex:<eps>', the sampled safex_policy).
     Root: recompute the target's matrix M and its exact strategy q = target_strategy(M) (the agent's
     own decision rule, so its argmax move or its mix). Candidates: the top-K own actions by depth-1
     value against q. For each candidate a and each target action b in q's support (top actions up to

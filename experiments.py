@@ -5,6 +5,10 @@ Agent specs (strings, so they can be shipped to worker processes):
   nash:<solver>:<ms>[:<iters>][:argmax][:legacy]
                                  per-turn equilibrium of nash.engine_matrix (unpruned depth-2; <ms> only
                                  used with :legacy), solver rm+ | omwu | lp; sampled, or its argmax
+  nash:...:tanh<k>               same, but solving nash.squash_matrix(state, k) (exact +-1 terminals,
+                                 tanh(h/k) leaf) instead of full_matrix, e.g. nash:rm+:0:1000:argmax:tanh400
+  safex:<eps>[:argmax]           eps-safe exploiter (nash.safex_policy): best response to the predicted
+                                 move within eps x payoff range of the equilibrium value; sampled or argmax
   safest:<ms>[:legacy]           pure maximin on the same matrix (deterministic)
   :legacy = the old pruned pe.id matrix with NaN->0 (buggy; how E1-E3 of 2026-11-13 were run --
             their records carry the spec WITHOUT the suffix, see results/experiments/NOTE.md)
@@ -12,6 +16,7 @@ Agent specs (strings, so they can be shipped to worker processes):
   lbr:<argmax|sample|safest>     local best response to that full-matrix agent (knows its algorithm)
   wb2:<argmax|sample>[:K:supp]   white-box depth-2 exploiter of that equilibrium agent (nash.wb2_policy;
                                  top-K own actions, default 5, target support to mass supp, default 0.95)
+  wb2:safex:<eps>[:K:supp]       the same exploiter of safex:<eps> (sampled)
   mcts_ms:<ms>                   poke-engine MCTS, time budget instead of iterations
   vnet[:argmax|:sample]          RM+ equilibrium of nash.vnet_matrix (depth 1, value-net leaves from
                                  results/value/vnet.npz); its argmax (default) or the sampled mix
@@ -77,11 +82,20 @@ MATRIX = {
     "E2": [(f"nash:rm+:{ms}:1000", f"mcts_ms:{ms}", 200) for ms in (10, 50, 200)],
     "E3": [("nash:rm+:50:100", "nash:lp:50", 200),
            ("nash:rm+:50:1000", "nash:lp:50", 200)],
+    "SX": [("safex:0.02", "mcts_it:2000", 100),                   # eps-safe exploiter vs MCTS (paired seeds)
+           ("nash:rm+:0:1000:argmax", "mcts_it:2000", 100),
+           ("nash:rm+:0:1000", "mcts_it:2000", 100)],
+    "SXW": [("wb2:safex:0.02:4:0.8", "safex:0.02", 100)],         # its exploitability (white-box depth 2)
+    "LF": [("nash:rm+:0:1000:argmax", "foulplay_ms:75", 100),      # tanh-squashed leaf vs plain (paired seeds)
+           ("nash:rm+:0:1000:argmax:tanh400", "foulplay_ms:75", 100)],
 }
 
 # experiment -> offset added to its seeds (default 0), so its pairs use teams no other run has seen.
 # Without it seeds depend only on (matchup index, pair index), shared by every experiment.
-SEED_BASE = {"W1": 50_000_000}
+SEED_BASE = {"W1": 50_000_000, "SX": 60_000_000, "SXW": 61_000_000, "LF": 62_000_000}
+# experiments whose seed is SEED_BASE[exp] + pair index for every matchup, so all matchups play the
+# same teams at each pair index (paired comparison across matchups).
+PAIRED = {"SX", "LF", "SXW"}
 
 
 def make_agent(spec: str):
@@ -93,21 +107,28 @@ def make_agent(spec: str):
     kind, *a = spec.split(":")
     legacy, argmax = "legacy" in a, "argmax" in a
     a = [x for x in a if x not in ("legacy", "argmax")]
+    if kind == "safex":
+        return nash.safex_policy(float(a[0]), "argmax" if argmax else "sample")
     if kind == "random":
         return pb.random_policy
     if kind == "safest":
         return nash.safest_policy(int(a[0]), legacy)
     if kind == "nash":
+        tau = [float(x[4:]) for x in a if x.startswith("tanh")]
+        a = [x for x in a if not x.startswith("tanh")]
         solver = {"rm+": "rm_plus"}.get(a[0], a[0])
         return nash.nash_policy(solver, int(a[1]), int(a[2]) if len(a) > 2 else 1000,
-                                "argmax" if argmax else "sample", legacy)
+                                "argmax" if argmax else "sample", legacy, *tau)
     if kind == "vnet":
         return nash.vnet_policy(1000, "sample" if "sample" in a else "argmax")
     if kind == "lbr":                                  # lbr:argmax | lbr:sample | lbr:safest | lbr:mcts | lbr:foulplay_*:N
         return nash.lbr_policy(spec.split(":", 1)[1])
-    if kind == "wb2":                                  # wb2:argmax | wb2:sample [:K:supp_mass]
-        n = [x for x in a if x != "sample"]
-        return nash.wb2_policy("argmax" if argmax else "sample", *([int(n[0]), 0.95, float(n[1])] if n else []))
+    if kind == "wb2":                                  # wb2:argmax | wb2:sample | wb2:safex:<eps> [:K:supp_mass]
+        if a[0] == "safex":
+            target, n = f"safex:{a[1]}", a[2:]
+        else:
+            target, n = "argmax" if argmax else "sample", [x for x in a if x != "sample"]
+        return nash.wb2_policy(target, *([int(n[0]), 0.95, float(n[1])] if n else []))
     if kind in ("foulplay_it", "foulplay_ms"):
         n = int(a[0])
         ms, it = (0, n) if kind == "foulplay_it" else (n, 0)
@@ -281,7 +302,8 @@ def run(exp: str, workers: int, pairs: int | None):
     for i, (A, B, n) in enumerate(MATRIX[exp]):
         for k in range(pairs or n):
             if (A, B, k) not in done:
-                tasks.append((exp, A, B, k, SEED_BASE.get(exp, 0) + 1_000_003 * (i + 1) + k))
+                seed = SEED_BASE[exp] + k if exp in PAIRED else SEED_BASE.get(exp, 0) + 1_000_003 * (i + 1) + k
+                tasks.append((exp, A, B, k, seed))
     random.Random(0).shuffle(tasks)                # interleave matchups so partial runs are balanced
     print(f"{exp}: {len(tasks)} pairs to play ({len(done)} already done), {workers} workers", flush=True)
     t0 = time.perf_counter()
