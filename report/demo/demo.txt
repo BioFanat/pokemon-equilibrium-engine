@@ -1,0 +1,158 @@
+Equilibrium agent (us)  vs  MCTS, 2,000 iterations
+── Turn 1 ──────────────────────────────────────────────
+  us:  wugtrio        100% HP      them: dipplin        100% HP
+  payoff matrix 13×13  →  RM+, 1,000 iterations
+  mixed strategy: switch → ribombee 0.83   liquidation 0.17
+  we play: switch → ribombee      they play: gigadrain
+── Turn 2 ──────────────────────────────────────────────
+  us:  ribombee        78% HP      them: dipplin        100% HP
+  payoff matrix 13×13  →  RM+, 1,000 iterations
+  mixed strategy: stickyweb 1.00
+  we play: stickyweb              they play: gigadrain
+── Turn 3 ──────────────────────────────────────────────
+  us:  ribombee        57% HP      them: dipplin        100% HP
+  payoff matrix 13×13  →  RM+, 1,000 iterations
+  mixed strategy: moonblast 0.61   switch → arceuselectric 0.39
+  we play: switch → arceuselectric they play: gigadrain
+── Turn 4 ──────────────────────────────────────────────
+  us:  arceuselectric    71% HP      them: dipplin        100% HP
+  payoff matrix 13×13  →  RM+, 1,000 iterations
+  mixed strategy: calmmind 0.62   judgment 0.38
+  we play: calmmind               they play: gigadrain
+── Turn 5 ──────────────────────────────────────────────
+  us:  arceuselectric    52% HP      them: dipplin        100% HP
+  payoff matrix 13×13  →  RM+, 1,000 iterations
+  mixed strategy: judgment 0.51   icebeam 0.49
+  we play: icebeam                they play: dragonpulse
+── Turn 6 ──────────────────────────────────────────────
+  us:  arceuselectric    31% HP      them: dipplin         22% HP
+  payoff matrix 13×13  →  RM+, 1,000 iterations
+  mixed strategy: recover 1.00
+  we play: recover                they play: recover
+── Turn 7 ──────────────────────────────────────────────
+  us:  arceuselectric    81% HP      them: dipplin         72% HP
+  payoff matrix 13×13  →  RM+, 1,000 iterations
+  mixed strategy: icebeam 0.52   judgment 0.48
+  we play: icebeam                they play: gigadrain
+── Turn 8 ──────────────────────────────────────────────
+  us:  arceuselectric    81% HP      them: dipplin          0% HP
+  forced move
+  we play: none                   they play: switch → hoopa
+── Turn 9 ──────────────────────────────────────────────
+  us:  arceuselectric    81% HP      them: hoopa          100% HP
+  payoff matrix 13×12  →  RM+, 1,000 iterations
+  mixed strategy: calmmind 0.69   judgment 0.31
+  we play: judgment               they play: psyshock
+── Turn 10 ──────────────────────────────────────────────
+  us:  arceuselectric    39% HP      them: hoopa           57% HP
+  payoff matrix 13×6  →  RM+, 1,000 iterations
+  mixed strategy: recover 0.87   judgment 0.13
+  we play: recover                they play: psyshock
+── Turn 11 ──────────────────────────────────────────────
+  us:  arceuselectric    48% HP      them: hoopa           57% HP
+  payoff matrix 13×6  →  RM+, 1,000 iterations
+  mixed strategy: recover 0.81   judgment 0.19
+  we play: recover                they play: psyshock
+── Turn 12 ──────────────────────────────────────────────
+  us:  arceuselectric    57% HP      them: hoopa           57% HP
+  payoff matrix 13×6  →  RM+, 1,000 iterations
+  mixed strategy: judgment 1.00
+  we play: judgment               they play: psyshock
+── Turn 13 ──────────────────────────────────────────────
+  us:  arceuselectric    16% HP      them: hoopa           15% HP
+  payoff matrix 13×6  →  RM+, 1,000 iterations
+  mixed strategy: recover 1.00
+  we play: recover                they play: psyshock
+── Turn 14 ──────────────────────────────────────────────
+  us:  arceuselectric    25% HP      them: hoopa           15% HP
+  payoff matrix 13×6  →  RM+, 1,000 iterations
+  mixed strategy: recover 1.00
+  we play: recover                they play: psyshock
+── Turn 15 ──────────────────────────────────────────────
+  us:  arceuselectric    33% HP      them: hoopa           15% HP
+  payoff matrix 13×6  →  RM+, 1,000 iterations
+  mixed strategy: recover 0.71   judgment 0.29
+  we play: recover                they play: psyshock
+── Turn 16 ──────────────────────────────────────────────
+  us:  arceuselectric    42% HP      them: hoopa           15% HP
+  payoff matrix 13×6  →  RM+, 1,000 iterations
+  mixed strategy: recover 0.69   judgment 0.31
+  we play: recover                they play: psyshock
+── Turn 17 ──────────────────────────────────────────────
+  us:  arceuselectric    51% HP      them: hoopa           15% HP
+  payoff matrix 13×6  →  RM+, 1,000 iterations
+  mixed strategy: recover 0.84   judgment 0.16
+  we play: recover                they play: psyshock
+── Turn 18 ──────────────────────────────────────────────
+  us:  arceuselectric    59% HP      them: hoopa           15% HP
+  payoff matrix 13×6  →  RM+, 1,000 iterations
+  mixed strategy: calmmind 0.86   judgment 0.14
+  we play: judgment               they play: psyshock
+── Turn 19 ──────────────────────────────────────────────
+  us:  arceuselectric    59% HP      them: hoopa            0% HP
+  forced move
+  we play: none                   they play: switch → azelf
+── Turn 20 ──────────────────────────────────────────────
+  us:  arceuselectric    59% HP      them: azelf          100% HP
+  payoff matrix 13×11  →  RM+, 1,000 iterations
+  mixed strategy: judgment-tera 1.00
+  we play: judgment-tera          they play: nastyplot
+── Turn 21 ──────────────────────────────────────────────
+  us:  arceuselectric    59% HP      them: azelf            0% HP
+  forced move
+  we play: none                   they play: switch → dewgong
+── Turn 22 ──────────────────────────────────────────────
+  us:  arceuselectric    59% HP      them: dewgong        100% HP
+  payoff matrix 9×8  →  RM+, 1,000 iterations
+  mixed strategy: calmmind 0.53   judgment 0.47
+  we play: calmmind               they play: hydropump
+── Turn 23 ──────────────────────────────────────────────
+  us:  arceuselectric    40% HP      them: dewgong        100% HP
+  payoff matrix 9×8  →  RM+, 1,000 iterations
+  mixed strategy: judgment 0.58   recover 0.32   calmmind 0.10
+  we play: judgment               they play: icebeam
+── Turn 24 ──────────────────────────────────────────────
+  us:  arceuselectric    40% HP      them: dewgong          0% HP
+  forced move
+  we play: none                   they play: switch → gardevoir
+── Turn 25 ──────────────────────────────────────────────
+  us:  arceuselectric    40% HP      them: gardevoir      100% HP
+  payoff matrix 9×9  →  RM+, 1,000 iterations
+  mixed strategy: calmmind 0.63   judgment 0.37
+  we play: judgment               they play: psychic
+── Turn 26 ──────────────────────────────────────────────
+  us:  arceuselectric    15% HP      them: gardevoir        0% HP
+  forced move
+  we play: none                   they play: switch → ironbundle
+── Turn 27 ──────────────────────────────────────────────
+  us:  arceuselectric    15% HP      them: ironbundle     100% HP
+  payoff matrix 9×8  →  RM+, 1,000 iterations
+  mixed strategy: switch → luvdisc 0.77   judgment 0.23
+  we play: judgment               they play: icebeam
+── Turn 28 ──────────────────────────────────────────────
+  us:  arceuselectric     0% HP      them: ironbundle     100% HP
+  payoff matrix 5×1  →  RM+, 1,000 iterations
+  mixed strategy: switch → amoonguss 1.00
+  we play: switch → amoonguss     they play: none
+── Turn 29 ──────────────────────────────────────────────
+  us:  amoonguss      100% HP      them: ironbundle     100% HP
+  payoff matrix 8×8  →  RM+, 1,000 iterations
+  mixed strategy: spore 1.00
+  we play: spore                  they play: icebeam-tera
+── Turn 30 ──────────────────────────────────────────────
+  us:  amoonguss        7% HP      them: ironbundle     100% HP
+  payoff matrix 8×4  →  RM+, 1,000 iterations
+  mixed strategy: sludgebomb 1.00
+  we play: sludgebomb             they play: freezedry
+── Turn 31 ──────────────────────────────────────────────
+  us:  amoonguss        7% HP      them: ironbundle      46% HP
+  payoff matrix 8×4  →  RM+, 1,000 iterations
+  mixed strategy: switch → deoxysspeed 0.93   switch → wugtrio 0.07
+  we play: switch → deoxysspeed   they play: freezedry
+── Turn 32 ──────────────────────────────────────────────
+  us:  deoxysspeed     51% HP      them: ironbundle      46% HP
+  payoff matrix 8×4  →  RM+, 1,000 iterations
+  mixed strategy: superpower 1.00
+  we play: superpower             they play: encore
+────────────────────────────────────────────────────────
+Result: we win in 32 turns

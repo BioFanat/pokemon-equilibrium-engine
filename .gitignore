@@ -1,10 +1,34 @@
-.venv/
-__pycache__/
-*.pyc
+# Repo root = final/ (engine/ keeps its own .gitignore for engine-local rules)
 .DS_Store
+**/__pycache__/
+*.pyc
 
-# large generated data (regenerate with value_data.py / hidden_experiments.py)
-results/value/data.npz
-results/value/data_8k.npz
-results/hidden/E5_decisions.jsonl
+# engine: generated / large
+engine/.venv/
+engine/modal_logs/
+engine/showdown/results/*/replays_headless/
+engine/showdown/results/*/hedge_state/
 
+# theory: Lean build artefacts
+theory/lean/.lake/
+
+# report: media and LaTeX build files (keep sources, figures, small data)
+report/demo/*.mp4
+report/demo/*.gif
+report/demo/sprites/
+report/*.aux
+report/*.log
+report/*.out
+report/*.toc
+report/*.bbl
+report/*.blg
+
+# course materials and personal notes not part of the project repo
+lecture6.pdf
+lecture7.pdf
+report.zip
+final_ideas.md
+modal_builders_application.md
+
+# large regenerable belief-scoring events (score_belief_engine.py play)
+engine/results/belief/engine_events.jsonl

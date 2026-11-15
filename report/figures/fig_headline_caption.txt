@@ -1,0 +1,37 @@
+DRAFT caption for fig_headline (report/make_headline_figure.py). Numbers printed by the script.
+
+Regret goes to zero, under the proved bounds, at all three places we use no-regret learning. All axes log-log;
+y is regret or Nash gap as a share of the payoff range. Solid lines are medians, bands as stated per panel; dashed
+lines are proved bounds.
+
+(A) Inside a turn. Nash gap of RM+'s linearly averaged strategies (alternating updates, nash.rm_plus) on real stage
+matrices, divided by the matrix's payoff range; line = median, band = median to 90th percentile; n = 35 matrices.
+Bound (Proposition 4, theory/full_game.md:82; checked for nash.rm_plus as coded, theory/CHECK.md:24):
+gap <= 2 Delta (sqrt(n)+sqrt(m))/sqrt(T) for an n x m matrix with payoff range Delta (linear averaging; deterministic
+full-information play), plotted as 2(sqrt(n)+sqrt(m))/sqrt(T), median over the 35 matrices; it holds on every
+matrix (largest measured gap/own bound 0.04). Fitted slope of the median for T >= 10: -1.3; bound slope -0.5.
+
+(B) Across games. Average external regret per turn R_T/T of Hedge over k = 4 experts (top, sampled, safest, safe
+exploitation), R_T = max_e sum_t r_{e,t} - sum_t w_t.r_t, against T, the cumulative non-forced turns with feedback.
+Rewards are the counterfactual stage-matrix rewards r_{e,t} = clip((q_e.A b_t - min A)/400, 0, 1) along our own
+trajectory, so this is regret on the surrogate rewards, not on game outcomes. Carried = anytime Hedge whose weights
+persist across games; reset = the same learner restarted at each game, compared with the best expert over the whole
+run. Bound (Lemma R2a, anytime FTRL with the shipped indexing w_t ∝ exp(sqrt(8 ln k/(t-1)) L_{t-1})):
+R_T/T <= (3/2) sqrt(ln k/(2T)) + sqrt(ln k/8)/T, pathwise for any adaptive opponent; it bounds the carried learner
+only. Line = median, band = interquartile range over n streams.
+[PLACEHOLDER, to be replaced by E2: 8 random orders of 20 logged games (1,477 turns) of real stage matrices with the
+opponent's recorded move; the learner's choices do not affect the trajectory. Replace this sentence with the E2 run:
+n streams, games, turns.]
+
+(C) At a search node. Nash gap of decoupled self-play at a single node, on real stage matrices with rewards
+(1+tanh(M/160))/2 in [0,1], against iterations N. By NashGap(x̄,ȳ) = (Reg1+Reg2)/N this is the players' average
+regret (for RM+, with weights t from linear averaging). Full-information RM+: average strategies, exact expected
+payoffs. Exp3 (anytime, eta_t = sqrt(ln k/(k t)), no forced exploration) and UCB1 (mean + sqrt(2 ln t/n)): visit
+shares, one Bernoulli reward per iteration. Line = median, band = interquartile range; n = 100 matrices sampled
+from the 601 two-sided positions of 17 logged games (games capped at 300 turns excluded); same matrices for all
+three rules. Gaps below 1e-7 are drawn at 1e-7 (RM+ lower quartile at N = 10,000 is 1.5e-8). Full-information reference: tuned Hedge, sqrt(ln n/(2N)) + sqrt(ln m/(2N)) (two players, regret
+sqrt(N ln k/2) each; 0.069 at N = 1000), median over matrices; it is a Hedge bound, used as the full-information
+reference for RM+. Bandit bound: Exp3-IX high-probability bound (Neu 2015, delta = 0.05), per player
+2 sqrt(2kN ln k) + (sqrt(2kN/ln k)+1) ln(2/delta), summed and divided by N, median over matrices; the median exceeds 1
+(vacuous) for N <= 1,000 and is 0.92 and 0.50 at N = 3,000 and 10,000. It is the bound for Exp3-IX, a reference
+for our Exp3 and UCB1, not a bound proved for them.

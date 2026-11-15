@@ -1,0 +1,436 @@
+{
+ "item": {
+  "foulplay_exact_showdown": {
+   "n": 4630,
+   "n_games": 80,
+   "n_clusters": 80,
+   "mean_p_truth": 0.8392,
+   "acc": 0.8378,
+   "acc_ci": [
+    0.7805,
+    0.8906
+   ],
+   "logloss": 0.2568,
+   "logloss_ci": [
+    0.1932,
+    0.324
+   ],
+   "brier": 0.1702,
+   "frac_p0": 0.0019,
+   "baseline_p": null,
+   "ece_decisions": 0.0377,
+   "ece_distinct": 0.0423,
+   "ece_null_distinct": [
+    0.0287,
+    0.0422
+   ]
+  },
+  "foulplay_K4_showdown": {
+   "n": 4630,
+   "n_games": 80,
+   "n_clusters": 80,
+   "mean_p_truth": 0.8161,
+   "acc": 0.8227,
+   "acc_ci": [
+    0.7737,
+    0.8692
+   ],
+   "logloss": 0.6143,
+   "logloss_ci": [
+    0.3955,
+    0.8934
+   ],
+   "brier": 0.2533,
+   "frac_p0": 0.0616,
+   "baseline_p": null,
+   "ece_decisions": 0.1253,
+   "ece_distinct": 0.1638,
+   "ece_null_distinct": [
+    0.0118,
+    0.0224
+   ]
+  },
+  "ours_engine": {
+   "n": 9920,
+   "n_games": 40,
+   "n_clusters": 20,
+   "mean_p_truth": 0.7393,
+   "acc": 0.7401,
+   "acc_ci": [
+    0.6798,
+    0.7935
+   ],
+   "logloss": 0.4268,
+   "logloss_ci": [
+    0.3614,
+    0.5017
+   ],
+   "brier": 0.2726,
+   "frac_p0": 0.0,
+   "baseline_p": null,
+   "ece_decisions": 0.0444,
+   "ece_distinct": 0.0551,
+   "ece_null_distinct": [
+    0.0244,
+    0.0384
+   ]
+  }
+ },
+ "ability": {
+  "foulplay_exact_showdown": {
+   "n": 6602,
+   "n_games": 80,
+   "n_clusters": 80,
+   "mean_p_truth": 0.9688,
+   "acc": 0.9743,
+   "acc_ci": [
+    0.9555,
+    0.9895
+   ],
+   "logloss": 0.0447,
+   "logloss_ci": [
+    0.0226,
+    0.072
+   ],
+   "brier": 0.0321,
+   "frac_p0": 0.0,
+   "baseline_p": null,
+   "ece_decisions": 0.0157,
+   "ece_distinct": 0.0198,
+   "ece_null_distinct": [
+    0.022,
+    0.0374
+   ]
+  },
+  "foulplay_K4_showdown": {
+   "n": 6602,
+   "n_games": 80,
+   "n_clusters": 80,
+   "mean_p_truth": 0.9695,
+   "acc": 0.9711,
+   "acc_ci": [
+    0.9533,
+    0.9861
+   ],
+   "logloss": 0.0773,
+   "logloss_ci": [
+    0.0368,
+    0.1276
+   ],
+   "brier": 0.0385,
+   "frac_p0": 0.0058,
+   "baseline_p": null,
+   "ece_decisions": 0.0196,
+   "ece_distinct": 0.0667,
+   "ece_null_distinct": [
+    0.0087,
+    0.0192
+   ]
+  },
+  "ours_engine": {
+   "n": 9920,
+   "n_games": 40,
+   "n_clusters": 20,
+   "mean_p_truth": 0.9556,
+   "acc": 0.9484,
+   "acc_ci": [
+    0.9217,
+    0.9704
+   ],
+   "logloss": 0.0624,
+   "logloss_ci": [
+    0.0336,
+    0.0929
+   ],
+   "brier": 0.0447,
+   "frac_p0": 0.0,
+   "baseline_p": null,
+   "ece_decisions": 0.0069,
+   "ece_distinct": 0.0186,
+   "ece_null_distinct": [
+    0.0199,
+    0.0308
+   ]
+  }
+ },
+ "tera": {
+  "foulplay_exact_showdown": {
+   "n": 7173,
+   "n_games": 80,
+   "n_clusters": 80,
+   "mean_p_truth": 0.61,
+   "acc": 0.6332,
+   "acc_ci": [
+    0.5784,
+    0.6861
+   ],
+   "logloss": 0.6273,
+   "logloss_ci": [
+    0.5685,
+    0.6866
+   ],
+   "brier": 0.3903,
+   "frac_p0": 0.0011,
+   "baseline_p": null,
+   "ece_decisions": 0.025,
+   "ece_distinct": 0.0247,
+   "ece_null_distinct": [
+    0.0199,
+    0.0327
+   ]
+  },
+  "foulplay_K4_showdown": {
+   "n": 7173,
+   "n_games": 80,
+   "n_clusters": 80,
+   "mean_p_truth": 0.613,
+   "acc": 0.6198,
+   "acc_ci": [
+    0.5863,
+    0.6525
+   ],
+   "logloss": 1.1265,
+   "logloss_ci": [
+    1.0139,
+    1.249
+   ],
+   "brier": 0.4797,
+   "frac_p0": 0.0956,
+   "baseline_p": null,
+   "ece_decisions": 0.158,
+   "ece_distinct": 0.2286,
+   "ece_null_distinct": [
+    0.0069,
+    0.0175
+   ]
+  },
+  "ours_engine": {
+   "n": 9407,
+   "n_games": 40,
+   "n_clusters": 20,
+   "mean_p_truth": 0.5862,
+   "acc": 0.5901,
+   "acc_ci": [
+    0.5028,
+    0.6616
+   ],
+   "logloss": 0.6767,
+   "logloss_ci": [
+    0.5675,
+    0.7976
+   ],
+   "brier": 0.4226,
+   "frac_p0": 0.0,
+   "baseline_p": null,
+   "ece_decisions": 0.0293,
+   "ece_distinct": 0.0271,
+   "ece_null_distinct": [
+    0.0189,
+    0.0291
+   ]
+  }
+ },
+ "move": {
+  "foulplay_exact_showdown": {
+   "n": 19083,
+   "n_games": 80,
+   "n_clusters": 80,
+   "mean_p_truth": 0.8145,
+   "acc": 0.8467,
+   "acc_ci": [
+    0.8208,
+    0.8703
+   ],
+   "logloss": 0.2726,
+   "logloss_ci": [
+    0.2454,
+    0.2989
+   ],
+   "brier": 0.1091,
+   "frac_p0": 0.0005,
+   "baseline_p": null,
+   "ece_decisions": 0.0132,
+   "ece_distinct": 0.0207,
+   "ece_null_distinct": [
+    0.0106,
+    0.0148
+   ]
+  },
+  "foulplay_K4_showdown": {
+   "n": 19083,
+   "n_games": 80,
+   "n_clusters": 80,
+   "mean_p_truth": 0.8161,
+   "acc": 0.8203,
+   "acc_ci": [
+    0.8029,
+    0.8391
+   ],
+   "logloss": 0.4472,
+   "logloss_ci": [
+    0.3989,
+    0.4957
+   ],
+   "brier": 0.1406,
+   "frac_p0": 0.0306,
+   "baseline_p": null,
+   "ece_decisions": 0.089,
+   "ece_distinct": 0.1287,
+   "ece_null_distinct": [
+    0.004,
+    0.0071
+   ]
+  },
+  "ours_engine": {
+   "n": 24786,
+   "n_games": 40,
+   "n_clusters": 20,
+   "mean_p_truth": 0.6702,
+   "acc": 0.683,
+   "acc_ci": [
+    0.6299,
+    0.7269
+   ],
+   "logloss": 0.4796,
+   "logloss_ci": [
+    0.4138,
+    0.5482
+   ],
+   "brier": 0.1815,
+   "frac_p0": 0.0,
+   "baseline_p": null,
+   "ece_decisions": 0.0308,
+   "ece_distinct": 0.0276,
+   "ece_null_distinct": [
+    0.0154,
+    0.0206
+   ]
+  }
+ },
+ "bench": {
+  "foulplay_exact_showdown": {
+   "n": 5727,
+   "n_games": 80,
+   "n_clusters": 80,
+   "mean_p_truth": 0.0077,
+   "acc": 0.0,
+   "acc_ci": [
+    0.0,
+    0.0
+   ],
+   "logloss": 6.1529,
+   "logloss_ci": [
+    6.0933,
+    6.213
+   ],
+   "brier": 0.9849,
+   "frac_p0": 0.7871,
+   "baseline_p": 0.0064
+  },
+  "foulplay_K4_showdown": {
+   "n": 5727,
+   "n_games": 80,
+   "n_clusters": 80,
+   "mean_p_truth": 0.0081,
+   "acc": 0.0005,
+   "acc_ci": [
+    0.0,
+    0.0012
+   ],
+   "logloss": 6.7328,
+   "logloss_ci": [
+    6.7045,
+    6.7587
+   ],
+   "brier": 0.986,
+   "frac_p0": 0.9684,
+   "baseline_p": 0.0064
+  },
+  "ours_engine": {
+   "n": 5964,
+   "n_games": 40,
+   "n_clusters": 20,
+   "mean_p_truth": 0.0063,
+   "acc": 0.0,
+   "acc_ci": [
+    0.0,
+    0.0
+   ],
+   "logloss": 5.1678,
+   "logloss_ci": [
+    5.1286,
+    5.2112
+   ],
+   "brier": 0.9874,
+   "frac_p0": 0.0,
+   "baseline_p": 0.0063
+  }
+ },
+ "note": "Not paired: foul-play measured on real Showdown (80 games), ours in poke-engine (40 games, 20 team draws). foul-play uses damage/speed/item inference + empirical prior; ours uses legality only, and its prior is the engine generator.",
+ "a4": {
+  "toy_generator": {
+   "A-1": 0.3762,
+   "A-2": 0.3743,
+   "C": 0.2495
+  },
+  "toy_expected": {
+   "A-1": 0.375,
+   "A-2": 0.375,
+   "C": 0.25
+  },
+  "n_configs": 287,
+  "n_distinct_configs_seen": 287,
+  "n_nonprefix": 212,
+  "n_draws_per_config": 100000,
+  "note": "prefix configs (revealed slots = 0..j-1) have TV 0 exactly: all importance weights are equal",
+  "species_keys": 509,
+  "bases": 421,
+  "multi_forme_bases": 54,
+  "forme_count_hist": {
+   "1": 367,
+   "2": 43,
+   "18": 1,
+   "3": 4,
+   "4": 5,
+   "6": 1
+  },
+  "tv_mean": 0.0015012147713404566,
+  "tv_median": 0.0013170175247148213,
+  "tv_p95": 0.004503737792865848,
+  "tv_max": 0.006097422520603695,
+  "worst_config": [
+   [
+    0,
+    413
+   ],
+   [
+    2,
+    204
+   ],
+   [
+    3,
+    458
+   ],
+   [
+    4,
+    405
+   ],
+   [
+    5,
+    215
+   ]
+  ],
+  "mc_check": {
+   "n": 40,
+   "draws": 100000,
+   "mean_exact": 0.0019480802958243583,
+   "mean_mc": 0.0019508688805018651,
+   "mc_split_half_noise": 0.0024249999999999983,
+   "max_abs_exact_minus_mc": 3.576611807393085e-05
+  },
+  "tv_mean_prefix_configs": 0.0,
+  "tv_mean_nonprefix_configs": 0.0020323049027109017,
+  "n_prefix": 75,
+  "ess_min": 99923.39545190889
+ }
+}

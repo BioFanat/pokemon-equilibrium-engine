@@ -1,0 +1,43 @@
+--- run_ourbot.orig.py	2026-11-15 16:32:56
++++ run_ourbot.py	2026-11-15 16:32:56
+@@ -64,6 +64,7 @@
+         t0 = time.time()
+         worlds = battle.mode.prepare_battles(battle, K)
+         Ms, ws, rows, legal, raw = [], [], [], None, {}
++        cols2, raw2, opp_teams = [], [], []                   # demo logging: per-world column labels, opp teams
+         for b, chance in worlds:
+             state = battle_to_poke_engine_state(b)
+             r = nash.pe.id(state, 0)                         # raw engine option strings for side one (us)
+@@ -72,6 +73,14 @@
+                 legal = s1
+                 raw = {pb._canon(o): o for o in r.s1}
+             Ms.append(M); ws.append(chance); rows.append(s1)
++            cols2.append(s2); raw2.append({pb._canon(o): o for o in r.s2})
++            try:
++                opp = [b.opponent.active] + list(b.opponent.reserve)
++                opp_teams.append([dict(name=p.name, item=getattr(p, "item", None), ability=getattr(p, "ability", None),
++                                       moves=[getattr(m, "name", str(m)) for m in getattr(p, "moves", [])])
++                                  for p in opp if p is not None])
++            except Exception:
++                opp_teams.append(None)
+             if len(legal) == 1:
+                 break
+         alt = None
+@@ -96,6 +105,17 @@
+             rec.update(alt_method=other, alt_mix={legal[i]: round(float(alt[i]), 3) for i in atop if alt[i] >= 0.01},
+                        argmax_same=bool(np.argmax(x) == np.argmax(alt)), tv=round(float(0.5 * np.abs(x - alt).sum()), 4),
+                        alt_secs=round(alt_secs, 3))
++        lab = lambda o, rw: ("switch: " + rw[o][len("switch "):]) if rw.get(o, "").startswith("switch ") else o
++        rec.update(rows=[lab(o, raw) for o in legal], rows_raw=list(legal), x=[round(float(v), 4) for v in x],
++                   K=len(Ms), w=[round(float(c), 4) for c in np.asarray(ws) / np.sum(ws)], opp_teams=opp_teams,
++                   force_switch=bool(getattr(battle, "force_switch", False)))
++        if len(legal) > 1:                                   # highest-weight world k*: its matrix + column eq.
++            ks = int(np.argmax(ws))
++            Mk = np.asarray(Ms[ks])
++            _, yk, vk = nash.lp(Mk)                          # column player's equilibrium on M_k* (no RNG)
++            yk = np.clip(yk, 0, None); yk = yk / yk.sum()
++            rec.update(kstar=ks, cols=[lab(o, raw2[ks]) for o in cols2[ks]], cols_raw=list(cols2[ks]),
++                       M=np.round(Mk, 1).tolist(), y=[round(float(v), 4) for v in yk], v=round(float(vk), 2))
+         with open(log or LOG, "a") as f:
+             f.write(json.dumps(rec) + "\n")
+         return move

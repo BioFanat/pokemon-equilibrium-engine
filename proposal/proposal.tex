@@ -1,0 +1,67 @@
+\documentclass[10pt]{article}
+\usepackage[margin=0.65in]{geometry}
+\usepackage{amsmath,amssymb,enumitem,microtype}
+\usepackage[compact]{titlesec}
+\titlespacing*{\section}{0pt}{3pt}{1pt}
+\setlist{nosep,leftmargin=*}
+\setlength{\parskip}{2pt}\setlength{\parindent}{0pt}
+\title{\vspace{-2.4em}\textbf{Bayesian Memory and No-Regret Learning for\\Strategic Decision-Making in Pok\'emon Showdown}\vspace{-0.8em}}
+\author{CS535 Project Proposal \quad [Name 1], [Name 2]}
+\date{\vspace{-1.6em}}
+\begin{document}
+\maketitle
+
+\section{Introduction and motivation}
+A competitive Pok\'emon battle is a two-player, winner-take-all game played under uncertainty. Players see the opponent's Pok\'emon, their health and the moves already used, but not each Pok\'emon's full moveset, item, ability or Tera type, and a single unseen Choice Scarf or coverage move can decide a battle. Both players also choose \emph{at the same time}, and damage, accuracy and critical hits are random. We focus on Gen~9 Random Battles, where teams are drawn from a known random generator.
+
+The strongest bots pair search with guesses about what the opponent is holding. Foul Play (open source, peak $\approx$2341 Elo) samples a handful of complete guesses about the opponent's team, plans separately for each one as if that guess were true and visible to both sides, and then blends the plans. Jaxcalibur (closed, self-reported $\approx$2557 Elo) and Chronoquazicalar (open source) add self-play networks or regret-based search but blend the same way. Others use replays (Metamon) or LLMs (Pok\'eChamp).
+
+These bots leave three things on the table. First, \textbf{blending per-guess plans is a known mistake}: we cannot play differently in each guessed world because we do not know which one we are in, yet the opponent \emph{does} know its own team, so a blended plan can be exploited. Second, \textbf{their memory is shallow}: they rule out impossible sets from hard evidence, but never ask what the opponent's \emph{choices} say about what it holds or how it plays. Third, \textbf{they cannot say how good they are} beyond Elo: how exploitable, how they fare against predictable opponents, or against equals. (We confirmed the first two in the open bots' code.)
+
+\section{Proposed idea}
+A strong player keeps two questions in mind at once: \emph{what does the opponent have?} and \emph{how does this opponent play?} When an opponent threatens a knockout, switching to a counter invites a setup move, while staying in risks the knockout; the right answer depends on both questions, and no single action is always right, so good play \emph{mixes} its choices. Inspired by poker AI, we propose an agent built around a \textbf{Bayesian memory} that answers both questions together, and a \textbf{no-regret learner} that turns those answers into a mixed strategy.
+
+\textbf{One memory for ``what they have'' and ``how they play.''} The agent keeps one probability distribution over two unknowns. The \textbf{set} $S$ is the hidden part of the opponent's team: each Pok\'emon's moves, item, ability and Tera type, including unrevealed Pok\'emon; its starting belief comes from Showdown's own team generator, so it knows which moves, items and abilities go together. The \textbf{style} $\sigma$ is one of a short menu of ways to pick actions, each giving a probability for every legal action in any position and set: \emph{near-optimal} (plays the equilibrium our own solver computes for that set), \emph{aggressive} (attacks more than it should), \emph{switch-happy} (switches out of bad matchups more than it should) and \emph{greedy} (always uses its strongest move). Starting weights come from human replays.
+Each turn $t$ we observe the opponent's \textbf{choice} $c_t$ (the move it used or where it switched) and the \textbf{evidence} $e_t$ (what the game shows about the result: damage, who moved first, items or abilities activating, Tera). The \textbf{history} $H_t=(c_1,e_1,\dots,c_t,e_t)$, plus our own actions, is everything seen so far. Bayes' rule then gives
+\[ P(S,\sigma\mid H_t)\;\propto\;P(e_t\mid S)\cdot P(c_t\mid S,\sigma)\cdot P(S,\sigma\mid H_{t-1}). \]
+$P(e_t\mid S)$, given both sides' actions, is usually 0 or 1 (a set either fits the evidence or not: a Pok\'emon that moved first must be fast enough, a move it used must be in its set), and damage adds a probability over Showdown's 16 equally likely damage rolls; it sharpens only the set. $P(c_t\mid S,\sigma)$ updates both: a near-optimal player who refuses to stay in probably holds something that cannot afford to, while a switch-happy one tells us little. Set beliefs reset each battle; style beliefs carry over against the same opponent.
+
+\textbf{How the agent picks a move.} Each turn has four steps, and both learners in it are multiplicative weights (MWU).
+\begin{enumerate}[label=(\arabic*),leftmargin=1.4em]
+\item \emph{Guess what they might have.} Sample several possible sets from the memory, and for each set simulate every pair (our action, their action) to get a table of our estimated win probability.
+\item \emph{Plan the safe strategy (MWU self-play, in our head).} Our experts are our legal moves and switches; the adversary is one imaginary opponent per sampled set, whose experts are that set's actions. Each iteration, every player scores its actions against the others' current mixes and reweights them by MWU. Our \emph{average} mix converges to a strategy that is safe against every possible set at once (the turn's equilibrium), instead of one plan per guess, blended; each imaginary opponent's average shows how a near-optimal player with that set acts, which feeds the memory.
+\item \emph{Choose the move (MWU over policies, against the real opponent).} The experts are now policies: ``play safe'' (step 2) and one ``exploit $\sigma$'' per style, which best-responds to what that style predicts. We mix their recommendations by their current weights and \emph{sample} our move.
+\item \emph{Learn from what happened.} After seeing the opponent's real choice, we score every expert against it and reweight by MWU; the memory updates by Bayes' rule. Weights persist across turns and battles: exploit experts lose weight against unpredictable opponents and take over against predictable ones, and since ``play safe'' is an expert, we never fall far below its value.
+\end{enumerate}
+
+\textbf{Gathering and hiding information.} Some actions are worth taking for what they reveal (Protect, a scouting switch), so the agent values information explicitly; and since our team is hidden too, it tracks what the opponent can infer about \emph{us} and avoids revealing more than necessary (principled bluffing).
+
+\section{Implementation steps and evaluation}
+\textbf{Steps.} (1) A fast open-source battle engine and poke-env on a local Showdown server. (2) The set-and-style memory. (3) A small value network trained on replays (hand-written evaluation until ready). (4) The move-picking loop, plus the ``plan per guess and blend'' rule on the same inputs. (5) Information gathering and concealment. (6) An opponent pool: fixed-style bots (always attack, switch-happy, max-damage, random), Foul Play, an \emph{exploiter} that sees our strategy and best-responds, and copies of our bot.
+
+\textbf{Evaluation: a ``status card''} that says how good the bot is against each kind of opponent:
+\begin{itemize}
+\item \textbf{Worst case:} how much the exploiter can beat us, i.e.\ how exploitable we are.
+\item \textbf{Predictable opponents:} how fast we learn to beat each fixed-style bot, and what we give up while learning.
+\item \textbf{Equally strong bots:} mirror matches against our copies (benchmark 50\%) and weakened versions; a round-robin table over all bots, analyzed as a game to see whether a rational player would pick our bot.
+\end{itemize}
+We also check \emph{why}: how often blending changes the decision in real positions, how fast the solver settles, how well-calibrated set and style predictions are, and how often information changes the move. Each component is switched on and off in turn.
+\textbf{Timeline:} wk 1--2 engine, memory, solver, fixed bots; wk 3--4 value net, information, exploitation, card rows 1--2; wk 5--6 concealment, round-robin, write-up. \textbf{Stretch:} self-play training, deeper search, human-mixing tests.
+
+\section{Theoretical explorations and goals}
+\begin{itemize}
+\item \textbf{Bayesian games, minimax and no-regret dynamics (step 2):} each turn as a Bayes--Nash equilibrium (as in auctions, with the hidden set as private information); why per-set learners' averaged play converges while the latest play can cycle; whether optimistic updates or warm-starting from last turn speed this up.
+\item \textbf{The cost of blending} (main theorem target): when planning per guess and blending is harmless, and how much it can lose. \textbf{An error budget:} how belief, evaluation and solver mistakes add up to exploitability, and what is lost by remembering attributes separately instead of jointly.
+\item \textbf{Experts and safe exploitation (steps 3--4):} regret bounds against fixed-style opponents with a guaranteed floor; Bayes as multiplicative weights; what happens when our learner meets other learners, including itself.
+\item \textbf{Information:} when information is worth paying for (never, if it would not change our plan), and when hiding a move is optimal---repeated games with incomplete information, like buyers hiding their values from a learning seller in repeated auctions. \textbf{Feedback loops:} do beliefs inferred from choices and choices based on beliefs settle down or oscillate?
+\end{itemize}
+Guarantees concern each turn's game and the round-robin; full-battle guarantees are a known hard problem we discuss, not solve.
+
+\section{Desired takeaways and further reading}
+We want (1) a bot that each turn shows its beliefs about the opponent's set and style, its mixed strategy, and why; (2) a clear answer to whether fixing the blending mistake and reading the opponent's choices actually matter; and (3) a status card that says how strong the bot is against worst-case, predictable and equally strong opponents, each tied to a concept from the course.
+
+\textbf{Readings we plan to do}, by course topic. \emph{No-regret \& minimax:} Freund--Schapire; Hart--Mas-Colell (regret matching); Hartline--Syrgkanis--Tardos (no-regret learning in Bayesian games); optimistic learning (Daskalakis et al.; Syrgkanis et al.); CFR (Zinkevich et al.).
+\emph{Equilibria in games with hidden information:} sequence-form LPs (Koller--Megiddo--von Stengel); the blending problem (Frank--Basin; Long et al.); safe subgame solving (Brown--Sandholm); DeepStack and ReBeL.
+\emph{Bayesian games \& information:} Aumann--Maschler; Bayesian persuasion (Kamenica--Gentzkow); strategic buyers in repeated auctions (Amin et al.); value of information (Gossner--Mertens).
+\emph{Learning against opponents \& evaluating agents:} Bayesian poker opponent models (Southey et al.); safe exploitation (Ganzfried--Sandholm); PSRO (Lanctot et al.); Nash averaging (Balduzzi et al.).
+\end{document}
