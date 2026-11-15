@@ -1,0 +1,237 @@
+✓ Initialized. View run at 
+https://modal.com/apps/bo-baoen/main/ap-9DEJK1or6s4TNInQyBd12F
+✓ Created objects.
+├── ✓ Uploaded 
+│   /Users/biofanat/Documents/classes/f26/cs535/final/engine/modal_psro.py
+├── ✓ Uploaded 
+│   /Users/biofanat/Documents/classes/f26/cs535/final/engine/randbats.py
+├── ✓ Uploaded 
+│   /Users/biofanat/Documents/classes/f26/cs535/final/engine/hidden.py
+├── ✓ Uploaded 
+│   /Users/biofanat/Documents/classes/f26/cs535/final/engine/experiments.py
+├── ✓ Uploaded 
+│   /Users/biofanat/Documents/classes/f26/cs535/final/engine/exp3_live.py
+├── ✓ Uploaded /Users/biofanat/Documents/classes/f26/cs535/final/engine/nash.py
+├── ✓ Uploaded 
+│   /Users/biofanat/Documents/classes/f26/cs535/final/engine/pkbattle.py
+├── ✓ Uploaded 
+│   /Users/biofanat/Documents/classes/f26/cs535/final/engine/ppo_pilot.py
+├── ✓ Uploaded 
+│   /Users/biofanat/Documents/classes/f26/cs535/final/engine/psro_cost.py
+├── ✓ Uploaded /Users/biofanat/Documents/classes/f26/cs535/final/engine/psro.py
+├── ✓ Uploaded 
+│   /Users/biofanat/Documents/classes/f26/cs535/final/engine/results/ppo_pilot.p
+│   t
+├── ✓ Uploaded /Users/biofanat/Documents/classes/f26/cs535/final/engine/data
+├── ✓ Created Function run_task.
+├── ✓ Created Function driver.
+└── ✓ Created Function one_game.
+phase                                           games  decisions local core-h
+rl_br foulplay_it:2000: train                   69842    3059062         4.04
+rl_br foulplay_it:2000: eval x3                   600          0         0.07
+TOTAL                                           70442    3059062         4.11
+Modal: 13.7 billed core-h (slowdown 2.0, utilization 0.6), $0.78 (workers $0.76 + driver $0.03), wall 0.2 h at 64 containers
+{"curve": {"decisions": 0, "games_trained": 0, "winrate": 0.1, "ci95": [0.0713, 0.1287]}}
+{"decisions": 14790, "games": 256, "winrate": 0.0938, "wall_s": 14.9, "pg": -0.0019, "vloss": 0.0207, "entropy": 0.133}
+{"decisions": 30841, "games": 512, "winrate": 0.1016, "wall_s": 26.6, "pg": -0.0025, "vloss": 0.0165, "entropy": 0.146}
+{"decisions": 44825, "games": 768, "winrate": 0.084, "wall_s": 40.7, "pg": -0.0031, "vloss": 0.0188, "entropy": 0.138}
+{"decisions": 59746, "games": 1024, "winrate": 0.0957, "wall_s": 49.9, "pg": -0.0025, "vloss": 0.0203, "entropy": 0.14}
+{"decisions": 74547, "games": 1280, "winrate": 0.0918, "wall_s": 66.5, "pg": -0.0018, "vloss": 0.0187, "entropy": 0.136}
+{"decisions": 90023, "games": 1536, "winrate": 0.1094, "wall_s": 79.8, "pg": -0.0026, "vloss": 0.0225, "entropy": 0.133}
+{"decisions": 103713, "games": 1792, "winrate": 0.0762, "wall_s": 90.1, "pg": -0.0046, "vloss": 0.0202, "entropy": 0.146}
+{"decisions": 118028, "games": 2048, "winrate": 0.084, "wall_s": 101.8, "pg": -0.0002, "vloss": 0.0197, "entropy": 0.146}
+{"decisions": 133075, "games": 2304, "winrate": 0.0996, "wall_s": 115.9, "pg": -0.0024, "vloss": 0.0241, "entropy": 0.123}
+{"decisions": 148933, "games": 2560, "winrate": 0.0957, "wall_s": 129.5, "pg": -0.0018, "vloss": 0.0148, "entropy": 0.117}
+{"decisions": 163858, "games": 2816, "winrate": 0.0996, "wall_s": 140.5, "pg": -0.0031, "vloss": 0.0232, "entropy": 0.136}
+{"decisions": 180915, "games": 3072, "winrate": 0.1172, "wall_s": 154.3, "pg": -0.0042, "vloss": 0.0179, "entropy": 0.116}
+{"decisions": 196716, "games": 3328, "winrate": 0.1094, "wall_s": 168.7, "pg": -0.0013, "vloss": 0.0198, "entropy": 0.112}
+{"decisions": 210696, "games": 3584, "winrate": 0.084, "wall_s": 178.9, "pg": -0.0006, "vloss": 0.0212, "entropy": 0.143}
+{"decisions": 223660, "games": 3840, "winrate": 0.0742, "wall_s": 190.1, "pg": 0.0015, "vloss": 0.0221, "entropy": 0.139}
+{"decisions": 238399, "games": 4096, "winrate": 0.0898, "wall_s": 200.8, "pg": -0.0023, "vloss": 0.019, "entropy": 0.127}
+{"decisions": 252729, "games": 4352, "winrate": 0.0898, "wall_s": 210.6, "pg": -0.0032, "vloss": 0.0254, "entropy": 0.14}
+{"decisions": 267493, "games": 4608, "winrate": 0.0918, "wall_s": 221.5, "pg": -0.0012, "vloss": 0.0179, "entropy": 0.127}
+{"decisions": 282562, "games": 4864, "winrate": 0.0938, "wall_s": 232.6, "pg": -0.0011, "vloss": 0.0186, "entropy": 0.137}
+{"decisions": 298580, "games": 5120, "winrate": 0.1152, "wall_s": 247.2, "pg": -0.0017, "vloss": 0.0203, "entropy": 0.121}
+{"decisions": 313673, "games": 5376, "winrate": 0.0957, "wall_s": 261.8, "pg": -0.0015, "vloss": 0.0187, "entropy": 0.124}
+{"decisions": 330216, "games": 5632, "winrate": 0.1074, "wall_s": 274.9, "pg": -0.012, "vloss": 0.0195, "entropy": 0.115}
+{"decisions": 342590, "games": 5888, "winrate": 0.0684, "wall_s": 283.4, "pg": 0.0076, "vloss": 0.02, "entropy": 0.131}
+{"decisions": 357690, "games": 6144, "winrate": 0.1055, "wall_s": 293.4, "pg": -0.001, "vloss": 0.0226, "entropy": 0.12}
+{"decisions": 374209, "games": 6400, "winrate": 0.1074, "wall_s": 305.8, "pg": 0.0012, "vloss": 0.0193, "entropy": 0.116}
+{"decisions": 389518, "games": 6656, "winrate": 0.1035, "wall_s": 315.3, "pg": -0.0016, "vloss": 0.0234, "entropy": 0.111}
+{"decisions": 404739, "games": 6912, "winrate": 0.0957, "wall_s": 330.0, "pg": -0.0018, "vloss": 0.0161, "entropy": 0.13}
+{"decisions": 419006, "games": 7168, "winrate": 0.0957, "wall_s": 344.5, "pg": -0.0008, "vloss": 0.0241, "entropy": 0.147}
+{"decisions": 435305, "games": 7424, "winrate": 0.1074, "wall_s": 358.9, "pg": -0.0017, "vloss": 0.0164, "entropy": 0.108}
+{"decisions": 450218, "games": 7680, "winrate": 0.084, "wall_s": 371.2, "pg": -0.0011, "vloss": 0.0184, "entropy": 0.121}
+{"decisions": 463953, "games": 7936, "winrate": 0.082, "wall_s": 381.5, "pg": -0.0027, "vloss": 0.0202, "entropy": 0.125}
+{"decisions": 480006, "games": 8192, "winrate": 0.125, "wall_s": 400.9, "pg": -0.0023, "vloss": 0.0289, "entropy": 0.126}
+{"decisions": 494535, "games": 8448, "winrate": 0.0957, "wall_s": 417.3, "pg": -0.0015, "vloss": 0.0232, "entropy": 0.146}
+{"decisions": 512530, "games": 8704, "winrate": 0.1211, "wall_s": 434.8, "pg": -0.0028, "vloss": 0.0184, "entropy": 0.144}
+{"decisions": 527333, "games": 8960, "winrate": 0.0801, "wall_s": 456.2, "pg": -0.0019, "vloss": 0.0204, "entropy": 0.164}
+{"decisions": 542030, "games": 9216, "winrate": 0.0898, "wall_s": 478.3, "pg": -0.0044, "vloss": 0.0191, "entropy": 0.124}
+{"decisions": 555755, "games": 9472, "winrate": 0.0742, "wall_s": 496.0, "pg": -0.0038, "vloss": 0.0218, "entropy": 0.121}
+{"decisions": 571962, "games": 9728, "winrate": 0.1074, "wall_s": 519.8, "pg": -0.0015, "vloss": 0.0206, "entropy": 0.13}
+{"decisions": 587650, "games": 9984, "winrate": 0.1074, "wall_s": 536.6, "pg": -0.0017, "vloss": 0.0199, "entropy": 0.143}
+{"decisions": 602072, "games": 10240, "winrate": 0.0801, "wall_s": 554.5, "pg": -0.0016, "vloss": 0.0206, "entropy": 0.142}
+{"decisions": 618325, "games": 10496, "winrate": 0.1074, "wall_s": 573.0, "pg": -0.0017, "vloss": 0.0169, "entropy": 0.12}
+{"decisions": 635190, "games": 10752, "winrate": 0.1133, "wall_s": 593.0, "pg": -0.0051, "vloss": 0.0185, "entropy": 0.114}
+{"decisions": 650952, "games": 11008, "winrate": 0.0977, "wall_s": 611.6, "pg": -0.0015, "vloss": 0.0191, "entropy": 0.121}
+{"decisions": 667861, "games": 11264, "winrate": 0.1074, "wall_s": 631.2, "pg": 0.0017, "vloss": 0.0186, "entropy": 0.128}
+{"decisions": 683338, "games": 11520, "winrate": 0.0996, "wall_s": 648.8, "pg": -0.0013, "vloss": 0.0196, "entropy": 0.13}
+{"decisions": 697036, "games": 11776, "winrate": 0.0801, "wall_s": 663.9, "pg": -0.0001, "vloss": 0.0215, "entropy": 0.14}
+{"decisions": 712529, "games": 12032, "winrate": 0.1035, "wall_s": 680.8, "pg": -0.0011, "vloss": 0.024, "entropy": 0.14}
+{"decisions": 727134, "games": 12288, "winrate": 0.0859, "wall_s": 700.5, "pg": -0.0027, "vloss": 0.0201, "entropy": 0.113}
+{"decisions": 741575, "games": 12544, "winrate": 0.0801, "wall_s": 715.1, "pg": -0.002, "vloss": 0.0187, "entropy": 0.144}
+{"decisions": 756850, "games": 12800, "winrate": 0.0996, "wall_s": 736.2, "pg": -0.0019, "vloss": 0.0202, "entropy": 0.13}
+{"decisions": 771987, "games": 13056, "winrate": 0.0977, "wall_s": 760.0, "pg": -0.0024, "vloss": 0.0218, "entropy": 0.122}
+{"decisions": 785165, "games": 13312, "winrate": 0.0723, "wall_s": 775.9, "pg": -0.0082, "vloss": 0.0171, "entropy": 0.114}
+{"decisions": 800539, "games": 13568, "winrate": 0.0977, "wall_s": 793.7, "pg": -0.001, "vloss": 0.0181, "entropy": 0.134}
+{"decisions": 817705, "games": 13824, "winrate": 0.123, "wall_s": 810.1, "pg": -0.0006, "vloss": 0.0188, "entropy": 0.11}
+{"decisions": 834866, "games": 14080, "winrate": 0.1016, "wall_s": 829.4, "pg": 0.0008, "vloss": 0.0184, "entropy": 0.118}
+{"decisions": 850546, "games": 14336, "winrate": 0.0938, "wall_s": 844.7, "pg": -0.0012, "vloss": 0.0194, "entropy": 0.128}
+{"decisions": 865194, "games": 14592, "winrate": 0.0879, "wall_s": 861.3, "pg": -0.0018, "vloss": 0.0183, "entropy": 0.135}
+{"decisions": 881992, "games": 14848, "winrate": 0.1172, "wall_s": 880.7, "pg": -0.0105, "vloss": 0.0197, "entropy": 0.119}
+{"decisions": 898587, "games": 15104, "winrate": 0.1094, "wall_s": 900.5, "pg": -0.0002, "vloss": 0.0236, "entropy": 0.149}
+{"decisions": 913928, "games": 15360, "winrate": 0.0977, "wall_s": 917.4, "pg": -0.0015, "vloss": 0.0201, "entropy": 0.141}
+{"decisions": 930829, "games": 15616, "winrate": 0.1094, "wall_s": 943.3, "pg": 0.0004, "vloss": 0.0168, "entropy": 0.132}
+{"decisions": 949067, "games": 15872, "winrate": 0.1133, "wall_s": 964.3, "pg": -0.0009, "vloss": 0.019, "entropy": 0.106}
+{"decisions": 965169, "games": 16128, "winrate": 0.1035, "wall_s": 980.4, "pg": -0.002, "vloss": 0.0179, "entropy": 0.144}
+{"decisions": 980830, "games": 16384, "winrate": 0.1035, "wall_s": 996.5, "pg": -0.0015, "vloss": 0.0211, "entropy": 0.15}
+{"decisions": 997162, "games": 16640, "winrate": 0.1055, "wall_s": 1014.9, "pg": -0.0021, "vloss": 0.019, "entropy": 0.141}
+{"decisions": 1015262, "games": 16896, "winrate": 0.127, "wall_s": 1037.5, "pg": -0.0018, "vloss": 0.0187, "entropy": 0.111}
+{"decisions": 1029938, "games": 17152, "winrate": 0.0938, "wall_s": 1055.5, "pg": -0.001, "vloss": 0.0194, "entropy": 0.14}
+{"decisions": 1046577, "games": 17408, "winrate": 0.1172, "wall_s": 1075.6, "pg": -0.0012, "vloss": 0.0232, "entropy": 0.118}
+{"decisions": 1061961, "games": 17664, "winrate": 0.0859, "wall_s": 1098.3, "pg": -0.0032, "vloss": 0.019, "entropy": 0.113}
+{"curve": {"decisions": 1061961, "games_trained": 17664, "winrate": 0.1225, "ci95": [0.088, 0.157]}}
+{"decisions": 1078472, "games": 17920, "winrate": 0.1113, "wall_s": 1125.0, "pg": 0.0002, "vloss": 0.0168, "entropy": 0.128}
+{"decisions": 1095337, "games": 18176, "winrate": 0.1152, "wall_s": 1140.6, "pg": -0.0018, "vloss": 0.0205, "entropy": 0.09}
+{"decisions": 1111542, "games": 18432, "winrate": 0.1074, "wall_s": 1161.9, "pg": -0.0018, "vloss": 0.0203, "entropy": 0.122}
+{"decisions": 1128736, "games": 18688, "winrate": 0.1191, "wall_s": 1176.5, "pg": -0.0019, "vloss": 0.0187, "entropy": 0.113}
+{"decisions": 1143709, "games": 18944, "winrate": 0.084, "wall_s": 1192.9, "pg": 0.0003, "vloss": 0.0226, "entropy": 0.158}
+{"decisions": 1159182, "games": 19200, "winrate": 0.1016, "wall_s": 1207.1, "pg": -0.0015, "vloss": 0.0202, "entropy": 0.133}
+{"decisions": 1176140, "games": 19456, "winrate": 0.1211, "wall_s": 1226.0, "pg": 0.0022, "vloss": 0.0217, "entropy": 0.12}
+{"decisions": 1194019, "games": 19712, "winrate": 0.1328, "wall_s": 1246.0, "pg": 0.0005, "vloss": 0.023, "entropy": 0.118}
+{"decisions": 1208876, "games": 19968, "winrate": 0.0957, "wall_s": 1263.1, "pg": -0.0006, "vloss": 0.0225, "entropy": 0.15}
+{"decisions": 1224959, "games": 20224, "winrate": 0.1016, "wall_s": 1281.6, "pg": -0.0019, "vloss": 0.0182, "entropy": 0.131}
+{"decisions": 1239874, "games": 20480, "winrate": 0.082, "wall_s": 1299.5, "pg": -0.0012, "vloss": 0.0184, "entropy": 0.138}
+{"decisions": 1257166, "games": 20736, "winrate": 0.125, "wall_s": 1315.6, "pg": 0.0024, "vloss": 0.0225, "entropy": 0.123}
+{"decisions": 1272897, "games": 20992, "winrate": 0.1113, "wall_s": 1330.9, "pg": -0.0021, "vloss": 0.023, "entropy": 0.155}
+{"decisions": 1289035, "games": 21248, "winrate": 0.0938, "wall_s": 1347.5, "pg": -0.0006, "vloss": 0.0177, "entropy": 0.133}
+{"decisions": 1304887, "games": 21504, "winrate": 0.1094, "wall_s": 1368.1, "pg": -0.0024, "vloss": 0.022, "entropy": 0.141}
+{"decisions": 1320235, "games": 21760, "winrate": 0.0957, "wall_s": 1382.1, "pg": -0.0021, "vloss": 0.0207, "entropy": 0.132}
+{"decisions": 1336717, "games": 22016, "winrate": 0.1191, "wall_s": 1398.9, "pg": -0.0034, "vloss": 0.0219, "entropy": 0.108}
+{"decisions": 1355175, "games": 22272, "winrate": 0.1348, "wall_s": 1418.0, "pg": -0.0033, "vloss": 0.017, "entropy": 0.134}
+{"decisions": 1372026, "games": 22528, "winrate": 0.1152, "wall_s": 1435.1, "pg": -0.006, "vloss": 0.0206, "entropy": 0.137}
+{"decisions": 1388727, "games": 22784, "winrate": 0.1172, "wall_s": 1451.9, "pg": -0.0004, "vloss": 0.0239, "entropy": 0.113}
+{"decisions": 1403652, "games": 23040, "winrate": 0.0898, "wall_s": 1468.0, "pg": -0.0017, "vloss": 0.0166, "entropy": 0.129}
+{"decisions": 1420110, "games": 23296, "winrate": 0.1172, "wall_s": 1485.4, "pg": -0.0008, "vloss": 0.0198, "entropy": 0.141}
+{"decisions": 1436755, "games": 23552, "winrate": 0.127, "wall_s": 1503.3, "pg": -0.0055, "vloss": 0.0249, "entropy": 0.139}
+{"decisions": 1451306, "games": 23808, "winrate": 0.0977, "wall_s": 1520.6, "pg": -0.0023, "vloss": 0.0255, "entropy": 0.162}
+{"decisions": 1466927, "games": 24064, "winrate": 0.0996, "wall_s": 1545.9, "pg": -0.0027, "vloss": 0.0216, "entropy": 0.138}
+{"decisions": 1484749, "games": 24320, "winrate": 0.127, "wall_s": 1568.1, "pg": -0.0004, "vloss": 0.0213, "entropy": 0.123}
+{"decisions": 1499117, "games": 24576, "winrate": 0.082, "wall_s": 1584.0, "pg": -0.0011, "vloss": 0.0206, "entropy": 0.137}
+{"decisions": 1515862, "games": 24832, "winrate": 0.1094, "wall_s": 1600.9, "pg": -0.0055, "vloss": 0.019, "entropy": 0.133}
+{"decisions": 1531666, "games": 25088, "winrate": 0.1074, "wall_s": 1615.8, "pg": -0.0009, "vloss": 0.021, "entropy": 0.123}
+{"decisions": 1547033, "games": 25344, "winrate": 0.0957, "wall_s": 1632.3, "pg": -0.0027, "vloss": 0.0213, "entropy": 0.138}
+{"decisions": 1562709, "games": 25600, "winrate": 0.1094, "wall_s": 1648.3, "pg": -0.0015, "vloss": 0.0244, "entropy": 0.133}
+{"decisions": 1578253, "games": 25856, "winrate": 0.1016, "wall_s": 1666.7, "pg": -0.002, "vloss": 0.0187, "entropy": 0.139}
+{"decisions": 1593771, "games": 26112, "winrate": 0.0996, "wall_s": 1684.4, "pg": -0.0018, "vloss": 0.0208, "entropy": 0.154}
+{"decisions": 1609844, "games": 26368, "winrate": 0.0996, "wall_s": 1702.7, "pg": -0.0017, "vloss": 0.0193, "entropy": 0.153}
+{"decisions": 1626141, "games": 26624, "winrate": 0.1055, "wall_s": 1717.4, "pg": -0.0014, "vloss": 0.017, "entropy": 0.129}
+{"decisions": 1641813, "games": 26880, "winrate": 0.1016, "wall_s": 1734.2, "pg": -0.0004, "vloss": 0.0232, "entropy": 0.156}
+{"decisions": 1657698, "games": 27136, "winrate": 0.0957, "wall_s": 1751.7, "pg": -0.0023, "vloss": 0.0201, "entropy": 0.139}
+{"decisions": 1674792, "games": 27392, "winrate": 0.1152, "wall_s": 1772.1, "pg": 0.0024, "vloss": 0.0199, "entropy": 0.135}
+{"decisions": 1690222, "games": 27648, "winrate": 0.1152, "wall_s": 1789.3, "pg": -0.002, "vloss": 0.0255, "entropy": 0.15}
+{"decisions": 1706875, "games": 27904, "winrate": 0.1113, "wall_s": 1805.7, "pg": 0.0035, "vloss": 0.018, "entropy": 0.126}
+{"decisions": 1722710, "games": 28160, "winrate": 0.1035, "wall_s": 1820.3, "pg": -0.001, "vloss": 0.0179, "entropy": 0.118}
+{"decisions": 1738240, "games": 28416, "winrate": 0.1055, "wall_s": 1835.4, "pg": -0.0007, "vloss": 0.0223, "entropy": 0.129}
+{"decisions": 1755846, "games": 28672, "winrate": 0.1289, "wall_s": 1858.0, "pg": -0.0063, "vloss": 0.0187, "entropy": 0.143}
+{"decisions": 1770412, "games": 28928, "winrate": 0.0859, "wall_s": 1872.9, "pg": -0.0011, "vloss": 0.0222, "entropy": 0.15}
+{"decisions": 1787373, "games": 29184, "winrate": 0.1211, "wall_s": 1915.3, "pg": 0.0002, "vloss": 0.0256, "entropy": 0.138}
+{"decisions": 1803336, "games": 29440, "winrate": 0.1055, "wall_s": 1931.9, "pg": -0.0019, "vloss": 0.0212, "entropy": 0.159}
+{"decisions": 1819080, "games": 29696, "winrate": 0.1035, "wall_s": 1949.0, "pg": -0.0015, "vloss": 0.0225, "entropy": 0.125}
+{"decisions": 1834217, "games": 29952, "winrate": 0.1035, "wall_s": 1964.1, "pg": -0.0015, "vloss": 0.0241, "entropy": 0.146}
+{"decisions": 1850183, "games": 30208, "winrate": 0.1074, "wall_s": 1981.0, "pg": -0.0021, "vloss": 0.0199, "entropy": 0.158}
+{"decisions": 1867106, "games": 30464, "winrate": 0.1172, "wall_s": 1997.3, "pg": -0.0002, "vloss": 0.0198, "entropy": 0.129}
+{"decisions": 1882945, "games": 30720, "winrate": 0.0996, "wall_s": 2014.4, "pg": -0.0013, "vloss": 0.0194, "entropy": 0.122}
+{"decisions": 1898937, "games": 30976, "winrate": 0.1074, "wall_s": 2031.3, "pg": -0.0021, "vloss": 0.0194, "entropy": 0.133}
+{"decisions": 1916815, "games": 31232, "winrate": 0.1289, "wall_s": 2049.4, "pg": -0.0032, "vloss": 0.0189, "entropy": 0.13}
+{"decisions": 1932491, "games": 31488, "winrate": 0.1035, "wall_s": 2065.5, "pg": -0.0015, "vloss": 0.0237, "entropy": 0.143}
+{"decisions": 1947557, "games": 31744, "winrate": 0.1074, "wall_s": 2083.6, "pg": -0.0031, "vloss": 0.0239, "entropy": 0.164}
+{"decisions": 1964602, "games": 32000, "winrate": 0.1211, "wall_s": 2106.4, "pg": -0.0052, "vloss": 0.0195, "entropy": 0.118}
+{"decisions": 1980056, "games": 32256, "winrate": 0.1055, "wall_s": 2126.6, "pg": -0.0008, "vloss": 0.0225, "entropy": 0.144}
+{"decisions": 1997936, "games": 32512, "winrate": 0.123, "wall_s": 2145.4, "pg": -0.0, "vloss": 0.0184, "entropy": 0.136}
+{"decisions": 2014278, "games": 32768, "winrate": 0.1113, "wall_s": 2164.2, "pg": -0.0024, "vloss": 0.0201, "entropy": 0.168}
+{"decisions": 2029603, "games": 33024, "winrate": 0.0879, "wall_s": 2179.6, "pg": -0.0016, "vloss": 0.0197, "entropy": 0.186}
+{"decisions": 2045083, "games": 33280, "winrate": 0.1016, "wall_s": 2196.4, "pg": -0.0016, "vloss": 0.0206, "entropy": 0.163}
+{"decisions": 2059994, "games": 33536, "winrate": 0.0938, "wall_s": 2213.0, "pg": 0.001, "vloss": 0.0196, "entropy": 0.135}
+{"decisions": 2074842, "games": 33792, "winrate": 0.1016, "wall_s": 2227.7, "pg": -0.0016, "vloss": 0.0224, "entropy": 0.133}
+{"decisions": 2091657, "games": 34048, "winrate": 0.1172, "wall_s": 2248.9, "pg": 0.0017, "vloss": 0.0177, "entropy": 0.132}
+{"decisions": 2106483, "games": 34304, "winrate": 0.0879, "wall_s": 2266.6, "pg": -0.0011, "vloss": 0.0197, "entropy": 0.157}
+{"decisions": 2122273, "games": 34560, "winrate": 0.0977, "wall_s": 2280.7, "pg": -0.0017, "vloss": 0.0205, "entropy": 0.146}
+{"decisions": 2138112, "games": 34816, "winrate": 0.1074, "wall_s": 2296.8, "pg": -0.0014, "vloss": 0.0188, "entropy": 0.128}
+[modal-client] 2026-11-15T08:17:28+0000 Modal Client → Modal Worker Heartbeat attempt failed (attempt_dur=61.83, time_since_heartbeat_success=61.83, error=ConnectionError('Deadline exceeded'))
+{"decisions": 2156021, "games": 35072, "winrate": 0.125, "wall_s": 2320.2, "pg": -0.0029, "vloss": 0.0185, "entropy": 0.132}
+{"decisions": 2171278, "games": 35328, "winrate": 0.0957, "wall_s": 2335.5, "pg": -0.0018, "vloss": 0.0218, "entropy": 0.167}
+{"decisions": 2188550, "games": 35584, "winrate": 0.1113, "wall_s": 2352.9, "pg": -0.0018, "vloss": 0.0201, "entropy": 0.148}
+{"decisions": 2202342, "games": 35840, "winrate": 0.0859, "wall_s": 2367.1, "pg": -0.0014, "vloss": 0.0234, "entropy": 0.169}
+{"decisions": 2218891, "games": 36096, "winrate": 0.1094, "wall_s": 2382.7, "pg": -0.0011, "vloss": 0.0181, "entropy": 0.156}
+{"decisions": 2231408, "games": 36352, "winrate": 0.0664, "wall_s": 2395.9, "pg": -0.006, "vloss": 0.0179, "entropy": 0.152}
+{"decisions": 2249343, "games": 36608, "winrate": 0.125, "wall_s": 2415.8, "pg": -0.0026, "vloss": 0.0179, "entropy": 0.107}
+{"decisions": 2264577, "games": 36864, "winrate": 0.0898, "wall_s": 2436.8, "pg": -0.0007, "vloss": 0.0179, "entropy": 0.138}
+{"decisions": 2280907, "games": 37120, "winrate": 0.0996, "wall_s": 2453.1, "pg": -0.0016, "vloss": 0.0176, "entropy": 0.136}
+{"decisions": 2296950, "games": 37376, "winrate": 0.1172, "wall_s": 2471.3, "pg": -0.002, "vloss": 0.0247, "entropy": 0.136}
+{"decisions": 2313183, "games": 37632, "winrate": 0.1152, "wall_s": 2486.5, "pg": -0.0017, "vloss": 0.0208, "entropy": 0.132}
+{"decisions": 2328798, "games": 37888, "winrate": 0.1035, "wall_s": 2505.3, "pg": -0.002, "vloss": 0.0222, "entropy": 0.137}
+{"decisions": 2345093, "games": 38144, "winrate": 0.1191, "wall_s": 2522.1, "pg": -0.0018, "vloss": 0.024, "entropy": 0.135}
+{"decisions": 2362371, "games": 38400, "winrate": 0.123, "wall_s": 2538.7, "pg": -0.0009, "vloss": 0.0191, "entropy": 0.127}
+{"decisions": 2378301, "games": 38656, "winrate": 0.0977, "wall_s": 2557.3, "pg": -0.0018, "vloss": 0.021, "entropy": 0.131}
+{"decisions": 2393458, "games": 38912, "winrate": 0.0957, "wall_s": 2574.2, "pg": -0.0015, "vloss": 0.019, "entropy": 0.134}
+{"decisions": 2408924, "games": 39168, "winrate": 0.0977, "wall_s": 2590.9, "pg": -0.0018, "vloss": 0.0207, "entropy": 0.114}
+{"decisions": 2426293, "games": 39424, "winrate": 0.125, "wall_s": 2615.6, "pg": -0.0056, "vloss": 0.0225, "entropy": 0.115}
+{"decisions": 2440887, "games": 39680, "winrate": 0.0898, "wall_s": 2639.6, "pg": -0.0043, "vloss": 0.0202, "entropy": 0.137}
+{"decisions": 2457526, "games": 39936, "winrate": 0.1133, "wall_s": 2661.1, "pg": -0.0037, "vloss": 0.0219, "entropy": 0.119}
+{"decisions": 2472103, "games": 40192, "winrate": 0.0801, "wall_s": 2677.5, "pg": -0.0015, "vloss": 0.0197, "entropy": 0.145}
+{"decisions": 2488337, "games": 40448, "winrate": 0.1055, "wall_s": 2694.6, "pg": -0.0019, "vloss": 0.0188, "entropy": 0.127}
+{"decisions": 2504161, "games": 40704, "winrate": 0.1055, "wall_s": 2713.0, "pg": -0.0018, "vloss": 0.0227, "entropy": 0.153}
+{"decisions": 2518494, "games": 40960, "winrate": 0.0801, "wall_s": 2732.8, "pg": -0.0047, "vloss": 0.0203, "entropy": 0.144}
+{"decisions": 2535513, "games": 41216, "winrate": 0.1191, "wall_s": 2749.8, "pg": 0.0037, "vloss": 0.0228, "entropy": 0.157}
+{"decisions": 2551046, "games": 41472, "winrate": 0.1133, "wall_s": 2765.4, "pg": -0.0016, "vloss": 0.0259, "entropy": 0.144}
+{"decisions": 2563706, "games": 41728, "winrate": 0.0703, "wall_s": 2778.6, "pg": 0.0023, "vloss": 0.021, "entropy": 0.155}
+{"decisions": 2579041, "games": 41984, "winrate": 0.0859, "wall_s": 2794.1, "pg": -0.0014, "vloss": 0.0167, "entropy": 0.138}
+{"decisions": 2593955, "games": 42240, "winrate": 0.0879, "wall_s": 2808.4, "pg": -0.0018, "vloss": 0.0189, "entropy": 0.162}
+{"decisions": 2611192, "games": 42496, "winrate": 0.1133, "wall_s": 2828.6, "pg": -0.0003, "vloss": 0.0165, "entropy": 0.13}
+{"decisions": 2626823, "games": 42752, "winrate": 0.0957, "wall_s": 2850.8, "pg": -0.0017, "vloss": 0.0197, "entropy": 0.156}
+{"decisions": 2642204, "games": 43008, "winrate": 0.1074, "wall_s": 2868.9, "pg": -0.0023, "vloss": 0.0212, "entropy": 0.144}
+{"decisions": 2659269, "games": 43264, "winrate": 0.1191, "wall_s": 2884.8, "pg": -0.004, "vloss": 0.0176, "entropy": 0.136}
+{"decisions": 2674902, "games": 43520, "winrate": 0.1055, "wall_s": 2900.2, "pg": -0.0013, "vloss": 0.0217, "entropy": 0.136}
+{"decisions": 2690446, "games": 43776, "winrate": 0.0996, "wall_s": 2916.8, "pg": -0.0011, "vloss": 0.0189, "entropy": 0.153}
+{"decisions": 2707093, "games": 44032, "winrate": 0.1016, "wall_s": 2932.2, "pg": -0.0121, "vloss": 0.0168, "entropy": 0.125}
+{"decisions": 2722738, "games": 44288, "winrate": 0.0996, "wall_s": 2949.2, "pg": -0.001, "vloss": 0.0195, "entropy": 0.157}
+{"decisions": 2738300, "games": 44544, "winrate": 0.0918, "wall_s": 2965.2, "pg": -0.0015, "vloss": 0.0164, "entropy": 0.129}
+{"decisions": 2754252, "games": 44800, "winrate": 0.1055, "wall_s": 2984.5, "pg": -0.0014, "vloss": 0.0167, "entropy": 0.132}
+{"decisions": 2769597, "games": 45056, "winrate": 0.1016, "wall_s": 3004.7, "pg": -0.0009, "vloss": 0.0221, "entropy": 0.17}
+{"decisions": 2783942, "games": 45312, "winrate": 0.0918, "wall_s": 3022.5, "pg": -0.0018, "vloss": 0.0233, "entropy": 0.165}
+{"decisions": 2800535, "games": 45568, "winrate": 0.1211, "wall_s": 3049.5, "pg": -0.0096, "vloss": 0.0221, "entropy": 0.141}
+{"decisions": 2816556, "games": 45824, "winrate": 0.1016, "wall_s": 3065.5, "pg": -0.0018, "vloss": 0.019, "entropy": 0.157}
+{"decisions": 2832133, "games": 46080, "winrate": 0.0977, "wall_s": 3082.5, "pg": -0.0018, "vloss": 0.0187, "entropy": 0.154}
+{"decisions": 2847137, "games": 46336, "winrate": 0.1016, "wall_s": 3098.4, "pg": -0.0024, "vloss": 0.0241, "entropy": 0.152}
+{"decisions": 2863053, "games": 46592, "winrate": 0.0996, "wall_s": 3112.8, "pg": -0.0015, "vloss": 0.0188, "entropy": 0.148}
+{"decisions": 2879449, "games": 46848, "winrate": 0.1055, "wall_s": 3134.3, "pg": 0.0404, "vloss": 0.0175, "entropy": 0.131}
+{"decisions": 2896972, "games": 47104, "winrate": 0.125, "wall_s": 3156.1, "pg": -0.0017, "vloss": 0.0199, "entropy": 0.118}
+{"decisions": 2914592, "games": 47360, "winrate": 0.1094, "wall_s": 3173.9, "pg": -0.0005, "vloss": 0.0182, "entropy": 0.146}
+{"decisions": 2930854, "games": 47616, "winrate": 0.1113, "wall_s": 3194.0, "pg": -0.0011, "vloss": 0.0202, "entropy": 0.154}
+{"decisions": 2946459, "games": 47872, "winrate": 0.0996, "wall_s": 3208.6, "pg": -0.0018, "vloss": 0.0198, "entropy": 0.154}
+{"decisions": 2961327, "games": 48128, "winrate": 0.0938, "wall_s": 3223.3, "pg": -0.0028, "vloss": 0.0207, "entropy": 0.155}
+{"decisions": 2978503, "games": 48384, "winrate": 0.125, "wall_s": 3240.6, "pg": -0.0005, "vloss": 0.0217, "entropy": 0.133}
+{"decisions": 2993928, "games": 48640, "winrate": 0.0898, "wall_s": 3256.3, "pg": -0.0021, "vloss": 0.0182, "entropy": 0.146}
+{"decisions": 3010504, "games": 48896, "winrate": 0.1152, "wall_s": 3272.9, "pg": 0.0024, "vloss": 0.0193, "entropy": 0.136}
+{"decisions": 3025297, "games": 49152, "winrate": 0.0859, "wall_s": 3289.3, "pg": -0.0011, "vloss": 0.0177, "entropy": 0.143}
+{"decisions": 3040185, "games": 49408, "winrate": 0.0996, "wall_s": 3305.8, "pg": -0.0018, "vloss": 0.0207, "entropy": 0.133}
+{"decisions": 3057934, "games": 49664, "winrate": 0.1211, "wall_s": 3325.0, "pg": -0.0012, "vloss": 0.0195, "entropy": 0.139}
+{"decisions": 3073506, "games": 49920, "winrate": 0.0977, "wall_s": 3346.9, "pg": -0.0014, "vloss": 0.0232, "entropy": 0.125}
+{"curve": {"decisions": 3073506, "games_trained": 49920, "winrate": 0.125, "ci95": [0.0967, 0.1533]}}
+{"target": "foulplay_it:2000", "decisions": 3073506, "winrate": 0.125, "exploitability_lb": -0.375, "ci95": [-0.40329016319029165, -0.34670983680970835], "init_winrate": null}
+{'usd_estimate': 0.969, 'worker_task_core_h': 5.146, 'wall_h': 0.938}
+Stopping app - local entrypoint completed.
+✓ App completed. View run at 
+https://modal.com/apps/bo-baoen/main/ap-9DEJK1or6s4TNInQyBd12F

@@ -1,0 +1,3 @@
+{"run": "rlbr_scale_smoke", "rl_br_targets": ["foulplay_it:2000"], "init": "results/ppo_pilot.pt", "eval_init": true,
+ "rl_br_decisions": 200000, "exploit_games": 50, "games_per_update": 256, "games_per_input": 8,
+ "eval_every_decisions": 100000}

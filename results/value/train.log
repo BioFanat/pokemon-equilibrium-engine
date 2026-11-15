@@ -1,0 +1,29 @@
+step 100 (epoch 1): val MSE 0.7657 (1s)
+step 200 (epoch 1): val MSE 0.7023 (1s)
+step 300 (epoch 1): val MSE 0.6978 (2s)
+step 400 (epoch 1): val MSE 0.6950 (2s)
+step 500 (epoch 1): val MSE 0.6930 (3s)
+step 600 (epoch 1): val MSE 0.6933 (3s)
+step 700 (epoch 1): val MSE 0.6911 (4s)
+step 800 (epoch 1): val MSE 0.6931 (4s)
+step 900 (epoch 1): val MSE 0.6944 (5s)
+step 1000 (epoch 1): val MSE 0.6963 (5s)
+step 1100 (epoch 1): val MSE 0.7011 (6s)
+step 1200 (epoch 1): val MSE 0.7064 (6s)
+{
+  "data": "results/value/data.npz",
+  "train_positions": 996486,
+  "val_positions": 112320,
+  "val_games": 3000,
+  "epochs": 1,
+  "steps": 1200,
+  "best_step": 700,
+  "train_s": 6.5,
+  "val_mse": 0.6911289095878601,
+  "val_mse_const0": 0.946955144405365,
+  "net_sign_acc_decisive": 0.7256633008029183,
+  "subsample_n": 2000,
+  "net_sign_acc_sub": 0.7425,
+  "heuristic_sign_acc_sub": 0.743,
+  "heuristic_zero_frac_sub": 0.0045
+}

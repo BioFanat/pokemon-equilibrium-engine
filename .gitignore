@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+
+# large generated data (regenerate with value_data.py / hidden_experiments.py)
+results/value/data.npz
+results/value/data_8k.npz
+results/hidden/E5_decisions.jsonl
+
+# in-progress Modal run (committed once it finishes)
+results/psro/run_rlbr_gray.log
+results/psro/rlbr_gray/

@@ -1,0 +1,51 @@
+kingambit vs clefable @ 100%: skipped (exceeds 20k exact, with PP abstraction, and with PP + HP/10)
+garchomp+toxapex vs rotomwash+kingambit @ 40%: skipped (exceeds 20k exact, with PP, and with PP + HP/10)
+garchomp+toxapex vs rotomwash+kingambit @ 100%: skipped (not attempted: the 40% variant already exceeds with PP + HP/10)
+garchomp vs rotomwash @ 100% [PP*] [HP/20]: 10,878 states (9,746 live), V*(s0)=+0.1269 (P1 win 0.5635), enum 114s, shapley 5000 sweeps 97s, matrices 55s, a=0 at 1469 states
+  seat1 equilibrium sampled   expl  0.3380 | long: H    3.18 bound   6.358 refined   4.498 | short: H    3.18 eps_v cal max/mean 1.000/0.431 eps_s max 0.001 bound   6.358 refined   4.489 ratio    13.3
+  seat1 equilibrium top move  expl  0.3555 | long: H    3.34 bound   5.499 refined   4.675 | short: H    3.18 eps_v cal max/mean 0.783/0.506 eps_s max 0.079 bound   5.231 refined   4.548 ratio    12.8
+  seat1 safest                expl  0.3555 | long: H    3.18 bound   5.231 refined   4.548 | short: H    3.18 eps_v cal max/mean 0.783/0.506 eps_s max 0.079 bound   5.231 refined   4.548 ratio    12.8
+  seat1 exact equilibrium     expl  0.0293 | long: H     inf bound     inf refined     inf | short: H     inf eps_v cal max/mean 0.000/0.000 eps_s max 0.000 bound     inf refined     inf ratio     inf   <-- CHECK FAILED
+  seat2 equilibrium sampled   expl  0.6020 | long: H    2.97 bound   5.468 refined   4.570 | short: H    2.95 eps_v cal max/mean 0.921/0.532 eps_s max 0.000 bound   5.435 refined   4.551 ratio     7.6
+  seat2 equilibrium top move  expl  0.5989 | long: H    2.96 bound   5.491 refined   4.557 | short: H    2.94 eps_v cal max/mean 0.918/0.716 eps_s max 0.017 bound   5.452 refined   4.545 ratio     7.6
+  seat2 safest                expl  0.5989 | long: H    2.96 bound   5.486 refined   4.568 | short: H    2.94 eps_v cal max/mean 0.918/0.716 eps_s max 0.017 bound   5.452 refined   4.545 ratio     7.6
+  seat2 exact equilibrium     expl  0.0000 | long: H    3.51 bound   0.000 refined   0.000 | short: H    2.97 eps_v cal max/mean 0.000/0.000 eps_s max 0.000 bound   0.000 refined   0.000 ratio     inf
+garchomp vs rotomwash @ 40% [PP*] [HP/20]: 7,268 states (6,342 live), V*(s0)=+1.0000 (P1 win 1.0000), enum 70s, shapley 8 sweeps 1s, matrices 35s, a=0 at 593 states
+  seat1 equilibrium sampled   expl  0.0000 | long: H    1.00 bound   2.000 refined   1.600 | short: H    1.00 eps_v cal max/mean 1.000/0.493 eps_s max 0.000 bound   2.000 refined   1.600 ratio 202969.2
+  seat1 equilibrium top move  expl  0.0000 | long: H    1.00 bound   1.600 refined   1.600 | short: H    1.00 eps_v cal max/mean 0.800/0.800 eps_s max 0.000 bound   1.600 refined   1.600 ratio     inf
+  seat1 safest                expl  0.0000 | long: H    1.00 bound   1.600 refined   1.600 | short: H    1.00 eps_v cal max/mean 0.800/0.800 eps_s max 0.000 bound   1.600 refined   1.600 ratio     inf
+  seat1 exact equilibrium     expl  0.0000 | long: H    1.00 bound   0.000 refined   0.000 | short: H    1.00 eps_v cal max/mean 0.000/0.000 eps_s max 0.000 bound   0.000 refined   0.000 ratio     inf
+  seat2 equilibrium sampled   expl  0.0000 | long: H    1.00 bound   1.600 refined   1.600 | short: H    1.00 eps_v cal max/mean 0.800/0.800 eps_s max 0.000 bound   1.600 refined   1.600 ratio     inf
+  seat2 equilibrium top move  expl  0.0000 | long: H    1.00 bound   1.600 refined   1.600 | short: H    1.00 eps_v cal max/mean 0.800/0.800 eps_s max 0.000 bound   1.600 refined   1.600 ratio     inf
+  seat2 safest                expl  0.0000 | long: H    1.00 bound   1.600 refined   1.600 | short: H    1.00 eps_v cal max/mean 0.800/0.800 eps_s max 0.000 bound   1.600 refined   1.600 ratio     inf
+  seat2 exact equilibrium     expl  0.0000 | long: H    1.00 bound   0.000 refined   0.000 | short: H    1.00 eps_v cal max/mean 0.000/0.000 eps_s max 0.000 bound   0.000 refined   0.000 ratio     inf
+greattusk vs gholdengo @ 100% [PP*] [HP/10]: 1,836 states (1,162 live), V*(s0)=+0.7969 (P1 win 0.8984), enum 4s, shapley 12 sweeps 0s, matrices 4s, a=0 at 576 states
+  seat1 equilibrium sampled   expl  0.2153 | long: H    1.11 bound   2.215 refined   2.000 | short: H    1.11 eps_v cal max/mean 1.000/0.487 eps_s max 0.000 bound   2.215 refined   2.000 ratio     9.3
+  seat1 equilibrium top move  expl  0.2153 | long: H    1.11 bound   2.215 refined   2.000 | short: H    1.11 eps_v cal max/mean 1.000/0.500 eps_s max 0.000 bound   2.215 refined   2.000 ratio     9.3
+  seat1 safest                expl  0.2153 | long: H    1.11 bound   2.215 refined   2.000 | short: H    1.11 eps_v cal max/mean 1.000/0.500 eps_s max 0.000 bound   2.215 refined   2.000 ratio     9.3
+  seat1 exact equilibrium     expl  0.0000 | long: H    1.00 bound   0.000 refined   0.000 | short: H    1.00 eps_v cal max/mean 0.000/0.000 eps_s max 0.000 bound   0.000 refined   0.000 ratio     inf
+  seat2 equilibrium sampled   expl  0.1198 | long: H    1.00 bound   2.000 refined   2.000 | short: H    1.00 eps_v cal max/mean 1.000/1.000 eps_s max 0.000 bound   2.000 refined   2.000 ratio    16.7
+  seat2 equilibrium top move  expl  0.1198 | long: H    1.00 bound   2.000 refined   2.000 | short: H    1.00 eps_v cal max/mean 1.000/1.000 eps_s max 0.000 bound   2.000 refined   2.000 ratio    16.7
+  seat2 safest                expl  0.1198 | long: H    1.00 bound   2.000 refined   2.000 | short: H    1.00 eps_v cal max/mean 1.000/1.000 eps_s max 0.000 bound   2.000 refined   2.000 ratio    16.7
+  seat2 exact equilibrium     expl  0.0000 | long: H    1.90 bound   0.000 refined   0.000 | short: H    1.00 eps_v cal max/mean 0.000/0.000 eps_s max 0.000 bound   0.000 refined   0.000 ratio     inf
+greattusk vs gholdengo @ 50% [PP*] [HP/10]: 481 states (229 live), V*(s0)=-1.0000 (P1 win 0.0000), enum 1s, shapley 6 sweeps 0s, matrices 1s, a=0 at 154 states
+  seat1 equilibrium sampled   expl  0.0000 | long: H    1.00 bound   2.000 refined   2.000 | short: H    1.00 eps_v cal max/mean 1.000/1.000 eps_s max 0.000 bound   2.000 refined   2.000 ratio     inf
+  seat1 equilibrium top move  expl  0.0000 | long: H    1.00 bound   2.000 refined   2.000 | short: H    1.00 eps_v cal max/mean 1.000/1.000 eps_s max 0.000 bound   2.000 refined   2.000 ratio     inf
+  seat1 safest                expl  0.0000 | long: H    1.00 bound   2.000 refined   2.000 | short: H    1.00 eps_v cal max/mean 1.000/1.000 eps_s max 0.000 bound   2.000 refined   2.000 ratio     inf
+  seat1 exact equilibrium     expl  0.0000 | long: H    1.00 bound   0.000 refined   0.000 | short: H    1.00 eps_v cal max/mean 0.000/0.000 eps_s max 0.000 bound   0.000 refined   0.000 ratio     inf
+  seat2 equilibrium sampled   expl  0.0000 | long: H    1.00 bound   2.000 refined   2.000 | short: H    1.00 eps_v cal max/mean 1.000/1.000 eps_s max 0.000 bound   2.000 refined   2.000 ratio 160881.9
+  seat2 equilibrium top move  expl  0.0000 | long: H    1.00 bound   2.000 refined   2.000 | short: H    1.00 eps_v cal max/mean 1.000/1.000 eps_s max 0.000 bound   2.000 refined   2.000 ratio     inf
+  seat2 safest                expl  0.0000 | long: H    1.00 bound   2.000 refined   2.000 | short: H    1.00 eps_v cal max/mean 1.000/1.000 eps_s max 0.000 bound   2.000 refined   2.000 ratio     inf
+  seat2 exact equilibrium     expl  0.0000 | long: H    1.00 bound   0.000 refined   0.000 | short: H    1.00 eps_v cal max/mean 0.000/0.000 eps_s max 0.000 bound   0.000 refined   0.000 ratio     inf
+Traceback (most recent call last):
+  File "/Users/biofanat/Documents/classes/f26/cs535/final/engine/endgame_eps.py", line 401, in <module>
+    main()
+  File "/Users/biofanat/Documents/classes/f26/cs535/final/engine/endgame_eps.py", line 396, in main
+    run_case(*case, cap, pool, out)
+  File "/Users/biofanat/Documents/classes/f26/cs535/final/engine/endgame_eps.py", line 317, in run_case
+    assert se.state_key(pe.State.from_string(rep[k])) == k
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError
+real 423.10
+user 844.31
+sys 45.86

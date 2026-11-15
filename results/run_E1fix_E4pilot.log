@@ -1,0 +1,94 @@
+E1fix: 800 pairs to play (0 already done), 6 workers
+  20/800 pairs, 38s
+  40/800 pairs, 78s
+  60/800 pairs, 107s
+  80/800 pairs, 141s
+  100/800 pairs, 174s
+  120/800 pairs, 204s
+  140/800 pairs, 237s
+  160/800 pairs, 287s
+  180/800 pairs, 331s
+  200/800 pairs, 368s
+  220/800 pairs, 402s
+  240/800 pairs, 430s
+  260/800 pairs, 462s
+  280/800 pairs, 518s
+  300/800 pairs, 549s
+  320/800 pairs, 593s
+  340/800 pairs, 646s
+  360/800 pairs, 694s
+  380/800 pairs, 743s
+  400/800 pairs, 794s
+  420/800 pairs, 839s
+  440/800 pairs, 882s
+  460/800 pairs, 921s
+  480/800 pairs, 951s
+  500/800 pairs, 985s
+  520/800 pairs, 1018s
+  540/800 pairs, 1061s
+  560/800 pairs, 1096s
+  580/800 pairs, 1137s
+  600/800 pairs, 1189s
+  620/800 pairs, 1227s
+  640/800 pairs, 1259s
+  660/800 pairs, 1298s
+  680/800 pairs, 1329s
+  700/800 pairs, 1363s
+  720/800 pairs, 1402s
+  740/800 pairs, 1446s
+  760/800 pairs, 1493s
+  780/800 pairs, 1521s
+  800/800 pairs, 1560s
+exp  A                    B                games err  A score          95% CI       W-L-D turns ms/mv A ms/mv B
+E1fix nash:rm+:0:1000      mcts_it:2000       400   0    0.443 [0.402, 0.483]  166-212-22    52    74.3     2.7
+E1fix nash:rm+:0:1000      safest:0           400   0    0.516 [0.475, 0.558]  195-182-23    60    74.8    68.6
+E1fix nash:rm+:0:1000:argmax mcts_it:2000       400   0    0.581 [0.540, 0.623]  207-142-51    70    72.4     2.7
+E1fix safest:0             mcts_it:2000       400   0    0.561 [0.518, 0.604]  203-154-43    70    67.3     2.7
+E4: 200 pairs to play (0 done), 6 workers, log=True
+  5/200 pairs, 36s
+  10/200 pairs, 66s
+  15/200 pairs, 95s
+  20/200 pairs, 136s
+  25/200 pairs, 175s
+  30/200 pairs, 203s
+  35/200 pairs, 237s
+  40/200 pairs, 261s
+  45/200 pairs, 304s
+  50/200 pairs, 328s
+  55/200 pairs, 365s
+  60/200 pairs, 392s
+  65/200 pairs, 422s
+  70/200 pairs, 467s
+  75/200 pairs, 507s
+  80/200 pairs, 553s
+  85/200 pairs, 577s
+  90/200 pairs, 615s
+  95/200 pairs, 652s
+  100/200 pairs, 684s
+  105/200 pairs, 720s
+  110/200 pairs, 757s
+  115/200 pairs, 781s
+  120/200 pairs, 823s
+  125/200 pairs, 875s
+  130/200 pairs, 893s
+  135/200 pairs, 943s
+  140/200 pairs, 977s
+  145/200 pairs, 1015s
+  150/200 pairs, 1037s
+  155/200 pairs, 1078s
+  160/200 pairs, 1095s
+  165/200 pairs, 1117s
+  170/200 pairs, 1136s
+  175/200 pairs, 1179s
+  180/200 pairs, 1202s
+  185/200 pairs, 1228s
+  190/200 pairs, 1256s
+  195/200 pairs, 1277s
+  200/200 pairs, 1307s
+exp  A                  B                games err  A score          95% CI     W-L-D turns ms/mv A ms/mv B s/game
+E4   agentform:4:200    mostlikely:200     100   0    0.440 [0.338, 0.542]   43-55-2    49   323.3    83.8   16.0
+E4   agentform:4:200    pimc:4:200         100   0    0.600 [0.503, 0.697]   60-40-0    41   356.2   355.8   25.4
+E4   oracle:200         agentform:4:200    100   0    0.600 [0.513, 0.687]   58-38-4    56    80.0   312.7   19.8
+E4   pimc:4:200         mostlikely:200     100   0    0.535 [0.455, 0.615]   52-45-3    46   341.8    89.9   16.1
+H0   agentform:4:50     random              20   0    1.000 [1.000, 1.000]    20-0-0    37    62.3     0.0    2.0
+E5 decisions: 20625, frac loss>1e-6 0.61, median normalised loss 0.0020, max 0.2256, max loss/(4 delta_H) 0.086, argmax differs 0.15

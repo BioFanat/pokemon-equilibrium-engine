@@ -1,0 +1,117 @@
+{
+ "target": "foulplay_it:2000",
+ "eval": "200 held-out games, seeds from EXPLOIT_SEED (identical for every point); ci95 in win-rate units",
+ "provenance": "Combined learning curve. Points 1-4: first run (configs/rlbr_scale.json, init results/ppo_pilot.pt), stopped by the --max-usd guard at 4,940,938 decisions / 97,536 games. Points 5-7: resume (configs/rlbr_scale_resume.json) from that final checkpoint; totals = resume counts + 4,940,938 decisions / 97,536 games. The 4.94M checkpoint appears twice (local eval 0.0975, Modal eval 0.100): same seeds, so they should be identical in principle; the small gap matches the first run's local-vs-Modal differences (0.0825 vs 0.09 at 3M, 0.04 vs 0.06 at init). Resume restarted Adam (moments not saved); lr is constant 3e-4 (no schedule), so only the optimizer state reset. Resume training seed_base=1999 (seed=1) vs 999 in the first run, so no training game is repeated. Resume used games_per_input=16 (first run 8): only the map partition changes, training batches are the same given the seeds.",
+ "configs": [
+  "configs/rlbr_scale.json",
+  "configs/rlbr_scale_resume.json"
+ ],
+ "logs": [
+  "results/psro/run_rlbr_scale.log",
+  "results/psro/run_rlbr_scale_resume.log"
+ ],
+ "final_checkpoint": "results/psro/rlbr_scale_resume/rlbr_foulplay_it_2000.pt",
+ "final_exploitability_lb": -0.375,
+ "final_ci95_exploitability": [
+  -0.40329016319029165,
+  -0.34670983680970835
+ ],
+ "cost_usd": {
+  "first_smoke": 0.074,
+  "first_main": 2.922,
+  "resume": 0.969,
+  "total": 3.965
+ },
+ "curve": [
+  {
+   "total_decisions": 0,
+   "total_games": 0,
+   "winrate": 0.06,
+   "ci95": [
+    0.0358,
+    0.0842
+   ],
+   "where": "modal",
+   "run": "rlbr_scale",
+   "source": "first run (configs/rlbr_scale.json), Modal eval, parsed from results/psro/run_rlbr_scale.log"
+  },
+  {
+   "total_decisions": 1000114,
+   "total_games": 22016,
+   "winrate": 0.065,
+   "ci95": [
+    0.0423,
+    0.0877
+   ],
+   "where": "modal",
+   "run": "rlbr_scale",
+   "source": "first run (configs/rlbr_scale.json), Modal eval, parsed from results/psro/run_rlbr_scale.log"
+  },
+  {
+   "total_decisions": 3012771,
+   "total_games": 63232,
+   "winrate": 0.09,
+   "ci95": [
+    0.0635,
+    0.1165
+   ],
+   "where": "modal",
+   "run": "rlbr_scale",
+   "source": "first run (configs/rlbr_scale.json), Modal eval, parsed from results/psro/run_rlbr_scale.log"
+  },
+  {
+   "total_decisions": 4940938,
+   "total_games": 97536,
+   "winrate": 0.0975,
+   "ci95": [
+    0.0706,
+    0.1244
+   ],
+   "where": "local (final checkpoint after budget stop)",
+   "run": "rlbr_scale",
+   "source": "first run final checkpoint results/psro/rlbr_scale/rlbr_foulplay_it_2000.pt, local eval (budget stop, no Modal final eval)"
+  },
+  {
+   "total_decisions": 4940938,
+   "total_games": 97536,
+   "resume_decisions": 0,
+   "resume_games": 0,
+   "winrate": 0.1,
+   "ci95": [
+    0.0713,
+    0.1287
+   ],
+   "where": "modal",
+   "run": "rlbr_scale_resume",
+   "source": "resume point 0 = same checkpoint as the 4.94M local point (results/psro/rlbr_scale/rlbr_foulplay_it_2000.pt), Modal eval (cross-check)"
+  },
+  {
+   "total_decisions": 6002899,
+   "total_games": 115200,
+   "resume_decisions": 1061961,
+   "resume_games": 17664,
+   "winrate": 0.1225,
+   "ci95": [
+    0.088,
+    0.157
+   ],
+   "where": "modal",
+   "run": "rlbr_scale_resume",
+   "source": "resume ckpt results/psro/rlbr_scale_resume/rlbr_foulplay_it_2000_ckpt1.npz, Modal eval"
+  },
+  {
+   "total_decisions": 8014444,
+   "total_games": 147456,
+   "resume_decisions": 3073506,
+   "resume_games": 49920,
+   "winrate": 0.125,
+   "ci95": [
+    0.0967,
+    0.1533
+   ],
+   "where": "modal",
+   "run": "rlbr_scale_resume",
+   "source": "resume final results/psro/rlbr_scale_resume/rlbr_foulplay_it_2000.pt, Modal eval (rl_br_foulplay_it_2000.json)"
+  }
+ ]
+}

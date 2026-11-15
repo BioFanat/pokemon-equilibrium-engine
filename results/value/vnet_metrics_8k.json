@@ -1,0 +1,17 @@
+{
+  "data": "results/value/data_8k.npz",
+  "train_positions": 265325,
+  "val_positions": 28412,
+  "val_games": 800,
+  "epochs": 2,
+  "steps": 800,
+  "best_step": 300,
+  "train_s": 4.0,
+  "val_mse": 0.6902515888214111,
+  "val_mse_const0": 0.9744474291801453,
+  "net_sign_acc_decisive": 0.7282019793397385,
+  "subsample_n": 2000,
+  "net_sign_acc_sub": 0.727,
+  "heuristic_sign_acc_sub": 0.7255,
+  "heuristic_zero_frac_sub": 0.007
+}

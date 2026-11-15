@@ -1,0 +1,83 @@
+E4: 150 pairs to play (200 done), 6 workers, log=True
+  5/150 pairs, 71s
+  10/150 pairs, 138s
+  15/150 pairs, 189s
+  20/150 pairs, 244s
+  25/150 pairs, 288s
+  30/150 pairs, 344s
+  35/150 pairs, 376s
+  40/150 pairs, 414s
+  45/150 pairs, 474s
+  50/150 pairs, 516s
+  55/150 pairs, 554s
+  60/150 pairs, 596s
+  65/150 pairs, 627s
+  70/150 pairs, 655s
+  75/150 pairs, 695s
+  80/150 pairs, 748s
+  85/150 pairs, 805s
+  90/150 pairs, 838s
+  95/150 pairs, 892s
+  100/150 pairs, 913s
+  105/150 pairs, 964s
+  110/150 pairs, 988s
+  115/150 pairs, 1030s
+  120/150 pairs, 1075s
+  125/150 pairs, 1105s
+  130/150 pairs, 1146s
+  135/150 pairs, 1189s
+  140/150 pairs, 1268s
+  145/150 pairs, 1302s
+  150/150 pairs, 1407s
+E4am: 200 pairs to play (0 done), 6 workers, log=False
+  5/200 pairs, 34s
+  10/200 pairs, 64s
+  15/200 pairs, 90s
+  20/200 pairs, 164s
+  25/200 pairs, 194s
+  30/200 pairs, 238s
+  35/200 pairs, 277s
+  40/200 pairs, 301s
+  45/200 pairs, 345s
+  50/200 pairs, 380s
+  55/200 pairs, 423s
+  60/200 pairs, 457s
+  65/200 pairs, 525s
+  70/200 pairs, 562s
+  75/200 pairs, 609s
+  80/200 pairs, 652s
+  85/200 pairs, 675s
+  90/200 pairs, 714s
+  95/200 pairs, 740s
+  100/200 pairs, 794s
+  105/200 pairs, 842s
+  110/200 pairs, 886s
+  115/200 pairs, 945s
+  120/200 pairs, 974s
+  125/200 pairs, 1045s
+  130/200 pairs, 1086s
+  135/200 pairs, 1135s
+  140/200 pairs, 1163s
+  145/200 pairs, 1186s
+  150/200 pairs, 1225s
+  155/200 pairs, 1258s
+  160/200 pairs, 1279s
+  165/200 pairs, 1304s
+  170/200 pairs, 1341s
+  175/200 pairs, 1380s
+  180/200 pairs, 1410s
+  185/200 pairs, 1443s
+  190/200 pairs, 1481s
+  195/200 pairs, 1493s
+  200/200 pairs, 1644s
+exp  A                  B                games err  A score          95% CI     W-L-D turns ms/mv A ms/mv B s/game
+E4   agentform:4:200    mostlikely:200     100   0    0.440 [0.338, 0.542]   43-55-2    49   323.3    83.8   16.0
+E4   agentform:4:200    pimc:4:200         400   0    0.585 [0.540, 0.630] 230-162-8    47   342.6   344.3   26.7
+E4   oracle:200         agentform:4:200    100   0    0.600 [0.513, 0.687]   58-38-4    56    80.0   312.7   19.8
+E4   pimc:4:200         mostlikely:200     100   0    0.535 [0.455, 0.615]   52-45-3    46   341.8    89.9   16.1
+E4am agentform:4:200:argmax mostlikely:200:argmax   100   0    0.525 [0.452, 0.598]  47-42-11    70   321.4    82.6   22.2
+E4am agentform:4:200:argmax pimc:4:200:argmax   100   0    0.540 [0.452, 0.628]   52-44-4    49   340.5   342.6   27.6
+E4am oracle:200:argmax  agentform:4:200:argmax   100   0    0.620 [0.525, 0.715]  56-32-12    72    79.4   314.8   22.9
+E4am pimc:4:200:argmax  mostlikely:200:argmax   100   0    0.560 [0.466, 0.654]   54-42-4    53   347.0    87.8   19.5
+H0   agentform:4:50     random              20   0    1.000 [1.000, 1.000]    20-0-0    37    62.3     0.0    2.0
+E5 decisions: 46890, frac loss>1e-6 0.61, median normalised loss 0.0019, max 0.2496, max loss/(4 delta_H) 0.098, argmax differs 0.15

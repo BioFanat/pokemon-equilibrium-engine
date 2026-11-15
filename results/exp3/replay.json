@@ -1,0 +1,138 @@
+[
+ {
+  "scenario": "vs MCTS 2,000 iterations, 3 experts",
+  "N": 400,
+  "experts": [
+   "Equilibrium, top move",
+   "Equilibrium, sampled",
+   "Safest move"
+  ],
+  "expert_mean_score": {
+   "Equilibrium, top move": 0.581,
+   "Equilibrium, sampled": 0.442,
+   "Safest move": 0.561
+  },
+  "best_fixed_mean": 0.581,
+  "exp3": {
+   "mean_score": 0.541,
+   "regret_vs_best_fixed": 16.0,
+   "regret_p90": 29.0,
+   "last_quarter_share": {
+    "Equilibrium, top move": 0.44,
+    "Equilibrium, sampled": 0.17,
+    "Safest move": 0.39
+   }
+  },
+  "hedge": {
+   "mean_score": 0.566,
+   "regret_vs_best_fixed": 6.2,
+   "regret_p90": 18.1,
+   "last_quarter_share": {
+    "Equilibrium, top move": 0.66,
+    "Equilibrium, sampled": 0.0,
+    "Safest move": 0.34
+   }
+  },
+  "uniform": {
+   "mean_score": 0.528,
+   "regret_vs_best_fixed": 21.2,
+   "regret_p90": 33.0,
+   "last_quarter_share": {
+    "Equilibrium, top move": 0.33,
+    "Equilibrium, sampled": 0.34,
+    "Safest move": 0.33
+   }
+  },
+  "exp3_bound": 95.2,
+  "hedge_bound": 14.8
+ },
+ {
+  "scenario": "vs MCTS 2,000 iterations, 3 experts, long",
+  "N": 4000,
+  "experts": [
+   "Equilibrium, top move",
+   "Equilibrium, sampled",
+   "Safest move"
+  ],
+  "expert_mean_score": {
+   "Equilibrium, top move": 0.581,
+   "Equilibrium, sampled": 0.443,
+   "Safest move": 0.561
+  },
+  "best_fixed_mean": 0.581,
+  "exp3": {
+   "mean_score": 0.557,
+   "regret_vs_best_fixed": 95.4,
+   "regret_p90": 139.0,
+   "last_quarter_share": {
+    "Equilibrium, top move": 0.59,
+    "Equilibrium, sampled": 0.04,
+    "Safest move": 0.38
+   }
+  },
+  "hedge": {
+   "mean_score": 0.575,
+   "regret_vs_best_fixed": 26.7,
+   "regret_p90": 70.5,
+   "last_quarter_share": {
+    "Equilibrium, top move": 0.9,
+    "Equilibrium, sampled": 0.0,
+    "Safest move": 0.1
+   }
+  },
+  "uniform": {
+   "mean_score": 0.528,
+   "regret_vs_best_fixed": 212.2,
+   "regret_p90": 249.5,
+   "last_quarter_share": {
+    "Equilibrium, top move": 0.33,
+    "Equilibrium, sampled": 0.33,
+    "Safest move": 0.33
+   }
+  },
+  "exp3_bound": 301.0,
+  "hedge_bound": 46.9
+ },
+ {
+  "scenario": "opponent switches: MCTS 2,000 it then 75 ms",
+  "N": 400,
+  "experts": [
+   "Equilibrium, top move",
+   "Safest move"
+  ],
+  "expert_mean_score": {
+   "Equilibrium, top move": 0.463,
+   "Safest move": 0.412
+  },
+  "best_fixed_mean": 0.463,
+  "exp3": {
+   "mean_score": 0.44,
+   "regret_vs_best_fixed": 9.2,
+   "regret_p90": 21.2,
+   "last_quarter_share": {
+    "Equilibrium, top move": 0.58,
+    "Safest move": 0.42
+   }
+  },
+  "hedge": {
+   "mean_score": 0.448,
+   "regret_vs_best_fixed": 5.9,
+   "regret_p90": 18.2,
+   "last_quarter_share": {
+    "Equilibrium, top move": 0.8,
+    "Safest move": 0.2
+   }
+  },
+  "uniform": {
+   "mean_score": 0.438,
+   "regret_vs_best_fixed": 10.2,
+   "regret_p90": 21.2,
+   "last_quarter_share": {
+    "Equilibrium, top move": 0.5,
+    "Safest move": 0.5
+   }
+  },
+  "exp3_bound": 61.7,
+  "hedge_bound": 11.8
+ }
+]

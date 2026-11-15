@@ -1,0 +1,96 @@
+E1: 650 pairs to play (0 already done), 10 workers
+  20/650 pairs, 17s
+  40/650 pairs, 33s
+  60/650 pairs, 50s
+  80/650 pairs, 64s
+  100/650 pairs, 77s
+  120/650 pairs, 91s
+  140/650 pairs, 105s
+  160/650 pairs, 124s
+  180/650 pairs, 143s
+  200/650 pairs, 167s
+  220/650 pairs, 188s
+  240/650 pairs, 210s
+  260/650 pairs, 226s
+  280/650 pairs, 244s
+  300/650 pairs, 267s
+  320/650 pairs, 285s
+  340/650 pairs, 303s
+  360/650 pairs, 317s
+  380/650 pairs, 338s
+  400/650 pairs, 360s
+  420/650 pairs, 374s
+  440/650 pairs, 389s
+  460/650 pairs, 407s
+  480/650 pairs, 422s
+  500/650 pairs, 440s
+  520/650 pairs, 460s
+  540/650 pairs, 482s
+  560/650 pairs, 498s
+  580/650 pairs, 514s
+  600/650 pairs, 530s
+  620/650 pairs, 547s
+  640/650 pairs, 572s
+  650/650 pairs, 590s
+E2: 600 pairs to play (0 already done), 10 workers
+  20/600 pairs, 33s
+  40/600 pairs, 61s
+  60/600 pairs, 110s
+  80/600 pairs, 141s
+  100/600 pairs, 190s
+  120/600 pairs, 234s
+  140/600 pairs, 283s
+  160/600 pairs, 312s
+  180/600 pairs, 348s
+  200/600 pairs, 368s
+  220/600 pairs, 407s
+  240/600 pairs, 454s
+  260/600 pairs, 497s
+  280/600 pairs, 531s
+  300/600 pairs, 574s
+  320/600 pairs, 608s
+  340/600 pairs, 645s
+  360/600 pairs, 689s
+  380/600 pairs, 729s
+  400/600 pairs, 760s
+  420/600 pairs, 797s
+  440/600 pairs, 827s
+  460/600 pairs, 862s
+  480/600 pairs, 896s
+  500/600 pairs, 924s
+  520/600 pairs, 961s
+  540/600 pairs, 993s
+  560/600 pairs, 1014s
+  580/600 pairs, 1054s
+  600/600 pairs, 1204s
+E3: 400 pairs to play (0 already done), 10 workers
+  20/400 pairs, 24s
+  40/400 pairs, 48s
+  60/400 pairs, 85s
+  80/400 pairs, 115s
+  100/400 pairs, 141s
+  120/400 pairs, 165s
+  140/400 pairs, 190s
+  160/400 pairs, 212s
+  180/400 pairs, 234s
+  200/400 pairs, 252s
+  220/400 pairs, 273s
+  240/400 pairs, 301s
+  260/400 pairs, 325s
+  280/400 pairs, 356s
+  300/400 pairs, 384s
+  320/400 pairs, 417s
+  340/400 pairs, 440s
+  360/400 pairs, 466s
+  380/400 pairs, 505s
+  400/400 pairs, 584s
+exp  A                    B                games err  A score          95% CI       W-L-D turns ms/mv A ms/mv B
+E1   nash:rm+:50:1000     mcts_it:2000       400   0    0.302 [0.257, 0.348]  114-272-14    46    56.8     2.7
+E1   nash:rm+:50:1000     random             100   0    1.000 [1.000, 1.000]     100-0-0    32    52.6     0.0
+E1   nash:rm+:50:1000     safest:50          400   0    0.497 [0.452, 0.543]  184-186-30    69    56.6    49.9
+E1   safest:50            mcts_it:2000       400   0    0.434 [0.393, 0.475]  155-208-37    64    50.0     2.8
+E2   nash:rm+:10:1000     mcts_ms:10         400   0    0.269 [0.227, 0.310]   99-284-17    50    19.3     9.7
+E2   nash:rm+:200:1000    mcts_ms:200        400   0    0.203 [0.166, 0.239]   75-313-12    50   193.0   189.3
+E2   nash:rm+:50:1000     mcts_ms:50         400   0    0.219 [0.179, 0.259]   77-302-21    54    58.4    47.2
+E3   nash:rm+:50:100      nash:lp:50         400   0    0.501 [0.462, 0.541]  189-188-23    62    49.2    49.9
+E3   nash:rm+:50:1000     nash:lp:50         400   0    0.504 [0.473, 0.535]  189-186-25    64    55.6    50.1

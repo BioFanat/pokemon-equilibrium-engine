@@ -1,0 +1,22 @@
+gholdengo vs heatran @ 100% [PP*] [HP/10]: 4,555 states (2,697 live), V*(s0)=-0.9256 (P1 win 0.0372), enum 10s, shapley 17 sweeps 0s, matrices 9s, a=0 at 1762 states
+  seat1 equilibrium sampled   expl  0.0742 | long: H    2.00 bound   3.833 refined   1.583 | short: H    2.00 eps_v cal max/mean 0.958/0.452 eps_s max 0.000 bound   3.833 refined   1.583 ratio    21.3
+  seat1 equilibrium top move  expl  0.0742 | long: H    2.00 bound   2.804 refined   1.583 | short: H    2.00 eps_v cal max/mean 0.701/0.297 eps_s max 0.000 bound   2.804 refined   1.583 ratio    21.3
+  seat1 safest                expl  0.0742 | long: H    2.00 bound   2.804 refined   1.583 | short: H    2.00 eps_v cal max/mean 0.701/0.297 eps_s max 0.000 bound   2.804 refined   1.583 ratio    21.3
+  seat1 exact equilibrium     expl -0.0000 | long: H    3.87 bound   0.000 refined   0.000 | short: H    1.36 eps_v cal max/mean 0.000/0.000 eps_s max 0.000 bound   0.000 refined   0.000 ratio     inf
+  seat2 equilibrium sampled   expl  0.4254 | long: H   31.39 bound  62.781 refined  16.418 | short: H   31.03 eps_v cal max/mean 0.869/0.146 eps_s max 0.000 bound  53.952 refined  16.232 ratio    38.2
+  seat2 equilibrium top move  expl  0.4256 | long: H   49.24 bound  98.473 refined  37.925 | short: H   30.82 eps_v cal max/mean 0.965/0.188 eps_s max 0.000 bound  59.476 refined  16.181 ratio    38.0
+  seat2 safest                expl  0.4256 | long: H   49.24 bound  98.473 refined  37.925 | short: H   30.82 eps_v cal max/mean 0.965/0.188 eps_s max 0.000 bound  59.476 refined  16.181 ratio    38.0
+  seat2 exact equilibrium     expl  0.0000 | long: H    1.37 bound   0.000 refined   0.000 | short: H    1.32 eps_v cal max/mean 0.000/0.000 eps_s max 0.000 bound   0.000 refined   0.000 ratio     inf
+greattusk vs rotomwash @ 100% [PP*] [HP/10]: 19,592 states (14,360 live), V*(s0)=-0.6000 (P1 win 0.2000), enum 168s, shapley 14 sweeps 1s, matrices 79s, a=0 at 6524 states
+  seat1 equilibrium sampled   expl  0.1896 | long: H    2.61 bound   5.219 refined   2.910 | short: H    2.61 eps_v cal max/mean 1.000/0.565 eps_s max 0.000 bound   5.219 refined   2.910 ratio    15.3
+  seat1 equilibrium top move  expl  0.3293 | long: H    2.25 bound   4.650 refined   2.259 | short: H    2.25 eps_v cal max/mean 0.958/0.639 eps_s max 0.152 bound   4.650 refined   2.259 ratio     6.9
+  seat1 safest                expl  0.0250 | long: H    3.02 bound   6.234 refined   3.883 | short: H    3.02 eps_v cal max/mean 0.997/0.718 eps_s max 0.071 bound   6.234 refined   3.883 ratio   155.4
+  seat1 exact equilibrium     expl -0.0000 | long: H    1.20 bound   0.000 refined   0.000 | short: H    1.20 eps_v cal max/mean 0.000/0.000 eps_s max 0.000 bound   0.000 refined   0.000 ratio     inf
+  seat2 equilibrium sampled   expl  0.8588 | long: H    6.67 bound  13.294 refined  10.823 | short: H    6.67 eps_v cal max/mean 0.997/0.780 eps_s max 0.000 bound  13.294 refined  10.820 ratio    12.6
+  seat2 equilibrium top move  expl  1.2556 | long: H     inf bound     inf refined     inf | short: H 20971520.03 eps_v cal max/mean 0.865/0.720 eps_s max 0.072 bound 37774679.702 refined 25654792.857 ratio 20432824.2
+  seat2 safest                expl  1.6000 | long: H     inf bound     inf refined     inf | short: H    7.98 eps_v cal max/mean 0.989/0.697 eps_s max 0.060 bound  16.258 refined   8.219 ratio     5.1
+  seat2 exact equilibrium     expl  0.0000 | long: H    1.20 bound   0.000 refined   0.000 | short: H    1.20 eps_v cal max/mean 0.000/0.000 eps_s max 0.000 bound   0.000 refined   0.000 ratio     inf
+total wall time 313s
+real 313.63
+user 707.05
+sys 49.75

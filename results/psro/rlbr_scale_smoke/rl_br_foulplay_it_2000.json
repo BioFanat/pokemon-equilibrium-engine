@@ -1,0 +1,223 @@
+{
+ "target": "foulplay_it:2000",
+ "br_path": "results/psro/rlbr_scale_smoke/rlbr_foulplay_it_2000.pt",
+ "init": "results/ppo_pilot.pt",
+ "decisions": 209808,
+ "games": 4864,
+ "wall_s": 130.5,
+ "winrate": 0.08,
+ "exploitability_lb": -0.42,
+ "ci95": [
+  -0.48146196655927415,
+  -0.3585380334407258
+ ],
+ "n_games": 50,
+ "label": "lower bound on exploitability: approximate RL best-response win rate - 0.5 (Timbers et al. 2022 style; the true best response can only do better)",
+ "init_winrate": 0.08,
+ "init_ci95": [
+  -0.4745640907557342,
+  -0.3654359092442658
+ ],
+ "history": [
+  {
+   "decisions": 9717,
+   "games": 256,
+   "winrate": 0.0469,
+   "wall_s": 4.7,
+   "pg": -0.0038,
+   "vloss": 0.0759,
+   "entropy": 0.356
+  },
+  {
+   "decisions": 20154,
+   "games": 512,
+   "winrate": 0.0449,
+   "wall_s": 9.5,
+   "pg": 0.001,
+   "vloss": 0.0503,
+   "entropy": 0.389
+  },
+  {
+   "decisions": 30940,
+   "games": 768,
+   "winrate": 0.0566,
+   "wall_s": 16.3,
+   "pg": -0.0028,
+   "vloss": 0.0411,
+   "entropy": 0.384
+  },
+  {
+   "decisions": 40914,
+   "games": 1024,
+   "winrate": 0.0547,
+   "wall_s": 22.7,
+   "pg": -0.0017,
+   "vloss": 0.0372,
+   "entropy": 0.33
+  },
+  {
+   "decisions": 52456,
+   "games": 1280,
+   "winrate": 0.0449,
+   "wall_s": 28.6,
+   "pg": -0.0033,
+   "vloss": 0.0257,
+   "entropy": 0.366
+  },
+  {
+   "decisions": 65429,
+   "games": 1536,
+   "winrate": 0.0605,
+   "wall_s": 36.6,
+   "pg": -0.0016,
+   "vloss": 0.0276,
+   "entropy": 0.341
+  },
+  {
+   "decisions": 76755,
+   "games": 1792,
+   "winrate": 0.0547,
+   "wall_s": 44.3,
+   "pg": -0.0024,
+   "vloss": 0.0294,
+   "entropy": 0.39
+  },
+  {
+   "decisions": 89332,
+   "games": 2048,
+   "winrate": 0.082,
+   "wall_s": 50.3,
+   "pg": 0.0094,
+   "vloss": 0.0322,
+   "entropy": 0.323
+  },
+  {
+   "decisions": 99791,
+   "games": 2304,
+   "winrate": 0.0449,
+   "wall_s": 55.8,
+   "pg": -0.0026,
+   "vloss": 0.0242,
+   "entropy": 0.342
+  },
+  {
+   "decisions": 110137,
+   "games": 2560,
+   "winrate": 0.0566,
+   "wall_s": 61.3,
+   "pg": -0.0035,
+   "vloss": 0.0293,
+   "entropy": 0.31
+  },
+  {
+   "decisions": 121076,
+   "games": 2816,
+   "winrate": 0.0547,
+   "wall_s": 70.1,
+   "pg": -0.0035,
+   "vloss": 0.0242,
+   "entropy": 0.375
+  },
+  {
+   "decisions": 131759,
+   "games": 3072,
+   "winrate": 0.0508,
+   "wall_s": 75.3,
+   "pg": -0.0024,
+   "vloss": 0.0253,
+   "entropy": 0.354
+  },
+  {
+   "decisions": 142413,
+   "games": 3328,
+   "winrate": 0.0469,
+   "wall_s": 80.7,
+   "pg": -0.0026,
+   "vloss": 0.0261,
+   "entropy": 0.308
+  },
+  {
+   "decisions": 155866,
+   "games": 3584,
+   "winrate": 0.0762,
+   "wall_s": 86.6,
+   "pg": -0.0059,
+   "vloss": 0.0246,
+   "entropy": 0.343
+  },
+  {
+   "decisions": 165547,
+   "games": 3840,
+   "winrate": 0.0449,
+   "wall_s": 91.4,
+   "pg": -0.0092,
+   "vloss": 0.0236,
+   "entropy": 0.359
+  },
+  {
+   "decisions": 175594,
+   "games": 4096,
+   "winrate": 0.0488,
+   "wall_s": 95.6,
+   "pg": -0.0001,
+   "vloss": 0.0278,
+   "entropy": 0.335
+  },
+  {
+   "decisions": 186494,
+   "games": 4352,
+   "winrate": 0.0449,
+   "wall_s": 102.3,
+   "pg": -0.0027,
+   "vloss": 0.0203,
+   "entropy": 0.332
+  },
+  {
+   "decisions": 199576,
+   "games": 4608,
+   "winrate": 0.0781,
+   "wall_s": 108.8,
+   "pg": -0.005,
+   "vloss": 0.0245,
+   "entropy": 0.277
+  },
+  {
+   "decisions": 209808,
+   "games": 4864,
+   "winrate": 0.0371,
+   "wall_s": 113.2,
+   "pg": -0.0035,
+   "vloss": 0.0221,
+   "entropy": 0.383
+  }
+ ],
+ "curve": [
+  {
+   "decisions": 0,
+   "games_trained": 0,
+   "winrate": 0.08,
+   "ci95": [
+    0.0254,
+    0.1346
+   ]
+  },
+  {
+   "decisions": 110137,
+   "games_trained": 2560,
+   "winrate": 0.08,
+   "ci95": [
+    0.0333,
+    0.1267
+   ]
+  },
+  {
+   "decisions": 209808,
+   "games_trained": 4864,
+   "winrate": 0.08,
+   "ci95": [
+    0.0185,
+    0.1415
+   ]
+  }
+ ]
+}

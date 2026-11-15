@@ -1,0 +1,80 @@
+{
+ "target": "foulplay_it:2000",
+ "br_path": "results/psro/rlbr_gray_smoke/rlbr_foulplay_it_2000.pt",
+ "init": "results/ppo_pilot.pt",
+ "gray_box": true,
+ "decisions": 31846,
+ "games": 768,
+ "wall_s": 27.2,
+ "winrate": 0.05,
+ "exploitability_lb": -0.45,
+ "ci95": [
+  -0.5153333333333333,
+  -0.38466666666666666
+ ],
+ "n_games": 20,
+ "label": "lower bound on exploitability: approximate RL best-response win rate - 0.5 (Timbers et al. 2022 style; the true best response can only do better)",
+ "init_winrate": 0.05,
+ "init_ci95": [
+  -0.5153333333333333,
+  -0.38466666666666666
+ ],
+ "history": [
+  {
+   "decisions": 10542,
+   "games": 256,
+   "winrate": 0.0566,
+   "wall_s": 7.9,
+   "pg": -0.0015,
+   "vloss": 0.0717,
+   "entropy": 0.352
+  },
+  {
+   "decisions": 19917,
+   "games": 512,
+   "winrate": 0.041,
+   "wall_s": 15.4,
+   "pg": 0.0022,
+   "vloss": 0.0497,
+   "entropy": 0.359
+  },
+  {
+   "decisions": 31846,
+   "games": 768,
+   "winrate": 0.0742,
+   "wall_s": 24.1,
+   "pg": -0.0028,
+   "vloss": 0.0447,
+   "entropy": 0.307
+  }
+ ],
+ "curve": [
+  {
+   "decisions": 0,
+   "games_trained": 0,
+   "winrate": 0.05,
+   "ci95": [
+    -0.0153,
+    0.1153
+   ]
+  },
+  {
+   "decisions": 10542,
+   "games_trained": 256,
+   "winrate": 0.075,
+   "ci95": [
+    0.0002,
+    0.1498
+   ]
+  },
+  {
+   "decisions": 31846,
+   "games_trained": 768,
+   "winrate": 0.05,
+   "ci95": [
+    -0.0153,
+    0.1153
+   ]
+  }
+ ]
+}

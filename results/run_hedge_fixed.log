@@ -1,0 +1,13 @@
+  /Users/biofanat/Documents/classes/f26/cs535/final/engine/results/experiments/hedge_stream_seed2.jsonl done, 202s
+  /Users/biofanat/Documents/classes/f26/cs535/final/engine/results/experiments/hedge_stream_seed1.jsonl done, 210s
+  /Users/biofanat/Documents/classes/f26/cs535/final/engine/results/experiments/hedge_stream_seed3.jsonl done, 232s
+  /Users/biofanat/Documents/classes/f26/cs535/final/engine/results/experiments/hedge_stream_seed0.jsonl done, 242s
+  /Users/biofanat/Documents/classes/f26/cs535/final/engine/results/experiments/hedge_stream_seed3_reset.jsonl done, 210s
+  /Users/biofanat/Documents/classes/f26/cs535/final/engine/results/experiments/hedge_stream_seed0_reset.jsonl done, 228s
+  /Users/biofanat/Documents/classes/f26/cs535/final/engine/results/experiments/hedge_stream_seed2_reset.jsonl done, 247s
+  /Users/biofanat/Documents/classes/f26/cs535/final/engine/results/experiments/hedge_stream_seed1_reset.jsonl done, 264s
+H1: 80 pairs to play (0 already done), 4 workers
+  20/80 pairs, 51s
+  40/80 pairs, 85s
+  60/80 pairs, 120s
+  80/80 pairs, 171s

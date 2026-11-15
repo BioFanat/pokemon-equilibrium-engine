@@ -1,0 +1,23 @@
+X1: 200 pairs to play (0 already done), 6 workers
+  20/200 pairs, 92s
+  40/200 pairs, 175s
+  60/200 pairs, 230s
+  80/200 pairs, 297s
+  100/200 pairs, 369s
+  120/200 pairs, 450s
+  140/200 pairs, 527s
+  160/200 pairs, 581s
+  180/200 pairs, 656s
+  200/200 pairs, 750s
+X2: 50 pairs to play (0 done), 6 workers, log=False
+  5/50 pairs, 125s
+  10/50 pairs, 222s
+  15/50 pairs, 296s
+  20/50 pairs, 357s
+  25/50 pairs, 434s
+  30/50 pairs, 515s
+  35/50 pairs, 590s
+  40/50 pairs, 658s
+  45/50 pairs, 724s
+  50/50 pairs, 868s
+ALLDONE
