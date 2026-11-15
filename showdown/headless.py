@@ -6,7 +6,7 @@
 Spawns `node pokemon-showdown simulate-battle` and drives two foul-play battle loops (fp.run_battle.pokemon_battle)
 in one asyncio process, each through a FakePSClient that turns sim blocks into the websocket messages foul-play
 expects and its `/choose ...|rqid` messages into `>pN ...` sim commands. Move choice is per player A / B, each one of
-agentform | pimc (run_ourbot.make_move_fn over K worlds; "ours" = agentform) or stock (foul-play MCTS,
+one of run_ourbot.METHODS (make_move_fn over K worlds; "ours" = agentform) or stock (foul-play MCTS,
 fp.search.main.find_best_move). --a/--b pick them; --p1fn/--p2fn are the same flags named by game-1 seat.
 
 Paired: one --seed plays two games with the same battle seed and the same per-player team seeds (p1 always gets
@@ -28,11 +28,16 @@ import time
 HOME = os.path.expanduser("~")
 FP = os.environ.get("FOULPLAY_DIR", os.path.join(HOME, "sandbox", "foul-play"))
 SHOWDOWN = os.environ.get("SHOWDOWN_DIR", os.path.join(HOME, "sandbox", "pokemon-showdown"))
-OUT = os.path.join(os.environ.get("OURBOT_WORK", os.path.join(HOME, "sandbox", "ourbot")), "replays_headless")
+WORK = os.environ.get("OURBOT_WORK", os.path.join(HOME, "sandbox", "ourbot"))
+GAME_TIMEOUT_S = int(os.environ.get("GAME_TIMEOUT_S", "600"))   # longest E1 game was ~150 s; a hang costs at most this
+OUT = os.path.join(WORK, "replays_headless")
+HEDGE_STATE = os.path.join(WORK, "hedge_state")      # carried Hedge weights: <tag>-stream<k>-<role>.json
 FORMAT = "gen9randombattle"
 SELF = "zzself"                     # FoulPlayConfig.username; must not be a substring of either player name
-NAMES = {"agentform": "OurAgentForm", "pimc": "OurPimc", "stock": "FoulPlay"}   # + player letter: distinct
-FNS = {"ours": "agentform", "agentform": "agentform", "pimc": "pimc", "stock": "stock"}
+NAMES = {"agentform": "OurAgentForm", "pimc": "OurPimc", "stock": "FoulPlay", "hedge": "OurHedge",
+         "hedge_fs": "OurHedgeFS", "bandit_ucb1": "OurBanditUCB", "bandit_exp3": "OurBanditExp",
+         "rmplus_avg": "OurRMPlus"}                                               # + player letter: distinct
+FNS = {"ours": "agentform", "stock": "stock", **{m: m for m in NAMES if m != "stock"}}
 STALL_S = 60                        # fail-fast after an [Invalid choice] with no new request
 sys.path[:0] = [FP, os.path.dirname(os.path.abspath(__file__))]
 
@@ -182,8 +187,9 @@ def setup_foulplay(search_time_ms, k):
     return state, run_ourbot
 
 
-async def play_game(seed, game, a_side, fns, run_tag, k, state, run_ourbot):
-    """One game: player A (method fns["A"]) on a_side, player B (fns["B"]) on the other seat."""
+async def play_game(seed, game, a_side, fns, run_tag, k, state, run_ourbot, stream=0):
+    """One game: player A (method fns["A"]) on a_side, player B (fns["B"]) on the other seat. A hedge player carries its
+    weights in HEDGE_STATE/<run_tag>-stream<stream>-<role>.json (the same file in both games of the seed)."""
     import logging
     from fp.run_battle import pokemon_battle
     import fp.search.main as fp_search
@@ -202,7 +208,9 @@ async def play_game(seed, game, a_side, fns, run_tag, k, state, run_ourbot):
         logs[r] = os.path.join(OUT, f"{tag}.{r}.decisions.jsonl")
         if os.path.exists(logs[r]):
             os.remove(logs[r])
-        move_fns[side] = run_ourbot.make_move_fn(fns[r], k, log=logs[r])
+        move_fns[side] = run_ourbot.make_move_fn(
+            fns[r], k, log=logs[r], seed=seed, game=game,
+            state_path=os.path.join(HEDGE_STATE, f"{run_tag}-stream{stream}-{r}.json"))
         timers[side] = Timer(children=False)
     state.update(fns=move_fns, timers=timers)
 
@@ -281,7 +289,7 @@ async def play_game(seed, game, a_side, fns, run_tag, k, state, run_ourbot):
     dog = asyncio.create_task(watchdog())
     error, results = None, [None, None]
     try:
-        deadline, pending, failed = time.monotonic() + 3600, set(tasks + [dog]), []
+        deadline, pending, failed = time.monotonic() + GAME_TIMEOUT_S, set(tasks + [dog]), []
         while not failed and not all(t.done() for t in tasks):   # the watchdog never finishes on its own
             done, pending = await asyncio.wait(pending, timeout=max(0.0, deadline - time.monotonic()),
                                                return_when=asyncio.FIRST_COMPLETED)
@@ -291,7 +299,7 @@ async def play_game(seed, game, a_side, fns, run_tag, k, state, run_ourbot):
         if failed:
             error = repr(failed[0].exception())
         elif not all(t.done() for t in tasks):
-            error = "timeout: game exceeded 3600s"
+            error = f"timeout: game exceeded {GAME_TIMEOUT_S}s"
         else:
             results = [tasks[0].result(), tasks[1].result()]
     finally:
@@ -328,7 +336,7 @@ async def play_game(seed, game, a_side, fns, run_tag, k, state, run_ourbot):
     record = dict(
         tag=tag, run_tag=run_tag, seed=seed, game=game, format=FORMAT, k=k,
         battle_seed=battle_seed, team_seeds=dict(p1=seed_a, p2=seed_b), sim_seed=end.get("seed"),
-        sides=dict(A=a_side, B=b_side, names=names), methods=dict(fns),
+        stream=stream, sides=dict(A=a_side, B=b_side, names=names), methods=dict(fns),
         winner=winner_name, winner_role=role.get(winner_side), winner_method=fns.get(role.get(winner_side)),
         fp_winners=dict(p1=results[0], p2=results[1]),
         turns=end.get("turns"), score=end.get("score"),
@@ -352,7 +360,7 @@ async def main_async(args):
     fns = {"A": FNS[args.a], "B": FNS[args.b]}
     recs = []
     for game, a_side in ((1, "p1"), (2, "p2")):
-        rec = await play_game(args.seed, game, a_side, fns, args.tag, args.k, state, run_ourbot)
+        rec = await play_game(args.seed, game, a_side, fns, args.tag, args.k, state, run_ourbot, args.stream)
         recs.append(rec)
         print(json.dumps(dict(tag=rec["tag"], A=f"{fns['A']}@{a_side}", B=fns["B"], winner=rec["winner"],
                               winner_role=rec["winner_role"], turns=rec["turns"], wall_s=rec["wall_s"],
@@ -375,6 +383,7 @@ def main():
     ap.add_argument("--tag", default="headless", help="run tag: outputs are <tag>-s<seed>-g<game>.*")
     ap.add_argument("--k", type=int, default=int(os.environ.get("OURBOT_K", "4")), help="worlds for our solver")
     ap.add_argument("--search-time-ms", type=int, default=100, help="stock foul-play MCTS time per state")
+    ap.add_argument("--stream", type=int, default=0, help="carried-weights stream (hedge state file) of this seed")
     asyncio.run(main_async(ap.parse_args()))
 
 

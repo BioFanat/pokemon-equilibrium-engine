@@ -586,6 +586,12 @@ Scripts and logs: `/private/tmp/claude-501/-Users-biofanat-Documents-classes-f26
   - The safe-exploit bot's per-turn gain does not show as a win-rate gain at 100 pairs. Its exploitability sits between top move and sampled: the 2% stage-level cap bounds loss only in the estimated matrix, and the exploiter wins through the leaf error, as predicted in `lit/next_directions.md`.
   - Rescaling the heuristic leaf toward the TD-residual minimiser does not help; the leaf bottleneck is not a scale problem.
 
+### E1: agent form vs PIMC on real Showdown (2026-11-15; `showdown/`, outputs in `$OURBOT_WORK/replays_headless/E1*`)
+- Setup: Showdown's own simulator (`pokemon-showdown simulate-battle`, commit 7e74376) run headless by `showdown/headless.py`; both seats use foul-play's battle tracker and set sampler (K = 4 sampled worlds, equal compute), then our matrix (`nash.full_matrix` per world); agent form = one LP over the worlds, PIMC = LP per world blended by weights. Paired seeds: same teams and battle PRNG, seats swapped. 300 seeds.
+- Result: agent form's pair score **0.559 [0.521, 0.597]** over 298 pairs (596 games); 1 game hung (seed 44, hit the 3,600 s cap; per-game cap now 600 s, longest E1 game 108 s); mean 32.7 turns; 0.315 / 0.314 CPU-s per decision; 28.2 CPU-s per game.
+- The two methods choose a different top move on ~11% of decisions (shadow solve on the same worlds, smoke run).
+- Reading: the in-engine result (0.585 [0.540, 0.630], our own belief tracker) transfers to real Showdown with Showdown's hidden information and foul-play's belief model. The comparison isolates the formulation: both arms share the belief.
+
 ## Next experiments
 
 **What X1 implies.** The matrix bot looks two turns ahead and then scores positions with
