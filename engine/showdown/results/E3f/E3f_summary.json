@@ -1,0 +1,889 @@
+{
+ "tag": "E3f",
+ "A": "hedge_fs",
+ "B": "switch:stock@8:exploit_top",
+ "k": 4,
+ "seeds": "1-160",
+ "n_seeds": 160,
+ "n_pairs": 159,
+ "pair_score_A": {
+  "mean": 0.4969,
+  "sd": 0.3535,
+  "ci95": [
+   0.4415,
+   0.5522
+  ],
+  "per_seed": {
+   "1": 0.5,
+   "2": 0.5,
+   "3": 0.5,
+   "5": 0.5,
+   "6": 0.0,
+   "7": 0.5,
+   "8": 0.5,
+   "9": 0.0,
+   "10": 0.5,
+   "11": 0.0,
+   "12": 0.5,
+   "13": 0.5,
+   "14": 0.5,
+   "15": 0.0,
+   "16": 0.0,
+   "17": 0.5,
+   "18": 0.5,
+   "19": 0.0,
+   "20": 0.0,
+   "21": 0.5,
+   "22": 0.5,
+   "23": 0.0,
+   "24": 0.5,
+   "25": 0.0,
+   "26": 0.5,
+   "27": 0.0,
+   "28": 1.0,
+   "29": 1.0,
+   "30": 1.0,
+   "31": 0.0,
+   "32": 0.5,
+   "33": 0.5,
+   "34": 0.0,
+   "35": 0.5,
+   "36": 0.0,
+   "37": 0.5,
+   "38": 0.5,
+   "39": 1.0,
+   "40": 0.5,
+   "41": 0.0,
+   "42": 0.0,
+   "43": 0.5,
+   "44": 0.0,
+   "45": 0.5,
+   "46": 0.0,
+   "47": 0.0,
+   "48": 0.0,
+   "49": 1.0,
+   "50": 0.0,
+   "51": 0.0,
+   "52": 1.0,
+   "53": 0.5,
+   "54": 0.0,
+   "55": 0.5,
+   "56": 0.5,
+   "57": 0.5,
+   "58": 0.0,
+   "59": 0.5,
+   "60": 0.5,
+   "61": 0.5,
+   "62": 0.0,
+   "63": 0.5,
+   "64": 0.0,
+   "65": 0.0,
+   "66": 0.5,
+   "67": 0.5,
+   "68": 0.5,
+   "69": 0.0,
+   "70": 0.5,
+   "71": 0.0,
+   "72": 0.5,
+   "73": 0.5,
+   "74": 0.0,
+   "75": 0.5,
+   "76": 1.0,
+   "77": 0.0,
+   "78": 0.5,
+   "79": 0.0,
+   "80": 0.5,
+   "81": 1.0,
+   "82": 0.5,
+   "83": 0.5,
+   "84": 1.0,
+   "85": 0.5,
+   "86": 1.0,
+   "87": 1.0,
+   "88": 0.5,
+   "89": 0.5,
+   "90": 1.0,
+   "91": 0.5,
+   "92": 0.0,
+   "93": 0.5,
+   "94": 0.0,
+   "95": 0.5,
+   "96": 0.0,
+   "97": 0.0,
+   "98": 0.5,
+   "99": 0.5,
+   "100": 0.5,
+   "101": 0.5,
+   "102": 1.0,
+   "103": 1.0,
+   "104": 1.0,
+   "105": 0.0,
+   "106": 0.5,
+   "107": 0.5,
+   "108": 0.5,
+   "109": 0.5,
+   "110": 0.5,
+   "111": 1.0,
+   "112": 0.5,
+   "113": 1.0,
+   "114": 0.5,
+   "115": 1.0,
+   "116": 0.5,
+   "117": 0.5,
+   "118": 1.0,
+   "119": 0.5,
+   "120": 1.0,
+   "121": 0.5,
+   "122": 0.0,
+   "123": 1.0,
+   "124": 1.0,
+   "125": 1.0,
+   "126": 1.0,
+   "127": 1.0,
+   "128": 1.0,
+   "129": 0.5,
+   "130": 1.0,
+   "131": 0.5,
+   "132": 1.0,
+   "133": 0.5,
+   "134": 1.0,
+   "135": 0.5,
+   "136": 0.5,
+   "137": 0.5,
+   "138": 1.0,
+   "139": 0.5,
+   "140": 0.5,
+   "141": 0.5,
+   "142": 0.0,
+   "143": 1.0,
+   "144": 1.0,
+   "145": 1.0,
+   "146": 1.0,
+   "147": 0.5,
+   "148": 0.5,
+   "149": 0.5,
+   "150": 1.0,
+   "151": 0.0,
+   "152": 0.5,
+   "153": 0.5,
+   "154": 1.0,
+   "155": 1.0,
+   "156": 0.5,
+   "157": 1.0,
+   "158": 0.0,
+   "159": 1.0,
+   "160": 0.5
+  }
+ },
+ "error_games": 1,
+ "errors": [
+  {
+   "game": "E3f-s4-g2",
+   "error": "ZeroDivisionError('float division by zero')",
+   "sim_errors": []
+  }
+ ],
+ "missing_games": [],
+ "nonzero_exit": {},
+ "mean_turns": 31.31,
+ "per_method": {
+  "hedge_fs": {
+   "decisions": 11447,
+   "wall_s_per_decision": 0.969,
+   "cpu_s_per_decision": 0.245,
+   "cpu_s_per_game": 8.79
+  },
+  "stock": {
+   "decisions": 5701,
+   "wall_s_per_decision": 0.478,
+   "cpu_s_per_decision": 0.4,
+   "cpu_s_per_game": 14.33
+  },
+  "exploit_top": {
+   "decisions": 5674,
+   "wall_s_per_decision": 1.238,
+   "cpu_s_per_decision": 0.244,
+   "cpu_s_per_game": 8.65
+  }
+ },
+ "cpu_s_per_game": 47.98,
+ "streams": 10,
+ "learning": {
+  "hedge_fs": {
+   "feedback_turns": 11235,
+   "updates": 9249,
+   "skipped": 1986,
+   "skipped_frac": 0.1768,
+   "skipped_reasons": {
+    "not_in_worlds": 999,
+    "fainted": 583,
+    "no_action": 201,
+    "cant": 203
+   }
+  }
+ },
+ "active": {
+  "1": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "2": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "3": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "4": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "5": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "6": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "7": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "8": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "9": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "10": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "11": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "12": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "13": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "14": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "15": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "16": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "17": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "18": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "19": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "20": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "21": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "22": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "23": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "24": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "25": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "26": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "27": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "28": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "29": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "30": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "31": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "32": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "33": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "34": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "35": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "36": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "37": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "38": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "39": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "40": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "41": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "42": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "43": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "44": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "45": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "46": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "47": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "48": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "49": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "50": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "51": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "52": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "53": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "54": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "55": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "56": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "57": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "58": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "59": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "60": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "61": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "62": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "63": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "64": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "65": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "66": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "67": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "68": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "69": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "70": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "71": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "72": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "73": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "74": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "75": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "76": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "77": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "78": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "79": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "80": {
+   "A": "hedge_fs",
+   "B": "stock"
+  },
+  "81": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "82": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "83": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "84": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "85": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "86": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "87": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "88": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "89": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "90": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "91": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "92": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "93": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "94": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "95": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "96": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "97": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "98": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "99": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "100": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "101": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "102": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "103": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "104": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "105": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "106": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "107": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "108": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "109": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "110": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "111": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "112": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "113": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "114": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "115": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "116": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "117": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "118": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "119": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "120": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "121": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "122": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "123": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "124": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "125": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "126": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "127": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "128": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "129": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "130": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "131": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "132": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "133": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "134": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "135": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "136": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "137": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "138": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "139": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "140": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "141": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "142": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "143": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "144": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "145": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "146": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "147": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "148": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "149": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "150": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "151": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "152": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "153": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "154": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "155": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "156": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "157": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "158": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "159": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  },
+  "160": {
+   "A": "hedge_fs",
+   "B": "exploit_top"
+  }
+ },
+ "modal": {
+  "usd_estimate": 0.498,
+  "stopped_over_budget": false,
+  "failed_streams": {},
+  "container_cpu": 2.0,
+  "stream_cpu_s": 14163.9,
+  "games_run": 290,
+  "cpu_s_per_game_measured": 48.8,
+  "stream_wall_s": {
+   "0": 916.0,
+   "6": 1462.6,
+   "5": 1484.3,
+   "3": 1501.1,
+   "1": 1532.4,
+   "9": 1596.5,
+   "4": 1625.4,
+   "7": 1734.1,
+   "8": 1756.1,
+   "2": 89.4
+  },
+  "entrypoint_wall_s": 1873.8
+ }
+}

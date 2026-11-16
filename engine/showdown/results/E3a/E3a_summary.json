@@ -1,0 +1,897 @@
+{
+ "tag": "E3a",
+ "A": "hedge",
+ "B": "switch:stock@8:exploit_top",
+ "k": 4,
+ "seeds": "1-160",
+ "n_seeds": 160,
+ "n_pairs": 158,
+ "pair_score_A": {
+  "mean": 0.4873,
+  "sd": 0.3476,
+  "ci95": [
+   0.4327,
+   0.542
+  ],
+  "per_seed": {
+   "1": 0.0,
+   "2": 0.5,
+   "3": 0.5,
+   "4": 0.0,
+   "5": 0.0,
+   "6": 0.0,
+   "7": 0.0,
+   "8": 0.0,
+   "9": 0.5,
+   "10": 0.0,
+   "11": 0.0,
+   "12": 0.5,
+   "13": 0.0,
+   "14": 0.5,
+   "15": 0.5,
+   "16": 0.5,
+   "17": 0.5,
+   "18": 0.0,
+   "19": 0.5,
+   "20": 0.5,
+   "21": 0.0,
+   "22": 1.0,
+   "23": 0.5,
+   "24": 0.0,
+   "25": 0.0,
+   "26": 0.5,
+   "27": 0.5,
+   "28": 0.0,
+   "29": 0.0,
+   "30": 0.0,
+   "31": 0.0,
+   "32": 0.0,
+   "33": 0.0,
+   "34": 0.0,
+   "35": 0.5,
+   "36": 0.5,
+   "37": 0.0,
+   "38": 0.5,
+   "39": 0.5,
+   "40": 0.0,
+   "41": 1.0,
+   "42": 0.5,
+   "43": 0.5,
+   "44": 0.0,
+   "45": 0.5,
+   "46": 0.0,
+   "47": 0.0,
+   "48": 0.0,
+   "49": 0.5,
+   "50": 0.0,
+   "51": 0.5,
+   "53": 0.0,
+   "54": 0.0,
+   "55": 0.5,
+   "56": 0.0,
+   "57": 1.0,
+   "58": 0.5,
+   "59": 1.0,
+   "60": 0.0,
+   "61": 0.5,
+   "62": 0.5,
+   "63": 0.5,
+   "64": 0.0,
+   "65": 0.5,
+   "66": 0.5,
+   "67": 0.5,
+   "68": 0.5,
+   "69": 1.0,
+   "70": 0.5,
+   "71": 0.5,
+   "72": 0.5,
+   "73": 0.5,
+   "74": 0.5,
+   "75": 0.5,
+   "76": 0.5,
+   "77": 0.5,
+   "78": 0.5,
+   "79": 0.5,
+   "80": 0.0,
+   "81": 0.5,
+   "82": 1.0,
+   "83": 0.0,
+   "84": 0.5,
+   "85": 0.5,
+   "86": 0.5,
+   "87": 0.5,
+   "88": 0.5,
+   "89": 0.5,
+   "90": 0.5,
+   "91": 0.5,
+   "92": 0.0,
+   "94": 1.0,
+   "95": 1.0,
+   "96": 1.0,
+   "97": 0.0,
+   "98": 1.0,
+   "99": 0.5,
+   "100": 1.0,
+   "101": 0.5,
+   "102": 1.0,
+   "103": 1.0,
+   "104": 0.5,
+   "105": 1.0,
+   "106": 1.0,
+   "107": 0.5,
+   "108": 1.0,
+   "109": 0.5,
+   "110": 1.0,
+   "111": 1.0,
+   "112": 1.0,
+   "113": 1.0,
+   "114": 1.0,
+   "115": 0.5,
+   "116": 1.0,
+   "117": 0.5,
+   "118": 0.5,
+   "119": 1.0,
+   "120": 0.5,
+   "121": 1.0,
+   "122": 0.0,
+   "123": 1.0,
+   "124": 0.5,
+   "125": 1.0,
+   "126": 0.5,
+   "127": 0.5,
+   "128": 1.0,
+   "129": 0.5,
+   "130": 0.5,
+   "131": 0.5,
+   "132": 1.0,
+   "133": 0.5,
+   "134": 1.0,
+   "135": 0.5,
+   "136": 0.5,
+   "137": 0.5,
+   "138": 1.0,
+   "139": 1.0,
+   "140": 0.5,
+   "141": 1.0,
+   "142": 1.0,
+   "143": 0.5,
+   "144": 1.0,
+   "145": 0.5,
+   "146": 0.5,
+   "147": 0.5,
+   "148": 1.0,
+   "149": 0.0,
+   "150": 0.5,
+   "151": 0.5,
+   "152": 0.5,
+   "153": 0.5,
+   "154": 0.5,
+   "155": 0.0,
+   "156": 0.5,
+   "157": 0.0,
+   "158": 0.5,
+   "159": 1.0,
+   "160": 0.5
+  }
+ },
+ "error_games": 2,
+ "errors": [
+  {
+   "game": "E3a-s52-g2",
+   "error": "RuntimeError('invalid_choice_stall: p1 got [Invalid choice] and no new request within 60s')",
+   "sim_errors": [
+    "p1 |error|[Invalid choice] Can't switch: You have to pass to a fainted Pok\u00e9mon"
+   ]
+  },
+  {
+   "game": "E3a-s93-g2",
+   "error": "RuntimeError('invalid_choice_stall: p2 got [Invalid choice] and no new request within 60s')",
+   "sim_errors": [
+    "p2 |error|[Invalid choice] Can't switch: You have to pass to a fainted Pok\u00e9mon"
+   ]
+  }
+ ],
+ "missing_games": [],
+ "nonzero_exit": {},
+ "mean_turns": 31.99,
+ "per_method": {
+  "hedge": {
+   "decisions": 11698,
+   "wall_s_per_decision": 0.903,
+   "cpu_s_per_decision": 0.222,
+   "cpu_s_per_game": 8.16
+  },
+  "stock": {
+   "decisions": 5492,
+   "wall_s_per_decision": 0.471,
+   "cpu_s_per_decision": 0.395,
+   "cpu_s_per_game": 13.65
+  },
+  "exploit_top": {
+   "decisions": 6036,
+   "wall_s_per_decision": 1.13,
+   "cpu_s_per_decision": 0.217,
+   "cpu_s_per_game": 8.22
+  }
+ },
+ "cpu_s_per_game": 46.22,
+ "streams": 10,
+ "learning": {
+  "hedge": {
+   "feedback_turns": 11463,
+   "updates": 9343,
+   "skipped": 2120,
+   "skipped_frac": 0.1849,
+   "skipped_reasons": {
+    "not_in_worlds": 1044,
+    "fainted": 594,
+    "cant": 278,
+    "no_action": 204
+   }
+  }
+ },
+ "active": {
+  "1": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "2": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "3": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "4": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "5": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "6": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "7": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "8": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "9": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "10": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "11": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "12": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "13": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "14": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "15": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "16": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "17": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "18": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "19": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "20": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "21": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "22": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "23": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "24": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "25": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "26": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "27": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "28": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "29": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "30": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "31": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "32": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "33": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "34": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "35": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "36": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "37": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "38": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "39": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "40": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "41": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "42": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "43": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "44": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "45": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "46": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "47": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "48": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "49": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "50": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "51": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "52": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "53": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "54": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "55": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "56": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "57": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "58": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "59": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "60": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "61": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "62": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "63": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "64": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "65": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "66": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "67": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "68": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "69": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "70": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "71": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "72": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "73": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "74": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "75": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "76": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "77": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "78": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "79": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "80": {
+   "A": "hedge",
+   "B": "stock"
+  },
+  "81": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "82": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "83": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "84": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "85": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "86": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "87": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "88": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "89": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "90": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "91": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "92": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "93": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "94": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "95": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "96": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "97": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "98": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "99": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "100": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "101": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "102": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "103": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "104": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "105": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "106": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "107": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "108": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "109": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "110": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "111": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "112": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "113": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "114": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "115": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "116": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "117": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "118": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "119": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "120": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "121": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "122": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "123": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "124": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "125": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "126": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "127": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "128": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "129": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "130": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "131": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "132": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "133": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "134": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "135": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "136": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "137": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "138": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "139": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "140": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "141": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "142": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "143": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "144": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "145": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "146": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "147": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "148": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "149": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "150": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "151": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "152": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "153": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "154": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "155": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "156": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "157": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "158": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "159": {
+   "A": "hedge",
+   "B": "exploit_top"
+  },
+  "160": {
+   "A": "hedge",
+   "B": "exploit_top"
+  }
+ },
+ "modal": {
+  "usd_estimate": 0.489,
+  "stopped_over_budget": false,
+  "failed_streams": {},
+  "container_cpu": 2.0,
+  "stream_cpu_s": 14990.199999999999,
+  "games_run": 320,
+  "cpu_s_per_game_measured": 46.8,
+  "stream_wall_s": {
+   "4": 1080.9,
+   "3": 1303.4,
+   "2": 1420.3,
+   "9": 1537.4,
+   "1": 1535.1,
+   "8": 1584.8,
+   "6": 1596.7,
+   "7": 1579.6,
+   "5": 1648.2,
+   "0": 1720.5
+  },
+  "entrypoint_wall_s": 1733.9
+ }
+}
