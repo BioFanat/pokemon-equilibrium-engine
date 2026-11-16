@@ -12,6 +12,11 @@ Writes report/figures/fig_headline.{pdf,png}. Caches go to report/figures/data/.
   C  search node     Nash gap of decoupled self-play at one node vs N: full-information RM+ (nash.rm_plus) vs bandit
                      Exp3 / UCB1 (copy of run_ourbot.bandit_selfplay, the E4 code). Rewards (1+tanh(M/160))/2,
                      Bernoulli draws for the bandits. Cache figures/data/headline_node.json.
+  D  opponent model  Bayesian style posterior = MWU with eta=1 on log loss over K=5 styles: cumulative log-loss regret
+                     R_T vs the best fixed style, per stream, against the bound ln 5 (theory/synthesis.md §3.2).
+                     Data: figures/data/bh_regret.json, the 8 count-clean BH streams (0 and 6 excluded: log/state update
+                     counts disagree), curves downsampled to <= 500 points (argmax kept), built once from the synthesis
+                     pass's out_bh_regret.json (scratchpad synthesis/bh_regret.py over the BH decision logs).
 """
 import argparse
 import glob
@@ -40,6 +45,9 @@ plt.style.use("/Users/biofanat/.claude/skills/figure-style/figure.mplstyle")
 
 SCRATCH = Path("/private/tmp/claude-501/-Users-biofanat-Documents-classes-f26-cs535/"
                "2bbe670b-2f97-4d9a-bfad-e1139e0352c6/scratchpad/brainstorm/data.pkl")
+BH_SRC = SCRATCH.parents[1] / "synthesis/out_bh_regret.json"
+BH_EXCLUDED = {0, 6}                 # streams whose log update count != hedge_state count (synthesis.md §3.2)
+C_BAYES = "#CC79A7"                  # Bayesian style posterior (opponent model), Okabe-Ito pink
 CAPPED = {1010, 1012, 1014}          # games that hit the 300-turn cap (excluded, as in brainstorm/exp_*.py)
 C_RMPLUS = COL["eq_top"]             # RM+ = the equilibrium agent's solver (accent)
 C_UCB1 = COL["mcts"]                 # UCB1 = the MCTS selection rule
@@ -276,6 +284,27 @@ def panel_b_data(e2=None, n_streams=None, role="A", refresh=False):
                 T_per_stream=[len(s[0]) for s in streams], weight_check=max(chk), placeholder=not e2)
 
 
+# ================================================================ panel D
+def panel_d_data(n_pts=500):
+    path = DATA / "bh_regret.json"
+    if not path.exists():
+        src = json.loads(BH_SRC.read_text())
+        streams = {}
+        for r in src["rows"]:
+            k = r["stream"]
+            if k in BH_EXCLUDED:
+                continue
+            R = np.array(src["curves"][str(k)])
+            idx = np.unique(np.r_[np.linspace(0, len(R) - 1, n_pts - 1).round().astype(int), R.argmax()])
+            streams[str(k)] = dict(T=(idx + 1).tolist(), R=R[idx].round(6).tolist(), n_turns=len(R),
+                                   R_final=float(R[-1]), R_max=float(R.max()), best_style=r["best_style"])
+        d = dict(ln5=src["ln5"], excluded=sorted(BH_EXCLUDED), streams=streams,
+                 note="R_T = sum_t -ln p_qhat(b_t) - min_s sum_t -ln q_s(b_t), feedback turns only (BH run, "
+                      "feedback.bayes, 6 dp); from synthesis/bh_regret.py; curves downsampled, argmax kept")
+        path.write_text(json.dumps(d))
+    return json.loads(path.read_text())
+
+
 # ================================================================ figure
 def band(ax, x, lo, hi, c):
     ax.fill_between(x, lo, hi, color=c, alpha=0.18, lw=0)
@@ -285,9 +314,10 @@ def label(ax, x, y, s, c, **kw):
     ax.text(x, y, s, color=c, **{"va": "center", **kw})
 
 
-def draw(a, b, c):
-    fig, axs = plt.subplots(1, 3, figsize=(7.09, 2.55), layout="constrained")
-    for ax, L in zip(axs, "ABC"):
+def draw(a, b, c, d):
+    fig, axs = plt.subplots(2, 2, figsize=(7.09, 5.0), layout="constrained")
+    axs = axs.ravel()
+    for ax, L in zip(axs, "ABCD"):
         ax.text(-0.02, 1.13, L, transform=ax.transAxes, fontsize=12, fontweight="bold", va="top", ha="right")
         ax.set_xscale("log"); ax.set_yscale("log")
 
@@ -300,7 +330,7 @@ def draw(a, b, c):
     fit = T >= 10
     sA, sB = slope(T[fit], a["med"][fit]), slope(T[fit], a["bound"][fit])
     label(ax, 60, 0.25, f"proved bound\nslope {sB:.1f}".replace("-", "−"), C_RMPLUS, va="top")
-    label(ax, 2.2, a["med"][list(T).index(20)] * 0.5, f"median, slope {sA:.1f}".replace("-", "−"), C_RMPLUS)
+    label(ax, 2.2, a["med"][list(T).index(20)] * 0.25, f"median, slope {sA:.1f}".replace("-", "−"), C_RMPLUS)
     ax.set_xlim(1, 2000); ax.set_ylim(1e-7, 2)
     ax.set_xticks([1, 10, 100, 1000])
     ax.set_xlabel("Iterations $T$")
@@ -352,9 +382,23 @@ def draw(a, b, c):
     ax.set_xlabel("Iterations $N$")
     ax.set_ylabel("Nash gap (win probability)")
     ax.set_title("At a search node", pad=10)
-    for ax in axs:
+    for ax in axs[:3]:
         ax.yaxis.set_major_locator(matplotlib.ticker.LogLocator(numticks=5))
         ax.yaxis.set_minor_locator(matplotlib.ticker.NullLocator())
+
+    # ---- D  (linear axes: the bound is a constant)
+    ax = axs[3]
+    ax.set_xscale("linear"); ax.set_yscale("linear")
+    Tmax = max(v["n_turns"] for v in d["streams"].values())
+    for v in d["streams"].values():
+        ax.plot(v["T"], v["R"], color=C_BAYES, lw=1.0, alpha=0.75)
+    ax.axhline(d["ln5"], color=INK, lw=1.2, ls=(0, (4, 2)), zorder=3)   # on top: the curves sit on it
+    label(ax, Tmax * 0.97, d["ln5"] + 0.2, "proved bound ln 5", INK, ha="right")
+    label(ax, Tmax * 0.97, 0.55, f"{len(d['streams'])} streams", C_BAYES, ha="right")
+    ax.set_xlim(0, Tmax); ax.set_ylim(0, 2)
+    ax.set_xlabel("Feedback turns $T$")
+    ax.set_ylabel("Log-loss regret (nats)")
+    ax.set_title("Opponent model: Bayes as MWU", pad=10)
     return fig, dict(sA=sA, sB=sB, full=full, bandit=bandit)
 
 
@@ -369,7 +413,8 @@ def main():
     a = panel_a_data()
     b = panel_b_data(args.e2, args.streams, args.role, args.refresh)
     c = panel_c_data(args.refresh)
-    fig, s = draw(a, b, c)
+    d = panel_d_data()
+    fig, s = draw(a, b, c, d)
 
     # numbers for the report / caption
     print(f"[A] n={a['n']} matrices; slope median (T>=10) {s['sA']:.2f}, bound {s['sB']:.2f}; at T={a['T'][-1]:.0f}: "
@@ -397,6 +442,12 @@ def main():
               f" | IQR@{N[-1]} {np.percentile(G[:, -1], 25):.2e}-{np.percentile(G[:, -1], 75):.2e} | slope {sl:.2f}"
               f" | median/full-info bound @N={N[-1]}: {med[-1] / s['full'][-1]:.3g}")
     print("[C] full-info bound (median):", np.round(s["full"], 4), "| Exp3-IX bound (median):", np.round(s["bandit"], 3))
+
+    for k, v in d["streams"].items():
+        print(f"[D] stream {k}: {v['n_turns']} feedback turns, final R_T {v['R_final']:.4f}, anytime max "
+              f"{v['R_max']:.4f}, best style {v['best_style']}")
+    print(f"[D] ln 5 = {d['ln5']:.4f}; max over clean streams of anytime max R_T - ln 5: "
+          f"{max(v['R_max'] for v in d['streams'].values()) - d['ln5']:.1e}; excluded streams {d['excluded']}")
 
     issues = check_figure(fig, min_pt=8, max_words=12)
     print("[fig_headline] figcheck:", issues if issues else "clean")

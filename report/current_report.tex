@@ -129,14 +129,14 @@ Behavioural tendencies & done & style posterior (\cref{alg:style}, \cref{prop:st
 No-regret solver per turn & done & \cref{prop:rmplus}, \cref{fig:rmplus} \\
 Beliefs integrated with game solving & done & agent form vs PIMC (E4, E1) \\
 Adaptation across games & done & Hedge over experts (X6, hedge\_stream, E2, E5) \\
-Value of information, bluffing & open & concealment has zero value under \cref{asm:A3}; no experiment \\
+Value of information, bluffing & identified & $=\eta_{\rm NL}$ (\cref{thm:C}), zero under \cref{asm:A3}; no experiment \\
 RL policy/value net & negative & PPO pilot and value net weaker than search (\cref{sec:engine}) \\
 Hidden-set accuracy, calibration & done & \cref{sec:belief} \\
 Exploitability with known equilibria & done & exact abstracted endgames; certified exploiter lower bounds (W1, SXW) \\
 Elo & open & not measured \\
 Proof goal (i) & done (vacuous in level) & \cref{thm:C} \\
 Proof goal (ii) memory & partial & sampling rates \cref{prop:S1,prop:S2}; no marginals ablation \\
-Proof goal (iii) VOI & open & --- \\
+Proof goal (iii) VOI & open & formal object named; no experiment possible without belief-dependent leaves \\
 \bottomrule
 \end{longtable}
 \endgroup
@@ -181,10 +181,13 @@ template for every bound of \cref{sec:L6lens}; our learners use exponential weig
 anytime learner does not know $T$. Lecture 6's ``hustler'' scenario (exploit a flawed opponent, retreat to equilibrium if
 it plays well) motivates the $\varepsilon$-safe expert. \Cref{eq:L7} is applied at every stage matrix
 (\cref{prop:rmplus,thm:A}) and becomes an identity for search-node visit shares (\cref{prop:L4}); Lemma D is the
-high-probability statement that \cref{thm:L7cce} asks for. Our solver returns the averaged RM$^+$ strategy, not the last
+high-probability statement that \cref{thm:L7cce} asks for. Lecture 7's time average exists at exactly three places in our
+system (inside RM$^+$, at a bandit root, and over the experts), and the node-level gap of 17,820 real E4 decisions (median
+0.0585) is Lecture 7's left-hand side measured on a real trajectory; a game-level $\bar x$ does not exist because the
+stage game changes every turn. Our solver returns the averaged RM$^+$ strategy, not the last
 iterate; on real matrices the last iterate after 1000 untuned iterations is bimodal (median gap 0.0085, p90 0.086). In
 zero-sum games a CCE's marginals are maximin, so CCE adds nothing beyond Nash here except as a correlation
-diagnostic.
+diagnostic: the only CCE-specific object is correlation of joint play, which the H4 probe found absent at practical budgets.
 
 % =====================================================================================================
 \section{The game}\label{sec:game}
@@ -336,6 +339,14 @@ $\qhat_t=\sum_sP_{t-1}(s)q_{s,t}$.
 \end{proposition}
 \begin{proof}[Proof idea] $\prod_t\qhat_t(b_t)=\sum_sP_0(s)\prod_tq_{s,t}(b_t)\ge|\mathcal S|^{-1}\prod_tq_{s^*,t}(b_t)$;
 take $-\ln$. \end{proof}
+\begin{corollary}[Bayes regret identity (N1)]\label{cor:N1}
+With $P_0$ uniform, for every $T$ and every style $s$,
+$\sum_{t\le T}\big(-\ln\qhat_t(b_t)+\ln q_{s,t}(b_t)\big)=\ln|\mathcal S|+\ln P_T(s)$.
+\end{corollary}
+\begin{proof}[Proof idea] $\prod_{t\le T}\qhat_t(b_t)=\sum_{s'}|\mathcal S|^{-1}\prod_tq_{s',t}(b_t)$ and
+$P_T(s)=\prod_tq_{s,t}(b_t)/\sum_{s'}\prod_tq_{s',t}(b_t)$; divide and take $-\ln$. \end{proof}
+So $R_T(s)\le\ln|\mathcal S|$ with equality iff the posterior has concentrated on $s$; on the eight clean BH streams the final
+regret is 1.609 on every stream (\cref{sec:behav}).
 With $|\mathcal S|=5$ the regret is at most $\ln5\approx1.61$ nats over the whole run, not per turn. The note also
 develops: how prediction quality enters the safety and gain of the $\varepsilon$-safe expert (B5: a floor independent
 of $\qhat$ and a loss at most $\Delta\|q-\qhat\|_1$; B6: a whole-game bound for \texttt{hedge\_bayes}, vacuous per
@@ -409,8 +420,9 @@ responses to $y^*$ costs, at their slack; it is at most the stage gap and can be
 row has deficit 0 even when its stage gap is large. (iii) (Hypothesis for our opponent, which solves its own worlds'
 matrix.) The whole-game loss against such an opponent is the summed deficit, not the summed gap.
 \end{proposition}
-B8 predicts that a bandit root loses to RM$^+$ through the exploration mass in its shares, and that the MCTS rule
-(play the most-visited arm) removes most of that loss. B8's prediction and refutation criterion were written before the runs
+The shares bot plays the time average $\bar x_N$ of Lecture 7; the \texttt{\_mv} bot plays its mode. Against
+a non-adapting opponent the average pays its exploration mass (B8(i)) and the mode pays nothing on best-response
+rows (B8(ii)); against an adaptive opponent the mode is a deterministic rule (Lecture 6 \S2.3), untested here. B8's prediction and refutation criterion were written before the runs
 (\src{theory/experts_extensions.md}); the verifier's quantified pre-registration was recorded before any result was read
 (SCR\src{verify_ext/prereg_B8.txt}, timestamped): on 120 fresh stage matrices the per-decision deficit against RM$^+$ falls from 0.039 to
 0.008 (Exp3) and from 0.046 to 0.007 (UCB1), shares to most-visited, a 5--8$\times$ ratio; the most-visited roots should
@@ -422,7 +434,7 @@ outcome is in \cref{sec:showdown}.
 \begin{figure}[!tbp]
 \centering
 \includegraphics[width=0.9\linewidth]{fig_headline.pdf}
-\caption{Regret vanishes under the proved bounds where we use no-regret learning (log--log; $y$: regret or Nash gap as
+\caption{Regret vanishes under the proved bounds at the four places we use no-regret learning (log--log; $y$: regret or Nash gap as
 a share of the payoff range; solid: median, dashed: proved bound). \textbf{(A)} Inside a turn: Nash gap of RM$^+$'s
 averaged strategy on 35 real stage matrices; band: median to 90th percentile; bound \cref{prop:rmplus}; fitted median
 slope $-1.3$ against $-0.5$. \textbf{(B)} Across games, real Showdown (E2): average external regret per turn $R_T/T$
@@ -433,12 +445,16 @@ games; reset: the same learner restarted each game. Bound \cref{lem:R2a}, $R_T/T
 k/8}/T$ (carried learner only). At $T=2056$ the carried median is 0.0042 (IQR 0.0039--0.0046) against the bound
 0.0277, and reset 0.0057; carried stays under the bound on every stream at every $T$; fitted slope of the median
 ($T\ge30$) $-0.15$ against the bound's $-0.51$. The logged weights match those replayed from the rewards to within
-0.0092. \textbf{(C)} At a search node:
+0.0001 on nine streams; stream 9 (a resumed run whose log has 2411 of the state file's 2448 updates) differs by 0.0092. \textbf{(C)} At a search node:
 Nash gap of decoupled self-play on real matrices with rewards $(1+\tanh(M/160))/2$, which by \cref{prop:L4} is the
 players' average regret; RM$^+$ (full information) against Exp3 and UCB1 (visit shares, one Bernoulli reward per
 iteration); 100 matrices; band: IQR. Full-information reference: tuned Hedge $\sqrt{\ln n/(2N)}+\sqrt{\ln m/(2N)}$.
 ``Bandit bound'': the Exp3-IX high-probability bound ($\vartheta=0.05$), a reference for Exp3 and UCB1, not a bound
-proved for them.}\label{fig:headline}
+proved for them. \textbf{(D)} Opponent model: Bayes as MWU. Cumulative regret $R_T$ of the style posterior against the best
+style on log loss, per clean BH stream (8), against feedback turns $T$ (linear); horizontal line at $\ln5$. The bound is a
+constant; by the prequential identity $R_T(s^*)=\ln5+\ln P_T(s^*)$ it is met with equality whenever the posterior
+concentrates on the best style, dips (to $\approx0.9$) while the posterior moves between the two near-tied styles, and is
+attained at the end of every stream (max excess $5\cdot10^{-4}$, log rounding).}\label{fig:headline}
 \end{figure}
 
 \subsection{Structural results}\label{sec:struct}
@@ -658,17 +674,24 @@ turn stays under the bound at every $T$ (median 0.0042 against 0.0277 at $T=2056
 regret falls more slowly than the bound (slope $-0.15$ against $-0.51$, so $R_T$ grows nearly linearly) but with a small
 constant, and at $T=2056$ it is still 6.6 times below the bound; the margin comes from the level, not the rate. Reset weights give
 0.0057, so carrying the weights lowers regret, as \cref{prop:R3d} predicts, yet E2 and E2fs score within 0.012 of agent form
-alone: regret on surrogate stage rewards does not convert into win rate (\cref{prop:P1}).
+alone: regret on surrogate stage rewards does not convert into win rate (\cref{prop:P1}). The four experts earn 0.325 / 0.321 /
+0.317 / 0.314 reward units per turn (E2, stream average), a spread of 4.4 engine units against a median stage range of 230;
+Hedge earns 0.321 and trails top, the best expert in hindsight on all 10 streams, by 0.0041 per turn. The per-turn
+best-expert (dynamic) regret is 0.014 per turn, 3.4$\times$ the external regret and still 2.4\% of the range.
 
 \emph{Asymmetric self-play (E5).} Hedge over experts scores 0.4583 [0.4210, 0.4956] against agent form. PA4$\beta$
 predicted a score in $[0.45,0.55]$ and pre-registered a score above 0.56 as the refutation (a sign of large $\epsv$).
 The prediction is not refuted and the point estimate is inside the band, but the whole CI lies below 0.5: the learner
 was out-played by the equilibrium bot at 95\% confidence, an outcome the design did not anticipate. The test therefore
-probes the band's lower edge, not the upper edge that PA4$\beta$ bounds.
+probes the band's lower edge, not the upper edge that PA4$\beta$ bounds. In the surrogate, top still out-earns
+sampled against the equilibrium opponent (0.323 vs 0.320 per turn) and Hedge ends top-weighted (0.37--0.45); a pure
+row costs its slack against an equilibrium of the opponent's matrix, which is built from different worlds (B8(i);
+E4umv $>0.5$ shows the matrices disagree). The 0.042 deficit has no theorem; sampled-alone and top-alone vs agent
+form (300 pairs each) would split it.
 
 \emph{Bandit roots (E4e, E4u).} The design compared bandit roots with RM$^+$ against an exploiter; the runs compare
 them head-to-head. The bandit roots play their visit shares, whose median top probability is 0.315 (Exp3) and 0.225
-(UCB1) against 0.783--0.788 for RM$^+$, with a per-turn stage gap of about 0.058 (median): this is exploration-dominated
+(UCB1) against 0.783--0.788 for RM$^+$, with a per-turn stage gap of about 0.058 (median; 0.083 median and 0.098 mean on the 15,277 two-sided nodes, the all-decisions 0.0585 over 17,820 decisions including 2,543 nodes where one side has a single option; by \cref{prop:L4} the logged \texttt{gap} is Lecture 7's quantity): this is exploration-dominated
 play, and it scores 0.0625 and 0.0502. The stage gaps agree in direction with \cref{cor:B3} and are
 below its 0.10--0.15, and Theorem~A's summed gap (2.6--2.8 per game) is vacuous and does not explain the scores (B7).
 
@@ -697,16 +720,20 @@ prequentially on turns with feedback (1128 against stock, 1188 against agent for
 and 14.84 columns over worlds).
 \begin{table}[!htbp]\centering\small
 \caption{Prequential prediction of the opponent's move: log loss (nats) and argmax accuracy.}\label{tab:behav}
-\begin{tabular}{@{}lcccc@{}}\toprule
- & \multicolumn{2}{c}{vs stock} & \multicolumn{2}{c}{vs agent form} \\
-Predictor & log loss & accuracy & log loss & accuracy \\ \midrule
-posterior $\qhat$ & 1.810 & 0.440 & 1.560 & 0.511 \\
-style \emph{safe} alone & 1.810 & 0.454 & 1.558 & 0.512 \\
-style \emph{br\_unif} alone & 1.816 & 0.423 & 1.697 & 0.428 \\
-style \emph{eq} alone & 2.638 & 0.424 & 2.133 & 0.514 \\
-uniform & 2.715 & 0.273 & 2.525 & 0.263 \\
-previous predictor (one-hot br\_unif, smoothed) & 3.323 & 0.423 & 3.232 & 0.428 \\ \bottomrule
+\begin{tabular}{@{}lcccccc@{}}\toprule
+ & \multicolumn{2}{c}{vs stock} & \multicolumn{2}{c}{vs agent form} & \multicolumn{2}{c}{vs stock, full BH run} \\
+Predictor & log loss & accuracy & log loss & accuracy & log loss & accuracy \\ \midrule
+posterior $\qhat$ & 1.810 & 0.440 & 1.560 & 0.511 & 1.773 & 0.431 \\
+style \emph{safe} alone & 1.810 & 0.454 & 1.558 & 0.512 & 1.772 & 0.428 \\
+style \emph{br\_unif} alone & 1.816 & 0.423 & 1.697 & 0.428 & 1.79 & 0.420 \\
+style \emph{eq} alone & 2.638 & 0.424 & 2.133 & 0.514 & 2.69 & 0.410 \\
+uniform & 2.715 & 0.273 & 2.525 & 0.263 & 2.677 & --- \\
+previous predictor (one-hot br\_unif, smoothed) & 3.323 & 0.423 & 3.232 & 0.428 & 3.328 & 0.420 \\ \bottomrule
 \end{tabular}\end{table}
+The last column pair is the full BH run (8 streams, 15,456 non-forced turns). The pathwise regret vs the best style is
+$\le\ln5$ anytime on all eight clean streams and equals $\ln5$ at the end of each (streams 0 and 6 excluded: logs
+overwritten by reruns, update counts 2266 vs 2344 and 2069 vs 2114). The posterior's last iterate is a vertex while its
+time average is 0.4--0.6 between \emph{safe} and \emph{br\_unif} on 4 of 10 streams.
 The posterior's log loss is within 0.002 of the best single style, as \cref{prop:style} guarantees up to
 $\ln5/T$ per turn, and roughly halves the previous predictor's. Against agent form, which plays a minimax mixture, the
 posterior still concentrates on \emph{safe} rather than the sharper \emph{eq}: \emph{eq}'s argmax accuracy is as good
@@ -785,13 +812,15 @@ limits play is not the solver but the matrix: \cref{thm:A} and \cref{thm:C} char
 exact endgames measure $\epsv$ near 1, and the B12 replay shows that a mixed bot is exploited exactly through that
 channel. Lecture 6's prescription (randomise against an adaptive adversary) is confirmed in game form: sampled play has
 a small exploitation gain where the top move has a large one, while against fixed opponents the top move wins.
-Lecture 7's prescription works per stage but not as a search rule: a bandit root whose shares still carry exploration
+Lecture 7's prescription works per stage but not as a search rule: it is the
+\emph{average} that carries exploration; the MCTS rule plays its mode, Lecture 7 \S4.1's majority guess. A bandit root whose shares still carry exploration
 scores 0.05--0.06 against full-information RM$^+$ on the same matrix, and the exploration share, not the correlation
 predicted by the UCB1 analysis, explains its gap at practical budgets. The pre-registered B8 test confirms it: the same
 bandit playing its most-visited arm scores 0.49--0.59, so the decision rule, not the feedback, decides the match. The hidden-information formulation is the one
 place where a structural choice paid off on real Showdown: agent form beats PIMC at equal cost, by the
 strategy-fusion margin that \cref{thm:C} assigns to PIMC. The Bayesian style model adds a calibrated opponent
-prediction at negligible cost, and it behaves as misspecified Bayes theory says: it chooses the best-calibrated style.
+prediction at negligible cost, and it behaves as misspecified Bayes theory says: it chooses the best-calibrated style, and its regret meets Lecture 6's bound with
+equality, because for Bayes the regret is $\ln|\mathcal S|+\ln P_T(s)$.
 Neither it nor four times as many worlds wins significantly more games (BH, AF16), consistent with the leaf, not the
 belief, being the bottleneck.
 
@@ -804,8 +833,10 @@ and channels, not win rates. Mid-game $\epsv$ is unmeasured (poke-engine's MCTS 
 \item \textbf{Strength.} The bot loses to stock foul-play (0.3144); matrix solving at depth 2 is not competitive with
 MCTS per unit of compute.
 \item \textbf{Not run:} the switch test E3, the safe-exploitation sweep PA2, the bandit and most-visited roots against
-an exploiter (the exploitability cost of max-visit play), belief scoring at $K=16$ (B10's predictions), and any
-\texttt{bayes\_safex} game. BH and AF16 are single runs of about 300--400 pairs and cannot resolve edges below
+an exploiter (the exploitability cost of max-visit play), belief scoring at $K=16$ (B10's predictions), any
+\texttt{bayes\_safex} game, a log-only rerun writing $\bar A_t$ (which would give the opponent's surrogate regret and the
+two-sided Lecture 7 identity along the real trajectory), and the direct measurement
+$\|\bar A^A_t-\bar A^B_t\|_\infty$ of the world-sampling error between two bots. BH and AF16 are single runs of about 300--400 pairs and cannot resolve edges below
 about 0.04.
 \item \textbf{$K=4$ calibration.} The worlds we solve are overconfident although the posterior is calibrated.
 \item \textbf{Pivot information leak} (\cref{asm:A11}): every full-information result and the oracle see the
@@ -815,8 +846,11 @@ per turn on Showdown; $\Hbar$ in decision nodes on Showdown.
 \item \textbf{Design deviations.} E4 ran head-to-head rather than against an exploiter; feedback was skipped on 16--17\%
 of Hedge turns; seeded games do not replay identically across machines, so cross-machine pairing is approximate;
 poke-engine's MCTS runs at least 1,000 iterations, so every ``MCTS-200'' was MCTS-1000.
-\item \textbf{Proof goals (ii) and (iii)} are open beyond the sampling rates; with world-only leaves concealment has no
-value in our model, so bluffing cannot be studied without belief-dependent leaves.
+\item \textbf{Proof goals (ii) and (iii).} Proof goal (iii): the value of information is Theorem C's
+$\eta_{\rm NL}$, the value of a perfect reveal at the next node; it is $\ge0$ by convexity and identically 0 under
+\cref{asm:A3}, so no probing experiment is possible with world-only leaves (toy: a probe worth 0.5 is never taken). Proof goal
+(ii): sufficiency holds under \cref{asm:A2} (A2 + E1 + Example C.1); the compression bound exists only for $K$-sampling
+(\cref{prop:S1,prop:S2}); no marginals ablation.
 \end{enumerate}
 
 % =====================================================================================================
@@ -854,6 +888,7 @@ BMstock, BMaf scores & SCR\src{behavior/work/replays_headless/BM\{stock,af\}_sum
 BELIEF pair score 0.275 & \src{engine/results/belief/report.md} (``Caveats'') & \tagU \\
 B12, B34 numbers & theory\_map \S3.1 (SCR\src{bridges/}) & \tagP \\
 Figure captions & \src{report/report.tex} (rmplus, exploit, hedge, leaves); \src{report/figures/fig_headline_caption.txt}; \src{engine/results/belief/report.md} & \tagU \\
+Lecture 7 time-average gap, Bayes regret identity and curves, BH full-run prediction, Hedge dynamics, E4 node gaps, VOI toy, weight-replay check (E1--E15) & scripts \src{theory/synthesis.md} header (SCR\src{synthesis/}: \texttt{common.py}, \texttt{bh\_regret.py}, \texttt{bayes\_identity.py}, \texttt{hedge\_dyn.py}, \texttt{e4\_gap.py}, \texttt{checks2.py}, \texttt{voi\_toy.py}, \texttt{weight\_replay.py}) with their \texttt{out\_*} outputs & \tagC \\
 Modal cost & \texttt{usd\_estimate} of the ten summaries sum to \$6.73 (partial first attempts and pilots excluded) & \tagC \\
 \bottomrule
 \end{longtable}
