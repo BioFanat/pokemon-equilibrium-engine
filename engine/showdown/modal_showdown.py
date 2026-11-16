@@ -236,9 +236,11 @@ def write_results(tag: str, res: dict) -> Path:
 @app.local_entrypoint()
 def main(tag: str, a: str = "hedge", b: str = "stock", seeds: str = "1-4", streams: int = 2, max_usd: float = 1.0,
          k: int = 4, search_time_ms: int = 100, cpu_s_per_game: float = CPU_S_PER_GAME, slowdown: float = SLOWDOWN,
-         util: float = UTIL, poll_s: float = 30.0, safex_eps: str = "", log_abar: bool = False):
+         util: float = UTIL, poll_s: float = 30.0, safex_eps: str = "", log_abar: bool = False,
+         det_leaf: bool = False, leaf_stats: bool = False):
     """--safex-eps E sets OURBOT_SAFEX_EPS=E (bayes_safex / hedge_bayes q-hat safex) and --log-abar sets OURBOT_LOG_ABAR=1
-    in every container's bot processes (the local shell environment does not reach the containers)."""
+    in every container's bot processes (the local shell environment does not reach the containers). --det-leaf sets
+    OURBOT_DET_LEAF=1 (deterministic depth-1 leaf, nash.py) and --leaf-stats OURBOT_LEAF_STATS=1 (per-decision leaf_stats)."""
     import argparse
     import json
     import os
@@ -247,7 +249,9 @@ def main(tag: str, a: str = "hedge", b: str = "stock", seeds: str = "1-4", strea
     seed_list = batch.parse_seeds(seeds)
     streams = max(1, min(streams, len(seed_list)))
     extra_env = {**({"OURBOT_SAFEX_EPS": str(float(safex_eps))} if safex_eps else {}),
-                 **({"OURBOT_LOG_ABAR": "1"} if log_abar else {})}
+                 **({"OURBOT_LOG_ABAR": "1"} if log_abar else {}),
+                 **({"OURBOT_DET_LEAF": "1"} if det_leaf else {}),
+                 **({"OURBOT_LEAF_STATS": "1"} if leaf_stats else {})}
     if extra_env:
         print(f"container env: {extra_env}")
     est = estimate_cost(2 * len(seed_list), streams, stock=has_stock(a, b), cpu_s_per_game=cpu_s_per_game,

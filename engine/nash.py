@@ -15,6 +15,7 @@ and play by sampling from the equilibrium mix.
 """
 from __future__ import annotations
 
+import os
 import time
 
 import numpy as np
@@ -93,11 +94,42 @@ def closed_form(M: np.ndarray, I, J):
 
 # ---------------------------------------------------------------- engine glue
 
+# Opt-in leaf controls (read once at import; with neither set the leaf path is unchanged).
+# Under CPU load pe.id(child, 0) sometimes returns a complete deeper search (depth_searched >= 2, or a wrapped
+# negative i8); OURBOT_DET_LEAF=1 retries until depth_searched == 1 (up to DET_LEAF_TRIES, else keeps the last
+# result and counts a fallback). OURBOT_LEAF_STATS=1 (or OURBOT_DET_LEAF=1) counts leaf calls in LEAF_STATS:
+# non_d1 / depth_hist are over first-try returns (depth_hist keyed by str(depth_searched)).
+DET_LEAF = os.environ.get("OURBOT_DET_LEAF") == "1"
+LEAF_STATS_ON = DET_LEAF or os.environ.get("OURBOT_LEAF_STATS") == "1"
+DET_LEAF_TRIES = 100
+LEAF_STATS = {"calls": 0, "non_d1": 0, "retries": 0, "fallback": 0, "depth_hist": {}}
+
+
+def _leaf_id(child: pe.State):
+    """pe.id(child, 0) with LEAF_STATS counting and, under DET_LEAF, the depth_searched == 1 retry."""
+    r = pe.id(child, 0)
+    d = int(r.depth_searched)
+    LEAF_STATS["calls"] += 1
+    LEAF_STATS["depth_hist"][str(d)] = LEAF_STATS["depth_hist"].get(str(d), 0) + 1
+    if d == 1:
+        return r
+    LEAF_STATS["non_d1"] += 1
+    if DET_LEAF:
+        tries = 1
+        while r.depth_searched != 1 and tries < DET_LEAF_TRIES:
+            r = pe.id(child, 0)
+            tries += 1
+            LEAF_STATS["retries"] += 1
+        if r.depth_searched != 1:
+            LEAF_STATS["fallback"] += 1
+    return r
+
+
 def _child_value(child: pe.State) -> float:
     """Side-one maximin of the child's depth-1 matrix = the engine's own leaf value one ply down.
     Exact even though pe.id prunes (a pruned row already has a cell <= the row it lost to, and
     Rust's comparisons skip NaN like nanmin), and independent of the depth-1 row-label bug."""
-    r = pe.id(child, 0)
+    r = _leaf_id(child) if LEAF_STATS_ON else pe.id(child, 0)
     M = np.array([np.nan if v is None else v for v in r.matrix], dtype=float).reshape(len(r.s1), len(r.s2))
     with np.errstate(all="ignore"):
         return float(np.nanmax(np.nanmin(M, axis=1)))
