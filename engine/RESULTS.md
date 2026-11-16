@@ -1,6 +1,6 @@
 # Results: equilibrium play and Bayesian agent-form solving in Pokémon Random Battles
 
-Status 2026-11-14. All numbers below come from files in `results/` and are recomputed by
+Status 2026-11-15 (real-Showdown section added). All numbers below come from files in `results/` and are recomputed by
 `figures/make_figures.py` and the `summary` commands of `experiments.py` / `hidden_experiments.py`.
 Terms follow `figures/FIGURE_VOCAB.md`. Literature cross-references and citations are added
 in the section "Relation to prior work", after the literature review.
@@ -592,6 +592,48 @@ Scripts and logs: `/private/tmp/claude-501/-Users-biofanat-Documents-classes-f26
 - The two methods choose a different top move on ~11% of decisions (shadow solve on the same worlds, smoke run).
 - Reading: the in-engine result (0.585 [0.540, 0.630], our own belief tracker) transfers to real Showdown with Showdown's hidden information and foul-play's belief model. The comparison isolates the formulation: both arms share the belief.
 
+## Real-Showdown experiments (Modal, 2026-11-15)
+
+Outputs in `showdown/results/<TAG>/`.
+
+- Setup: as E1 (Showdown commit 7e74376 headless, foul-play's tracker and set sampler, K = 4 worlds unless stated, our matrix per world). Seat-swapped pairs share seed, teams and battle PRNG; the result is player A's pair score (win = 1, draw = ½) with a 95% CI over pairs. "Stock" = foul-play's MCTS client at 100 ms per move. Runs used 10 streams on Modal (E1 local). Hedge weights and the style posterior carry across the games of a stream.
+- Sources: `showdown/results/<TAG>/<TAG>_summary.json` (scores, CIs, pairs, costs, skip and gap fields); per-game logs in `showdown/results/<TAG>/replays_headless/`; E1 in `showdown/results/E1_summary.json`.
+
+| Tag | Matchup (A vs B) | Question | Pairs | Pair score of A [95% CI] | Modal cost |
+|---|---|---|---|---|---|
+| E1 | agentform vs pimc | Does agent form beat PIMC on Showdown? | 298 | **0.5587** [0.5209, 0.5966] | local |
+| AF | agentform vs stock | How strong is the base bot? | 299 | 0.3144 [0.2792, 0.3495] | $0.50 |
+| E2 | hedge vs stock | Does carried Hedge over 4 experts match its experts? | 399 | 0.3108 [0.2804, 0.3412] | $0.72 |
+| E2fs | hedge_fs vs stock | Same with fixed-share Hedge | 399 | 0.3033 [0.2729, 0.3336] | $0.75 |
+| E4e | bandit_exp3 (visit shares) vs rmplus_avg | Does bandit feedback at the root cost value? | 296 | 0.0625 [0.0430, 0.0820] | $0.45 |
+| E4u | bandit_ucb1 (visit shares) vs rmplus_avg | Same, UCB1 | 299 | 0.0502 [0.0312, 0.0691] | $0.38 |
+| E4emv | bandit_exp3_mv (most-visited arm) vs rmplus_avg | Is it the feedback model or the decision rule? (B8) | 295 | 0.4949 [0.4547, 0.5351] | $0.51 |
+| E4umv | bandit_ucb1_mv vs rmplus_avg | Same, UCB1 (B8) | 300 | **0.5933** [0.5551, 0.6316] | $0.56 |
+| E5 | hedge vs agentform | Can a no-regret learner beat the equilibrium expert? (PA4β) | 300 | 0.4583 [0.4210, 0.4956] | $0.56 |
+| BH | hedge_bayes (style posterior in the safex expert) vs stock | Does a better opponent prediction win games? | 398 | 0.3329 [0.3022, 0.3637] | $0.68 |
+| AF16 | agentform, K = 16 vs stock | Do better-calibrated worlds win games? | 299 | 0.3278 [0.2923, 0.3632] | $1.61 |
+
+Paired differences (same seeds, so same teams and battle PRNG; trajectories diverge, so these are not identical games; mean ± 1.96 sd/√n over common seeds, recomputed from `per_seed`):
+
+| Comparison | Difference [95% CI] | Common seeds |
+|---|---|---|
+| BH − E2 | +0.024 [−0.018, +0.066] | 397 |
+| BH − E2fs | +0.029 [−0.013, +0.071] | 397 |
+| BH − AF | +0.017 [−0.032, +0.066] | 297 |
+| AF16 − AF | +0.017 [−0.031, +0.065] | 298 |
+
+Modal cost: the ten summaries' `usd_estimate` fields sum to **$6.73** (of a $15 budget). This excludes partial first attempts (several summaries have `games_run` below the games scored, i.e. resumed runs) and pilots; the full bill was reported as about $8.3, which these files cannot confirm.
+
+Per experiment (Lecture 6 = one no-regret learner against an adaptive adversary; Lecture 7 = no-regret dynamics give minimax / CCE). Predictions are those pre-registered in `theory/bridge_plan.md` §2 and `theory/theory_map.md` §8, and for B8 in `theory/experts_extensions.md` (pre-registration `verify_ext/prereg_B8.txt`).
+- **E1 (structural, M3→M4).** Prediction: agent form > PIMC; refuted if the paired Δ ≤ 0. **Met**: 0.5587 replicates the in-engine 0.585 [0.540, 0.630] with a different belief model (both arms share foul-play's).
+- **E2 / E2fs (Lecture 6, R2a and L2).** Prediction (1): the pathwise regret bound holds on every log. **Met** on all 10 E2 streams: on the surrogate stage rewards (all in [0, 1]), the carried learner's average regret per turn stays below the R2a bound everywhere (largest excess over the bound −0.0229); at T = 2056 non-forced turns (shortest stream) the median is 0.0042 (IQR 0.0039–0.0046) against the bound 0.0277; fitted slope of the median −0.15 against the bound's −0.51 (headline figure panel B; 10 streams, 800 games, 22,858 turns; weight-replay consistency check max |w_logged − w_replayed| = 0.0092; recomputed from the E2 logs with `report/make_headline_figure.py`). Weights reset at each game give 0.0057, so carrying lowers regret (consistent with R3d's warm-up amortisation), but this does not move the win rate. Prediction (2): W_H within 0.05 of its experts. **Met for the one expert run alone**: E2 0.3108 and E2fs 0.3033 vs agent form 0.3144; the other three experts were not run alone. Caveat: 16.43% (E2) and 16.83% (E2fs) of feedback turns were skipped (opponent action in no world, fainted, `cant`, no action), above the ~10% at which L2 needs semi-bandit feedback, so L2 applies only approximately. Regret here is on surrogate rewards along our own trajectory, not on game outcomes (P1).
+- **E4e / E4u (Lecture 7, L4 + B3: bandit vs full-information feedback).** Pre-registered design (bridge_plan §2): the bandit root loses ≥ 0.05 more **against an exploiter**; not run as designed. The runs are head-to-head against `rmplus_avg` on the same kind of matrix. Shares-playing roots lose heavily (0.0625, 0.0502). Their decision logs show diffuse play: median top-move probability 0.315 (Exp3) and 0.225 (UCB1) vs 0.78 for RM+ (0.783 / 0.788); median stage gap 0.0585 / 0.0578, mean 0.086 / 0.093 (A01 units; `theory/experts_extensions.md` B7, verified with corrections). Theorem A's summed gap (2.6–2.8 per game) is vacuous and does not explain the scores (B7(iii)).
+- **E4emv / E4umv (B8).** B8's prediction and refutation criterion were written before the runs (`theory/experts_extensions.md`); the verifier's quantified pre-registration was recorded before any result was read (`scratchpad/verify_ext/prereg_B8.txt`, timestamped). Prediction: against the RM+ root, the max-visit roots lose much less than the shares roots (per-decision deficit 5–8× smaller; verifier's point guess 0.25–0.45); refuted if _mv ≤ shares at n ≈ 300. **Ordering confirmed**: 0.4949 and 0.5933 vs 0.0625 and 0.0502; the point guess undershot both. So at MCTS budgets the decision rule (play shares vs the most-visited arm), not the feedback model, drives the outcome. E4umv > 0.5 also shows that `rmplus_avg` is not a stage equilibrium of the bandit's matrix (it solves its own worlds' matrix, an ε_v-type difference; B8(iii) is a hypothesis for this opponent, not a theorem). Reading (ours): deterministic play beats an opponent that does not adapt, a parallel to Lecture 7 §4.1's probability matching (matching the frequencies scores 58% where always predicting the majority scores 70%) and to the in-engine top move vs sampled (0.581 vs 0.443). Its cost in exploitability is **untested**: Lecture 6 §2.3 says a deterministic rule can be exploited and B9(i) gives the max-visit row a positive stage gap on strictly mixed matrices, but on 57 real matrices the two rules' stage gaps are similar (0.053 vs 0.058; B8 verifier note), and no exploiter was run. (The `gap` fields in these summaries, median 0.104 / 0.125, are the Nash gap of the visit shares at the _mv bots' positions, not of the arm they played.)
+- **E5 (Lecture 7 minimax content, PA4β).** Prediction W_A ∈ [0.45, 0.55]; refuted if > 0.56. **Not refuted**, point estimate 0.4583 inside the band, but the whole CI lies below 0.5: the learner was out-played by the equilibrium expert at 95% confidence, which the design did not anticipate. PA4β bounds only the upper side, so this probes the band's lower edge.
+- **BH (style posterior, `experts_extensions.md` B1, B5, B6).** No win-rate prediction was registered; B6's whole-game bound is vacuous per game. Result 0.3329, paired +0.024 vs E2 and +0.017 vs AF, n.s. 17.36% of feedback turns skipped. The posterior predicts the opponent's move much better than the old predictor (log loss 1.56–1.81 vs 3.23–3.32 in the 24-pair pilots BMstock / BMaf; `report/current_report.tex` Table 5, `tab:behav`) but this does not show up as a significant win-rate gain.
+- **AF16 (K = 16 worlds, B10/B11).** B11(iv): no win-rate gain is derivable from the bounds (in-engine X2, 8 vs 4 worlds: 0.495, n.s.). Result 0.3278, paired +0.017 vs AF, n.s.; the K = 16 absent-fraction predictions of B10 were not scored in this run (no belief logging). Cost 2.9× AF's CPU per game (100.3 vs 34.5 CPU-s).
+- **Overall reading (ours).** Better prediction (BH) and better-calibrated worlds (AF16) give small positive, non-significant edges. This is consistent with the leaf bottleneck: by Theorems A and C the remaining loss is charged to ε_v, which the exact endgames put near 1, so improving the belief or the opponent model moves the estimated matrix but not the error in it.
+
 ## Next experiments
 
 **What X1 implies.** The matrix bot looks two turns ahead and then scores positions with
@@ -635,7 +677,7 @@ measures implementation speed.
    strong policy. It tests whether mixing buys robustness.
 4. **Belief upgrades:** item and ability inference from damage and speed, and behaviour-based
    updates. Measure how much of the oracle gap closes.
-5. Full-size runs for the remaining E4 matchups.
+5. The E4 exploiter arm: bandit (shares and most-visited) and RM+ roots against an exploiter, to measure the exploitability cost of most-visited play (see "Real-Showdown experiments").
 
 ## Relation to prior work
 

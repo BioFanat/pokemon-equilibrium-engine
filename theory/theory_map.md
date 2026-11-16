@@ -762,7 +762,7 @@ ranges per game vs 6.8 first-order; no single-game bound is non-vacuous; only am
 
 ## 7. M4: real Showdown
 
-Nothing in §4–§6 is yet measured on Showdown except the bridge probes of §3.1.
+Measured on Showdown so far: the bridge probes of §3.1 and the playable-algorithm runs of §8 (E1, E2, E2fs, E4 in four arms, E5, BH, AF16; 2026-11-15). They test predictions of §4–§6; they do not measure the quantities ($\varepsilon_v$, $\varepsilon_{\rm sim}$, $\bar H$) in the bounds.
 
 **Proposition SIM (simulation lemma for exploitability).** [M4; S; **exact resolution: proved**; coarsened resolution: **proved with the $\omega$ term**; trajectory form: **sketch** (standard lemma: cite Kearns & Singh 2002)]
 *Assumptions:* A1(i), A6, A5; the same action sets and terminal payoffs in both kernels. This precondition fails on the structural rows of `game_model.md` §3.2: Struggle, PP, the pending move at a pivot, simultaneous wipe-out payoffs, horizon, and team prior. These are outside A5/SIM and are stated as A10–A12.
@@ -797,7 +797,7 @@ equal compute); oracle gap $\approx0.1$; X5 hidden-information exploiter gain 0.
 
 Each is a drop-in for the adapter's per-turn move choice (`our_find_best_move`), built on the $K$ sampled-world
 matrices. Predictions are from `bridge_plan.md` §2 and `dynamics_directions.md` §0, restated against the verified
-results. E1 has been run on real Showdown (below); the others are not run yet; all are M4 tests.
+results. All are M4 tests. Run on real Showdown (2026-11-15; Modal except E1): E1, E2, E2fs, E4 (shares and most-visited arms, head-to-head against RM+), E5, BH and AF16; results below the table. Not run: E3, PA2, and E4 against an exploiter. Sources: `engine/showdown/results/<TAG>/<TAG>_summary.json`; interpretation in `engine/RESULTS.md`, section "Real-Showdown experiments (Modal, 2026-11-15)".
 
 | # | Algorithm | Theorem it instantiates (level) | Real-Showdown prediction | Refuted if | Games |
 |---|---|---|---|---|---|
@@ -809,6 +809,18 @@ results. E1 has been run on real Showdown (below); the others are not run yet; a
 | **E4** (PA3) | **BanditRootBot**: per-turn bandit self-play (UCB1 / Exp3, $N=2000$, MCTS's feedback model) vs full-information RM+ on the same matrices | L4 identity + B3 (M0–M1), L1(b) lower side (M2) | bandit root loses $\ge0.05$ more against an exploiter (stage gap 0.10–0.15 on ~80% of two-sided decisions) | $|\Delta|\le0.03$ at $n=300$ (then feedback model does not matter at MCTS budgets: a result in itself) | 800 |
 | **E5** (PA4β) | **Asymmetric self-play**: HedgeBot (all experts) vs equilibrium-sampled | PA4β statement (M2; Theorem A + L2(a)) | $W_A\in[0.45,0.55]$ | $W_A>0.56$: read as a measurement of a larger $\varepsilon_v$ (stage-wise deviations profit), not a theorem failure | 400 |
 | **PA2** | **SafexBot(ε)**, ε $\le1\%$, LP on the squashed $[-1,1]$ matrix | L2(b) with $\varepsilon_s\to\varepsilon_s+\varepsilon\cdot$range (M2, cite); certificate arithmetic | win rate $\approx W_{\rm sampled}+f(\varepsilon)(W_{\rm top}-W_{\rm sampled})$, $f=0.35,0.8$ at 0.3%, 1% (engine pre-screen first; effects 0.03–0.06 are below the $n=200$ CI) | safex(1%) $\le$ sampled. Against an exploiter, only a direction test: the theorem bounds each bot's loss separately, not the *difference* to sampled, and SXW already shows the 2% certificate not surviving M1→M2 | 900 (pre-screen 1.4 CPU-h) |
+| **E4 _mv** (B8) | **Most-visited root**: `bandit_exp3_mv`, `bandit_ucb1_mv` (the MCTS decision rule) vs `rmplus_avg` | B8 (`experts_extensions.md`; identity proved, real-opponent form a hypothesis) | written before the runs (`experts_extensions.md` B8); quantified pre-registration recorded before results were read (`scratchpad/verify_ext/prereg_B8.txt`): _mv scores far above the shares roots against RM+ (deficit 5–8× smaller) | _mv $\le$ shares at $n=300$ | 600 |
+| **BH** | **hedge_bayes**: E2's HedgeBot with the safex expert's prediction $\hat q$ from the style posterior | B1 (Bayes = Hedge on log loss), B5, B6 (`experts_extensions.md`) | no win-rate prediction (B6's whole-game bound is vacuous per game); paired with E2 on the same seeds | — | 800 |
+| **AF16** | **Agent form with $K=16$ worlds** vs stock | B10, B11 (`experts_extensions.md`) | B11(iv): no win-rate gain derivable (in-engine X2, 8 vs 4 worlds: 0.495 n.s.); paired with AF | — | 600 |
+
+**Results (measured, real Showdown; pair score of the first-named bot [95% CI], pairs).** Status: measured. Paired differences are over common seeds (same teams and battle PRNG).
+- **E1** agent form vs PIMC: **0.559 [0.521, 0.597]**, 298. Prediction met (transfers the in-engine 0.585).
+- **E2** hedge vs stock: **0.3108 [0.2804, 0.3412]**, 399; **E2fs** hedge_fs vs stock: **0.3033 [0.2729, 0.3336]**, 399. Prediction (1) met: on all 10 E2 streams the carried learner's surrogate regret per turn stays below the R2a bound (median 0.0042, IQR 0.0039–0.0046, vs bound 0.0277 at $T=2056$; slope −0.15 vs −0.51; rewards all in $[0,1]$; reset weights 0.0057; weight-replay check 0.0092). Prediction (2) met for the one expert run alone (AF 0.3144). 16.43% / 16.83% of feedback turns skipped (> 10%: L2 holds only approximately).
+- **E4** (head-to-head vs `rmplus_avg`, not vs an exploiter as designed): shares roots **E4e 0.0625 [0.0430, 0.0820]**, 296; **E4u 0.0502 [0.0312, 0.0691]**, 299 (median top-move probability 0.315 / 0.225 vs 0.78 for RM+; median stage gap 0.0585 / 0.0578). Most-visited roots **E4emv 0.4949 [0.4547, 0.5351]**, 295; **E4umv 0.5933 [0.5551, 0.6316]**, 300. B8's pre-registered ordering held (the verifier's point guess 0.25–0.45 undershot both): the decision rule, not the feedback model, drives the outcome. E4umv > 0.5 shows `rmplus_avg` is not a stage equilibrium of the bandit's matrix (B8(iii) is a hypothesis for it). The exploitability of max-visit play is untested.
+- **E5** hedge vs agent form: **0.4583 [0.4210, 0.4956]**, 300. Inside the predicted band $[0.45,0.55]$, not refuted; the CI lies below 0.5, which PA4β (an upper-side bound) does not address.
+- **BH** hedge_bayes vs stock: **0.3329 [0.3022, 0.3637]**, 398; paired BH − E2 +0.024 [−0.018, +0.066] (397), BH − E2fs +0.029 [−0.013, +0.071] (397), BH − AF +0.017 [−0.032, +0.066] (297): n.s.
+- **AF16** agent form $K=16$ vs stock: **0.3278 [0.2923, 0.3632]**, 299; paired AF16 − AF +0.017 [−0.031, +0.065] (298): n.s., as B11(iv) expects; the B10 absent fractions at $K=16$ were not scored.
+- Reading (interpretation): better opponent prediction (BH) and calibration (AF16) do not translate into significant wins, consistent with the leaf bottleneck ($\varepsilon_v\approx1$ dominates Theorems A and C).
 
 Not run (cite only): meta-game Exp3 vs Exp3 (B1: too flat to observe), OMWU last iterate, CCE.
 
@@ -851,7 +863,7 @@ Lens: S structural, L6 single algorithm, L7 dynamics. "Test" is the real-game te
 | Lecture 7 theorem; zero-sum CCE | M0 | L7 | cite | Lecture 7 | — |
 | Prop 4 / Cor A′ RM+ as coded | M0–M1 | L7 | proved (key step Lean) | `full_game.md:81` | — |
 | RM+ weighted averaging, alternation (BMS19) | M0 | L7 | cite | `new_directions.md:274` | — |
-| Proposition L4 identity | M0 | L7 | proved | `search_rl_links.md:149` | E4 |
+| Proposition L4 identity | M0 | L7 | proved | `search_rl_links.md:149` | E4e/E4u (measured): shares roots 0.0625 / 0.0502 vs RM+; median gap 0.058 |
 | Proposition L4b lockstep | M0 | L7 | proved | `search_rl_links.md:180` | — |
 | Proposition U1 | M0 | L7 | proved with named hypothesis | `new_directions.md:148` (corrected) | not at engine budgets (H4) |
 | Corollary U2 (incl. gap ⇒ TV>0, contrapositive, U1.2) | M0 | L7 | proved with named hypothesis | `new_directions.md:165` | — |
@@ -860,26 +872,26 @@ Lens: S structural, L6 single algorithm, L7 dynamics. "Test" is the real-game te
 | Conjecture U3 plateau | M0 | L7 | conjecture | `new_directions.md:183` | — |
 | Observation U4 | M0 | L7 | numeric | `new_directions.md:199` (corrected) | — |
 | H4 engine root = exploration | M1–M2 | L7 | numeric | probe | — |
-| Corollary B3 | M0–M1 | L7 | numeric (L4 part proved; bounds cite) | `dynamics_directions.md:290` (corrected) | E4 |
+| Corollary B3 | M0–M1 | L7 | numeric (L4 part proved; bounds cite) | `dynamics_directions.md:290` (corrected) | E4e/E4u (measured, head-to-head; exploiter arm not run); E4emv/E4umv 0.4949 / 0.5933: decision rule, not feedback, drives the outcome (B8) |
 | Lemma D | M0 | L7 | proved | `dynamics_directions.md:342` (scope corrected) | — |
 | Proposition T depth composition | M2 | L7 | sketch | `dynamics_directions.md:353` | — |
 | Per-state averaging failure | M2 | L7 | cite | `new_directions.md:280` | — |
 | OMWU last iterate | M0 | L7 | cite | `dynamics_directions.md:393` | — |
 | Meta-game Exp3 dynamics (B1) | M2 | L7 | cite | `dynamics_directions.md:319` | not run |
-| PA4β statement | M2 | L7 | proved | §5.2 | E5 |
+| PA4β statement | M2 | L7 | proved | §5.2 | E5 (measured): 0.4583 [0.4210, 0.4956], inside $[0.45,0.55]$; CI below 0.5 |
 | Lemma H | M0 | L6 | proved (summation step Lean) | `hedge_experts.md:44` | — |
 | Proposition R1 | M0 | L6 | proved | `regret_theory.md:47` | — |
-| Lemma R2a | M0 | L6 | proved | `regret_theory.md:105` | E2 (pathwise) |
-| Proposition L2 (b: proved with named hypothesis (E)) | M2 | L6 | proved | `search_rl_links.md:84` | E2 |
-| Propositions E1, E3 | M2 | L6 | Lean (E1) / proved (E3) | `hedge_experts.md:64` | E2 |
-| Theorem E2 | M2 | L6 | Lean (`composition_step`) + proved with named hypothesis (E) | `hedge_experts.md:106` | E2 |
+| Lemma R2a | M0 | L6 | proved | `regret_theory.md:105` | E2 (measured): pathwise bound held on all 10 streams; median 0.0042 vs 0.0277 at $T=2056$ |
+| Proposition L2 (b: proved with named hypothesis (E)) | M2 | L6 | proved | `search_rl_links.md:84` | E2/E2fs (measured): 0.3108 / 0.3033 vs AF 0.3144, within 0.05; 16.4–16.8% of feedback skipped |
+| Propositions E1, E3 | M2 | L6 | Lean (E1) / proved (E3) | `hedge_experts.md:64` | E2 (measured, see L2) |
+| Theorem E2 | M2 | L6 | Lean (`composition_step`) + proved with named hypothesis (E) | `hedge_experts.md:106` | E2 (measured; bound vacuous in level) |
 | Theorem E2′ | M2 | L6 | proved with named hypothesis | `regret_theory.md:138` | does not apply ($a=0$) |
 | Lemma R3a | M2 | L6 | proved | `regret_theory.md:195` | — |
 | R3b fitted drifts | M2 | L6 | numeric | `regret_theory.md:206` | — |
 | Proposition R3c | M2 | L6 | proved | `regret_theory.md:265` | — |
-| Proposition R3d | M2 | L6 | proved | `new_directions.md:225` (corrected) | hedge_stream (in-sample) |
-| Proposition P1 | M2 | L6 | proved | `dynamics_directions.md:175` (corrected) | E2 |
-| Proposition P2 (necessity in (ii)(b) proved; time estimate sketch) | M2 | L6 | proved | `dynamics_directions.md:237` (corrected) | E3 |
+| Proposition R3d | M2 | L6 | proved | `new_directions.md:225` (corrected) | hedge_stream (in-sample); E2 logs: carried 0.0042 vs reset 0.0057 regret per turn, win rate unchanged |
+| Proposition P1 | M2 | L6 | proved | `dynamics_directions.md:175` (corrected) | E2 run; policy regret not separately measured |
+| Proposition P2 (necessity in (ii)(b) proved; time estimate sketch) | M2 | L6 | proved | `dynamics_directions.md:237` (corrected) | E3 (not run) |
 | ε-safe expert in Hedge | M2 | L6 | cite | `new_directions.md:259` | PA2 |
 | Non-convexity remark (Hedge vs min expl) | M2 | L6 | proved | §6.3 | — |
 | Certificate arithmetic, gain curve | M2 | L6 | proved (arithmetic) / numeric (curve) | `dynamics_directions.md:272` | PA2; SXW failure |
@@ -890,9 +902,15 @@ Lens: S structural, L6 single algorithm, L7 dynamics. "Test" is the real-game te
 | A11 information at pivot nodes | M3–M4 | S | assumption | this map §2; `game_model.md` §5 | — |
 | A12 horizon unit (decision nodes) | M2–M4 | S | assumption | this map §2; `game_model.md` §5 | — |
 | E1 agent form vs PIMC on Showdown | M4 | S | measured (numeric) | `engine/RESULTS.md` (E1) | 0.559 [0.521, 0.597], 298 pairs |
+| E2 / E2fs Hedge over experts vs stock | M4 | L6 | measured (numeric) | `engine/showdown/results/{E2,E2fs}/` | 0.3108 [0.2804, 0.3412] / 0.3033 [0.2729, 0.3336], 399 pairs each |
+| E4e / E4u bandit roots (visit shares) vs RM+ | M4 | L7 | measured (numeric) | `engine/showdown/results/{E4e,E4u}/` | 0.0625 [0.0430, 0.0820], 296 / 0.0502 [0.0312, 0.0691], 299 |
+| E4emv / E4umv most-visited roots vs RM+ (B8, pre-registered) | M4 | L7 | measured (numeric) | `engine/showdown/results/{E4emv,E4umv}/` | 0.4949 [0.4547, 0.5351], 295 / 0.5933 [0.5551, 0.6316], 300; ordering confirmed |
+| E5 Hedge vs agent form | M4 | L7 | measured (numeric) | `engine/showdown/results/E5/` | 0.4583 [0.4210, 0.4956], 300 pairs |
+| BH hedge_bayes vs stock | M4 | L6 | measured (numeric) | `engine/showdown/results/BH/` | 0.3329 [0.3022, 0.3637], 398; vs E2 +0.024 [−0.018, +0.066] n.s. |
+| AF16 agent form $K=16$ vs stock | M4 | S | measured (numeric) | `engine/showdown/results/AF16/` | 0.3278 [0.2923, 0.3632], 299; vs AF +0.017 [−0.031, +0.065] n.s. |
 
-**Count by status (70 rows):** Lean 5; proved 36; proved with named hypothesis 4; proved with the $\omega$ term 1; sketch 3;
-conjecture 2; numeric 8; cite 7; assumption 3; measured 1 (E1). (Rows with a mixed tag are counted by the first-named tag.)
+**Count by status (76 rows):** Lean 5; proved 36; proved with named hypothesis 4; proved with the $\omega$ term 1; sketch 3;
+conjecture 2; numeric 8; cite 7; assumption 3; measured 7 (E1, E2/E2fs, E4e/E4u, E4emv/E4umv, E5, BH, AF16). (Rows with a mixed tag are counted by the first-named tag.)
 
 ---
 
