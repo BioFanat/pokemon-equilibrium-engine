@@ -1,0 +1,95 @@
+=== 1. exact 2-step example, k = 5, cap B = ln(n/MIX) ===
+n=13 B=5.561  lam*(exact grid)=0.9527  lam*(B = ln k + H/(1-lam))=0.9491
+    lam 0.3: R*=3.687 (B0=5.56) VIOL
+    lam 0.5: R*=2.894 (B0=5.54) VIOL
+    lam 0.7: R*=2.187 (B0=4.67) VIOL
+    lam 0.9: R*=1.683 (B0=3.21) VIOL
+    lam 0.95: R*=1.612 (B0=2.27) VIOL
+    lam 0.98: R*=1.594 (B0=0.25)     
+    lam 0.99: R*=1.594 (B0=0.00)     
+n=18 B=5.886  lam*(exact grid)=0.9656  lam*(B = ln k + H/(1-lam))=0.9629
+    lam 0.3: R*=3.914 (B0=5.89) VIOL
+    lam 0.5: R*=3.056 (B0=5.87) VIOL
+    lam 0.7: R*=2.284 (B0=5.01) VIOL
+    lam 0.9: R*=1.715 (B0=3.58) VIOL
+    lam 0.95: R*=1.627 (B0=2.70) VIOL
+    lam 0.98: R*=1.600 (B0=1.20)     
+    lam 0.99: R*=1.598 (B0=0.00)     
+n=27 B=6.292  lam*(exact grid)=0.9770  lam*(B = ln k + H/(1-lam))=0.9751
+    lam 0.3: R*=4.196 (B0=6.29) VIOL
+    lam 0.5: R*=3.258 (B0=6.28) VIOL
+    lam 0.7: R*=2.405 (B0=5.42) VIOL
+    lam 0.9: R*=1.754 (B0=4.02) VIOL
+    lam 0.95: R*=1.647 (B0=3.19) VIOL
+    lam 0.98: R*=1.607 (B0=1.95)     
+    lam 0.99: R*=1.602 (B0=0.37)     
+n=44 B=6.780  lam*(exact grid)=0.9858  lam*(B = ln k + H/(1-lam))=0.9847
+    lam 0.3: R*=4.537 (B0=6.78) VIOL
+    lam 0.5: R*=3.502 (B0=6.77) VIOL
+    lam 0.7: R*=2.551 (B0=5.92) VIOL
+    lam 0.9: R*=1.802 (B0=4.54) VIOL
+    lam 0.95: R*=1.671 (B0=3.74) VIOL
+    lam 0.98: R*=1.616 (B0=2.63) VIOL
+    lam 0.99: R*=1.606 (B0=1.58)     
+closed-form vs asymptotic (B -> inf, B0 = B): lam ln k + (1-lam) B;  capped optimum ~ lam ln k + (1-lam) B - H(lam)
+  lam 0.5: optimum 3.5021, B0*=6.774 vs B - ln(lam/(1-lam)) = 6.780; approx 3.5015
+  lam 0.7: optimum 2.5505, B0*=5.921 vs B - ln(lam/(1-lam)) = 5.933; approx 2.5497
+  lam 0.9: optimum 1.8024, B0*=4.540 vs B - ln(lam/(1-lam)) = 4.583; approx 1.8014
+
+=== 2. the shipped class behavior.Posterior(lam) on the optimised 2-step paths ===
+lam 0.3 n 13: shipped-class regret vs style 0 = 3.6871  (log-space fn 3.6871; closed form 3.6871; ln5 = 1.6094)  VIOLATION
+lam 0.3 n 44: shipped-class regret vs style 0 = 4.5371  (log-space fn 4.5371; closed form 4.5371; ln5 = 1.6094)  VIOLATION
+lam 0.5 n 13: shipped-class regret vs style 0 = 2.8938  (log-space fn 2.8938; closed form 2.8938; ln5 = 1.6094)  VIOLATION
+lam 0.5 n 44: shipped-class regret vs style 0 = 3.5021  (log-space fn 3.5021; closed form 3.5021; ln5 = 1.6094)  VIOLATION
+lam 0.7 n 13: shipped-class regret vs style 0 = 2.1865  (log-space fn 2.1865; closed form 2.1865; ln5 = 1.6094)  VIOLATION
+lam 0.7 n 44: shipped-class regret vs style 0 = 2.5505  (log-space fn 2.5505; closed form 2.5505; ln5 = 1.6094)  VIOLATION
+lam 0.9 n 13: shipped-class regret vs style 0 = 1.6821  (log-space fn 1.6821; closed form 1.6821; ln5 = 1.6094)  VIOLATION
+lam 0.9 n 44: shipped-class regret vs style 0 = 1.8023  (log-space fn 1.8023; closed form 1.8023; ln5 = 1.6094)  VIOLATION
+lam 0.95 n 13: shipped-class regret vs style 0 = 1.6104  (log-space fn 1.6104; closed form 1.6104; ln5 = 1.6094)  VIOLATION
+lam 0.95 n 44: shipped-class regret vs style 0 = 1.6704  (log-space fn 1.6704; closed form 1.6704; ln5 = 1.6094)  VIOLATION
+free losses (C=60), lam 0.9: 2.0495 vs ln5 1.6094  (formula 2.0485)
+free losses (C=60), lam 0.99: 1.6534 vs ln5 1.6094  (formula 1.6533)
+free losses (C=60), lam 0.999: 1.6138 vs ln5 1.6094  (formula 1.6138)
+
+=== 3. log-space search, losses in [0, B], B = ln(44/MIX) = 6.780 ===
+lam 0.5 T 2 k 2: max disc. regret 3.044 (ln k 0.693; optimised 2-step 3.044)
+lam 0.5 T 2 k 5: max disc. regret 3.502 (ln k 1.609; optimised 2-step 3.502)
+lam 0.5 T 3 k 5: max disc. regret 4.659 (ln k 1.609; optimised 2-step 3.502)
+lam 0.5 T 4 k 5: max disc. regret 5.097 (ln k 1.609; optimised 2-step 3.502)
+lam 0.5 T 6 k 5: max disc. regret 5.427 (ln k 1.609; optimised 2-step 3.502)
+lam 0.7 T 2 k 2: max disc. regret 1.909 (ln k 0.693; optimised 2-step 1.909)
+lam 0.7 T 2 k 5: max disc. regret 2.551 (ln k 1.609; optimised 2-step 2.551)
+lam 0.7 T 3 k 5: max disc. regret 3.466 (ln k 1.609; optimised 2-step 2.551)
+lam 0.7 T 4 k 5: max disc. regret 3.908 (ln k 1.609; optimised 2-step 2.551)
+lam 0.7 T 6 k 5: max disc. regret 4.429 (ln k 1.609; optimised 2-step 2.551)
+lam 0.9 T 2 k 2: max disc. regret 0.978 (ln k 0.693; optimised 2-step 0.978)
+lam 0.9 T 2 k 5: max disc. regret 1.802 (ln k 1.609; optimised 2-step 1.802)
+    losses
+ [[0.   3.95 0.15 6.78 4.48]
+ [6.78 0.   6.78 6.78 6.78]]
+lam 0.9 T 3 k 5: max disc. regret 2.155 (ln k 1.609; optimised 2-step 1.802)
+    losses
+ [[6.47 2.63 6.47 0.   6.48]
+ [0.   6.78 0.   6.78 0.  ]
+ [6.78 0.   6.78 6.78 6.78]]
+lam 0.9 T 4 k 5: max disc. regret 2.378 (ln k 1.609; optimised 2-step 1.802)
+lam 0.9 T 6 k 5: max disc. regret 2.766 (ln k 1.609; optimised 2-step 1.802)
+lam 0.95 T 2 k 2: max disc. regret 0.800 (ln k 0.693; optimised 2-step 0.800)
+lam 0.95 T 2 k 5: max disc. regret 1.671 (ln k 1.609; optimised 2-step 1.671)
+lam 0.95 T 3 k 5: max disc. regret 1.852 (ln k 1.609; optimised 2-step 1.671)
+lam 0.95 T 4 k 5: max disc. regret 1.985 (ln k 1.609; optimised 2-step 1.671)
+lam 0.95 T 6 k 5: max disc. regret 2.221 (ln k 1.609; optimised 2-step 1.671)
+
+=== 4. data-dependent bound ln k + (1-lam) sum_t lam^{T-t} range(D_{t-1}) on random + adversarial paths ===
+lam 0.5: 2-step example regret 3.502  bound 4.999  (tightness 0.70)
+lam 0.7: 2-step example regret 2.551  bound 3.389  (tightness 0.75)
+lam 0.9: 2-step example regret 1.802  bound 2.068  (tightness 0.87)
+lam 0.99: 2-step example regret 1.605  bound 1.631  (tightness 0.98)
+max (regret - bound) over 1200 random paths: -1.14e-03  (<= 0 means the bound held)
+
+=== 5. realisable 2-turn example on the 57 real stage matrices (style matrices from behavior.style_dists) ===
+569 (matrix, column) loss vectors; max loss 5.561; min loss 0.043
+lam 0.5: max real 2-turn discounted regret 1.614 vs ln5 1.609 VIOLATION; comparator uniform; turn-1 losses [0.12 3.07 3.07 0.66 2.2 ], turn-2 losses [5.19 4.89 4.89 5.17 2.2 ]
+lam 0.7: max real 2-turn discounted regret 1.449 vs ln5 1.609 no violation; comparator eq; turn-1 losses [1.48 0.66 0.66 2.87 2.2 ], turn-2 losses [0.8  4.44 4.44 3.43 2.2 ]
+lam 0.9: max real 2-turn discounted regret 1.465 vs ln5 1.609 no violation; comparator eq; turn-1 losses [0.05 1.02 1.02 1.26 2.56], turn-2 losses [0.8  4.44 4.44 3.43 2.2 ]
+lam 0.95: max real 2-turn discounted regret 1.526 vs ln5 1.609 no violation; comparator uniform; turn-1 losses [5.19 4.99 4.99 5.07 2.2 ], turn-2 losses [5.19 4.99 4.99 5.07 2.2 ]

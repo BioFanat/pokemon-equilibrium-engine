@@ -1,0 +1,16 @@
+str     T            s1/s2    gap      mu     sd    ac1 MAPsw  sgn wrong  Gneg      BM   Hoeff | ll mix ll FTL ll best  ll s2 | acc mix acc FTL | reg mix reg FTL
+  1  2159     safe/br_unif   52.7  0.0244  0.616  0.116     8    5    15    10     318    2098 | 1.4903 1.4932  1.4895 1.5139 |  0.5225  0.5151 |   1.609   8.016
+  2  2376     safe/br_unif   63.7  0.0268  0.576  0.149     7    4   468   461     231    2286 | 1.4824 1.4839  1.4817 1.5085 |  0.5194  0.5164 |   1.609   5.295
+  3  2173     safe/br_unif   33.7  0.0155  0.582  0.146    31   29   901   899     702    2148 | 1.5119 1.5194  1.5112 1.5267 |  0.5186  0.5145 |   1.609  17.844
+  4  1969     safe/br_unif   39.8  0.0202  0.591  0.094    20   20   802   796     427    1933 | 1.5126 1.5168  1.5118 1.5320 |  0.5373  0.5317 |   1.609   9.954
+  5  2404     safe/br_unif   67.0  0.0279  0.598  0.129     4    4   461   461     230    2305 | 1.5902 1.5919  1.5895 1.6174 |  0.4784  0.4775 |   1.609   5.799
+  7  2234     br_unif/safe   45.8  0.0205  0.622  0.164    10    8    90    89     460    2187 | 1.5056 1.5092  1.5048 1.5253 |  0.5188  0.5166 |   1.609   9.818
+  8  2396     br_unif/safe   39.8  0.0166  0.615  0.167    13   13   965   965     686    2360 | 1.4830 1.4844  1.4823 1.4989 |  0.5046  0.5008 |   1.609   4.968
+  9  2450     safe/br_unif   28.0  0.0114  0.616  0.111    32   32  1512  1512    1453    2432 | 1.4865 1.4925  1.4858 1.4973 |  0.5282  0.5273 |   1.609  16.195
+
+means over 8 clean streams: turns MAP wrong 652 (G<0: 649), BM prediction sigma^2/(2 mu^2) 563, Hoeffding 2219, T 2270
+ratio measured/BM per stream: [0.03 2.   1.28 1.86 2.   0.19 1.41 1.04]
+fraction of turns with identical loss for s1, s2 (|g|<1e-6, e.g. forced turns): 0.151
+log loss: mixture 1.5078, FTL/MAP 1.5114, best style 1.5071, runner-up 1.5275
+regret vs best style, total nats: mixture 1.609 (ln5 1.609), FTL 9.736 (min 4.97, max 17.84); MAP switches per stream mean 15.6
+argmax accuracy: mixture 0.5160, FTL 0.5125, best style 0.5145

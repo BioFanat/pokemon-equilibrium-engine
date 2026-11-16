@@ -1,0 +1,6 @@
+57 matrices; cols median 9.0
+[T4a] max |x'Ay - v|/range = 0.00300 (claim <= 0.003); max NE gap/range = 0.00600 (claim <= 0.006)
+[T3] truth eq      : realised mean 3.20 (SE 0.28, max 8.86) | bound(v) sum 1/(1-mean BC) = 16.7 | sup rho_s = [0.977 0.956 0.983 0.808]
+[T3] truth safe    : realised mean 9.54 (SE 1.31, max 37.12) | bound(v) sum 1/(1-mean BC) = 41.1 | sup rho_s = [0.983 0.998 1.    0.948]
+[T3] truth uniform : realised mean 5.84 (SE 0.63, max 16.38) | bound(v) sum 1/(1-mean BC) = 26.1 | sup rho_s = [0.808 0.994 0.985 0.948]
+[T3] truth br_unif : realised mean 9.43 (SE 1.34, max 52.13) | bound(v) sum 1/(1-mean BC) = 41.0 | sup rho_s = [0.977 0.993 0.998 0.994]

@@ -1,0 +1,17 @@
+    b alpha     c  V_skip  V_probe    VOI  eta_NL  A3 picks  A3 loss  optimal
+ 0.50  0.70  0.00   0.500    0.700  0.200   0.500      skip    0.200    probe
+ 0.50  0.70  0.30   0.500    0.400  0.200   0.500      skip    0.000     skip
+ 0.50  1.00  0.00   0.500    1.000  0.500   0.500      skip    0.500    probe
+ 0.50  1.00  0.30   0.500    0.700  0.500   0.500      skip    0.200    probe
+ 0.30  0.70  0.00   0.700    0.700  0.000   0.300      skip    0.000     skip
+ 0.30  0.70  0.30   0.700    0.400  0.000   0.300      skip    0.000     skip
+ 0.30  1.00  0.00   0.700    1.000  0.300   0.300      skip    0.300    probe
+ 0.30  1.00  0.30   0.700    0.700  0.300   0.300      skip    0.000     skip
+ 0.10  0.70  0.00   0.900    0.900  0.000   0.100      skip    0.000    probe
+ 0.10  0.70  0.30   0.900    0.600  0.000   0.100      skip    0.000     skip
+ 0.10  1.00  0.00   0.900    1.000  0.100   0.100      skip    0.100    probe
+ 0.10  1.00  0.30   0.900    0.700  0.100   0.100      skip    0.000     skip
+
+Jensen check: min VOI over grid = 0.000 (>= 0 required).
+Identity checks passed: VOI(alpha) = alpha - 1/2 at b = 1/2; eta_NL(skip node) = perfect-reveal VOI = 1 - v(b); A3 agent's loss = max(0, VOI - c).
+convexity chord violations: 0 / 10000

@@ -1,0 +1,452 @@
+[
+ {
+  "case": 1,
+  "kind": "mixed",
+  "game": "LOG-s15-g2",
+  "source_json": "engine/showdown/results/LOG/replays_headless/LOG-s15-g2.json",
+  "source_decisions": "engine/showdown/results/LOG/replays_headless/LOG-s15-g2.A.decisions.jsonl",
+  "our_side": "p2",
+  "winner": "Ours",
+  "total_turns": 21,
+  "turn": 2,
+  "figure": "case_study_1",
+  "cell_units": "averaged stage matrix Abar, heuristic engine units (positive = good for us)",
+  "rows": [
+   {
+    "id": "hypervoice",
+    "name": "Hyper Voice",
+    "kind": "move",
+    "equilibrium": 0.5643,
+    "played_prob": 0.5498
+   },
+   {
+    "id": "kyogre",
+    "name": "Kyogre",
+    "kind": "switch",
+    "equilibrium": 0.4357,
+    "played_prob": 0.4352
+   },
+   {
+    "id": "tinglu",
+    "name": "Ting-Lu",
+    "kind": "switch",
+    "equilibrium": 0.0,
+    "played_prob": 0.0
+   }
+  ],
+  "cols": [
+   {
+    "id": "pecharunt",
+    "name": "Pecharunt",
+    "kind": "switch",
+    "qhat": 0.1623
+   },
+   {
+    "id": "stealthrock",
+    "name": "Stealth Rock",
+    "kind": "move",
+    "qhat": 0.1164
+   },
+   {
+    "id": "ceruledge",
+    "name": "Ceruledge",
+    "kind": "switch",
+    "qhat": 0.0731
+   },
+   {
+    "id": "earthquake",
+    "name": "Earthquake",
+    "kind": "move",
+    "qhat": 0.068
+   }
+  ],
+  "payoff": [
+   [
+    -60.03,
+    -6.86,
+    -60.03,
+    6.83
+   ],
+   [
+    38.46,
+    -10.57,
+    42.22,
+    -21.99
+   ],
+   [
+    -60.03,
+    -37.22,
+    -4.56,
+    -7.92
+   ]
+  ],
+  "payoff_layout": "payoff[row][col]; figure draws it transposed",
+  "cols_rule": "opponent's top replies by q-hat",
+  "tv_equilibrium_vs_played": 0.015,
+  "n_our_options": 7,
+  "n_opp_options": 30,
+  "played": {
+   "id": "hypervoice",
+   "name": "Hyper Voice",
+   "raw": "hypervoice"
+  },
+  "opponent": {
+   "id": "earthquake",
+   "name": "Earthquake",
+   "how": "move",
+   "qhat": 0.068
+  },
+  "payoff_played_vs_actual": 6.83,
+  "payoff_other_vs_actual": {
+   "kyogre": -21.99,
+   "tinglu": -7.92
+  },
+  "figcheck": "clean"
+ },
+ {
+  "case": 2,
+  "kind": "bayes",
+  "game": "LOG-s2-g1",
+  "source_json": "engine/showdown/results/LOG/replays_headless/LOG-s2-g1.json",
+  "source_decisions": "engine/showdown/results/LOG/replays_headless/LOG-s2-g1.A.decisions.jsonl",
+  "our_side": "p1",
+  "winner": "Ours",
+  "total_turns": 40,
+  "turn": 15,
+  "figure": "case_study_2",
+  "styles": {
+   "eq": "Equilibrium",
+   "br_unif": "Best reply to uniform",
+   "br_us": "Best reply to us",
+   "safe": "Cautious (maximin)",
+   "uniform": "Uniform random"
+  },
+  "posterior_first": {
+   "eq": 0.2,
+   "br_unif": 0.2,
+   "br_us": 0.2,
+   "safe": 0.2,
+   "uniform": 0.2
+  },
+  "posterior_at_turn": {
+   "eq": 0.0,
+   "br_unif": 0.9189,
+   "br_us": 0.002,
+   "safe": 0.0791,
+   "uniform": 0.0
+  },
+  "posterior_after_update": {
+   "eq": 0.0,
+   "br_unif": 0.8999,
+   "br_us": 0.0007,
+   "safe": 0.0994,
+   "uniform": 0.0
+  },
+  "posterior_trajectory": [
+   {
+    "turn": 1,
+    "posterior": {
+     "eq": 0.2,
+     "br_unif": 0.2,
+     "br_us": 0.2,
+     "safe": 0.2,
+     "uniform": 0.2
+    }
+   },
+   {
+    "turn": 2,
+    "posterior": {
+     "eq": 0.4172,
+     "br_unif": 0.268,
+     "br_us": 0.1333,
+     "safe": 0.1014,
+     "uniform": 0.0801
+    }
+   },
+   {
+    "turn": 3,
+    "posterior": {
+     "eq": 0.0238,
+     "br_unif": 0.5972,
+     "br_us": 0.1334,
+     "safe": 0.1543,
+     "uniform": 0.0913
+    }
+   },
+   {
+    "turn": 4,
+    "posterior": {
+     "eq": 0.0011,
+     "br_unif": 0.7517,
+     "br_us": 0.0636,
+     "safe": 0.1014,
+     "uniform": 0.0822
+    }
+   },
+   {
+    "turn": 5,
+    "posterior": {
+     "eq": 0.0003,
+     "br_unif": 0.8328,
+     "br_us": 0.0447,
+     "safe": 0.0939,
+     "uniform": 0.0283
+    }
+   },
+   {
+    "turn": 6,
+    "posterior": {
+     "eq": 0.0,
+     "br_unif": 0.9139,
+     "br_us": 0.0179,
+     "safe": 0.0513,
+     "uniform": 0.0168
+    }
+   },
+   {
+    "turn": 7,
+    "posterior": {
+     "eq": 0.0,
+     "br_unif": 0.9139,
+     "br_us": 0.0179,
+     "safe": 0.0513,
+     "uniform": 0.0168
+    }
+   },
+   {
+    "turn": 8,
+    "posterior": {
+     "eq": 0.0,
+     "br_unif": 0.9185,
+     "br_us": 0.0184,
+     "safe": 0.0526,
+     "uniform": 0.0106
+    }
+   },
+   {
+    "turn": 9,
+    "posterior": {
+     "eq": 0.0,
+     "br_unif": 0.9008,
+     "br_us": 0.0089,
+     "safe": 0.0862,
+     "uniform": 0.0041
+    }
+   },
+   {
+    "turn": 10,
+    "posterior": {
+     "eq": 0.0,
+     "br_unif": 0.8689,
+     "br_us": 0.0106,
+     "safe": 0.1179,
+     "uniform": 0.0026
+    }
+   },
+   {
+    "turn": 11,
+    "posterior": {
+     "eq": 0.0,
+     "br_unif": 0.8414,
+     "br_us": 0.0105,
+     "safe": 0.1475,
+     "uniform": 0.0006
+    }
+   },
+   {
+    "turn": 12,
+    "posterior": {
+     "eq": 0.0,
+     "br_unif": 0.8344,
+     "br_us": 0.0068,
+     "safe": 0.1585,
+     "uniform": 0.0002
+    }
+   },
+   {
+    "turn": 13,
+    "posterior": {
+     "eq": 0.0,
+     "br_unif": 0.8874,
+     "br_us": 0.0048,
+     "safe": 0.1077,
+     "uniform": 0.0001
+    }
+   },
+   {
+    "turn": 14,
+    "posterior": {
+     "eq": 0.0,
+     "br_unif": 0.9189,
+     "br_us": 0.002,
+     "safe": 0.0791,
+     "uniform": 0.0
+    }
+   },
+   {
+    "turn": 15,
+    "posterior": {
+     "eq": 0.0,
+     "br_unif": 0.9189,
+     "br_us": 0.002,
+     "safe": 0.0791,
+     "uniform": 0.0
+    }
+   }
+  ],
+  "n_opp_options": 14,
+  "uniform_prob": 0.0714,
+  "qhat_shown": [
+   {
+    "id": "swordsdance",
+    "name": "Swords Dance",
+    "kind": "move",
+    "qhat": 0.4433
+   },
+   {
+    "id": "knockoff",
+    "name": "Knock Off",
+    "kind": "move",
+    "qhat": 0.076
+   },
+   {
+    "id": "arceuselectric",
+    "name": "Arceus-Electric",
+    "kind": "switch",
+    "qhat": 0.0674
+   },
+   {
+    "id": "zangoose",
+    "name": "Zangoose",
+    "kind": "switch",
+    "qhat": 0.065
+   },
+   {
+    "id": "earthquake",
+    "name": "Earthquake",
+    "kind": "move",
+    "qhat": 0.0583
+   }
+  ],
+  "opponent": {
+   "id": "swordsdance",
+   "name": "Swords Dance",
+   "how": "move",
+   "qhat": 0.4433,
+   "qhat_rank": 1,
+   "hit_qhat": true
+  },
+  "played": {
+   "id": "lanturn",
+   "name": "Lanturn",
+   "raw": "switch lanturn"
+  },
+  "figcheck": "clean"
+ },
+ {
+  "case": 3,
+  "kind": "hedge",
+  "game": "LOG-s272-g2",
+  "source_json": "engine/showdown/results/LOG/replays_headless/LOG-s272-g2.json",
+  "source_decisions": "engine/showdown/results/LOG/replays_headless/LOG-s272-g2.A.decisions.jsonl",
+  "our_side": "p2",
+  "winner": "Ours",
+  "total_turns": 34,
+  "turn": 18,
+  "figure": "case_study_3",
+  "experts": {
+   "top": "Equilibrium, top move",
+   "sampled": "Equilibrium, sampled",
+   "safest": "Safest move",
+   "safex": "Safe exploit"
+  },
+  "weights": {
+   "top": 0.5187,
+   "sampled": 0.2436,
+   "safest": 0.1227,
+   "safex": 0.115
+  },
+  "expert_top_move": {
+   "top": {
+    "id": "shiftry",
+    "name": "Shiftry"
+   },
+   "sampled": {
+    "id": "shiftry",
+    "name": "Shiftry"
+   },
+   "safest": {
+    "id": "mysticalfire",
+    "name": "Mystical Fire"
+   },
+   "safex": {
+    "id": "shadowball",
+    "name": "Shadow Ball"
+   }
+  },
+  "moves_shown": [
+   {
+    "id": "shiftry",
+    "name": "Shiftry",
+    "kind": "switch",
+    "expert_probs": {
+     "top": 1.0,
+     "sampled": 0.4293,
+     "safest": 0.0,
+     "safex": 0.2602
+    },
+    "played_prob": 0.6532
+   },
+   {
+    "id": "mysticalfire",
+    "name": "Mystical Fire",
+    "kind": "move",
+    "expert_probs": {
+     "top": 0.0,
+     "sampled": 0.0,
+     "safest": 1.0,
+     "safex": 0.0
+    },
+    "played_prob": 0.1227
+   },
+   {
+    "id": "shadowball",
+    "name": "Shadow Ball",
+    "kind": "move",
+    "expert_probs": {
+     "top": 0.0,
+     "sampled": 0.0,
+     "safest": 0.0,
+     "safex": 0.7398
+    },
+    "played_prob": 0.0851
+   },
+   {
+    "id": "energyball",
+    "name": "Energy Ball",
+    "kind": "move",
+    "expert_probs": {
+     "top": 0.0,
+     "sampled": 0.2887,
+     "safest": 0.0,
+     "safex": 0.0
+    },
+    "played_prob": 0.0703
+   }
+  ],
+  "played": {
+   "id": "shiftry",
+   "name": "Shiftry",
+   "raw": "switch shiftry",
+   "prob": 0.6532
+  },
+  "opponent": {
+   "id": "shadowball",
+   "name": "Shadow Ball",
+   "how": "move"
+  },
+  "n_our_options": 12,
+  "weights_note": "carried across the games of the run's stream (not reset per game)",
+  "figcheck": "clean"
+ }
+]

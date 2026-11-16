@@ -1,0 +1,12 @@
+2013 Illumise argmin {'Steel': ['bugbuzz'], 'Water': ['bugbuzz', 'bugbuzz-tera']} E[TV] min/max 0.0 0.25 eta_min -2.842170943040401e-14
+2012 Arceus-Ground argmin {'Ground': ['dragondance', 'earthquake-tera'], 'Steel': ['dragondance']} E[TV] min/max 0.0 0.25 eta_min -1.1368683772161603e-13
+2024 Cresselia argmin {'Electric': ['calmmind'], 'Fairy': ['calmmind-tera'], 'Poison': ['calmmind'], 'Steel': ['calmmind', 'calmmind-tera']} E[TV] min/max 0.187 0.25 eta_min -2.842170943040401e-14
+2027 Venomoth argmin {'Bug': ['bugbuzz', 'quiverdance', 'sleeppowder', 'sludgewave'], 'Poison': ['quiverdance-tera'], 'Steel': ['quiverdance-tera'], 'Water': ['quiverdance-tera']} E[TV] min/max 0.188 0.188 eta_min -5.684341886080802e-14
+3002 Rotom-Fan argmin {'Electric': ['nastyplot', 'nastyplot-tera'], 'Steel': ['willowisp']} E[TV] min/max 0.25 0.5 eta_min -7.673861546209082e-13
+3004 Floatzel argmin {'Steel': ['wavecrash'], 'Water': ['icespinner']} E[TV] min/max 0.5 0.5 eta_min -2.4158453015843406e-13
+3013 Eiscue argmin {'Electric': ['icespinner'], 'Ground': ['bellydrum-tera']} E[TV] min/max 0.25 0.25 eta_min -9.094947017729282e-13
+2011 Mamoswine argmin {'Ground': ['earthquake-tera', 'iciclecrash'], 'Ice': ['iciclecrash']} E[TV] min/max 0.0 0.25 eta_min -1.0231815394945443e-12
+2014 Ludicolo argmin {'Grass': ['gigadrain'], 'Water': ['hydropump']} E[TV] min/max 0.5 0.5 eta_min -2.842170943040401e-14
+2015 Azelf argmin {'Fairy': ['uturn'], 'Fire': ['uturn'], 'Psychic': ['psyshock', 'uturn']} E[TV] min/max 0.0 0.444 eta_min -6.039613253960852e-14
+2018 Calyrex-Ice argmin {'Fighting': ['trickroom'], 'Ground': ['highhorsepower-tera']} E[TV] min/max 0.25 0.25 eta_min -1.3855583347321954e-13
+2003 Dialga argmin {'Dragon': ['fireblast'], 'Flying': ['fireblast-tera'], 'Steel': ['fireblast']} E[TV] min/max 0.222 0.222 eta_min -1.1510792319313623e-12

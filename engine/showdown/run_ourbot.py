@@ -362,6 +362,8 @@ def make_move_fn(method: str, K: int, log=None, seed: int = 0, game: int = 0, st
                  rng=random.Random((seed or 0) * 1009 + (game or 0)))
                  if belief_source != "foulplay_baseline" else None)
     log_abar = os.environ.get("OURBOT_LOG_ABAR") == "1"    # open item 1: log Abar, labels, legal, full p (+ Q, qs)
+    if nash.LEAF_STATS_ON:                                # OURBOT_LEAF_STATS / OURBOT_DET_LEAF: per-decision leaf counts
+        ctx["leaf"] = leaf_stats_copy()
 
     def write(rec):
         with open(log or LOG, "a") as f:
@@ -536,12 +538,29 @@ def make_move_fn(method: str, K: int, log=None, seed: int = 0, game: int = 0, st
             rec["feedback"] = fb
         if os.environ.get("OURBOT_LOG_WORLDS") == "1" and worlds is not None:
             rec["belief"] = belief_log(battle, worlds)
+        if nash.LEAF_STATS_ON:
+            cur = leaf_stats_copy()
+            rec["leaf_stats"] = leaf_stats_delta(cur, ctx["leaf"])
+            ctx["leaf"] = cur
         ctx["n"] += 1
         if mechanics is not None:
             rec["mechanics"] = mechanics.summary()
         write(rec)
         return move
     return find_best_move
+
+
+def leaf_stats_copy():
+    """Snapshot of nash.LEAF_STATS (depth_hist copied)."""
+    return dict(nash.LEAF_STATS, depth_hist=dict(nash.LEAF_STATS["depth_hist"]))
+
+
+def leaf_stats_delta(cur, prev):
+    """cur - prev for two leaf_stats_copy snapshots (depth_hist: only the depths seen since prev)."""
+    d = {kk: cur[kk] - prev[kk] for kk in ("calls", "non_d1", "retries", "fallback")}
+    d["depth_hist"] = {kk: v - prev["depth_hist"].get(kk, 0) for kk, v in cur["depth_hist"].items()
+                       if v != prev["depth_hist"].get(kk, 0)}
+    return d
 
 
 def root_decision(method, other, Ms, ws, rows, legal, raw, t0, cols=None):

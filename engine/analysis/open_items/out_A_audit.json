@@ -1,0 +1,2142 @@
+{
+ "LOG": {
+  "A": "hedge_bayes",
+  "B": "stock",
+  "expected_games": 600,
+  "present_game_json": 600,
+  "missing": [],
+  "extra": [],
+  "err_games": [
+   [
+    4,
+    2
+   ]
+  ],
+  "err_detail": {
+   "s4-g2": "ZeroDivisionError('float division by zero')"
+  },
+  "sim_err_games": [],
+  "bad_stream_field": [],
+  "n_bad_stream": 0,
+  "n_A_logs": 600,
+  "n_B_logs": 0,
+  "noA": [],
+  "turn_reset_or_dup_files": [],
+  "n_turn_reset": 0,
+  "n_nonfinal_vs_timing_mismatch": 0,
+  "mismatch_examples": [],
+  "summary": {
+   "mean": 0.3077,
+   "ci95": [
+    0.2724,
+    0.343
+   ],
+   "n_pairs": 299,
+   "error_games": 1,
+   "missing_games": [],
+   "nonzero_exit": {},
+   "modal": {
+    "failed_streams": {},
+    "stopped_over_budget": false,
+    "games_run": 524,
+    "usd_estimate": 0.671
+   },
+   "n_summary_per_seed": 299
+  },
+  "recomputed_pair_mean": 0.3076923076923077,
+  "n_pairs_recomputed": 299,
+  "pair_mean_matches": true,
+  "per_seed_matches": true,
+  "game_level_normal": [
+   0.3071786310517529,
+   0.018864945091515452,
+   0.2702033386723826,
+   0.3441539234311232,
+   599
+  ],
+  "game_level_stream_cluster": [
+   0.3071786310517529,
+   0.014339144283167007,
+   0.27474123310318976,
+   0.33961602900031607,
+   10
+  ],
+  "pair_level_normal": [
+   0.3076923076923077,
+   0.01794481616384963,
+   0.2725204680111624,
+   0.342864147373453,
+   299
+  ],
+  "pair_level_stream_cluster": [
+   0.3076923076923077,
+   0.014162717232581895,
+   0.275654015459937,
+   0.3397305999246784,
+   10
+  ],
+  "wins": 184,
+  "draws": 0,
+  "losses": 415,
+  "hedge_state_games_vs_present": {
+   "0": [
+    {
+     "bayes_games": 60,
+     "bayes_updates": 1631,
+     "games": 60,
+     "updates": 1631
+    },
+    60
+   ],
+   "1": [
+    {
+     "bayes_games": 60,
+     "bayes_updates": 1630,
+     "games": 60,
+     "updates": 1630
+    },
+    60
+   ],
+   "2": [
+    {
+     "bayes_games": 60,
+     "bayes_updates": 1850,
+     "games": 60,
+     "updates": 1850
+    },
+    60
+   ],
+   "3": [
+    {
+     "bayes_games": 61,
+     "bayes_updates": 1811,
+     "games": 61,
+     "updates": 1811
+    },
+    60
+   ],
+   "4": [
+    {
+     "bayes_games": 60,
+     "bayes_updates": 1600,
+     "games": 60,
+     "updates": 1600
+    },
+    60
+   ],
+   "5": [
+    {
+     "bayes_games": 60,
+     "bayes_updates": 1782,
+     "games": 60,
+     "updates": 1782
+    },
+    60
+   ],
+   "6": [
+    {
+     "bayes_games": 60,
+     "bayes_updates": 1664,
+     "games": 60,
+     "updates": 1664
+    },
+    60
+   ],
+   "7": [
+    {
+     "bayes_games": 60,
+     "bayes_updates": 1719,
+     "games": 60,
+     "updates": 1719
+    },
+    60
+   ],
+   "8": [
+    {
+     "bayes_games": 60,
+     "bayes_updates": 1691,
+     "games": 60,
+     "updates": 1691
+    },
+    60
+   ],
+   "9": [
+    {
+     "bayes_games": 61,
+     "bayes_updates": 1940,
+     "games": 61,
+     "updates": 1940
+    },
+    60
+   ]
+  },
+  "hedge_state_games_mismatch_streams": [
+   3,
+   9
+  ]
+ },
+ "E3a": {
+  "A": "hedge",
+  "B": "switch:stock@8:exploit_top",
+  "expected_games": 320,
+  "present_game_json": 320,
+  "missing": [],
+  "extra": [],
+  "err_games": [
+   [
+    52,
+    2
+   ],
+   [
+    93,
+    2
+   ]
+  ],
+  "err_detail": {
+   "s52-g2": "RuntimeError('invalid_choice_stall: p1 got [Invalid choice] and no new request within 60s'",
+   "s93-g2": "RuntimeError('invalid_choice_stall: p2 got [Invalid choice] and no new request within 60s'"
+  },
+  "sim_err_games": [
+   [
+    52,
+    2
+   ],
+   [
+    93,
+    2
+   ]
+  ],
+  "bad_stream_field": [],
+  "n_bad_stream": 0,
+  "n_A_logs": 320,
+  "n_B_logs": 160,
+  "noA": [],
+  "turn_reset_or_dup_files": [],
+  "n_turn_reset": 0,
+  "n_nonfinal_vs_timing_mismatch": 0,
+  "mismatch_examples": [],
+  "summary": {
+   "mean": 0.4873,
+   "ci95": [
+    0.4327,
+    0.542
+   ],
+   "n_pairs": 158,
+   "error_games": 2,
+   "missing_games": [],
+   "nonzero_exit": {},
+   "modal": {
+    "failed_streams": {},
+    "stopped_over_budget": false,
+    "games_run": 320,
+    "usd_estimate": 0.489
+   },
+   "n_summary_per_seed": 158
+  },
+  "recomputed_pair_mean": 0.4873417721518987,
+  "n_pairs_recomputed": 158,
+  "pair_mean_matches": true,
+  "per_seed_matches": true,
+  "game_level_normal": [
+   0.48742138364779874,
+   0.028073909798781285,
+   0.4323965204421874,
+   0.54244624685341,
+   318
+  ],
+  "game_level_stream_cluster": [
+   0.48742138364779874,
+   0.023632566077038723,
+   0.4339608050213237,
+   0.5408819622742738,
+   10
+  ],
+  "pair_level_normal": [
+   0.4873417721518987,
+   0.027657243994662642,
+   0.43313357392235996,
+   0.5415499703814375,
+   158
+  ],
+  "pair_level_stream_cluster": [
+   0.4873417721518987,
+   0.024571324597726152,
+   0.4317575742137128,
+   0.5429259700900847,
+   10
+  ],
+  "wins": 155,
+  "draws": 0,
+  "losses": 163,
+  "active_B": {
+   "stock": 80,
+   "exploit_top": 80
+  },
+  "active_B_stock_seeds_max": 80,
+  "active_B_exploit_seeds_min": 81,
+  "hedge_state_games_vs_present": {
+   "0": [
+    {
+     "games": 32,
+     "updates": 986
+    },
+    32
+   ],
+   "1": [
+    {
+     "games": 33,
+     "updates": 873
+    },
+    32
+   ],
+   "2": [
+    {
+     "games": 32,
+     "updates": 943
+    },
+    32
+   ],
+   "3": [
+    {
+     "games": 33,
+     "updates": 883
+    },
+    32
+   ],
+   "4": [
+    {
+     "games": 32,
+     "updates": 784
+    },
+    32
+   ],
+   "5": [
+    {
+     "games": 32,
+     "updates": 1065
+    },
+    32
+   ],
+   "6": [
+    {
+     "games": 32,
+     "updates": 982
+    },
+    32
+   ],
+   "7": [
+    {
+     "games": 33,
+     "updates": 1022
+    },
+    32
+   ],
+   "8": [
+    {
+     "games": 32,
+     "updates": 932
+    },
+    32
+   ],
+   "9": [
+    {
+     "games": 32,
+     "updates": 988
+    },
+    32
+   ]
+  },
+  "hedge_state_games_mismatch_streams": [
+   1,
+   3,
+   7
+  ]
+ },
+ "E3f": {
+  "A": "hedge_fs",
+  "B": "switch:stock@8:exploit_top",
+  "expected_games": 320,
+  "present_game_json": 320,
+  "missing": [],
+  "extra": [],
+  "err_games": [
+   [
+    4,
+    2
+   ]
+  ],
+  "err_detail": {
+   "s4-g2": "ZeroDivisionError('float division by zero')"
+  },
+  "sim_err_games": [],
+  "bad_stream_field": [],
+  "n_bad_stream": 0,
+  "n_A_logs": 320,
+  "n_B_logs": 160,
+  "noA": [],
+  "turn_reset_or_dup_files": [],
+  "n_turn_reset": 0,
+  "n_nonfinal_vs_timing_mismatch": 0,
+  "mismatch_examples": [],
+  "summary": {
+   "mean": 0.4969,
+   "ci95": [
+    0.4415,
+    0.5522
+   ],
+   "n_pairs": 159,
+   "error_games": 1,
+   "missing_games": [],
+   "nonzero_exit": {},
+   "modal": {
+    "failed_streams": {},
+    "stopped_over_budget": false,
+    "games_run": 290,
+    "usd_estimate": 0.498
+   },
+   "n_summary_per_seed": 159
+  },
+  "recomputed_pair_mean": 0.4968553459119497,
+  "n_pairs_recomputed": 159,
+  "pair_mean_matches": true,
+  "per_seed_matches": true,
+  "game_level_normal": [
+   0.4952978056426332,
+   0.02803736777452513,
+   0.44034456480456396,
+   0.5502510464807024,
+   319
+  ],
+  "game_level_stream_cluster": [
+   0.4952978056426332,
+   0.02116556586791124,
+   0.4474179692098606,
+   0.5431776420754059,
+   10
+  ],
+  "pair_level_normal": [
+   0.4968553459119497,
+   0.028037491584636618,
+   0.4419018624060619,
+   0.5518088294178375,
+   159
+  ],
+  "pair_level_stream_cluster": [
+   0.4968553459119497,
+   0.021198580952958977,
+   0.44890082416805593,
+   0.5448098676558434,
+   10
+  ],
+  "wins": 158,
+  "draws": 0,
+  "losses": 161,
+  "active_B": {
+   "stock": 80,
+   "exploit_top": 80
+  },
+  "active_B_stock_seeds_max": 80,
+  "active_B_exploit_seeds_min": 81,
+  "hedge_state_games_vs_present": {
+   "0": [
+    {
+     "games": 32,
+     "updates": 975
+    },
+    32
+   ],
+   "1": [
+    {
+     "games": 32,
+     "updates": 899
+    },
+    32
+   ],
+   "2": [
+    {
+     "games": 35,
+     "updates": 979
+    },
+    32
+   ],
+   "3": [
+    {
+     "games": 32,
+     "updates": 888
+    },
+    32
+   ],
+   "4": [
+    {
+     "games": 32,
+     "updates": 860
+    },
+    32
+   ],
+   "5": [
+    {
+     "games": 32,
+     "updates": 914
+    },
+    32
+   ],
+   "6": [
+    {
+     "games": 32,
+     "updates": 917
+    },
+    32
+   ],
+   "7": [
+    {
+     "games": 32,
+     "updates": 946
+    },
+    32
+   ],
+   "8": [
+    {
+     "games": 32,
+     "updates": 982
+    },
+    32
+   ],
+   "9": [
+    {
+     "games": 32,
+     "updates": 995
+    },
+    32
+   ]
+  },
+  "hedge_state_games_mismatch_streams": [
+   2
+  ]
+ },
+ "XUmv": {
+  "A": "exploit_bandit_ucb1_mv",
+  "B": "bandit_ucb1_mv",
+  "expected_games": 600,
+  "present_game_json": 600,
+  "missing": [],
+  "extra": [],
+  "err_games": [
+   [
+    245,
+    1
+   ]
+  ],
+  "err_detail": {
+   "s245-g1": "PanicException('Invalid PokemonMoveIndex: 4')"
+  },
+  "sim_err_games": [],
+  "bad_stream_field": [],
+  "n_bad_stream": 0,
+  "n_A_logs": 600,
+  "n_B_logs": 600,
+  "noA": [],
+  "turn_reset_or_dup_files": [],
+  "n_turn_reset": 0,
+  "n_nonfinal_vs_timing_mismatch": 1,
+  "mismatch_examples": [
+   [
+    245,
+    1,
+    "B",
+    27,
+    28
+   ]
+  ],
+  "summary": {
+   "mean": 0.4582,
+   "ci95": [
+    0.418,
+    0.4984
+   ],
+   "n_pairs": 299,
+   "error_games": 1,
+   "missing_games": [],
+   "nonzero_exit": {},
+   "modal": {
+    "failed_streams": {},
+    "stopped_over_budget": false,
+    "games_run": 592,
+    "usd_estimate": 0.513
+   },
+   "n_summary_per_seed": 299
+  },
+  "recomputed_pair_mean": 0.45819397993311034,
+  "n_pairs_recomputed": 299,
+  "pair_mean_matches": true,
+  "per_seed_matches": true,
+  "game_level_normal": [
+   0.4574290484140234,
+   0.020372275823018347,
+   0.4174993878009074,
+   0.49735870902713936,
+   599
+  ],
+  "game_level_stream_cluster": [
+   0.4574290484140234,
+   0.020838218167861397,
+   0.410289723925644,
+   0.5045683729024028,
+   10
+  ],
+  "pair_level_normal": [
+   0.45819397993311034,
+   0.020440323787491603,
+   0.4181309453096268,
+   0.4982570145565939,
+   299
+  ],
+  "pair_level_stream_cluster": [
+   0.45819397993311034,
+   0.020887967819607948,
+   0.41094211391368585,
+   0.5054458459525348,
+   10
+  ],
+  "wins": 274,
+  "draws": 0,
+  "losses": 325
+ },
+ "XU": {
+  "A": "exploit_bandit_ucb1",
+  "B": "bandit_ucb1",
+  "expected_games": 600,
+  "present_game_json": 600,
+  "missing": [],
+  "extra": [],
+  "err_games": [
+   [
+    205,
+    1
+   ],
+   [
+    93,
+    1
+   ]
+  ],
+  "err_detail": {
+   "s205-g1": "AttributeError(\"'NoneType' object has no attribute 'can_z'\")",
+   "s93-g1": "RuntimeError('invalid_choice_stall: p2 got [Invalid choice] and no new request within 60s'"
+  },
+  "sim_err_games": [
+   [
+    93,
+    1
+   ]
+  ],
+  "bad_stream_field": [],
+  "n_bad_stream": 0,
+  "n_A_logs": 600,
+  "n_B_logs": 600,
+  "noA": [],
+  "turn_reset_or_dup_files": [],
+  "n_turn_reset": 0,
+  "n_nonfinal_vs_timing_mismatch": 0,
+  "mismatch_examples": [],
+  "summary": {
+   "mean": 0.9849,
+   "ci95": [
+    0.9751,
+    0.9947
+   ],
+   "n_pairs": 298,
+   "error_games": 2,
+   "missing_games": [],
+   "nonzero_exit": {},
+   "modal": {
+    "failed_streams": {},
+    "stopped_over_budget": false,
+    "games_run": 600,
+    "usd_estimate": 0.391
+   },
+   "n_summary_per_seed": 298
+  },
+  "recomputed_pair_mean": 0.9848993288590604,
+  "n_pairs_recomputed": 298,
+  "pair_mean_matches": true,
+  "per_seed_matches": true,
+  "game_level_normal": [
+   0.9849498327759197,
+   0.004982996160748671,
+   0.9751831603008524,
+   0.9947165052509871,
+   598
+  ],
+  "game_level_stream_cluster": [
+   0.9849498327759197,
+   0.00461213249955101,
+   0.974516464206286,
+   0.9953832013455535,
+   10
+  ],
+  "pair_level_normal": [
+   0.9848993288590604,
+   0.004965302267192725,
+   0.9751673364153627,
+   0.9946313213027581,
+   298
+  ],
+  "pair_level_stream_cluster": [
+   0.9848993288590604,
+   0.004609510489221657,
+   0.9744718916888742,
+   0.9953267660292466,
+   10
+  ],
+  "wins": 589,
+  "draws": 0,
+  "losses": 9
+ },
+ "XR": {
+  "A": "exploit_rmplus_avg",
+  "B": "rmplus_avg",
+  "expected_games": 600,
+  "present_game_json": 600,
+  "missing": [],
+  "extra": [],
+  "err_games": [],
+  "err_detail": {},
+  "sim_err_games": [],
+  "bad_stream_field": [],
+  "n_bad_stream": 0,
+  "n_A_logs": 600,
+  "n_B_logs": 600,
+  "noA": [],
+  "turn_reset_or_dup_files": [],
+  "n_turn_reset": 0,
+  "n_nonfinal_vs_timing_mismatch": 0,
+  "mismatch_examples": [],
+  "summary": {
+   "mean": 0.4683,
+   "ci95": [
+    0.4312,
+    0.5055
+   ],
+   "n_pairs": 300,
+   "error_games": 0,
+   "missing_games": [],
+   "nonzero_exit": {},
+   "modal": {
+    "failed_streams": {},
+    "stopped_over_budget": false,
+    "games_run": 542,
+    "usd_estimate": 0.63
+   },
+   "n_summary_per_seed": 300
+  },
+  "recomputed_pair_mean": 0.4683333333333333,
+  "n_pairs_recomputed": 300,
+  "pair_mean_matches": true,
+  "per_seed_matches": true,
+  "game_level_normal": [
+   0.4683333333333333,
+   0.020388432603081284,
+   0.428372005431294,
+   0.5082946612353726,
+   600
+  ],
+  "game_level_stream_cluster": [
+   0.4683333333333333,
+   0.019633996718969215,
+   0.42391814702116065,
+   0.5127485196455059,
+   10
+  ],
+  "pair_level_normal": [
+   0.4683333333333333,
+   0.018872678684893094,
+   0.4313428831109429,
+   0.5053237835557238,
+   300
+  ],
+  "pair_level_stream_cluster": [
+   0.4683333333333333,
+   0.01963399671896922,
+   0.42391814702116065,
+   0.5127485196455059,
+   10
+  ],
+  "wins": 281,
+  "draws": 0,
+  "losses": 319
+ },
+ "XEmv": {
+  "A": "exploit_bandit_exp3_mv",
+  "B": "bandit_exp3_mv",
+  "expected_games": 600,
+  "present_game_json": 600,
+  "missing": [],
+  "extra": [],
+  "err_games": [
+   [
+    22,
+    1
+   ]
+  ],
+  "err_detail": {
+   "s22-g1": "AttributeError(\"'NoneType' object has no attribute 'can_z'\")"
+  },
+  "sim_err_games": [],
+  "bad_stream_field": [],
+  "n_bad_stream": 0,
+  "n_A_logs": 600,
+  "n_B_logs": 600,
+  "noA": [],
+  "turn_reset_or_dup_files": [],
+  "n_turn_reset": 0,
+  "n_nonfinal_vs_timing_mismatch": 0,
+  "mismatch_examples": [],
+  "summary": {
+   "mean": 0.4548,
+   "ci95": [
+    0.4152,
+    0.4945
+   ],
+   "n_pairs": 299,
+   "error_games": 1,
+   "missing_games": [],
+   "nonzero_exit": {},
+   "modal": {
+    "failed_streams": {},
+    "stopped_over_budget": false,
+    "games_run": 458,
+    "usd_estimate": 0.607
+   },
+   "n_summary_per_seed": 299
+  },
+  "recomputed_pair_mean": 0.45484949832775917,
+  "n_pairs_recomputed": 299,
+  "pair_mean_matches": true,
+  "per_seed_matches": true,
+  "game_level_normal": [
+   0.4557595993322204,
+   0.020366326844698194,
+   0.4158415987166119,
+   0.49567759994782884,
+   599
+  ],
+  "game_level_stream_cluster": [
+   0.4557595993322204,
+   0.024093587588025912,
+   0.40125611759246166,
+   0.5102630810719792,
+   10
+  ],
+  "pair_level_normal": [
+   0.45484949832775917,
+   0.020139707614644196,
+   0.41537567140305653,
+   0.4943233252524618,
+   299
+  ],
+  "pair_level_stream_cluster": [
+   0.45484949832775917,
+   0.024492256936471727,
+   0.39944416386582565,
+   0.5102548327896927,
+   10
+  ],
+  "wins": 273,
+  "draws": 0,
+  "losses": 326
+ },
+ "E5t": {
+  "A": "top",
+  "B": "agentform",
+  "expected_games": 600,
+  "present_game_json": 600,
+  "missing": [],
+  "extra": [],
+  "err_games": [],
+  "err_detail": {},
+  "sim_err_games": [],
+  "bad_stream_field": [],
+  "n_bad_stream": 0,
+  "n_A_logs": 600,
+  "n_B_logs": 600,
+  "noA": [],
+  "turn_reset_or_dup_files": [],
+  "n_turn_reset": 0,
+  "n_nonfinal_vs_timing_mismatch": 0,
+  "mismatch_examples": [],
+  "summary": {
+   "mean": 0.55,
+   "ci95": [
+    0.513,
+    0.587
+   ],
+   "n_pairs": 300,
+   "error_games": 0,
+   "missing_games": [],
+   "nonzero_exit": {},
+   "modal": {
+    "failed_streams": {},
+    "stopped_over_budget": false,
+    "games_run": 542,
+    "usd_estimate": 0.639
+   },
+   "n_summary_per_seed": 300
+  },
+  "recomputed_pair_mean": 0.55,
+  "n_pairs_recomputed": 300,
+  "pair_mean_matches": true,
+  "per_seed_matches": true,
+  "game_level_normal": [
+   0.55,
+   0.020327042277376306,
+   0.5101589971363425,
+   0.5898410028636576,
+   600
+  ],
+  "game_level_stream_cluster": [
+   0.55,
+   0.011915339216404008,
+   0.5230456300444414,
+   0.5769543699555587,
+   10
+  ],
+  "pair_level_normal": [
+   0.55,
+   0.018813761892995568,
+   0.5131250266897287,
+   0.5868749733102714,
+   300
+  ],
+  "pair_level_stream_cluster": [
+   0.55,
+   0.01191533921640401,
+   0.5230456300444414,
+   0.5769543699555587,
+   10
+  ],
+  "wins": 330,
+  "draws": 0,
+  "losses": 270
+ },
+ "E5s": {
+  "A": "agentform",
+  "B": "agentform",
+  "expected_games": 600,
+  "present_game_json": 600,
+  "missing": [],
+  "extra": [],
+  "err_games": [
+   [
+    245,
+    2
+   ],
+   [
+    291,
+    2
+   ]
+  ],
+  "err_detail": {
+   "s245-g2": "PanicException('Invalid PokemonMoveIndex: 4')",
+   "s291-g2": "RuntimeError('invalid_choice_stall: p2 got [Invalid choice] and no new request within 60s'"
+  },
+  "sim_err_games": [
+   [
+    291,
+    2
+   ]
+  ],
+  "bad_stream_field": [],
+  "n_bad_stream": 0,
+  "n_A_logs": 600,
+  "n_B_logs": 600,
+  "noA": [],
+  "turn_reset_or_dup_files": [],
+  "n_turn_reset": 0,
+  "n_nonfinal_vs_timing_mismatch": 1,
+  "mismatch_examples": [
+   [
+    245,
+    2,
+    "A",
+    24,
+    25
+   ]
+  ],
+  "summary": {
+   "mean": 0.5185,
+   "ci95": [
+    0.4801,
+    0.5568
+   ],
+   "n_pairs": 298,
+   "error_games": 2,
+   "missing_games": [],
+   "nonzero_exit": {},
+   "modal": {
+    "failed_streams": {},
+    "stopped_over_budget": false,
+    "games_run": 530,
+    "usd_estimate": 0.648
+   },
+   "n_summary_per_seed": 298
+  },
+  "recomputed_pair_mean": 0.5184563758389261,
+  "n_pairs_recomputed": 298,
+  "pair_mean_matches": true,
+  "per_seed_matches": true,
+  "game_level_normal": [
+   0.5167224080267558,
+   0.020452189665007635,
+   0.4766361162833409,
+   0.5568086997701708,
+   598
+  ],
+  "game_level_stream_cluster": [
+   0.5167224080267558,
+   0.023808384362436066,
+   0.46286410080661833,
+   0.5705807152468934,
+   10
+  ],
+  "pair_level_normal": [
+   0.5184563758389261,
+   0.019498285839182436,
+   0.4802397355941285,
+   0.5566730160837237,
+   298
+  ],
+  "pair_level_stream_cluster": [
+   0.5184563758389261,
+   0.02378198054200209,
+   0.46465779821030856,
+   0.5722549534675436,
+   10
+  ],
+  "wins": 309,
+  "draws": 0,
+  "losses": 289
+ },
+ "SX1": {
+  "A": "bayes_safex",
+  "B": "stock",
+  "expected_games": 400,
+  "present_game_json": 400,
+  "missing": [],
+  "extra": [],
+  "err_games": [],
+  "err_detail": {},
+  "sim_err_games": [],
+  "bad_stream_field": [],
+  "n_bad_stream": 0,
+  "n_A_logs": 400,
+  "n_B_logs": 0,
+  "noA": [],
+  "turn_reset_or_dup_files": [],
+  "n_turn_reset": 0,
+  "n_nonfinal_vs_timing_mismatch": 0,
+  "mismatch_examples": [],
+  "summary": {
+   "mean": 0.2,
+   "ci95": [
+    0.163,
+    0.237
+   ],
+   "n_pairs": 200,
+   "error_games": 0,
+   "missing_games": [],
+   "nonzero_exit": {},
+   "modal": {
+    "failed_streams": {},
+    "stopped_over_budget": false,
+    "games_run": 390,
+    "usd_estimate": 0.436
+   },
+   "n_summary_per_seed": 200
+  },
+  "recomputed_pair_mean": 0.2,
+  "n_pairs_recomputed": 200,
+  "pair_mean_matches": true,
+  "per_seed_matches": true,
+  "game_level_normal": [
+   0.2,
+   0.02002504697287036,
+   0.16075090793317412,
+   0.2392490920668259,
+   400
+  ],
+  "game_level_stream_cluster": [
+   0.2,
+   0.014907119849998597,
+   0.16627775205463438,
+   0.23372224794536564,
+   10
+  ],
+  "pair_level_normal": [
+   0.2,
+   0.018755233775398516,
+   0.1632397418002189,
+   0.2367602581997811,
+   200
+  ],
+  "pair_level_stream_cluster": [
+   0.2,
+   0.014907119849998601,
+   0.16627775205463438,
+   0.23372224794536564,
+   10
+  ],
+  "wins": 80,
+  "draws": 0,
+  "losses": 320,
+  "hedge_state_games_vs_present": {
+   "0": [
+    {
+     "bayes_games": 40,
+     "bayes_updates": 1010
+    },
+    40
+   ],
+   "1": [
+    {
+     "bayes_games": 40,
+     "bayes_updates": 1138
+    },
+    40
+   ],
+   "2": [
+    {
+     "bayes_games": 40,
+     "bayes_updates": 1084
+    },
+    40
+   ],
+   "3": [
+    {
+     "bayes_games": 40,
+     "bayes_updates": 1034
+    },
+    40
+   ],
+   "4": [
+    {
+     "bayes_games": 40,
+     "bayes_updates": 1036
+    },
+    40
+   ],
+   "5": [
+    {
+     "bayes_games": 40,
+     "bayes_updates": 1109
+    },
+    40
+   ],
+   "6": [
+    {
+     "bayes_games": 40,
+     "bayes_updates": 1215
+    },
+    40
+   ],
+   "7": [
+    {
+     "bayes_games": 40,
+     "bayes_updates": 1054
+    },
+    40
+   ],
+   "8": [
+    {
+     "bayes_games": 40,
+     "bayes_updates": 1074
+    },
+    40
+   ],
+   "9": [
+    {
+     "bayes_games": 42,
+     "bayes_updates": 1226
+    },
+    40
+   ]
+  },
+  "hedge_state_games_mismatch_streams": [
+   9
+  ]
+ },
+ "SX3": {
+  "A": "bayes_safex",
+  "B": "stock",
+  "expected_games": 400,
+  "present_game_json": 400,
+  "missing": [],
+  "extra": [],
+  "err_games": [],
+  "err_detail": {},
+  "sim_err_games": [],
+  "bad_stream_field": [],
+  "n_bad_stream": 0,
+  "n_A_logs": 400,
+  "n_B_logs": 0,
+  "noA": [],
+  "turn_reset_or_dup_files": [],
+  "n_turn_reset": 0,
+  "n_nonfinal_vs_timing_mismatch": 0,
+  "mismatch_examples": [],
+  "summary": {
+   "mean": 0.2275,
+   "ci95": [
+    0.1887,
+    0.2663
+   ],
+   "n_pairs": 200,
+   "error_games": 0,
+   "missing_games": [],
+   "nonzero_exit": {},
+   "modal": {
+    "failed_streams": {},
+    "stopped_over_budget": false,
+    "games_run": 400,
+    "usd_estimate": 0.483
+   },
+   "n_summary_per_seed": 200
+  },
+  "recomputed_pair_mean": 0.2275,
+  "n_pairs_recomputed": 200,
+  "pair_mean_matches": true,
+  "per_seed_matches": true,
+  "game_level_normal": [
+   0.2275,
+   0.020987151457875112,
+   0.18636518314256478,
+   0.26863481685743523,
+   400
+  ],
+  "game_level_stream_cluster": [
+   0.2275,
+   0.014166666666666662,
+   0.19545277352702545,
+   0.25954722647297457,
+   10
+  ],
+  "pair_level_normal": [
+   0.2275,
+   0.019669856794894525,
+   0.18894708068200675,
+   0.2660529193179933,
+   200
+  ],
+  "pair_level_stream_cluster": [
+   0.2275,
+   0.014166666666666666,
+   0.19545277352702545,
+   0.25954722647297457,
+   10
+  ],
+  "wins": 91,
+  "draws": 0,
+  "losses": 309,
+  "hedge_state_games_vs_present": {
+   "0": [
+    {
+     "bayes_games": 40,
+     "bayes_updates": 1037
+    },
+    40
+   ],
+   "1": [
+    {
+     "bayes_games": 40,
+     "bayes_updates": 1037
+    },
+    40
+   ],
+   "2": [
+    {
+     "bayes_games": 40,
+     "bayes_updates": 1063
+    },
+    40
+   ],
+   "3": [
+    {
+     "bayes_games": 40,
+     "bayes_updates": 1051
+    },
+    40
+   ],
+   "4": [
+    {
+     "bayes_games": 40,
+     "bayes_updates": 1103
+    },
+    40
+   ],
+   "5": [
+    {
+     "bayes_games": 40,
+     "bayes_updates": 1150
+    },
+    40
+   ],
+   "6": [
+    {
+     "bayes_games": 40,
+     "bayes_updates": 1172
+    },
+    40
+   ],
+   "7": [
+    {
+     "bayes_games": 40,
+     "bayes_updates": 1082
+    },
+    40
+   ],
+   "8": [
+    {
+     "bayes_games": 40,
+     "bayes_updates": 1168
+    },
+    40
+   ],
+   "9": [
+    {
+     "bayes_games": 40,
+     "bayes_updates": 1119
+    },
+    40
+   ]
+  },
+  "hedge_state_games_mismatch_streams": []
+ },
+ "SX10": {
+  "A": "bayes_safex",
+  "B": "stock",
+  "expected_games": 400,
+  "present_game_json": 400,
+  "missing": [],
+  "extra": [],
+  "err_games": [],
+  "err_detail": {},
+  "sim_err_games": [],
+  "bad_stream_field": [],
+  "n_bad_stream": 0,
+  "n_A_logs": 400,
+  "n_B_logs": 0,
+  "noA": [],
+  "turn_reset_or_dup_files": [],
+  "n_turn_reset": 0,
+  "n_nonfinal_vs_timing_mismatch": 0,
+  "mismatch_examples": [],
+  "summary": {
+   "mean": 0.245,
+   "ci95": [
+    0.2031,
+    0.2869
+   ],
+   "n_pairs": 200,
+   "error_games": 0,
+   "missing_games": [],
+   "nonzero_exit": {},
+   "modal": {
+    "failed_streams": {},
+    "stopped_over_budget": false,
+    "games_run": 328,
+    "usd_estimate": 0.555
+   },
+   "n_summary_per_seed": 200
+  },
+  "recomputed_pair_mean": 0.245,
+  "n_pairs_recomputed": 200,
+  "pair_mean_matches": true,
+  "per_seed_matches": true,
+  "game_level_normal": [
+   0.245,
+   0.021531290979132443,
+   0.2027986696809004,
+   0.28720133031909956,
+   400
+  ],
+  "game_level_stream_cluster": [
+   0.245,
+   0.01818118685772619,
+   0.20387129792162212,
+   0.2861287020783779,
+   10
+  ],
+  "pair_level_normal": [
+   0.245,
+   0.021263482273417955,
+   0.2033235747441008,
+   0.2866764252558992,
+   200
+  ],
+  "pair_level_stream_cluster": [
+   0.245,
+   0.018181186857726194,
+   0.2038712979216221,
+   0.2861287020783779,
+   10
+  ],
+  "wins": 98,
+  "draws": 0,
+  "losses": 302,
+  "hedge_state_games_vs_present": {
+   "0": [
+    {
+     "bayes_games": 40,
+     "bayes_updates": 1092
+    },
+    40
+   ],
+   "1": [
+    {
+     "bayes_games": 40,
+     "bayes_updates": 1126
+    },
+    40
+   ],
+   "2": [
+    {
+     "bayes_games": 40,
+     "bayes_updates": 1165
+    },
+    40
+   ],
+   "3": [
+    {
+     "bayes_games": 40,
+     "bayes_updates": 941
+    },
+    40
+   ],
+   "4": [
+    {
+     "bayes_games": 40,
+     "bayes_updates": 1031
+    },
+    40
+   ],
+   "5": [
+    {
+     "bayes_games": 41,
+     "bayes_updates": 1157
+    },
+    40
+   ],
+   "6": [
+    {
+     "bayes_games": 40,
+     "bayes_updates": 1248
+    },
+    40
+   ],
+   "7": [
+    {
+     "bayes_games": 40,
+     "bayes_updates": 1166
+    },
+    40
+   ],
+   "8": [
+    {
+     "bayes_games": 40,
+     "bayes_updates": 1184
+    },
+    40
+   ],
+   "9": [
+    {
+     "bayes_games": 42,
+     "bayes_updates": 1283
+    },
+    40
+   ]
+  },
+  "hedge_state_games_mismatch_streams": [
+   5,
+   9
+  ]
+ },
+ "SX30": {
+  "A": "bayes_safex",
+  "B": "stock",
+  "expected_games": 400,
+  "present_game_json": 400,
+  "missing": [],
+  "extra": [],
+  "err_games": [
+   [
+    93,
+    1
+   ]
+  ],
+  "err_detail": {
+   "s93-g1": "ZeroDivisionError('float division by zero')"
+  },
+  "sim_err_games": [],
+  "bad_stream_field": [],
+  "n_bad_stream": 0,
+  "n_A_logs": 400,
+  "n_B_logs": 0,
+  "noA": [],
+  "turn_reset_or_dup_files": [],
+  "n_turn_reset": 0,
+  "n_nonfinal_vs_timing_mismatch": 0,
+  "mismatch_examples": [],
+  "summary": {
+   "mean": 0.2538,
+   "ci95": [
+    0.2135,
+    0.294
+   ],
+   "n_pairs": 199,
+   "error_games": 1,
+   "missing_games": [],
+   "nonzero_exit": {},
+   "modal": {
+    "failed_streams": {},
+    "stopped_over_budget": false,
+    "games_run": 320,
+    "usd_estimate": 0.503
+   },
+   "n_summary_per_seed": 199
+  },
+  "recomputed_pair_mean": 0.2537688442211055,
+  "n_pairs_recomputed": 199,
+  "pair_mean_matches": true,
+  "per_seed_matches": true,
+  "game_level_normal": [
+   0.2531328320802005,
+   0.021794875233420025,
+   0.21041487662269726,
+   0.2958507875377037,
+   399
+  ],
+  "game_level_stream_cluster": [
+   0.2531328320802005,
+   0.018186166479291135,
+   0.21199286531523143,
+   0.29427279884516955,
+   10
+  ],
+  "pair_level_normal": [
+   0.2537688442211055,
+   0.020423087836979232,
+   0.21373959206062623,
+   0.29379809638158483,
+   199
+  ],
+  "pair_level_stream_cluster": [
+   0.2537688442211055,
+   0.017959913778080684,
+   0.21314069662478213,
+   0.2943969918174289,
+   10
+  ],
+  "wins": 101,
+  "draws": 0,
+  "losses": 298,
+  "hedge_state_games_vs_present": {
+   "0": [
+    {
+     "bayes_games": 40,
+     "bayes_updates": 1039
+    },
+    40
+   ],
+   "1": [
+    {
+     "bayes_games": 40,
+     "bayes_updates": 1114
+    },
+    40
+   ],
+   "2": [
+    {
+     "bayes_games": 41,
+     "bayes_updates": 1060
+    },
+    40
+   ],
+   "3": [
+    {
+     "bayes_games": 40,
+     "bayes_updates": 898
+    },
+    40
+   ],
+   "4": [
+    {
+     "bayes_games": 41,
+     "bayes_updates": 1062
+    },
+    40
+   ],
+   "5": [
+    {
+     "bayes_games": 40,
+     "bayes_updates": 1130
+    },
+    40
+   ],
+   "6": [
+    {
+     "bayes_games": 40,
+     "bayes_updates": 1174
+    },
+    40
+   ],
+   "7": [
+    {
+     "bayes_games": 43,
+     "bayes_updates": 1129
+    },
+    40
+   ],
+   "8": [
+    {
+     "bayes_games": 40,
+     "bayes_updates": 1082
+    },
+    40
+   ],
+   "9": [
+    {
+     "bayes_games": 40,
+     "bayes_updates": 1206
+    },
+    40
+   ]
+  },
+  "hedge_state_games_mismatch_streams": [
+   2,
+   4,
+   7
+  ]
+ },
+ "RQeq": {
+  "A": "hedge_bayes",
+  "B": "style_eq",
+  "expected_games": 200,
+  "present_game_json": 200,
+  "missing": [],
+  "extra": [],
+  "err_games": [],
+  "err_detail": {},
+  "sim_err_games": [],
+  "bad_stream_field": [],
+  "n_bad_stream": 0,
+  "n_A_logs": 200,
+  "n_B_logs": 200,
+  "noA": [],
+  "turn_reset_or_dup_files": [],
+  "n_turn_reset": 0,
+  "n_nonfinal_vs_timing_mismatch": 0,
+  "mismatch_examples": [],
+  "summary": {
+   "mean": 0.67,
+   "ci95": [
+    0.6082,
+    0.7318
+   ],
+   "n_pairs": 100,
+   "error_games": 0,
+   "missing_games": [],
+   "nonzero_exit": {},
+   "modal": {
+    "failed_streams": {},
+    "stopped_over_budget": false,
+    "games_run": 200,
+    "usd_estimate": 0.217
+   },
+   "n_summary_per_seed": 100
+  },
+  "recomputed_pair_mean": 0.67,
+  "n_pairs_recomputed": 100,
+  "pair_mean_matches": true,
+  "per_seed_matches": true,
+  "game_level_normal": [
+   0.67,
+   0.033332495801873425,
+   0.6046683082283282,
+   0.7353316917716719,
+   200
+  ],
+  "game_level_stream_cluster": [
+   0.67,
+   0.03,
+   0.6021352851160539,
+   0.7378647148839462,
+   10
+  ],
+  "pair_level_normal": [
+   0.67,
+   0.031156172273035576,
+   0.6089339023448503,
+   0.7310660976551497,
+   100
+  ],
+  "pair_level_stream_cluster": [
+   0.67,
+   0.03,
+   0.6021352851160539,
+   0.7378647148839462,
+   10
+  ],
+  "wins": 134,
+  "draws": 0,
+  "losses": 66,
+  "hedge_state_games_vs_present": {
+   "0": [
+    {
+     "bayes_games": 20,
+     "bayes_updates": 590,
+     "games": 20,
+     "updates": 590
+    },
+    20
+   ],
+   "1": [
+    {
+     "bayes_games": 20,
+     "bayes_updates": 624,
+     "games": 20,
+     "updates": 624
+    },
+    20
+   ],
+   "2": [
+    {
+     "bayes_games": 20,
+     "bayes_updates": 520,
+     "games": 20,
+     "updates": 520
+    },
+    20
+   ],
+   "3": [
+    {
+     "bayes_games": 20,
+     "bayes_updates": 608,
+     "games": 20,
+     "updates": 608
+    },
+    20
+   ],
+   "4": [
+    {
+     "bayes_games": 20,
+     "bayes_updates": 479,
+     "games": 20,
+     "updates": 479
+    },
+    20
+   ],
+   "5": [
+    {
+     "bayes_games": 20,
+     "bayes_updates": 599,
+     "games": 20,
+     "updates": 599
+    },
+    20
+   ],
+   "6": [
+    {
+     "bayes_games": 20,
+     "bayes_updates": 576,
+     "games": 20,
+     "updates": 576
+    },
+    20
+   ],
+   "7": [
+    {
+     "bayes_games": 20,
+     "bayes_updates": 649,
+     "games": 20,
+     "updates": 649
+    },
+    20
+   ],
+   "8": [
+    {
+     "bayes_games": 20,
+     "bayes_updates": 650,
+     "games": 20,
+     "updates": 650
+    },
+    20
+   ],
+   "9": [
+    {
+     "bayes_games": 20,
+     "bayes_updates": 609,
+     "games": 20,
+     "updates": 609
+    },
+    20
+   ]
+  },
+  "hedge_state_games_mismatch_streams": []
+ },
+ "RQsafe": {
+  "A": "hedge_bayes",
+  "B": "style_safe",
+  "expected_games": 200,
+  "present_game_json": 200,
+  "missing": [],
+  "extra": [],
+  "err_games": [],
+  "err_detail": {},
+  "sim_err_games": [],
+  "bad_stream_field": [],
+  "n_bad_stream": 0,
+  "n_A_logs": 200,
+  "n_B_logs": 200,
+  "noA": [],
+  "turn_reset_or_dup_files": [],
+  "n_turn_reset": 0,
+  "n_nonfinal_vs_timing_mismatch": 0,
+  "mismatch_examples": [],
+  "summary": {
+   "mean": 0.855,
+   "ci95": [
+    0.8076,
+    0.9024
+   ],
+   "n_pairs": 100,
+   "error_games": 0,
+   "missing_games": [],
+   "nonzero_exit": {},
+   "modal": {
+    "failed_streams": {},
+    "stopped_over_budget": false,
+    "games_run": 200,
+    "usd_estimate": 0.187
+   },
+   "n_summary_per_seed": 100
+  },
+  "recomputed_pair_mean": 0.855,
+  "n_pairs_recomputed": 100,
+  "pair_mean_matches": true,
+  "per_seed_matches": true,
+  "game_level_normal": [
+   0.855,
+   0.024959766620478316,
+   0.8060788574238624,
+   0.9039211425761375,
+   200
+  ],
+  "game_level_stream_cluster": [
+   0.855,
+   0.022912878474779203,
+   0.8031674678379535,
+   0.9068325321620465,
+   10
+  ],
+  "pair_level_normal": [
+   0.855,
+   0.023884190282581184,
+   0.8081869870461409,
+   0.9018130129538591,
+   100
+  ],
+  "pair_level_stream_cluster": [
+   0.855,
+   0.022912878474779203,
+   0.8031674678379535,
+   0.9068325321620465,
+   10
+  ],
+  "wins": 171,
+  "draws": 0,
+  "losses": 29,
+  "hedge_state_games_vs_present": {
+   "0": [
+    {
+     "bayes_games": 20,
+     "bayes_updates": 475,
+     "games": 20,
+     "updates": 475
+    },
+    20
+   ],
+   "1": [
+    {
+     "bayes_games": 20,
+     "bayes_updates": 474,
+     "games": 20,
+     "updates": 474
+    },
+    20
+   ],
+   "2": [
+    {
+     "bayes_games": 20,
+     "bayes_updates": 580,
+     "games": 20,
+     "updates": 580
+    },
+    20
+   ],
+   "3": [
+    {
+     "bayes_games": 20,
+     "bayes_updates": 501,
+     "games": 20,
+     "updates": 501
+    },
+    20
+   ],
+   "4": [
+    {
+     "bayes_games": 20,
+     "bayes_updates": 581,
+     "games": 20,
+     "updates": 581
+    },
+    20
+   ],
+   "5": [
+    {
+     "bayes_games": 20,
+     "bayes_updates": 466,
+     "games": 20,
+     "updates": 466
+    },
+    20
+   ],
+   "6": [
+    {
+     "bayes_games": 20,
+     "bayes_updates": 470,
+     "games": 20,
+     "updates": 470
+    },
+    20
+   ],
+   "7": [
+    {
+     "bayes_games": 20,
+     "bayes_updates": 608,
+     "games": 20,
+     "updates": 608
+    },
+    20
+   ],
+   "8": [
+    {
+     "bayes_games": 20,
+     "bayes_updates": 409,
+     "games": 20,
+     "updates": 409
+    },
+    20
+   ],
+   "9": [
+    {
+     "bayes_games": 20,
+     "bayes_updates": 474,
+     "games": 20,
+     "updates": 474
+    },
+    20
+   ]
+  },
+  "hedge_state_games_mismatch_streams": []
+ },
+ "RQunif": {
+  "A": "hedge_bayes",
+  "B": "style_uniform",
+  "expected_games": 200,
+  "present_game_json": 200,
+  "missing": [],
+  "extra": [],
+  "err_games": [
+   [
+    3,
+    1
+   ],
+   [
+    52,
+    2
+   ],
+   [
+    93,
+    1
+   ]
+  ],
+  "err_detail": {
+   "s3-g1": "AttributeError(\"'NoneType' object has no attribute 'can_z'\")",
+   "s52-g2": "RuntimeError('invalid_choice_stall: p1 got [Invalid choice] and no new request within 60s'",
+   "s93-g1": "RuntimeError('invalid_choice_stall: p2 got [Invalid choice] and no new request within 60s'"
+  },
+  "sim_err_games": [
+   [
+    52,
+    2
+   ],
+   [
+    93,
+    1
+   ]
+  ],
+  "bad_stream_field": [],
+  "n_bad_stream": 0,
+  "n_A_logs": 200,
+  "n_B_logs": 200,
+  "noA": [],
+  "turn_reset_or_dup_files": [],
+  "n_turn_reset": 0,
+  "n_nonfinal_vs_timing_mismatch": 0,
+  "mismatch_examples": [],
+  "summary": {
+   "mean": 0.9948,
+   "ci95": [
+    0.9846,
+    1.0051
+   ],
+   "n_pairs": 97,
+   "error_games": 3,
+   "missing_games": [],
+   "nonzero_exit": {},
+   "modal": {
+    "failed_streams": {},
+    "stopped_over_budget": false,
+    "games_run": 200,
+    "usd_estimate": 0.143
+   },
+   "n_summary_per_seed": 97
+  },
+  "recomputed_pair_mean": 0.9948453608247423,
+  "n_pairs_recomputed": 97,
+  "pair_mean_matches": true,
+  "per_seed_matches": true,
+  "game_level_normal": [
+   0.9949238578680203,
+   0.005076142131979697,
+   0.98497461928934,
+   1.0048730964467005,
+   197
+  ],
+  "game_level_stream_cluster": [
+   0.9949238578680203,
+   0.00506784420565102,
+   0.9834595977982614,
+   1.0063881179377792,
+   10
+  ],
+  "pair_level_normal": [
+   0.9948453608247423,
+   0.005154639175257732,
+   0.9847422680412371,
+   1.0049484536082474,
+   97
+  ],
+  "pair_level_stream_cluster": [
+   0.9948453608247423,
+   0.005138147116568759,
+   0.9832220645214853,
+   1.0064686571279993,
+   10
+  ],
+  "wins": 196,
+  "draws": 0,
+  "losses": 1,
+  "hedge_state_games_vs_present": {
+   "0": [
+    {
+     "bayes_games": 20,
+     "bayes_updates": 325,
+     "games": 20,
+     "updates": 325
+    },
+    20
+   ],
+   "1": [
+    {
+     "bayes_games": 20,
+     "bayes_updates": 371,
+     "games": 20,
+     "updates": 371
+    },
+    20
+   ],
+   "2": [
+    {
+     "bayes_games": 20,
+     "bayes_updates": 387,
+     "games": 20,
+     "updates": 387
+    },
+    20
+   ],
+   "3": [
+    {
+     "bayes_games": 20,
+     "bayes_updates": 384,
+     "games": 20,
+     "updates": 384
+    },
+    20
+   ],
+   "4": [
+    {
+     "bayes_games": 20,
+     "bayes_updates": 345,
+     "games": 20,
+     "updates": 345
+    },
+    20
+   ],
+   "5": [
+    {
+     "bayes_games": 20,
+     "bayes_updates": 361,
+     "games": 20,
+     "updates": 361
+    },
+    20
+   ],
+   "6": [
+    {
+     "bayes_games": 20,
+     "bayes_updates": 292,
+     "games": 20,
+     "updates": 292
+    },
+    20
+   ],
+   "7": [
+    {
+     "bayes_games": 20,
+     "bayes_updates": 350,
+     "games": 20,
+     "updates": 350
+    },
+    20
+   ],
+   "8": [
+    {
+     "bayes_games": 20,
+     "bayes_updates": 379,
+     "games": 20,
+     "updates": 379
+    },
+    20
+   ],
+   "9": [
+    {
+     "bayes_games": 20,
+     "bayes_updates": 377,
+     "games": 20,
+     "updates": 377
+    },
+    20
+   ]
+  },
+  "hedge_state_games_mismatch_streams": []
+ }
+}

@@ -1,0 +1,8 @@
+../../scripts/out/eta_hat2.jsonl: games 12 decisions 1003 tera-decisions 592 turns med 39.0
+  set : mean 0.0134 med 0.0043 p90 0.0371 max 0.2183 | ==0 exact 0.311 <=1e-6 0.367
+  tera: mean 0.0013 med 0.0000 max 0.1561 | ==0 exact 0.704 <=1e-6 0.870 >1% 0.027
+  payoff range med 268 max 652; retries max 25
+out/eta_hat_det.jsonl: games 12 decisions 1003 tera-decisions 592 turns med 39.0
+  set : mean 0.0134 med 0.0043 p90 0.0371 max 0.2183 | ==0 exact 0.311 <=1e-6 0.367
+  tera: mean 0.0013 med 0.0000 max 0.1561 | ==0 exact 0.704 <=1e-6 0.870 >1% 0.027
+  payoff range med 268 max 652; retries max 0

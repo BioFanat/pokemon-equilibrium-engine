@@ -1,0 +1,158 @@
+{
+ "roots": {
+  "6v6": 10,
+  "endgame": 8,
+  "1v1": 6
+ },
+ "ref_range_median": {
+  "6v6": 203.01511443108902,
+  "endgame": 21.525954246520996,
+  "1v1": 288.02220151695224
+ },
+ "ms_full_matrix_unloaded": {
+  "stock_total": 989.1118337400258,
+  "det_total": 1012.4668758362532
+ },
+ "levels": {
+  "0": {
+   "6v6": {
+    "matrices": 50,
+    "matrices_changed": 0,
+    "cells_changed": 0,
+    "cells": 4650,
+    "max_dev_over_range_max": 0.0,
+    "lp_tv_max": 0.0,
+    "lp_tv_mean": 0.0,
+    "argmax_changed": 0,
+    "value_dev_over_range_max": 0.0
+   },
+   "endgame": {
+    "matrices": 40,
+    "matrices_changed": 0,
+    "cells_changed": 0,
+    "cells": 85,
+    "max_dev_over_range_max": 0.0,
+    "lp_tv_max": 0.0,
+    "lp_tv_mean": 0.0,
+    "argmax_changed": 0,
+    "value_dev_over_range_max": 0.0
+   },
+   "1v1": {
+    "matrices": 30,
+    "matrices_changed": 0,
+    "cells_changed": 0,
+    "cells": 1920,
+    "max_dev_over_range_max": 0.0,
+    "lp_tv_max": 0.0,
+    "lp_tv_mean": 0.0,
+    "argmax_changed": 0,
+    "value_dev_over_range_max": 0.0
+   }
+  },
+  "12": {
+   "6v6": {
+    "matrices": 50,
+    "matrices_changed": 30,
+    "cells_changed": 75,
+    "cells": 4650,
+    "max_dev_over_range_max": 0.2703242329527202,
+    "lp_tv_max": 0.18260986936925833,
+    "lp_tv_mean": 0.007719642381377451,
+    "argmax_changed": 0,
+    "value_dev_over_range_max": 0.0488773045638401
+   },
+   "endgame": {
+    "matrices": 40,
+    "matrices_changed": 1,
+    "cells_changed": 1,
+    "cells": 85,
+    "max_dev_over_range_max": 0.0946313585703468,
+    "lp_tv_max": 0.0,
+    "lp_tv_mean": 0.0,
+    "argmax_changed": 0,
+    "value_dev_over_range_max": 0.0
+   },
+   "1v1": {
+    "matrices": 30,
+    "matrices_changed": 28,
+    "cells_changed": 240,
+    "cells": 1920,
+    "max_dev_over_range_max": 15.108678377859482,
+    "lp_tv_max": 1.0,
+    "lp_tv_mean": 0.16868883619790687,
+    "argmax_changed": 5,
+    "value_dev_over_range_max": 0.18870470364989203
+   }
+  },
+  "13": {
+   "6v6": {
+    "matrices": 50,
+    "matrices_changed": 30,
+    "cells_changed": 218,
+    "cells": 4650,
+    "max_dev_over_range_max": 0.24577962200433165,
+    "lp_tv_max": 0.6957572434612913,
+    "lp_tv_mean": 0.027381505917412678,
+    "argmax_changed": 2,
+    "value_dev_over_range_max": 0.016519369816540005
+   },
+   "endgame": {
+    "matrices": 40,
+    "matrices_changed": 2,
+    "cells_changed": 4,
+    "cells": 85,
+    "max_dev_over_range_max": 0.8798001196815675,
+    "lp_tv_max": 0.0,
+    "lp_tv_mean": 0.0,
+    "argmax_changed": 0,
+    "value_dev_over_range_max": 0.6651139611112695
+   },
+   "1v1": {
+    "matrices": 30,
+    "matrices_changed": 22,
+    "cells_changed": 178,
+    "cells": 1920,
+    "max_dev_over_range_max": 32.01834061120435,
+    "lp_tv_max": 1.0000000000000295,
+    "lp_tv_mean": 0.10184453197154139,
+    "argmax_changed": 2,
+    "value_dev_over_range_max": 0.199089688288146
+   }
+  },
+  "20": {
+   "6v6": {
+    "matrices": 50,
+    "matrices_changed": 21,
+    "cells_changed": 29,
+    "cells": 4650,
+    "max_dev_over_range_max": 0.10261000453572781,
+    "lp_tv_max": 0.3951899293931319,
+    "lp_tv_mean": 0.008349085894495503,
+    "argmax_changed": 1,
+    "value_dev_over_range_max": 0.10261000453572781
+   },
+   "endgame": {
+    "matrices": 40,
+    "matrices_changed": 0,
+    "cells_changed": 0,
+    "cells": 85,
+    "max_dev_over_range_max": 0.0,
+    "lp_tv_max": 0.0,
+    "lp_tv_mean": 0.0,
+    "argmax_changed": 0,
+    "value_dev_over_range_max": 0.0
+   },
+   "1v1": {
+    "matrices": 30,
+    "matrices_changed": 27,
+    "cells_changed": 53,
+    "cells": 1920,
+    "max_dev_over_range_max": 12.37721021037135,
+    "lp_tv_max": 0.9999999999999943,
+    "lp_tv_mean": 0.03961670693135134,
+    "argmax_changed": 1,
+    "value_dev_over_range_max": 0.0187240250081431
+   }
+  }
+ }
+}

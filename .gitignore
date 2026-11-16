@@ -33,3 +33,7 @@ modal_builders_application.md
 
 # large regenerable belief-scoring events (score_belief_engine.py play)
 engine/results/belief/engine_events.jsonl
+
+# regenerable leaf-probe states (build_states.py)
+theory/tightening/verify/leaf/states_s0.jsonl
+engine/analysis/open_items/out_B1_log_games.json

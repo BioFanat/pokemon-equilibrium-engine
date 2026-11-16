@@ -1,8 +1,29 @@
-Caption for fig_headline (report/make_headline_figure.py). Numbers printed by the script; panel B is the real E2 run (2026-11-15).
+Caption for fig_headline (report/make_headline_figure.py), as in report/current_report.tex (fig:headline). Numbers printed by
+the script; panel B is the real E2 run (2026-11-15).
 
-Regret goes to zero, under the proved bounds, at all three places we use no-regret learning. All axes log-log;
-y is regret or Nash gap as a share of the payoff range. Solid lines are medians, bands as stated per panel; dashed
-lines are proved bounds.
+Regret vanishes under the proved bounds at the four places we use no-regret learning (solid: median; dashed: proved
+bound; A-C log-log). (A) Inside a turn: Nash gap of RM+'s averaged strategy, as a share of the payoff range, on 35 real
+stage matrices; band: median to 90th percentile; bound Proposition rmplus; fitted median slope -1.3 against the bound's
+-0.5. (B) Across games, in the real-Showdown run of Hedge against the MCTS bot (E2; 10 streams, 800 games, 22,858 turns):
+average regret per turn R_T/T of Hedge over 4 experts against non-forced turns T with feedback; band: IQR over
+streams; curves cut at the shortest stream (T = 2056). Carried: the logged weights, kept across games; reset: the same
+learner restarted each game. Bound Lemma R2a (carried learner), R_T/T <= (3/2) sqrt(ln k/(2T)) + sqrt(ln k/8)/T. At
+T = 2056 the carried median is 0.0042 (IQR 0.0039-0.0046) against the bound 0.0277, and reset 0.0057; carried stays
+under the bound on every stream at every T; fitted slope of the median (T >= 30) -0.15 against the bound's -0.51. The
+logged weights match those replayed from the rewards to within 0.0001 on nine streams and 0.0092 on stream 9 (a
+resumed run, 2411 of 2448 updates logged). Regret is on the surrogate rewards clip((q_e.Abar b_t - min Abar)/400, 0, 1)
+along our own trajectory, not on game outcomes. (C) At a search node: Nash gap, in win probability, of decoupled
+self-play on 100 real matrices with rewards (1+tanh(M/160))/2, which by Proposition L4 is the players' average regret;
+RM+ (full information) against Exp3 and UCB1 (visit shares, one Bernoulli reward per iteration); band: IQR.
+Full-information reference: tuned Hedge sqrt(ln n/(2N)) + sqrt(ln m/(2N)). The bandit bound (Exp3-IX, delta = 0.05)
+is a reference, not proved for Exp3 or UCB1. (D) Opponent model: cumulative log-loss regret R_T of the style posterior
+against the best fixed style, on the 8 clean streams of the run whose safe-exploit expert uses the style posterior
+(BH), against feedback turns T (linear axes); one line per stream, with the median lying on the dashed ln 5 line. The regret equals ln 5 plus
+the log of the posterior on the best style, so it meets the bound whenever the posterior settles on that style: it
+dips to ~0.9 after the first 50 turns (0.45 at the very start) and returns to ln 5 at the end of every stream (max
+excess 5e-4, log rounding).
+
+Methods detail (not in the caption; sources for the numbers above)
 
 (A) Inside a turn. Nash gap of RM+'s linearly averaged strategies (alternating updates, nash.rm_plus) on real stage
 matrices, divided by the matrix's payoff range; line = median, band = median to 90th percentile; n = 35 matrices.

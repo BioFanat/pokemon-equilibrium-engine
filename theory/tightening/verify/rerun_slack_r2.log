@@ -1,0 +1,7 @@
+unstable option order at 0 states (M permuted by label)
+gholdengo vs heatran @ 100% [PP*] [HP/10]: 4,555 states (2,697 live), V*(s0)=-0.9256, shapley 17 sweeps delta 8.4e-10, prep 21s
+  seat 1 equilibrium sampled    expl +0.0742 H   2.00 | sum ell +0.0742 (pos 0.074 neg +0.000) e 0.0742 | bud2 1.583 bud3 0.522 | T1 -0.399 T2 -0.212 T3 +0.686 | evcal reach max 0.958 mean 0.452
+  seat 1 equilibrium top move   expl +0.0742 H   2.00 | sum ell +0.0742 (pos 0.074 neg +0.000) e 0.0742 | bud2 1.583 bud3 0.522 | T1 -0.399 T2 -0.212 T3 +0.686 | evcal reach max 0.701 mean 0.297
+  seat 2 equilibrium sampled    expl +0.4254 H  31.57 | sum ell +0.4254 (pos 0.500 neg -0.074) e 0.5121 | bud2 16.453 bud3 4.010 | T1 +4.874 T2 -0.303 T3 -4.146 | evcal reach max 1.000 mean 0.148
+  seat 2 equilibrium top move   expl +0.4256 H  49.24 | sum ell +0.4256 (pos 0.500 neg -0.074) e 0.5122 | bud2 37.925 bud3 12.449 | T1 +14.978 T2 -0.303 T3 -14.250 | evcal reach max 1.000 mean 0.205
+.venv/bin/python ../theory/tightening/scripts/endgame_slack.py 4   70.25s user 3.11s system 312% cpu 23.482 total

@@ -47,7 +47,6 @@ SCRATCH = Path("/private/tmp/claude-501/-Users-biofanat-Documents-classes-f26-cs
                "2bbe670b-2f97-4d9a-bfad-e1139e0352c6/scratchpad/brainstorm/data.pkl")
 BH_SRC = SCRATCH.parents[1] / "synthesis/out_bh_regret.json"
 BH_EXCLUDED = {0, 6}                 # streams whose log update count != hedge_state count (synthesis.md §3.2)
-C_BAYES = "#CC79A7"                  # Bayesian style posterior (opponent model), Okabe-Ito pink
 CAPPED = {1010, 1012, 1014}          # games that hit the 300-turn cap (excluded, as in brainstorm/exp_*.py)
 C_RMPLUS = COL["eq_top"]             # RM+ = the equilibrium agent's solver (accent)
 C_UCB1 = COL["mcts"]                 # UCB1 = the MCTS selection rule
@@ -334,8 +333,8 @@ def draw(a, b, c, d):
     ax.set_xlim(1, 2000); ax.set_ylim(1e-7, 2)
     ax.set_xticks([1, 10, 100, 1000])
     ax.set_xlabel("Iterations $T$")
-    ax.set_ylabel("Nash gap / payoff range")
-    ax.set_title("Inside a turn: RM$^+$", pad=10)
+    ax.set_ylabel("Nash gap (share of payoff range)")
+    ax.set_title("Inside a turn: RM$^{\\mathregular{+}}$", pad=10)
 
     # ---- B
     ax = axs[1]
@@ -373,12 +372,12 @@ def draw(a, b, c, d):
         band(ax, N, q1, q3, col)
         ax.plot(N, med, color=col, lw=1.5, marker="o", ms=3)
     ex, uc, rp = (np.median([r[k] for r in c["rows"]], 0) for k in ("exp3", "ucb1", "rmplus"))
-    label(ax, 115, 0.33, "Exp3", C_EXP3)
-    label(ax, 300, 0.33, "UCB1", C_UCB1)
-    label(ax, 115, max(rp[0], floor) * 3.5, "RM$^+$ (full info)", C_RMPLUS)
+    label(ax, 115, 0.035, "Exp3", C_EXP3)       # below the two bandit curves (full-info bound is above them here)
+    label(ax, 2500, 0.25, "UCB1", C_UCB1, ha="center")   # above: UCB1 ends highest
+    label(ax, 115, max(rp[0], floor) * 3.5, "RM$^{\\mathregular{+}}$ (full info)", C_RMPLUS)
     label(ax, 9000, full[-1] * 0.4, "full-info bound", C_RMPLUS, ha="right")
-    label(ax, 9000, 0.27, "bandit bound", GRAY, ha="right")
-    ax.set_xlim(N[0], N[-1]); ax.set_ylim(1e-7, 2)
+    label(ax, 115, 0.4, "bandit bound (above 1: vacuous)", GRAY)
+    ax.set_xlim(N[0], N[-1]); ax.set_ylim(1e-7, 2)    # win-prob gap <= 1; the bandit bound (5.1 at N=100) enters from above
     ax.set_xlabel("Iterations $N$")
     ax.set_ylabel("Nash gap (win probability)")
     ax.set_title("At a search node", pad=10)
@@ -390,15 +389,19 @@ def draw(a, b, c, d):
     ax = axs[3]
     ax.set_xscale("linear"); ax.set_yscale("linear")
     Tmax = max(v["n_turns"] for v in d["streams"].values())
+    grid = np.arange(1, Tmax + 1)
+    curves = np.array([np.where(grid <= v["n_turns"], np.interp(grid, v["T"], v["R"]), np.nan)
+                       for v in d["streams"].values()])
     for v in d["streams"].values():
-        ax.plot(v["T"], v["R"], color=C_BAYES, lw=1.0, alpha=0.75)
+        ax.plot(v["T"], v["R"], color=COL["bayes"], lw=0.6, alpha=0.45)
+    ax.plot(grid, np.nanmedian(curves, 0), color=COL["bayes"], lw=1.8)   # median over the streams still running
     ax.axhline(d["ln5"], color=INK, lw=1.2, ls=(0, (4, 2)), zorder=3)   # on top: the curves sit on it
     label(ax, Tmax * 0.97, d["ln5"] + 0.2, "proved bound ln 5", INK, ha="right")
-    label(ax, Tmax * 0.97, 0.55, f"{len(d['streams'])} streams", C_BAYES, ha="right")
+    label(ax, Tmax * 0.97, 0.55, f"{len(d['streams'])} streams; median on ln 5", COL["bayes"], ha="right")
     ax.set_xlim(0, Tmax); ax.set_ylim(0, 2)
     ax.set_xlabel("Feedback turns $T$")
     ax.set_ylabel("Log-loss regret (nats)")
-    ax.set_title("Opponent model: Bayes as MWU", pad=10)
+    ax.set_title("Opponent model: regret vs ln 5", pad=10)
     return fig, dict(sA=sA, sB=sB, full=full, bandit=bandit)
 
 

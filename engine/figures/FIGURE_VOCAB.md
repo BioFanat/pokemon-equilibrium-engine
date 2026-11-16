@@ -17,3 +17,10 @@
 | Bound 4·δ_H | 4 × Hausdorff distance between the worlds' payoff-column sets | E5 logs |
 | Score | wins + ½ draws, per game, averaged over game pairs | |
 | Self-play RL | PPO self-play pilot (12-species pool, full information) | `ppo_pilot.py` |
+| Safe exploit | ε-safe exploit: best reply to the predicted opponent strategy among our strategies that guarantee at least the turn's equilibrium value minus ε times the turn's payoff range | `bayes_safex` (`engine/showdown/run_ourbot.py`) |
+| Equilibrium | opponent style (and case-study label): plays a Nash equilibrium of the turn's matrix | (case-study figures) |
+| Best reply to uniform | opponent style: best-responds to a uniformly random guess about our move | (case-study figures) |
+| Best reply to us | opponent style: soft best reply to our reference mixture (our strategy before the exploit step) | `br_us` (`engine/showdown/behavior.py`) |
+| Cautious (maximin) | opponent style: plays the maximin (safest) move | (case-study figures) |
+| Uniform random | opponent style: picks uniformly among its options | (case-study figures) |
+| Ours | our agent (the Hedge/equilibrium player) in game results | (none) |

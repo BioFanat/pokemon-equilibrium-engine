@@ -1,0 +1,193 @@
+{
+ "tag": "RQunif",
+ "A": "hedge_bayes",
+ "B": "style_uniform",
+ "k": 4,
+ "seeds": "1-100",
+ "n_seeds": 100,
+ "n_pairs": 97,
+ "pair_score_A": {
+  "mean": 0.9948,
+  "sd": 0.0508,
+  "ci95": [
+   0.9846,
+   1.0051
+  ],
+  "per_seed": {
+   "1": 1.0,
+   "2": 1.0,
+   "4": 1.0,
+   "5": 1.0,
+   "6": 1.0,
+   "7": 1.0,
+   "8": 1.0,
+   "9": 1.0,
+   "10": 1.0,
+   "11": 1.0,
+   "12": 1.0,
+   "13": 1.0,
+   "14": 1.0,
+   "15": 1.0,
+   "16": 1.0,
+   "17": 1.0,
+   "18": 1.0,
+   "19": 1.0,
+   "20": 1.0,
+   "21": 1.0,
+   "22": 1.0,
+   "23": 1.0,
+   "24": 1.0,
+   "25": 1.0,
+   "26": 1.0,
+   "27": 1.0,
+   "28": 1.0,
+   "29": 1.0,
+   "30": 1.0,
+   "31": 1.0,
+   "32": 1.0,
+   "33": 1.0,
+   "34": 1.0,
+   "35": 1.0,
+   "36": 1.0,
+   "37": 1.0,
+   "38": 1.0,
+   "39": 1.0,
+   "40": 1.0,
+   "41": 1.0,
+   "42": 1.0,
+   "43": 1.0,
+   "44": 1.0,
+   "45": 1.0,
+   "46": 1.0,
+   "47": 1.0,
+   "48": 1.0,
+   "49": 0.5,
+   "50": 1.0,
+   "51": 1.0,
+   "53": 1.0,
+   "54": 1.0,
+   "55": 1.0,
+   "56": 1.0,
+   "57": 1.0,
+   "58": 1.0,
+   "59": 1.0,
+   "60": 1.0,
+   "61": 1.0,
+   "62": 1.0,
+   "63": 1.0,
+   "64": 1.0,
+   "65": 1.0,
+   "66": 1.0,
+   "67": 1.0,
+   "68": 1.0,
+   "69": 1.0,
+   "70": 1.0,
+   "71": 1.0,
+   "72": 1.0,
+   "73": 1.0,
+   "74": 1.0,
+   "75": 1.0,
+   "76": 1.0,
+   "77": 1.0,
+   "78": 1.0,
+   "79": 1.0,
+   "80": 1.0,
+   "81": 1.0,
+   "82": 1.0,
+   "83": 1.0,
+   "84": 1.0,
+   "85": 1.0,
+   "86": 1.0,
+   "87": 1.0,
+   "88": 1.0,
+   "89": 1.0,
+   "90": 1.0,
+   "91": 1.0,
+   "92": 1.0,
+   "94": 1.0,
+   "95": 1.0,
+   "96": 1.0,
+   "97": 1.0,
+   "98": 1.0,
+   "99": 1.0,
+   "100": 1.0
+  }
+ },
+ "error_games": 3,
+ "errors": [
+  {
+   "game": "RQunif-s3-g1",
+   "error": "AttributeError(\"'NoneType' object has no attribute 'can_z'\")",
+   "sim_errors": []
+  },
+  {
+   "game": "RQunif-s52-g2",
+   "error": "RuntimeError('invalid_choice_stall: p1 got [Invalid choice] and no new request within 60s')",
+   "sim_errors": [
+    "p1 |error|[Invalid choice] Can't switch: You have to pass to a fainted Pok\u00e9mon"
+   ]
+  },
+  {
+   "game": "RQunif-s93-g1",
+   "error": "RuntimeError('invalid_choice_stall: p2 got [Invalid choice] and no new request within 60s')",
+   "sim_errors": [
+    "p2 |error|[Invalid choice] Can't switch: You have to pass to a fainted Pok\u00e9mon"
+   ]
+  }
+ ],
+ "missing_games": [],
+ "nonzero_exit": {},
+ "mean_turns": 23.58,
+ "per_method": {
+  "hedge_bayes": {
+   "decisions": 4901,
+   "wall_s_per_decision": 1.072,
+   "cpu_s_per_decision": 0.236,
+   "cpu_s_per_game": 5.87
+  },
+  "style_uniform": {
+   "decisions": 5689,
+   "wall_s_per_decision": 0.905,
+   "cpu_s_per_decision": 0.198,
+   "cpu_s_per_game": 5.71
+  }
+ },
+ "cpu_s_per_game": 33.7,
+ "streams": 10,
+ "learning": {
+  "hedge_bayes": {
+   "feedback_turns": 4893,
+   "updates": 3529,
+   "skipped": 1364,
+   "skipped_frac": 0.2788,
+   "skipped_reasons": {
+    "not_in_worlds": 732,
+    "fainted": 524,
+    "cant": 73,
+    "no_action": 35
+   }
+  }
+ },
+ "modal": {
+  "usd_estimate": 0.143,
+  "stopped_over_budget": false,
+  "failed_streams": {},
+  "container_cpu": 1.0,
+  "stream_cpu_s": 6798.5,
+  "games_run": 200,
+  "cpu_s_per_game_measured": 34.0,
+  "stream_wall_s": {
+   "5": 483.0,
+   "4": 501.1,
+   "0": 584.3,
+   "2": 599.0,
+   "8": 705.3,
+   "9": 722.9,
+   "6": 833.0,
+   "7": 938.9,
+   "1": 979.7,
+   "3": 996.0
+  },
+  "entrypoint_wall_s": 1010.6
+ }
+}

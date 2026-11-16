@@ -1,0 +1,15 @@
+[1] 2-turn closed form vs behavior.Posterior vs own: max abs diff 1.33e-15
+[2] thresholds lam*_2(n) (k=5, MIX=0.05):
+   n=13: B=5.561 lam*_exact=0.9528 formula=0.9491 R*(0.9)=1.683 | attainable range 5.513: lam*=0.9506 R*(0.9)=1.678
+   n=18: B=5.886 lam*_exact=0.9657 formula=0.9629 R*(0.9)=1.715 | attainable range 5.838: lam*=0.9640 R*(0.9)=1.710
+   n=27: B=6.292 lam*_exact=0.9770 formula=0.9751 R*(0.9)=1.754 | attainable range 6.242: lam*=0.9759 R*(0.9)=1.749
+   n=44: B=6.780 lam*_exact=0.9858 formula=0.9847 R*(0.9)=1.802 | attainable range 6.730: lam*=0.9851 R*(0.9)=1.797
+[3] lam=0.95 T=2: hill-climb max discounted regret 1.671 (coded class re-eval 1.671); ln5=1.609
+[3] lam=0.95 T=3: hill-climb max discounted regret 1.840 (coded class re-eval 1.840); ln5=1.609
+[3] lam=0.95 T=6: hill-climb max discounted regret 2.206 (coded class re-eval 2.206); ln5=1.609
+[3] lam=0.9 T=2: hill-climb max discounted regret 1.802 (coded class re-eval 1.802); ln5=1.609
+[3] lam=0.9 T=3: hill-climb max discounted regret 2.131 (coded class re-eval 2.131); ln5=1.609
+[3] lam=0.9 T=6: hill-climb max discounted regret 2.749 (coded class re-eval 2.749); ln5=1.609
+[4] fixed update (z=lam*(logp+loglik)) == own DTP; max discounted regret 1.6055 vs ln5 1.6094
+[5] data-dependent bound: max(R - bound) over random sequences -2.50e-05 (<=0 required)
+    tightness R/bound on the optimal 2-turn examples: 0.66-0.94
