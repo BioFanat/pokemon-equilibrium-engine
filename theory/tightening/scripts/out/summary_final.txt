@@ -1,0 +1,47 @@
+# exact 1v1 tera subgames: 30 ok, 16 errors ["RuntimeError('leaf did not stabilise')", "RuntimeError('leaf did not stabilise')", "RuntimeError('leaf did not stabilise')"]
+k dist: {np.int64(2): np.int64(21), np.int64(3): np.int64(5), np.int64(4): np.int64(4)}  leaf retries total: 1448
+checks: C1 holds 30 / 30 | sandwich holds 30 | VOI>=0 30 | expl>=0 30 | expl <= E_BR[eta]+2*Delta*E[TV] 30
+Delta (payoff range, engine units) quantiles [0 25 50 75 90 100]: 228.9 402.7 455.9 499.9 571.5 655
+quantity         median      p75      p90       max  | /Delta median  p90    max  | frac>0.1%Delta frac>1%Delta
+voi_total          0.00     0.73     6.01     25.92  |  0.0000  0.0155 0.0521 |  0.30  0.13
+eta_NL0            1.76    13.84    31.82     38.36  |  0.0040  0.0568 0.0673 |  0.57  0.40
+eta_b0_max         1.66    12.15    27.18     31.97  |  0.0036  0.0529 0.0608 |  0.53  0.40
+eta_b0_mean        0.02     0.88     2.82      5.73  |  0.0001  0.0057 0.0095 |  0.30  0.00
+e_eta_play         0.00     0.01     0.89     14.18  |  0.0000  0.0019 0.0285 |  0.13  0.07
+sandwich_gap       0.00     0.00     0.36     14.10  |  0.0000  0.0007 0.0284 |  0.10  0.07
+expl_a3            0.00     0.00     0.11     16.14  |  0.0000  0.0002 0.0309 |  0.07  0.03
+frac of pre-tera children with eta(b0)>0: median 0.01 max 0.59
+matchups with VOI_total > 1e-3 Delta: 9 ; with expl_a3 > 1e-3 Delta: 2
+E_TV1 > 0 (type-dependent best response at stage 0): 7
+expl / (eta_NL0 + 2 Delta E[TV]) over matchups with expl>0:  [0.0, 0.001, 0.001, 0.003, 0.029, 0.054]
+equilibrium P(tera at stage 0 | theta): hidden - known: n=73 mean 0.001; |diff|>0.1 in 0.14; hidden<known-0.1: 0.07; hidden>known+0.1: 0.07
+stage-0 argmax differs eq vs A3: 1 / 30
+time per matchup (s): median 29 max 107
+top-5 by expl/Delta:
+  seed 3004 Floatzel(2) vs Braviary-Hisui: Delta 522 VOI 8.29 etaNL0 31.76 expl 16.14 E[TV] 0.500 sandwich 6.97 x0_eq {'agility': 0.584, 'hurricane': 0.379, 'psychic': 0.037} x0_a3 {'agility': 0.53, 'hurricane': 0.421, 'psychic': 0.048}
+  seed 2016 Tauros-Paldea-Combat(3) vs Rillaboom: Delta 471 VOI 1.92 etaNL0 13.51 expl 0.73 E[TV] 0.000 sandwich 1.64 x0_eq {'knockoff': 0.223, 'woodhammer': 0.777} x0_a3 {'knockoff': 0.173, 'woodhammer': 0.827}
+  seed 3002 Rotom-Fan(2) vs Dedenne: Delta 479 VOI 0.21 etaNL0 3.21 expl 0.37 E[TV] 0.500 sandwich 0.21 x0_eq {'superfang': 1.0} x0_a3 {'superfang': 1.0}
+  seed 3009 Mimikyu(2) vs Kingdra: Delta 497 VOI 25.92 etaNL0 32.40 expl 0.08 E[TV] 0.000 sandwich 14.10 x0_eq {'ironhead': 0.352, 'ironhead-tera': 0.648} x0_a3 {'ironhead': 0.339, 'ironhead-tera': 0.661}
+  seed 3013 Eiscue(2) vs Goodra: Delta 494 VOI -0.00 etaNL0 25.74 expl 0.04 E[TV] 0.250 sandwich -0.00 x0_eq {'fireblast': 1.0} x0_a3 {'fireblast': 1.0}
+
+# two-sided 1v1 tera subgames: 4 ok, 0 errors; leaf retries 79
+  seed 5501 Garganacl(2) vs Dugtrio-Alola(2) Delta 411 V_real 25.27 conceal 0.000 (0.00%) >=0:True voi_opp(2-sided) -0.000 voi_opp(1-sided avg) 0.000 46.2s
+  seed 5500 Deoxys(3) vs Talonflame(2) Delta 396 V_real 19.71 conceal -0.000 (-0.00%) >=0:True voi_opp(2-sided) 0.000 voi_opp(1-sided avg) 0.000 91.4s
+  seed 5503 Chesnaught(2) vs Amoonguss(2) Delta 430 V_real -48.00 conceal 0.000 (0.00%) >=0:True voi_opp(2-sided) 0.000 voi_opp(1-sided avg) 0.000 33.8s
+  seed 5502 Drifblim(3) vs Snorlax(2) Delta 455 V_real -34.90 conceal 1.777 (0.39%) >=0:True voi_opp(2-sided) 2.233 voi_opp(1-sided avg) 2.250 129.6s
+conceal/Delta: median 0.0000 max 0.0039; all >= 0: True
+
+# engine eta-hat: games 12 decisions 1003 with tera worlds 592; stable-matrix retries total 25
+eta_hat_set/range : mean 0.0134 median 0.0043 p90 0.0371 max 0.2183  frac>0.05 0.061  frac==0 0.367
+eta_hat_tera/range: mean 0.0013 median 0.0000 p90 0.0002 max 0.1561  frac>0.01 0.027  frac==0 0.870
+sum_t eta_hat_set/range per game per side: mean 0.558 median 0.554 max 1.088 (turns median 39)
+payoff_range (engine units): median 268 p99 640 max 652
+                method games  P(tera)  first tera turn med  as frac of game med
+        AF16:agentform   150     0.50                 11.0                 0.36
+            AF16:stock   150     0.93                 13.0                 0.41
+          AF:agentform   150     0.55                 16.5                 0.51
+              AF:stock   150     0.90                 16.0                 0.48
+        BH:hedge_bayes   150     0.55                 12.0                 0.41
+              BH:stock   150     0.91                 16.0                 0.53
+              E2:hedge   150     0.53                 13.0                 0.51
+              E2:stock   150     0.95                 14.0                 0.44

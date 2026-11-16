@@ -1,0 +1,45 @@
+57 real matrices, T = 400
+
+--- SS ---  eps = 0.003 (so the safex floor is 0.003 ptp)
+payoff band (x^T A y - v)/ptp: mean -0.0001, min over all rounds -0.0030, max +0.0030
+row: last-iterate expl max over t 0.0030 (median of per-matrix max 0.0030); time-avg expl mean 0.0023 max 0.0030
+col: last-iterate expl max over t 0.0030 (median 0.0030); time-avg expl mean 0.0022 max 0.0030
+row posterior: mean last {'eq': np.float64(0.912), 'br_unif': np.float64(0.018), 'br_us': np.float64(0.035), 'safe': np.float64(0.035), 'uniform': np.float64(0.0)}; mean time-avg {'eq': np.float64(0.923), 'br_unif': np.float64(0.014), 'br_us': np.float64(0.024), 'safe': np.float64(0.038), 'uniform': np.float64(0.0)}
+   final MAP counts {'eq': 52, 'br_unif': 1, 'br_us': 2, 'safe': 2, 'uniform': 0}; MAP switches median 0 max 53; P_T(MAP) >= 0.99 on 57/57
+col posterior: mean last {'eq': np.float64(0.947), 'br_unif': np.float64(0.035), 'br_us': np.float64(0.0), 'safe': np.float64(0.018), 'uniform': np.float64(0.0)}; mean time-avg {'eq': np.float64(0.941), 'br_unif': np.float64(0.036), 'br_us': np.float64(0.003), 'safe': np.float64(0.02), 'uniform': np.float64(0.0)}
+   final MAP counts {'eq': 54, 'br_unif': 2, 'br_us': 0, 'safe': 1, 'uniform': 0}; MAP switches median 0 max 5; P_T(MAP) >= 0.99 on 57/57
+
+--- SSm0.1 ---  eps = 0.003 (so the safex floor is 0.003 ptp)
+payoff band (x^T A y - v)/ptp: mean +0.0174, min over all rounds -0.0030, max +0.1064
+row: last-iterate expl max over t 0.0030 (median of per-matrix max 0.0030); time-avg expl mean 0.0024 max 0.0030
+col: last-iterate expl max over t 0.1554 (median 0.0331); time-avg expl mean 0.0441 max 0.1338
+row posterior: mean last {'eq': np.float64(0.439), 'br_unif': np.float64(0.191), 'br_us': np.float64(0.158), 'safe': np.float64(0.213), 'uniform': np.float64(0.0)}; mean time-avg {'eq': np.float64(0.441), 'br_unif': np.float64(0.203), 'br_us': np.float64(0.139), 'safe': np.float64(0.214), 'uniform': np.float64(0.004)}
+   final MAP counts {'eq': 25, 'br_unif': 11, 'br_us': 10, 'safe': 11, 'uniform': 0}; MAP switches median 1 max 30; P_T(MAP) >= 0.99 on 54/57
+col posterior: mean last {'eq': np.float64(0.474), 'br_unif': np.float64(0.242), 'br_us': np.float64(0.105), 'safe': np.float64(0.162), 'uniform': np.float64(0.018)}; mean time-avg {'eq': np.float64(0.484), 'br_unif': np.float64(0.238), 'br_us': np.float64(0.097), 'safe': np.float64(0.158), 'uniform': np.float64(0.024)}
+   final MAP counts {'eq': 27, 'br_unif': 14, 'br_us': 6, 'safe': 9, 'uniform': 1}; MAP switches median 0 max 38; P_T(MAP) >= 0.99 on 55/57
+
+--- SSm0.3 ---  eps = 0.003 (so the safex floor is 0.003 ptp)
+payoff band (x^T A y - v)/ptp: mean +0.0549, min over all rounds -0.0019, max +0.2743
+row: last-iterate expl max over t 0.0030 (median of per-matrix max 0.0030); time-avg expl mean 0.0024 max 0.0030
+col: last-iterate expl max over t 0.4876 (median 0.1011); time-avg expl mean 0.1132 max 0.4876
+row posterior: mean last {'eq': np.float64(0.088), 'br_unif': np.float64(0.381), 'br_us': np.float64(0.274), 'safe': np.float64(0.184), 'uniform': np.float64(0.072)}; mean time-avg {'eq': np.float64(0.09), 'br_unif': np.float64(0.355), 'br_us': np.float64(0.296), 'safe': np.float64(0.177), 'uniform': np.float64(0.082)}
+   final MAP counts {'eq': 5, 'br_unif': 22, 'br_us': 16, 'safe': 10, 'uniform': 4}; MAP switches median 1 max 39; P_T(MAP) >= 0.99 on 52/57
+col posterior: mean last {'eq': np.float64(0.193), 'br_unif': np.float64(0.368), 'br_us': np.float64(0.106), 'safe': np.float64(0.245), 'uniform': np.float64(0.088)}; mean time-avg {'eq': np.float64(0.201), 'br_unif': np.float64(0.366), 'br_us': np.float64(0.117), 'safe': np.float64(0.227), 'uniform': np.float64(0.088)}
+   final MAP counts {'eq': 11, 'br_unif': 21, 'br_us': 6, 'safe': 14, 'uniform': 5}; MAP switches median 0 max 29; P_T(MAP) >= 0.99 on 56/57
+
+--- HS ---  eps = 0.003 (so the safex floor is 0.003 ptp)
+payoff band (x^T A y - v)/ptp: mean -0.0056, min over all rounds -0.3416, max +0.0029
+row: last-iterate expl max over t 0.4625 (median of per-matrix max 0.2104); time-avg expl mean 0.0468 max 0.2634
+col: last-iterate expl max over t 0.0030 (median 0.0030); time-avg expl mean 0.0023 max 0.0030
+col posterior: mean last {'eq': np.float64(0.632), 'br_unif': np.float64(0.003), 'br_us': np.float64(0.211), 'safe': np.float64(0.155), 'uniform': np.float64(0.0)}; mean time-avg {'eq': np.float64(0.378), 'br_unif': np.float64(0.071), 'br_us': np.float64(0.385), 'safe': np.float64(0.156), 'uniform': np.float64(0.009)}
+   final MAP counts {'eq': 36, 'br_unif': 0, 'br_us': 12, 'safe': 9, 'uniform': 0}; MAP switches median 5 max 19; P_T(MAP) >= 0.99 on 56/57
+Hedge side per-round regret (ptp units): mean 0.0098, bound 1.5*sqrt(ln k/(2T)) ~ 0.0740 (k=7)
+
+--- SH ---  eps = 0.003 (so the safex floor is 0.003 ptp)
+payoff band (x^T A y - v)/ptp: mean +0.0052, min over all rounds -0.0030, max +0.5080
+row: last-iterate expl max over t 0.0030 (median of per-matrix max 0.0030); time-avg expl mean 0.0022 max 0.0030
+col: last-iterate expl max over t 0.5080 (median 0.2245); time-avg expl mean 0.0535 max 0.2370
+row posterior: mean last {'eq': np.float64(0.481), 'br_unif': np.float64(0.156), 'br_us': np.float64(0.182), 'safe': np.float64(0.181), 'uniform': np.float64(0.0)}; mean time-avg {'eq': np.float64(0.318), 'br_unif': np.float64(0.155), 'br_us': np.float64(0.297), 'safe': np.float64(0.219), 'uniform': np.float64(0.01)}
+   final MAP counts {'eq': 27, 'br_unif': 9, 'br_us': 10, 'safe': 11, 'uniform': 0}; MAP switches median 7 max 30; P_T(MAP) >= 0.99 on 52/57
+Hedge side per-round regret (ptp units): mean 0.0099, bound 1.5*sqrt(ln k/(2T)) ~ 0.0740 (k=7)
+/Users/biofanat/Documents/classes/f26/cs535/final/engine/.venv/bin/python  40  118.69s user 0.32s system 76% cpu 2:35.67 total

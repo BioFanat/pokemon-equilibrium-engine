@@ -1,0 +1,20 @@
+wb2-12  logit games  12 ident max 2.2e-16 | -Ez +0.250 (0.279) | sumR -0.389 sumS -0.275 -sumD +0.913 (0.306) mid +1.047 last -0.134 | E|D_last| 0.166 | perdec ED -0.0127 (SE 0.0071) | sum|D| 2.86 | dec/game 72.1 median 32 | E phi(v1) +0.0000 (0.0274)
+wb2-12  tanh  games  12 ident max 2.2e-16 | -Ez +0.250 (0.279) | sumR -0.460 sumS -0.131 -sumD +0.841 (0.338) mid +0.924 last -0.083 | E|D_last| 0.300 | perdec ED -0.0117 (SE 0.0056) | sum|D| 2.33 | dec/game 72.1 median 32 | E phi(v1) -0.0000 (0.0135)
+wb2-60  logit games  60 ident max 2.2e-16 | -Ez +0.283 (0.121) | sumR -0.255 sumS -0.125 -sumD +0.663 (0.124) mid +0.708 last -0.045 | E|D_last| 0.136 | perdec ED -0.0127 (SE 0.0033) | sum|D| 2.91 | dec/game 52.0 median 32 | E phi(v1) -0.0000 (0.0166)
+wb2-60  tanh  games  60 ident max 2.2e-16 | -Ez +0.283 (0.121) | sumR -0.207 sumS -0.062 -sumD +0.552 (0.122) mid +0.549 last +0.003 | E|D_last| 0.297 | perdec ED -0.0106 (SE 0.0029) | sum|D| 2.16 | dec/game 52.0 median 32 | E phi(v1) -0.0000 (0.0083)
+mcts    logit games 100 ident max 4.4e-16 | -Ez +0.110 (0.095) | sumR -0.432 sumS -0.102 -sumD +0.643 (0.104) mid +0.633 last +0.010 | E|D_last| 0.224 | perdec ED -0.0113 (SE 0.0023) | sum|D| 3.06 | dec/game 56.8 median 30 | E phi(v1) -0.0007 (0.0145)
+mcts    tanh  games 100 ident max 2.2e-16 | -Ez +0.110 (0.095) | sumR -0.296 sumS -0.048 -sumD +0.454 (0.097) mid +0.414 last +0.040 | E|D_last| 0.380 | perdec ED -0.0080 (SE 0.0019) | sum|D| 2.27 | dec/game 56.8 median 30 | E phi(v1) -0.0005 (0.0073)
+self    logit games 100 ident max 2.2e-16 | -Ez -0.050 (0.097) | sumR -0.000 sumS +0.060 -sumD -0.114 (0.094) mid -0.107 last -0.007 | E|D_last| 0.168 | perdec ED +0.0020 (SE 0.0017) | sum|D| 3.18 | dec/game 56.0 median 35 | E phi(v1) -0.0039 (0.0165)
+self    tanh  games 100 ident max 2.2e-16 | -Ez -0.050 (0.097) | sumR +0.000 sumS +0.031 -sumD -0.083 (0.093) mid -0.059 last -0.024 | E|D_last| 0.331 | perdec ED +0.0015 (SE 0.0017) | sum|D| 2.34 | dec/game 56.0 median 35 | E phi(v1) -0.0022 (0.0084)
+
+per-decision drift differences (logit), z-scores:
+  wb2-60 vs mcts [logit]: -0.0127 vs -0.0113, diff -0.0014 +- 0.0040 (z=-0.35); 95% CIs [-0.0193,-0.0062] / [-0.0158,-0.0068]
+  wb2-60 vs mcts [tanh]: -0.0106 vs -0.0080, diff -0.0026 +- 0.0034 (z=-0.76); 95% CIs [-0.0162,-0.0050] / [-0.0117,-0.0043]
+  wb2-60 vs self [logit]: -0.0127 vs +0.0020, diff -0.0148 +- 0.0037 (z=-3.95); 95% CIs [-0.0193,-0.0062] / [-0.0013,+0.0053]
+  wb2-60 vs self [tanh]: -0.0106 vs +0.0015, diff -0.0121 +- 0.0033 (z=-3.65); 95% CIs [-0.0162,-0.0050] / [-0.0018,+0.0047]
+  mcts vs self [logit]: -0.0113 vs +0.0020, diff -0.0134 +- 0.0028 (z=-4.71); 95% CIs [-0.0158,-0.0068] / [-0.0013,+0.0053]
+  mcts vs self [tanh]: -0.0080 vs +0.0015, diff -0.0095 +- 0.0025 (z=-3.77); 95% CIs [-0.0117,-0.0043] / [-0.0018,+0.0047]
+
+W1 sampled: 30 seeds, 30 with both seats; phi(v1)+phi(v1') per pair: max |.| 8.88e-16, mean -3.70e-17
+mcts: 100 distinct seeds for 100 games (one game per seed => no seat-paired states)
+self: 100 distinct seeds for 100 games (one game per seed => no seat-paired states)

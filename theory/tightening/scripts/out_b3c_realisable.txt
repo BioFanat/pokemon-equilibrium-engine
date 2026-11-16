@@ -1,0 +1,37 @@
+lam 0.5 T 2: best realisable discounted regret 1.614 (shipped class 1.614) vs ln5 1.609 VIOLATION
+   loss vectors (eq, br_unif, br_us, safe, uniform):
+ [[0.12 3.07 3.07 0.66 2.2 ]
+ [5.19 4.89 4.89 5.17 2.2 ]]
+lam 0.5 T 3: best realisable discounted regret 1.729 (shipped class 1.729) vs ln5 1.609 VIOLATION
+   loss vectors (eq, br_unif, br_us, safe, uniform):
+ [[3.79 1.7  1.7  3.53 2.2 ]
+ [0.12 3.07 3.07 0.66 2.2 ]
+ [5.19 4.99 4.99 5.07 2.2 ]]
+lam 0.5 T 4: best realisable discounted regret 1.813 (shipped class 1.813) vs ln5 1.609 VIOLATION
+   loss vectors (eq, br_unif, br_us, safe, uniform):
+ [[0.67 0.5  0.5  2.06 2.2 ]
+ [0.12 3.07 3.07 0.66 2.2 ]
+ [5.56 0.98 0.98 3.16 2.56]
+ [0.8  4.44 4.44 3.43 2.2 ]]
+lam 0.5 T 6: best realisable discounted regret 1.836 (shipped class 1.836) vs ln5 1.609 VIOLATION
+lam 0.5 T 8: best realisable discounted regret 1.838 (shipped class 1.838) vs ln5 1.609 VIOLATION
+lam 0.7 T 2: best realisable discounted regret 1.434 (shipped class 1.434) vs ln5 1.609 
+lam 0.7 T 3: best realisable discounted regret 1.570 (shipped class 1.570) vs ln5 1.609 
+lam 0.7 T 4: best realisable discounted regret 1.636 (shipped class 1.636) vs ln5 1.609 VIOLATION
+   loss vectors (eq, br_unif, br_us, safe, uniform):
+ [[1.9  1.83 1.83 2.41 2.2 ]
+ [0.12 3.07 3.07 0.66 2.2 ]
+ [5.08 0.89 0.89 3.83 2.08]
+ [5.56 5.21 5.21 5.11 2.56]]
+lam 0.7 T 6: best realisable discounted regret 1.714 (shipped class 1.714) vs ln5 1.609 VIOLATION
+lam 0.7 T 8: best realisable discounted regret 1.753 (shipped class 1.753) vs ln5 1.609 VIOLATION
+lam 0.9 T 2: best realisable discounted regret 1.463 (shipped class 1.463) vs ln5 1.609 
+lam 0.9 T 3: best realisable discounted regret 1.528 (shipped class 1.528) vs ln5 1.609 
+lam 0.9 T 4: best realisable discounted regret 1.588 (shipped class 1.588) vs ln5 1.609 
+lam 0.9 T 6: best realisable discounted regret 1.633 (shipped class 1.633) vs ln5 1.609 VIOLATION
+lam 0.9 T 8: best realisable discounted regret 1.608 (shipped class 1.608) vs ln5 1.609 
+lam 0.95 T 2: best realisable discounted regret 1.526 (shipped class 1.526) vs ln5 1.609 
+lam 0.95 T 3: best realisable discounted regret 1.543 (shipped class 1.543) vs ln5 1.609 
+lam 0.95 T 4: best realisable discounted regret 1.576 (shipped class 1.576) vs ln5 1.609 
+lam 0.95 T 6: best realisable discounted regret 1.599 (shipped class 1.599) vs ln5 1.609 
+lam 0.95 T 8: best realisable discounted regret 1.602 (shipped class 1.602) vs ln5 1.609 

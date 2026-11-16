@@ -1,0 +1,6 @@
+random+hill-climb: violations 0; max(loss-bud3) 4.25e-15; max(bud3-bud2) -2.36e-04
+degenerate integer games, arbitrary optimal-face vertices: violations 0; max(loss-bud3) 2.57e-09
+draft CE: x=[0.5 0.5], eps_s in Qhat=0.000, loss in Q=0.500; eps_v=10.0
+draft CE: x=[0. 1.], eps_s in Qhat=0.500, loss in Q=0.000; eps_v=10.0
+fixed CE: x=[1. 0.], eps_s in Qhat=-0.000, loss in Q=2.000; eps_v=1.0
+fixed CE: x=[0. 1.], eps_s in Qhat=-0.000, loss in Q=0.000; eps_v=1.0
