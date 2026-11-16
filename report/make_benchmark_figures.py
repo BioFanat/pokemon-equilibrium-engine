@@ -130,6 +130,41 @@ def fig_gauntlet():
     finish(fig, "fig_gauntlet")
 
 
+# ================================================================ fig_gauntlet_col
+# Single-column panel A for final5.tex, drawn at its print width (included unscaled) in the text's vocabulary.
+COL_W_IN = 3.4                       # \includegraphics without width; final5.tex column is 3.525 in
+NAME_COL = {"agentform": "Bayesian LP (ours)", "top": "top move", "pimc": "PIMC",
+            "maxpower": "max damage", "random": "uniform random"}
+
+
+def fig_gauntlet_col():
+    d = json.loads(GAUNTLET.read_text())
+    bots = sorted(d["bots"], key=lambda b: d["ratings"][b])           # bottom -> top
+    fig, a = plt.subplots(figsize=(COL_W_IN, 2.25), layout="constrained")
+    a.axvline(0, color=GRAY, lw=0.6, zorder=0)
+    for y, bot in enumerate(bots):
+        r, (lo, hi) = d["ratings"][bot], d["ci95"][bot]
+        c = colour(bot)
+        if r < XLIM_A[0]:   # off scale: arrow at the left edge, value as a direct label (CI in the caption)
+            a.plot(XLIM_A[0] + 8, y, marker="<", color=c, ms=6, clip_on=False)
+            a.annotate(f"{r:.0f}".replace("-", "−"), (XLIM_A[0] + 8, y),
+                       xytext=(7, 0), textcoords="offset points", va="center", color=INK)
+            continue
+        a.errorbar(r, y, xerr=[[r - lo], [hi - r]], fmt="o", color=c, ms=6 if bot == "agentform" else 5,
+                   elinewidth=1.2, capsize=0, zorder=3)
+    ms_lab = lambda bot: f"Foul Play, {bot.partition('@')[2]} ms" if "@" in bot else NAME_COL[bot]
+    a.set_yticks(range(len(bots)), [ms_lab(x) for x in bots])
+    for t, bot in zip(a.get_yticklabels(), bots):
+        if bot == "agentform":
+            t.set_fontweight("bold")
+    a.yaxis.set_tick_params(length=0)
+    a.spines["left"].set_visible(False)
+    a.set_xlim(*XLIM_A)
+    a.set_ylim(-0.6, len(bots) - 0.4)
+    a.set_xlabel("Rating (Elo, Bayesian LP = 0)")
+    finish(fig, "fig_gauntlet_col", exact=True)
+
+
 # ================================================================ fig_switch
 def switch_traj(refresh=False):
     """P(uniform) per update for the EXAMPLES streams, recomputed from the logged p_style (cached)."""

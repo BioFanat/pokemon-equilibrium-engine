@@ -9,10 +9,10 @@ notes keep the long proofs. Sources: `theory_section.md`, `full_game.md`, `hedge
 How to read it.
 
 - §0 notation, canonical names and the status vocabulary.
-- §1 levels M0–M4 and the two course lenses.
+- §1 levels M0–M4 and the two course views.
 - §2 assumptions A1–A12, numbered once and cited by number everywhere below.
 - §3 the bridges M0→M1→M2→M3→M4.
-- §4–§7 results, grouped by lens, then by level. Each result has a status tag, a level tag, a lens tag, its
+- §4–§7 results, grouped by view, then by level. Each result has a status tag, a level tag, a view tag, its
   assumptions, a statement with quantifiers in order, a proof (idea → steps → conclusion) or a precise pointer, and
   its real-game test.
 - §8 playable algorithms. §9 status table (as of 2026-11-15). §10 refuted / superseded. §11 tightening results and
@@ -40,24 +40,24 @@ notes; each one is also listed in §10 so the old versions are not re-derived.
 | $\operatorname{val}(A)$ | $\max_x\min_y x^\top Ay$ |
 | $\Delta$ | payoff **range** of a matrix (max entry − min entry); $\Delta=2$ on $[-1,1]$ |
 | $\mathcal P(X)$ | the probability simplex on a finite set $X$ (written $\Delta(X)$ in the sources; renamed here to avoid the clash with the range) |
-| $\varepsilon_s$ | solver gap: $\operatorname{val}\hat Q-\min_y x^\top\hat Qy$ |
-| $\varepsilon_v$ | matrix (leaf) error, A7 |
+| $\varepsilon_s$ | stage exploitability: $\operatorname{val}\hat Q-\min_y x^\top\hat Qy$ |
+| $\varepsilon_v$ | stage-matrix error, A7 |
 | $\varepsilon_{\rm sim}$ | simulator-fidelity term, A5 |
-| $\delta(t,s)$ | per-stage budget $\varepsilon_s+2\varepsilon_v$ (Theorem A). Confidence levels are written $\vartheta$; no other $\delta$ |
-| $\bar H$ | $\mathbb E_{\pi,\sigma_{\rm BR}}[\tau]$, expected length against a best response (non-forced turns where stated). $\bar H_\sigma$: against opponent $\sigma$. The sources' $H_{\rm eff}$ and $\bar L$ are this quantity |
+| $\delta(t,s)$ | per-turn error $\varepsilon_s+2\varepsilon_v$ (Theorem A). Confidence levels are written $\vartheta$; no other $\delta$ |
+| $\bar H$ | $\mathbb E_{\pi,\sigma_{\rm BR}}[\tau]$, expected length against a best response (in scored turns where stated: turns on which our agent had at least two legal actions and the opponent's action was observed and matched a sampled world, turns where the opponent had one option included). $\bar H_\sigma$: against opponent $\sigma$. The sources' $H_{\rm eff}$ and $\bar L$ are this quantity |
 | $k$; $\eta$; $\alpha$ | number of experts; Hedge step; fixed-share rate |
-| $d,\ d_1,\ d_2$ | per-turn surrogate drift between two experts (R3a model); $d_1$ vs MCTS, $d_2$ vs the exploiter |
+| $d,\ d_1,\ d_2$ | per-turn normalised-stage-payoff drift between two experts (R3a model); $d_1$ vs MCTS, $d_2$ vs the exploiter |
 | $\operatorname{lgs}(z)$ | logistic $1/(1+e^{-z})$ |
 | $\mathrm{TV}(p,q)$ | $\tfrac12\lVert p-q\rVert_1$ |
 | $J_N,\ \bar x_N,\ \bar y_N$ | empirical joint visit distribution at a node and its marginals (visit shares) |
-| $\eta_{\rm NL}$ | non-locality gap (`full_game.md` §6.2) |
+| $\eta_{\rm NL}$ | value of revealing the opponent's team to both sides (ours; it bounds the error Long et al. call non-locality; `full_game.md` §6.2) |
 
 ### 0.2 Units (A9 fixes them; used at every number below)
 
 - Payoff $u\in[-1,1]$; score $s=(u+1)/2\in[0,1]$. Exploitability in score units is half the exploitability in payoff
   units.
-- An exploiter with mean score $Z$ against our bot certifies, at the point estimate, exploitability
-  $\ge 2(Z-\tfrac12)$ in payoff units and $\ge Z-\tfrac12$ in score units.
+- An exploiter with mean score $Z$ against our bot gives, at the point estimate, the lower bound
+  $\operatorname{expl}\ge 2(Z-\tfrac12)$ in payoff units (a 95% lower confidence bound once $Z$ is replaced by its lower confidence limit) and $\ge Z-\tfrac12$ in score units.
 - Engine matrices are in heuristic engine units. The map to the payoff scale is unknown; its error is part of
   $\varepsilon_v$ (A7).
 
@@ -82,12 +82,12 @@ complete proof given a hypothesis that is stated by name and not itself proved. 
 gap. **conjecture**: believed, not proved; evidence given. **numeric**: brute force, simulation or measurement only.
 **cite**: known result; we use it without re-proof. "Measured (probe level, n small)" in §3.1 is **numeric** with small $n$, not a paper number.
 
-Level tags M0–M4 (§1). Lens tags: **L6** (single algorithm), **L7** (dynamics), **S** (structural: perturbation,
-telescoping and measurement results that belong to neither lens; forcing them into a lens would overstate them).
+Level tags M0–M4 (§1). View tags: **L6** (single algorithm), **L7** (dynamics), **S** (structural: perturbation,
+telescoping and measurement results that belong to neither view; forcing them into a view would overstate them).
 
 ---
 
-## 1. Levels and lenses
+## 1. Levels and views
 
 ### 1.1 Levels
 
@@ -96,13 +96,13 @@ telescoping and measurement results that belong to neither lens; forcing them in
 | **M0** | one exact matrix $A$ (Lecture 7's setting) | solver/dynamics gap only |
 | **M1** | one estimated stage matrix $\hat Q\approx Q^*$ | + matrix error $\varepsilon_v$ (A7) |
 | **M2** | full-information finite-horizon stochastic game (poke-engine, A6) | + composition over $\bar H$ decision nodes |
-| **M3** | hidden information: agent-form solve over $K$ sampled worlds | + sampling, belief error (A2), non-locality (A3), prior (A4) |
+| **M3** | hidden information: Bayesian-LP solve over $K$ sampled worlds | + sampling, belief error (A2), non-locality (A3), prior (A4) |
 | **M4** | real Showdown | + simulator mismatch $\varepsilon_{\rm sim}$ (A5); measured only so far |
 
 Pure online-learning results with no game in them (Lemma H, R1, R2a) are tagged **M0** and listed where they are
 applied (M2).
 
-### 1.2 The two course lenses
+### 1.2 The two course views
 
 **L6, single algorithm (Lecture 6).** One learner, an arbitrary opponent, a regret guarantee against fixed
 comparators. The adversary model is Lecture 6 §2.1 and §2.3: losses "may depend on everything that happened earlier,
@@ -116,7 +116,7 @@ on full-information no-regret dynamics, Lecture 7 §2.2 gives
 $$\max_x x^\top A\bar y-\min_y\bar x^\top Ay\le\epsilon_R+\epsilon_C .$$
 In a general game the time-average joint play is an $\epsilon$-CCE (§3.2); its last sentence notes that for the
 *sampled* actions "the analogous statement requires an additional expectation or a high-probability guarantee", which
-is the role of Lemma D. Proposition L4 is the §2.2 inequality as an identity, with counterfactual regrets and bandit
+is the role of Lemma D. Proposition L4 is the §2.2 inequality as an identity, with full-information regrets and bandit
 feedback; B3 measures what the feedback model costs; U explains when decoupled UCB1 breaks the §2.2 argument.
 
 ---
@@ -154,7 +154,7 @@ partly exact (`game_model.md` §6 item 2). Within a species the set posterior is
 `Belief.sample_unrevealed` is NOT the true conditional of `randbats.sample_team` (toy check: true 3/8, 3/8, 1/4 vs the
 sampler's 1/3, 1/3, 1/3; size at 509 species unmeasured). `Belief` uses only legality evidence (revealed moves, tera,
 item gone), no damage likelihoods, so Theorem C's TV term is not zero even under A2. On Showdown both E1 arms use
-foul-play's count-weighted prior, which is a third prior; its distance to Showdown's generator is unmeasured.
+Foul Play's count-weighted prior, which is a third prior; its distance to Showdown's generator is unmeasured.
 
 *Crosswalk:* `theory_section.md`'s (A1), (A2), (A3) are A2, A3, A4 here; `game_model.md` §5's new A10, A11, A12 are the assumptions below the A9 entry.
 
@@ -179,12 +179,12 @@ fainted last; poke-engine's search makes side one lose; our engine loop scores a
 
 **A7 (matrix error).** At every live $(t,s)$ the matrix we solve satisfies
 $\lVert\hat Q_t(s)-Q^*_t(s)\rVert_\infty\le\varepsilon_v(t,s)$ on the payoff scale; $\varepsilon_v=\sup\varepsilon_v(t,s)$.
-A per-state affine calibration $a_{t,s}\hat Q+c_{t,s}$ ($a\ge0$) may be used for Theorem A (R6a); the Hedge learner
-needs one global calibration (E2′).
+A per-state affine fit $a_{t,s}\hat Q+c_{t,s}$ ($a>0$) may be used for Theorem A (R6a); the Hedge learner
+needs one global affine fit (E2′).
 
 **A8 (experts are fixed stage policies).** The expert set $\{1,\dots,k\}$ is fixed for the match. Expert $e$'s stage
 strategy at turn $t$ is $q_{e,t}=q_e(\hat A_t)$, a fixed function of the current stage matrix (top move, RM+ mixture,
-safest row, ε-safe LP). P1 also allows history-dependent experts, fixed across games. **Hypothesis (E)**, used by the
+pure maximin row, ε-safe LP). P1 also allows history-dependent experts, fixed across games. **Hypothesis (E)**, used by the
 safety statements: some expert $e^\star$ is $\varepsilon_s$-optimal in every $\hat A_t$.
 
 **A9 (bounded rewards, normalisation).** Units as in §0.2. Learner rewards are
@@ -213,9 +213,9 @@ $\bar H$ measured in decision nodes, not turns.
 
 | Bridge | Theorem that crosses it | Assumptions | Status | Real-game test |
 |---|---|---|---|---|
-| **B01** M0→M1 | Lemma 1 (+ Lemma 2(a)) | A7 | Lean | **Only exact-endgame $\varepsilon_v$ is measured** (abstracted endgames: calibrated $\varepsilon_v$ max 0.8–1.0, global calibration $a=0$, $\varepsilon_v^{\rm glob}\approx1$; RESULTS "Exact endgames"). **Mid-game $\varepsilon_v$ is unmeasured**: poke-engine MCTS values are root-relative, so they are not an absolute $Q^*$ reference. What the measured exploitability *requires* is bounded below: path-average $\varepsilon_v\ge0.0041$ per decision (W1 point; §11, $\varepsilon_v$ lower bound) |
+| **B01** M0→M1 | Lemma 1 (+ Lemma 2(a)) | A7 | Lean | **Only exact-endgame $\varepsilon_v$ is measured** (abstracted endgames: affine-invariant stage-matrix error $\varepsilon_v^{\rm aff}$ max 0.8–1.0, the best global affine fit is constant, $\varepsilon_v^{\rm glob}\approx1$; RESULTS "Exact endgames"). **Mid-game $\varepsilon_v$ is unmeasured**: poke-engine MCTS values are root-relative, so they are not an absolute $Q^*$ reference. What the measured exploitability *requires* is bounded below: path-average $\varepsilon_v\ge0.0041$ per decision (W1 point; §11, $\varepsilon_v$ lower bound) |
 | **B12** M1→M2 | Theorem A (with L1's sandwich and L6's residual form) | A1, A6, A7 | Lean (abstract induction) + proved | Stage gaps along the exploiter's path, computed in $\hat Q$ ($Q^*$ unavailable). For sampled play they are $\approx0$ (RM+ converges), so the test **isolates the residual $2\varepsilon_v\bar H$** that must explain the measured exploitability; **it does not confirm the bound**. Probe done (§3.1): residual isolated for sampled play. Units first: exploitability $=2\times$(exploiter score $-0.5$) $=$ **0.746 / 0.426 / 0.534** for top move / sampled / safex 2% (W1 0.873, W1 0.713, SXW 0.767). Log-only rerun, about 1 CPU-h |
-| **B23** M2→M3 | Theorem C; Corollary C.1; Theorem B′; S1, S2 | A2, A3, A4 | proved (C, C.1, B′, S2); proved with named hypothesis (S1) | On Showdown we control both bots, so true opponent sets are known: measure TV(foul-play belief, truth) per turn and the oracle-vs-agent-form gap in real games (from harness logs) |
+| **B23** M2→M3 | Theorem C; Corollary C.1; Theorem B′; S1, S2 | A2, A3, A4 | proved (C, C.1, B′, S2); proved with named hypothesis (S1) | On Showdown we control both bots, so true opponent sets are known: measure TV(Foul Play belief, truth) per turn and the oracle-vs-Bayesian LP gap in real games (from harness logs) |
 | **B34** M3→M4 | Proposition SIM (simulation lemma) | A5 | sketch (standard lemma, cite) | From recorded Showdown battles: rebuild each turn with the true teams, predict the outcome distribution of the played move pair with poke-engine, score the observed outcome (calibration, HP-damage error). Probe done (§3.1): mean KO-gap $\approx0.012$ per move, 0.011–0.015 per turn at KO resolution (sup unmeasured, observed max 0.31); $\ge0.89$ at exact-state resolution |
 
 ### 3.1 Bridge measurements (status: measured, probe level, n small; leads, not paper numbers)
@@ -236,7 +236,7 @@ $n=12$ the channel split is noisy.
 |---|---|---|---|
 | sampled | 0.250 (0.426) | **0.001** [0.000, 0.001]; exploiter's realised stage gain $\le0$ (median $-0.69$ to $-1.08$) | all measured exploitability goes through the drift channel: the $2\varepsilon_v\bar H$ residual. **Supported** |
 | top move | 0.833 (0.746) | **1.95** [1.23, 3.41]; 0/597 turns mixed | the stage channel explains 0.68–1.04 of the exploitability, depending on the units conversion |
-| safex 2% | 0.667 (0.534) | 0.33; per-turn gap capped at exactly 0.020 | exploitation goes through drift |
+| ε-safe 2% | 0.667 (0.534) | 0.33; per-turn gap capped at exactly 0.020 | exploitation goes through drift |
 
 Reading: deterministic play is exploited through stage gaps; mixed play is exploited through value error along the
 line chosen by the exploiter's lookahead. This **isolates** the residual; it does not confirm Theorem A's constant.
@@ -244,7 +244,7 @@ Caveat: on these 6 pairs the sampled target's exploitability (0.250) is well bel
 subsample is not representative in level. Extension (2026-11-16, verified): 284 in-engine games (36 B12 + 48 exploiter extension +
 100 MCTS-2000 + 100 self-play) and 599 real-Showdown LOG games; see §11, signed pathwise identity.
 
-**B34 (M3→M4, A5).** 21 instrumented foul-play-vs-foul-play games on a local Showdown server, both true teams known;
+**B34 (M3→M4, A5).** 21 instrumented Foul Play-vs-Foul Play games on a local Showdown server, both true teams known;
 519 damage events scored against the 16-roll grid reconstructed by the bridge scorer from poke-engine's max roll (poke-engine itself uses one average roll per branch), poke-engine 0.0.48.
 
 - Observed damage vs poke-engine's 16-roll support (519 events):
@@ -268,7 +268,7 @@ subsample is not representative in level. Extension (2026-11-16, verified): 284 
   average damage roll by design, so its point kernel matches the observed HP exactly on only 10.6% of single-value
   events. With that resolution Proposition SIM is vacuous.
 - Genuine mechanic mismatches: 2 of 519 (< 0.5%): drain rounding, and a suspected crit/Unaware issue ($n=1$); counting
-  these as genuine is a judgement call. Errors in rebuilding the state from foul-play's tracker are about as common.
+  these as genuine is a judgement call. Errors in rebuilding the state from Foul Play's tracker are about as common.
 
 **Consequence for A5.** A5 must be stated at a **coarsened resolution**: the TV in $\varepsilon_{{\rm sim},t}$ is
 taken between the kernels pushed forward to a coarse partition of states (KO events, or HP bins), and the simulation
@@ -282,9 +282,9 @@ What is already known about transfer (empirical bridge results):
 - **U does not transfer to the engine at practical budgets.** At $10^3$–$10^4$ iterations the real poke-engine root's
   joint visits are indistinguishable from the product of the marginals; the gap is unequalised exploration (H4,
   §5.2). U stays an M0, large-$N$ result.
-- **The 2% ε-safe certificate does not survive M1→M2.** SXW: the white-box exploiter scores 0.767 against safex 2%,
+- **The 2% ε-safe best-response bound does not survive M1→M2.** SXW: the depth-2 informed best response scores 0.767 against the 2% ε-safe best response,
   worse for us than 0.713 against sampled (W1; different seeds, unpaired). The stage-level cap bounds loss only in
-  $\hat Q$; the exploiter wins through $\varepsilon_v$. The certificate's add-on is non-vacuous only for
+  $\hat Q$; the exploiter wins through $\varepsilon_v$. The bound's ε-add-on is non-vacuous only for
   $\varepsilon\lesssim1\%$ (§6.3).
 - **Leaf rescaling did not help:** LF, $\tanh(h/400)$ with exact terminals vs the current leaf, $-0.040$
   $[-0.098,+0.018]$, n.s. Lowering the TD residual (L6) did not move the win rate: $\varepsilon_v$ is not a scale
@@ -294,7 +294,7 @@ What is already known about transfer (empirical bridge results):
 
 ---
 
-## 4. Structural results (lens S)
+## 4. Structural results (view S)
 
 ### 4.1 M1: one estimated matrix
 
@@ -310,14 +310,14 @@ $\min_y x^\top Ay\ge\operatorname{val}(A)-\varepsilon_s-2\varepsilon$. The facto
 error $\varepsilon_{\rm leaf}$ gives $\varepsilon_v\le\varepsilon_{\rm leaf}$ for every $d\ge1$. (d) The bound in (c) is
 attained for every $d$ in games where no transition before stage $t+d$ reaches a terminal state. `full_game.md:40–46`.
 
-**Lemma R6a (affine invariance; calibrated Theorem A).** [M1–M2; S; **proved**, numeric check] For $a>0$,
-`rm_plus(aM+c)` returns the strategies of `rm_plus(M)`; Theorem A holds with per-state budget
-$a_{t,s}\varepsilon_s+2\varepsilon_v^{\rm cal}(t,s)$; with $a=0$ the budget is the trivial $\operatorname{range}(Q^*)$.
+**Lemma R6a (affine invariance; affine-invariant Theorem A).** [M1–M2; S; **proved**, numeric check] For $a>0$,
+`rm_plus(aM+c)` returns the strategies of `rm_plus(M)`; Theorem A holds with per-turn error
+$a_{t,s}\varepsilon_s+2\varepsilon_v^{\rm aff}(t,s)$; as $a\to0$ the per-turn error $2\varepsilon_v^{\rm aff}$ tends to the trivial $\operatorname{range}(Q^*)$ ($\varepsilon_v^{\rm aff}$ itself tends to the error of the best constant fit, half the range).
 `regret_theory.md:403–420`.
 
-**Lemma R6b (inversions; exact terminals).** [M1; S; **proved**, numeric] (1) $\varepsilon_v^{\rm cal}(M,Q)\ge\tfrac12\max\{Q_i-Q_j:M_i\le M_j\}$;
-(2) $a=0$ is an optimal calibration iff some argmax-$Q$ cell is scored at or below some argmin-$Q$ cell; (3) with exact
-terminal values, $|\hat Q-Q^*|\le\pi_{\rm live}\,\varepsilon_{\rm live}$ cellwise. Explains $a=0$ on all six exact
+**Lemma R6b (inversions; exact terminals).** [M1; S; **proved**, numeric] (1) $\varepsilon_v^{\rm aff}(M,Q)\ge\tfrac12\max\{Q_i-Q_j:M_i\le M_j\}$;
+(2) the best affine fit is constant iff some argmax-$Q$ cell is scored at or below some argmin-$Q$ cell; (3) with exact
+terminal values, $|\hat Q-Q^*|\le\pi_{\rm live}\,\varepsilon_{\rm live}$ cellwise. Explains the constant best fit on all six exact
 endgames (one mis-scored won terminal suffices). `regret_theory.md:422–460`. *Scope:* "exact terminals" holds only for `squash_matrix` and `vnet_matrix`; `nash.full_matrix` scores terminal children with the heuristic evaluation (`game_model.md` §6 item 6), so part (3) applies only to those.
 
 ### 4.2 M2: composition over the game
@@ -351,7 +351,7 @@ exploitability in $Q^*$ and $\sigma_g$ the myopic $Q^*$-exploiter; the gap can a
 $2-\delta$). (c) Theorem A as a corollary. `search_rl_links.md:57–70`.
 
 **Theorem L5 (depth with exact terminals; applies to `squash_matrix`/`vnet_matrix` only, not `nash.full_matrix`, which scores terminal children with the heuristic evaluation).** [M2; S; **proved**, brute force, bound attained] $|V^D_t-V^*_t|\le\varepsilon_{\rm leaf}\,\rho_D(t,s)$
-with $\rho_D$ the cooperative survival probability; Theorem A holds with budget $\varepsilon_s+2\varepsilon_{\rm leaf}\rho_D$.
+with $\rho_D$ the cooperative survival probability; Theorem A holds with per-turn error $\varepsilon_s+2\varepsilon_{\rm leaf}\rho_D$.
 Mid-game $\rho_D\approx1$: depth alone does not shrink the leaf term. `search_rl_links.md:193–215`.
 
 **Theorem L6 (minimax TD residual).** [M2; S; **proved**, brute force] *Assumptions:* A1(i), A6; leaf $\hat V$ with exact
@@ -363,19 +363,19 @@ add $\mathbb E_{\pi,\sigma_{\rm BR}}[m]-\mathbb E_{\pi^*,\hat\sigma}[m]$ (note t
 bound is vacuous (median $2\sum|\delta_t|=4.2$ per game). *Real-game test:* LF (played $k=400$): $-0.040$, n.s.
 
 **Proposition R6c (non-termination).** [M2; S; **proved**] In an uncapped undiscounted game, a stationary agent with
-stage budget $\delta\equiv0$ in the true $V^*$ can have exploitability 0.3; with the cap (A6) Theorem A holds with
+per-turn error $\delta\equiv0$ in the true $V^*$ can have exploitability 0.3; with the cap (A6) Theorem A holds with
 equality and charges the loss to the last turn; residual form for fixed points. Engine instance: exploitability
 0.029 in an abstracted endgame loop. `regret_theory.md:462–510`.
 
-**Corollary R4 (surrogate-to-true transfer).** [M1–M2; S; **proved**, numeric] Under A7 (calibrated),
+**Corollary R4 (normalised-stage-payoff-to-true transfer).** [M1–M2; S; **proved**, numeric] Under A7 (affine-invariant),
 trajectory sums of stage payoffs move by at most $\sum_t\varepsilon_v(t)$ (one strategy) or $2\sum_t\varepsilon_v(t)$
-(differences, values). With $a=0$ on every exact endgame nothing is certified. `regret_theory.md:297–321`.
+(differences, values). With the best fit constant on every exact endgame, the transfer bound is vacuous. `regret_theory.md:297–321`.
 
 **Propositions R5a–c (exploitability bracket).** [M2/M4; S; **proved**] (a) any fixed pre-registered exploiter gives
 $\operatorname{expl}\ge\bar Z-\tfrac12-\sqrt{\ln(m/\vartheta)/(2n)}$ (score units; $m$ exploiters tried, $n$ pairs);
 fresh seeds remove the $\ln m$. (b) $\mathrm{gain}\le\operatorname{expl}(\pi)+\operatorname{expl}(\beta)$. (c) bracket with
 Theorem A's upper side, which is vacuous for current leaves. `regret_theory.md:325–397`. *Measured (engine):* W1
-certified LCBs 0.250 (top move), 0.090 (sampled); SXW 0.145 (safex 2%), all score units, one exploiter each.
+95% lower confidence bounds 0.250 (top move), 0.090 (sampled); SXW 0.145 (ε-safe 2%), all score units, one exploiter each.
 
 ### 4.3 M3: hidden information
 
@@ -437,21 +437,21 @@ $\delta_C=\varepsilon_s+2\varepsilon_v+2\mathbb ES_t+\eta_{\rm NL}(t)+2\Delta\,\
 **Corollary C.1 (headline bound).** [M3; S; **proved**] Under A2 (TV term $=0$), A3 ($\eta_{\rm NL}=0$), A4 and the RM+ and
 $K$-sample rates, with $\Delta=2$:
 $$\operatorname{expl}(\pi)\le\bar H\Big(8\sqrt{n/T}+2\varepsilon_v+4\sqrt{2n\log K/K}\Big).$$
-Against arbitrary (revealing) opponents the TV term is necessary: three-type Example C.1 (repaired) has
-$\operatorname{expl}=1$ while $\sum_t\eta_{\rm NL}=3/7$ and all other terms are 0. At least 3 types are needed at $H=2$.
+Against arbitrary (revealing) opponents the TV term is necessary: three-team Example C.1 (repaired) has
+$\operatorname{expl}=1$ while $\sum_t\eta_{\rm NL}=3/7$ and all other terms are 0. At least 3 teams are needed at $H=2$.
 `full_game.md:176–186`; `theory_section.md:52–60`. Two-sided information adds the value of concealing our team once
 (`full_game.md:188`).
 
-**Blend-loss bound (PIMC vs agent-form, one stage).** [M3; S; **numeric** ($4\delta_H$), **sketch** ($2\delta_H$)] Blend
+**PIMC-averaging loss bound (PIMC averaging vs Bayesian LP, one stage).** [M3; S; **numeric** ($4\delta_H$), **sketch** ($2\delta_H$)] The Bayesian LP is the maximin LP of PokaiTrainer's Bayesian matrix game, the one-sided special case of Ponssard and Sorin's (1980) LP for zero-sum games with incomplete information ("Bayesian matrix game" is PokaiTrainer's name). PIMC averaging solves each sampled world as if it were known and plays the $\beta$-weighted average of the per-world equilibria. PIMC-averaging
 loss $\le4\delta_H$ held on all 46,890 logged decisions (max 0.098 of the bound); a hand argument gives $2\delta_H$, not
-yet through `prove`. RESULTS "Blend loss vs the bound" and "Relation to prior work".
+yet through `prove`. RESULTS "PIMC-averaging loss vs the bound" and "Relation to prior work".
 
 **Conjecture ($\eta_{\rm NL}$ + TV floor).** [M3; S; **conjecture**] $\sum_t(\eta_{\rm NL}(t)+4\,\mathrm{TV}_t)$ along typical
 play is of the order of the measured oracle gap ($\approx0.1$ score). Test: B23 on Showdown.
 
 ---
 
-## 5. Dynamics results (lens L7)
+## 5. Dynamics results (view L7)
 
 ### 5.1 M0: one exact matrix
 
@@ -472,7 +472,7 @@ plain identity (BMS19 Observation 1: both regrets 0, average exploitability 0.5)
 
 **Proposition L4 (exact folk identity for visit shares).** [M0; L7; **proved**] At a node with payoff matrix
 $\hat A\in[0,1]^{n\times m}$ and any selection rule,
-$\operatorname{NashGap}(\bar x_N,\bar y_N)=(\mathrm{Reg}^1_N+\mathrm{Reg}^2_N)/N$ with counterfactual (mean-reward) regrets.
+$\operatorname{DualityGap}(\bar x_N,\bar y_N)=(\mathrm{Reg}^1_N+\mathrm{Reg}^2_N)/N$ with full-information (mean-reward) regrets.
 Lecture 7 §2.2 as an identity. Convergence iff the *sum* is $o(N)$ (one side can be negative). `search_rl_links.md:149–155`.
 
 **Proposition L4b (UCB1 lockstep on symmetric games).** [M0; L7; **proved**] Deterministic rewards,
@@ -589,7 +589,7 @@ a measurement of $\varepsilon_v$, not as a refutation of a theorem.
 
 ---
 
-## 6. Single-algorithm results (lens L6)
+## 6. Single-algorithm results (view L6)
 
 ### 6.1 M0: online learning, no game
 
@@ -628,8 +628,8 @@ learner matches the best expert along the realised trajectory only (external, no
 `hedge_experts.md:64–201`.
 
 **Theorem E2′ (shipped learner, carried weights).** [M2; L6; **proved with named hypothesis** (E) and (B2) global
-calibration $a>0$] Adds the clipping loss $C_S$ and the R2a constant. **Does not apply on real leaves:** global
-calibration gives $a=0$, $\varepsilon_v^{\rm glob}\approx1$ on 6/6 exact endgames. `regret_theory.md:138–183`.
+affine fit $a>0$] Adds the clipping loss $C_S$ and the R2a constant. **Does not apply on real leaves:** the best global
+affine fit is constant, $\varepsilon_v^{\rm glob}\approx1$ on 6/6 exact endgames. `regret_theory.md:138–183`.
 
 **Lemma R3a (weight identities, $k=2$).** [M2; L6; **proved**] $\ln(w_N/w_F)=\eta_tG_t$; constant drift gives
 $w_F=\operatorname{lgs}(-d\sqrt{8\ln2}\sqrt t)$; per-turn deficit to the equilibrium expert is $400\,w_{F,t}\tilde d_t$.
@@ -640,7 +640,7 @@ $d_2=0.0291\pm0.0014$ (vs exploiter); the constant-slope model **reproduces** th
 fitted on the same data); "exploiter edge grows with $p_F$" not supported; no per-game link to score
 (corr $-0.17$). `regret_theory.md:206–263`.
 
-**Proposition R3c (bracket on the loss to the white-box exploiter).** [M2; L6; **proved**] $w_F\gamma_F\le\operatorname{val}\hat A-p\cdot\hat A[:,b]\le w_F\,\mathrm{gap}_F+w_N\varepsilon_s$.
+**Proposition R3c (bracket on the loss to the depth-2 informed best response).** [M2; L6; **proved**] $w_F\gamma_F\le\operatorname{val}\hat A-p\cdot\hat A[:,b]\le w_F\,\mathrm{gap}_F+w_N\varepsilon_s$.
 `regret_theory.md:265–285`.
 
 **Proposition R3d (carried vs reset cost).** [M2; L6; **proved**] *Assumptions:* $k=2$; shipped anytime FTRL with the
@@ -658,7 +658,7 @@ $\int_0^\infty u/(1+e^u)\,du=\pi^2/12$. (iii) with $G_t\ge d_1t$, $w_F\le\operat
 cost $d_2w_F\le(d_2/d_1)\,d_1w_F$. $\square$
 *At the fitted drifts* $d_1=0.0133<d_2/2=0.0146$, so the $d_1\ge d_2/2$ clause of (iii) fails; whether the bounded-horizon clause covers the 60-game run is not checked here. The general bound is
 $(0.0291/0.0133)\times0.2966/0.0133\approx48.8$ normalised units, far above the simulated carried phase-2 cost 4.9
-(reset 13.2). *Data agreement (numeric):* with actual non-forced turn counts, like-for-like within 0.02: reset vs
+(reset 13.2). *Data agreement (numeric):* with actual scored-turn counts, like-for-like within 0.02: reset vs
 exploiter end-of-game $w_F$ model value 0.394 (in-sample drifts) vs logged 0.380. Does not convert to the +0.146 win-rate difference
 (heuristic units are not win probability). Mechanism: warm-up amortisation of a decaying-$\eta$ learner (Harris,
 Anagnostides, Farina, Khodak, Wu & Sandholm, ICLR 2023, arXiv 2209.14110, "Meta-Learning in Games", general principle).
@@ -726,22 +726,22 @@ $F$'s log-odds by $\approx\alpha(\tfrac12-\tfrac1k)/\tfrac14=\alpha(2-4/k)$ per 
 *Numeric:* anytime crossings for $T_1=350/1400/5600$: update index 510 / 2040 / 8160 predicted ($=\lceil T_1(1+d_1/d_2)\rceil$); played turns 511 / 2041 / 8161. X6's fast switch (0–3 battles under fixed share) is **consistent with** (ii), not predicted by it.
 *Refuted:* "0.035/turn $=\alpha/\eta$" ($\alpha/\eta=0.010$); fixed-share steady state 0.38 and break-even at 74 battles are in §10. `dynamics_directions.md:237–270` (superseded).
 
-### 6.3 Safe exploitation
+### 6.3 ε-safe best response
 
 **ε-safe expert inside Hedge.** [M2; L6; **cite**] The ε-safe LP's stage gap is $\le\varepsilon_s+\varepsilon\cdot\operatorname{range}$, so
-L2(b) holds with that budget and L2(c)/E3 give the gain side. Cite: L2; Ganzfried & Sandholm 2015 §6.4; Li 2026
+L2(b) holds with that per-turn error and L2(c)/E3 give the gain side. Cite: L2; Ganzfried & Sandholm 2015 §6.4; Li 2026
 (arXiv 2607.28520, runtime certificate); Jeary & Turrini 2023 (arXiv 2307.12338, "Safe Opponent Exploitation for
 Epsilon Equilibrium Strategies"). Non-convexity remark [**proved**, 2-turn example]: per-turn mixing of two zero-exploitability
 experts can have exploitability 1, so "$\operatorname{expl}(\mathrm{Hedge})\le\min_e\operatorname{expl}(e)+\mathrm{Reg}$" is false.
 
-**Certificate arithmetic.** [M2; L6; **proved** (arithmetic on L2(b)) + **numeric**] With $\hat A$ on the payoff scale
+**ε-add-on arithmetic.** [M2; L6; **proved** (arithmetic on L2(b)) + **numeric**] With $\hat A$ on the payoff scale
 (range $\le2$; the shipped LP must run on the squashed matrix), the ε add-on is $\varepsilon\bar H$ in score units; at
-$\bar H\approx35$ non-forced turns: 0.105 (ε = 0.3%), 0.35 (1%), **0.70 (2%, vacuous)**. So the add-on is non-vacuous
-only for $\varepsilon\lesssim1\%$. The base term $\bar H(\varepsilon_s+2\varepsilon_v)$ is vacuous already, so "certified"
-means only that the add-on is non-vacuous. Gain curve (LP sensitivity, cite): concave in ε (300/300 real matrices),
+$\bar H\approx35$ scored turns: 0.105 (ε = 0.3%), 0.35 (1%), **0.70 (2%, vacuous)**. So the add-on is non-vacuous
+only for $\varepsilon\lesssim1\%$. The base term $\bar H(\varepsilon_s+2\varepsilon_v)$ is vacuous already, so the bound
+the ε-safe bound says only that its add-on is non-vacuous. Gain curve (LP sensitivity, cite): concave in ε (300/300 real matrices),
 recovering a median 35% / 80% / 100% of the top move's stage gain at 0.3% / 1% / 2%.
-*Empirical (engine):* SX safex 2% 0.530 vs MCTS-2000 (top move 0.580, sampled 0.510; paired differences n.s.); SXW: the
-certificate did not translate into game-level robustness (§3).
+*Empirical (engine):* SX ε-safe 2% 0.530 vs MCTS-2000 (top move 0.580, sampled 0.510; paired differences n.s.); SXW: the
+ε-safe best-response bound did not translate into game-level robustness (§3).
 
 ### 6.4 RL best responses
 
@@ -751,10 +751,9 @@ Corollaries L3a (RL gives a lower bound with computable slack), L3b (distributio
 `search_rl_links.md:107–128`.
 
 **Proposition L3c (undirected exploration).** [M2; L6; **proved**] A chain with $|B|^D$ miss probability: uniform-start
-exploiters need $\sim|B|^D$ games; white-box backward induction needs none. `search_rl_links.md:130–140`.
-*Empirical:* RL BR vs foul-play reached 0.125 at 8M decisions (black-box); gray-box (opponent's move distribution in
-the observation) 0.075 at 8M (single runs, unpaired, $\approx2.7$ SE): **gray-box did not beat black-box**; the white-box
-exploiter certifies $\ge0.25$ / $\ge0.09$ (top / sampled) with no training. Reading fixed before the run: $q$ without a
+exploiters need $\sim|B|^D$ games; informed-best-response backward induction needs none. `search_rl_links.md:130–140`.
+*Empirical:* RL BR vs Foul Play reached 0.125 at 8M decisions (black-box); gray-box (opponent's move distribution in
+the observation) 0.075 at 8M (single runs, unpaired, $\approx2.7$ SE): **gray-box did not beat black-box**; the depth-2 informed best response gives 95% lower confidence bounds $\ge0.25$ / $\ge0.09$ (top / sampled) with no training. Reading fixed before the run: $q$ without a
 payoff model is not enough; it does not say knowing the policy is useless.
 
 **AdaHedge second-order slack.** [M2; L6; **cite** + numeric] de Rooij et al. 2014 (constants from memory): about 2.0
@@ -790,7 +789,7 @@ $V^*_{\rm sd}-V^*_{\rm pe}\le\mathbb E_{\rm sd}\big[\sum_{t<\tau}(P_{\rm sd}-P_{
 policy term along $(\pi,\mathrm{BR}_{\rm sd})$. These lengths and TVs are along **adversarial** trajectories, not self-play.
 *Measured (probe):* mean KO-gap $\approx0.012$ per move, 0.011–0.015 per turn at KO resolution (sup unmeasured); $\ge0.89$ at exact-state resolution (vacuous).
 
-**What has been measured at M3 in the engine and awaits M4:** agent-form vs PIMC 0.585 [0.540, 0.630] (400 games,
+**What has been measured at M3 in the engine and awaits M4:** Bayesian LP vs PIMC 0.585 [0.540, 0.630] (400 games,
 equal compute); oracle gap $\approx0.1$; X5 hidden-information exploiter gain 0.00 / 0.03 (n.s.).
 
 ---
@@ -799,30 +798,30 @@ equal compute); oracle gap $\approx0.1$; X5 hidden-information exploiter gain 0.
 
 Each is a drop-in for the adapter's per-turn move choice (`our_find_best_move`), built on the $K$ sampled-world
 matrices. Predictions are from `bridge_plan.md` §2 and `dynamics_directions.md` §0, restated against the verified
-results. All are M4 tests. Run on real Showdown (2026-11-15; Modal except E1): E1, E2, E2fs, E4 (shares and most-visited arms, head-to-head against RM+), E5, BH and AF16; results below the table. Not run on 2026-11-15: E3, PA2, and E4 against an exploiter; all three were run on 2026-11-16 (E3a/E3f; the $\varepsilon$ sweep SX1–SX30 of `bayes_safex`, a PA2-type sweep without the squashed LP; exploiters XU, XUmv, XR, XEmv), results in §11. Sources: `engine/showdown/results/<TAG>/<TAG>_summary.json`; interpretation in `engine/RESULTS.md`, section "Real-Showdown experiments (Modal, 2026-11-15)".
+results. All are M4 tests. Run on real Showdown (2026-11-15; Modal except E1): E1, E2, E2fs, E4 (shares and most-visited actions, head-to-head against RM+), E5, BH and AF16; results below the table. Not run on 2026-11-15: E3, PA2, and E4 against an exploiter; all three were run on 2026-11-16 (E3a/E3f; the $\varepsilon$ sweep SX1–SX30 of `bayes_safex`, a PA2-type sweep without the squashed LP; exploiters XU, XUmv, XR, XEmv), results in §11. Sources: `engine/showdown/results/<TAG>/<TAG>_summary.json`; interpretation in `engine/RESULTS.md`, section "Real-Showdown experiments (Modal, 2026-11-15)".
 
 | # | Algorithm | Theorem it instantiates (level) | Real-Showdown prediction | Refuted if | Games |
 |---|---|---|---|---|---|
-| **E1** | Agent-form vs PIMC, both using foul-play's set sampler as belief | Theorem C / Cor C.1 and the blend-loss bound (M3), carried to M4 via A4, A5 | agent-form > PIMC (engine: 0.585) | paired $\Delta\le0$ at $n=300$ | 600 |
+| **E1** | Bayesian LP vs PIMC, both using Foul Play's set sampler as belief | Theorem C / Cor C.1 and the PIMC-averaging loss bound (M3), carried to M4 via A4, A5 | Bayesian LP > PIMC (engine: 0.585) | paired $\Delta\le0$ at $n=300$ | 600 |
 
-**E1 result (measured).** On real Showdown, agent form vs PIMC, both arms sharing foul-play's belief: pair score **0.559 [0.521, 0.597]** over 298 paired seeds. Status: measured; it transfers the in-engine 0.585. Source: `engine/RESULTS.md`, section "E1: agent form vs PIMC on real Showdown".
-| **E2** (PA1) | **HedgeBot**: carried Hedge over {top, sampled, safest, safex 0.3%}, per-turn full-information feedback (opponent's realised move) | L2(a)–(d), R2a pathwise bound (M2); P1 (M2) for what external regret does not say | (1) pathwise external regret $\le R(T)$ on every log (one run suffices); (2) $W_H\in[\min_eW_e-0.05,\max_eW_e+0.05]$ | (1) fails on any log (rewards left $[0,1]$), or $W_H<\min_eW_e-0.05$ with non-overlapping 95% CIs. Log the skipped-turn fraction (no world contains $b_t$); above ~10% the feedback is semi-bandit and L2 needs Exp3. P1 applies to the log only if $\bar A_t$ does not depend on $b_t$ | 300 + 150/expert |
+**E1 result (measured).** On real Showdown, Bayesian LP vs PIMC, both arms sharing Foul Play's belief: pair score **0.559 [0.521, 0.597]** over 298 paired seeds. Status: measured; it transfers the in-engine 0.585. Source: `engine/RESULTS.md`, section "E1: Bayesian LP vs PIMC on real Showdown".
+| **E2** (PA1) | **HedgeBot**: carried Hedge over {top, sampled, pure maximin, ε-safe 0.3%}, per-turn full-information feedback (opponent's realised move) | L2(a)–(d), R2a pathwise bound (M2); P1 (M2) for what external regret does not say | (1) pathwise external regret $\le R(T)$ on every log (one run suffices); (2) $W_H\in[\min_eW_e-0.05,\max_eW_e+0.05]$ | (1) fails on any log (rewards left $[0,1]$), or $W_H<\min_eW_e-0.05$ with non-overlapping 95% CIs. Log the skipped-turn fraction (no world contains $b_t$); above ~10% the feedback is semi-bandit and L2 needs Exp3. P1 applies to the log only if $\bar A_t$ does not depend on $b_t$ | 300 + 150/expert |
 | **E3** | **Switch test**: anytime FTRL vs fixed-share HedgeBot ($k=4$), opponent switches after $T_1$ games | P2 (M2), updated: measure **time until top-weighted** (P2(ii)(a)), not time to $w_F\ge\tfrac12$ | fixed share: favoured expert top-weighted within $\ln(k/\alpha)/(\eta d_2)$ turns (an upper bound, valid for any $k$ if it out-earns every other expert by $\ge d_2$; at X6 constants and $d_2=0.0291$: $\le1306$ turns $\approx37$ battles); anytime: top-weighted exactly when its cumulative reward leads (schedule-free), i.e. linear in $T_1$ | fixed share exceeds its bound while the premise holds on the log; or the anytime-minus-fixed-share gap does not grow with $T_1$ (or the two crossings are within ±3 battles) | 160 |
 | **E4** (PA3) | **BanditRootBot**: per-turn bandit self-play (UCB1 / Exp3, $N=2000$, MCTS's feedback model) vs full-information RM+ on the same matrices | L4 identity + B3 (M0–M1), L1(b) lower side (M2) | bandit root loses $\ge0.05$ more against an exploiter (stage gap 0.10–0.15 on ~80% of two-sided decisions) | $|\Delta|\le0.03$ at $n=300$ (then feedback model does not matter at MCTS budgets: a result in itself) | 800 |
 | **E5** (PA4β) | **Asymmetric self-play**: HedgeBot (all experts) vs equilibrium-sampled | PA4β statement (M2; Theorem A + L2(a)) | $W_A\in[0.45,0.55]$ | $W_A>0.56$: read as a measurement of a larger $\varepsilon_v$ (stage-wise deviations profit), not a theorem failure | 400 |
-| **PA2** | **SafexBot(ε)**, ε $\le1\%$, LP on the squashed $[-1,1]$ matrix | L2(b) with $\varepsilon_s\to\varepsilon_s+\varepsilon\cdot$range (M2, cite); certificate arithmetic | win rate $\approx W_{\rm sampled}+f(\varepsilon)(W_{\rm top}-W_{\rm sampled})$, $f=0.35,0.8$ at 0.3%, 1% (engine pre-screen first; effects 0.03–0.06 are below the $n=200$ CI) | safex(1%) $\le$ sampled. Against an exploiter, only a direction test: the theorem bounds each bot's loss separately, not the *difference* to sampled, and SXW already shows the 2% certificate not surviving M1→M2 | 900 (pre-screen 1.4 CPU-h) |
+| **PA2** | **ε-safe best-response bot (SafexBot, ε)**, ε $\le1\%$, LP on the squashed $[-1,1]$ matrix | L2(b) with $\varepsilon_s\to\varepsilon_s+\varepsilon\cdot$range (M2, cite); bound arithmetic | win rate $\approx W_{\rm sampled}+f(\varepsilon)(W_{\rm top}-W_{\rm sampled})$, $f=0.35,0.8$ at 0.3%, 1% (engine pre-screen first; effects 0.03–0.06 are below the $n=200$ CI) | safex(1%) $\le$ sampled. Against an exploiter, only a direction test: the theorem bounds each bot's loss separately, not the *difference* to sampled, and SXW already shows the 2% bound not surviving M1→M2 | 900 (pre-screen 1.4 CPU-h) |
 | **E4 _mv** (B8) | **Most-visited root**: `bandit_exp3_mv`, `bandit_ucb1_mv` (the MCTS decision rule) vs `rmplus_avg` | B8 (`experts_extensions.md`; identity proved, real-opponent form a hypothesis) | written before the runs (`experts_extensions.md` B8); quantified pre-registration recorded before results were read (`scratchpad/verify_ext/prereg_B8.txt`): _mv scores far above the shares roots against RM+ (deficit 5–8× smaller) | _mv $\le$ shares at $n=300$ | 600 |
-| **BH** | **hedge_bayes**: E2's HedgeBot with the safex expert's prediction $\hat q$ from the style posterior | B1 (Bayes = Hedge on log loss), B5, B6 (`experts_extensions.md`) | no win-rate prediction (B6's whole-game bound is vacuous per game); paired with E2 on the same seeds | — | 800 |
-| **AF16** | **Agent form with $K=16$ worlds** vs stock | B10, B11 (`experts_extensions.md`) | B11(iv): no win-rate gain derivable (in-engine X2, 8 vs 4 worlds: 0.495 n.s.); paired with AF | — | 600 |
+| **BH** | **hedge_bayes**: E2's HedgeBot with the ε-safe expert's prediction $\hat q$ from the style posterior | B1 (Bayes = Hedge on log loss), B5, B6 (`experts_extensions.md`) | no win-rate prediction (B6's whole-game bound is vacuous per game); paired with E2 on the same seeds | — | 800 |
+| **AF16** | **Bayesian LP with $K=16$ worlds** vs Foul Play | B10, B11 (`experts_extensions.md`) | B11(iv): no win-rate gain derivable (in-engine X2, 8 vs 4 worlds: 0.495 n.s.); paired with AF | — | 600 |
 
 **Results (measured, real Showdown; pair score of the first-named bot [95% CI], pairs).** Status: measured. Paired differences are over common seeds (same teams and battle PRNG).
-- **E1** agent form vs PIMC: **0.559 [0.521, 0.597]**, 298. Prediction met (transfers the in-engine 0.585).
-- **E2** hedge vs stock: **0.3108 [0.2804, 0.3412]**, 399; **E2fs** hedge_fs vs stock: **0.3033 [0.2729, 0.3336]**, 399. Prediction (1) met: on all 10 E2 streams the carried learner's surrogate regret per turn stays below the R2a bound (median 0.0042, IQR 0.0039–0.0046, vs bound 0.0277 at $T=2056$; slope −0.15 vs −0.51; rewards all in $[0,1]$; reset weights 0.0057; weight-replay check 0.0092). Prediction (2) met for the one expert run alone (AF 0.3144). 16.43% / 16.83% of feedback turns skipped (> 10%: L2 holds only approximately).
-- **E4** (head-to-head vs `rmplus_avg`, not vs an exploiter as designed): shares roots **E4e 0.0625 [0.0430, 0.0820]**, 296; **E4u 0.0502 [0.0312, 0.0691]**, 299 (median top-move probability 0.315 / 0.225 vs 0.78 for RM+; median stage gap 0.0585 / 0.0578). Most-visited roots **E4emv 0.4949 [0.4547, 0.5351]**, 295; **E4umv 0.5933 [0.5551, 0.6316]**, 300. B8's pre-registered ordering held (the verifier's point guess 0.25–0.45 undershot both): the decision rule, not the feedback model, drives the outcome. E4umv > 0.5 shows `rmplus_avg` is not a stage equilibrium of the bandit's matrix (B8(iii) is a hypothesis for it). The exploitability of max-visit play was untested on 2026-11-15; the 2026-11-16 model-based exploiters exploit it at most marginally (XUmv +0.052 [−0.002, 0.106], stream-clustered [0.007, 0.097]; XEmv −0.053 [−0.107, 0.002] over RM$^+$; §11).
-- **E5** hedge vs agent form: **0.4583 [0.4210, 0.4956]**, 300. Inside the predicted band $[0.45,0.55]$, not refuted; the CI lies below 0.5, which PA4β (an upper-side bound) does not address. Controls (2026-11-16, §11): top alone 0.5500, agentform self-play 0.5185; the split of the deficit is not identifiable from the logs.
-- **BH** hedge_bayes vs stock: **0.3329 [0.3022, 0.3637]**, 398; paired BH − E2 +0.024 [−0.018, +0.066] (397), BH − E2fs +0.029 [−0.013, +0.071] (397), BH − AF +0.017 [−0.032, +0.066] (297): n.s.
-- **AF16** agent form $K=16$ vs stock: **0.3278 [0.2923, 0.3632]**, 299; paired AF16 − AF +0.017 [−0.031, +0.065] (298): n.s., as B11(iv) expects; the B10 absent fractions at $K=16$ were not scored.
-- Reading (interpretation): better opponent prediction (BH) and calibration (AF16) do not translate into significant wins, consistent with the leaf bottleneck ($\varepsilon_v\approx1$ dominates Theorems A and C).
+- **E1** Bayesian LP vs PIMC: **0.559 [0.521, 0.597]**, 298. Prediction met (transfers the in-engine 0.585).
+- **E2** hedge vs Foul Play: **0.3108 [0.2804, 0.3412]**, 399; **E2fs** hedge_fs vs Foul Play: **0.3033 [0.2729, 0.3336]**, 399. Prediction (1) met: on all 10 E2 matches (a match, also called a stream in the logs: a sequence of games over which Hedge weights and the posterior are carried) the carried learner's regret on normalised stage payoffs per turn stays below the R2a bound (median 0.0042, IQR 0.0039–0.0046, vs bound 0.0277 at $T=2056$; slope −0.15 vs −0.51; rewards all in $[0,1]$; reset weights 0.0057; weight-replay check 0.0092). Prediction (2) met for the one expert run alone (AF 0.3144). 16.43% / 16.83% of feedback turns skipped (> 10%: L2 holds only approximately).
+- **E4** (head-to-head vs `rmplus_avg`, not vs an exploiter as designed): shares roots **E4e 0.0625 [0.0430, 0.0820]**, 296; **E4u 0.0502 [0.0312, 0.0691]**, 299 (median top-move probability 0.315 / 0.225 vs 0.78 for RM+; median stage gap 0.0585 / 0.0578). Most-visited roots **E4emv 0.4949 [0.4547, 0.5351]**, 295; **E4umv 0.5933 [0.5551, 0.6316]**, 300. B8's pre-registered ordering held (the verifier's point guess 0.25–0.45 undershot both): the decision rule, not the feedback model, drives the outcome. E4umv > 0.5 shows `rmplus_avg` is not a stage equilibrium of the bandit's matrix (B8(iii) is a hypothesis for it). The exploitability of max-visit play was untested on 2026-11-15; the 2026-11-16 model-based exploiters exploit it at most marginally (XUmv +0.052 [−0.002, 0.106], match-clustered [0.007, 0.097]; XEmv −0.053 [−0.107, 0.002] over RM$^+$; §11).
+- **E5** hedge vs Bayesian LP: **0.4583 [0.4210, 0.4956]**, 300. Inside the predicted band $[0.45,0.55]$, not refuted; the CI lies below 0.5, which PA4β (an upper-side bound) does not address. Controls (2026-11-16, §11): top move alone 0.5500, Bayesian LP self-play 0.5185; the split of the deficit is not identifiable from the logs.
+- **BH** hedge_bayes vs Foul Play: **0.3329 [0.3022, 0.3637]**, 398; paired BH − E2 +0.024 [−0.018, +0.066] (397), BH − E2fs +0.029 [−0.013, +0.071] (397), BH − AF +0.017 [−0.032, +0.066] (297): n.s.
+- **AF16** Bayesian LP $K=16$ vs Foul Play: **0.3278 [0.2923, 0.3632]**, 299; paired AF16 − AF +0.017 [−0.031, +0.065] (298): n.s., as B11(iv) expects; the B10 absent fractions at $K=16$ were not scored.
+- Reading (interpretation): better opponent prediction (BH) and calibration (AF16) do not translate into significant wins, consistent with the leaf evaluation error dominating the bound ($\varepsilon_v\approx1$ dominates Theorems A and C).
 
 Not run (cite only): meta-game Exp3 vs Exp3 (B1: too flat to observe), OMWU last iterate, CCE.
 
@@ -830,15 +829,15 @@ Not run (cite only): meta-game Exp3 vs Exp3 (B1: too flat to observe), OMWU last
 
 ## 9. Status table
 
-Lens: S structural, L6 single algorithm, L7 dynamics. "Test" is the real-game test or the measurement that bears on it.
+View: S structural, L6 single algorithm, L7 dynamics. "Test" is the real-game test or the measurement that bears on it.
 
-| Result | Level | Lens | Status | Source | Real-game test |
+| Result | Level | View | Status | Source | Real-game test |
 |---|---|---|---|---|---|
 | Lemma 1 (one step, factor 2 tight) | M1 | S | Lean | `full_game.md:34` | B01 (endgames only) |
 | Lemma 2(a) val Lipschitz | M1 | S | Lean | `full_game.md:41` | — |
 | Lemma 2(b)–(d) lookahead, no contraction | M1–M2 | S | proved | `full_game.md:42` | L5 / depth |
-| Lemma R6a affine invariance, calibrated Thm A | M1–M2 | S | proved | `regret_theory.md:403` | endgames |
-| Lemma R6b inversions, $a=0$ criterion | M1 | S | proved | `regret_theory.md:422` | endgames ($a=0$ on 6/6) |
+| Lemma R6a affine invariance, affine-invariant Thm A | M1–M2 | S | proved | `regret_theory.md:403` | endgames |
+| Lemma R6b inversions, constant-fit criterion | M1 | S | proved | `regret_theory.md:422` | endgames (best fit constant on 6/6) |
 | Lemma L0 telescoping | M2 | S | proved | `search_rl_links.md:37` | — |
 | Proposition 0 value | M2 | S | proved | `full_game.md:28` | — |
 | Theorem A per-turn composition, $\bar H$ refinement | M2 | S | Lean + proved (model link by reading) | `full_game.md:52` | B12 (probe: residual isolated) |
@@ -854,8 +853,8 @@ Lens: S structural, L6 single algorithm, L7 dynamics. "Test" is the real-game te
 | Proposition S2 lower bound | M3 | S | proved | `new_directions.md:84` (corrected here) | — |
 | Theorem C five terms | M3 | S | proved | `full_game.md:166` | B23 |
 | Corollary C.1 headline bound; Example C.1 | M3 | S | proved | `full_game.md:176` | B23, E1 |
-| Blend-loss bound $4\delta_H$ | M3 | S | numeric | RESULTS | E1 |
-| Blend-loss bound $2\delta_H$ | M3 | S | sketch | RESULTS | — |
+| PIMC-averaging loss bound $4\delta_H$ | M3 | S | numeric | RESULTS | E1 |
+| PIMC-averaging loss bound $2\delta_H$ | M3 | S | sketch | RESULTS | — |
 | $\sum(\eta_{\rm NL}+4\mathrm{TV})\approx$ oracle gap | M3 | S | conjecture | `full_game.md:190` | B23 |
 | Proposition SIM (exact resolution) | M4 | S | proved | this map §7 | B34 (probe) |
 | Proposition SIM (coarsened, with $\omega$ term) | M4 | S | proved with the $\omega$ term | this map §7 | B34 (probe) |
@@ -883,11 +882,11 @@ Lens: S structural, L6 single algorithm, L7 dynamics. "Test" is the real-game te
 | PA4β statement | M2 | L7 | proved | §5.2 | E5 (measured): 0.4583 [0.4210, 0.4956], inside $[0.45,0.55]$; CI below 0.5 |
 | Lemma H | M0 | L6 | proved (summation step Lean) | `hedge_experts.md:44` | — |
 | Proposition R1 | M0 | L6 | proved | `regret_theory.md:47` | — |
-| Lemma R2a | M0 | L6 | proved | `regret_theory.md:105` | E2 (measured): pathwise bound held on all 10 streams; median 0.0042 vs 0.0277 at $T=2056$ |
+| Lemma R2a | M0 | L6 | proved | `regret_theory.md:105` | E2 (measured): pathwise bound held on all 10 matches; median 0.0042 vs 0.0277 at $T=2056$ |
 | Proposition L2 (b: proved with named hypothesis (E)) | M2 | L6 | proved | `search_rl_links.md:84` | E2/E2fs (measured): 0.3108 / 0.3033 vs AF 0.3144, within 0.05; 16.4–16.8% of feedback skipped |
 | Propositions E1, E3 | M2 | L6 | Lean (E1) / proved (E3) | `hedge_experts.md:64` | E2 (measured, see L2) |
 | Theorem E2 | M2 | L6 | Lean (`composition_step`) + proved with named hypothesis (E) | `hedge_experts.md:106` | E2 (measured; bound vacuous in level) |
-| Theorem E2′ | M2 | L6 | proved with named hypothesis | `regret_theory.md:138` | does not apply ($a=0$) |
+| Theorem E2′ | M2 | L6 | proved with named hypothesis | `regret_theory.md:138` | does not apply (best global affine fit constant) |
 | Lemma R3a | M2 | L6 | proved | `regret_theory.md:195` | — |
 | R3b fitted drifts | M2 | L6 | numeric | `regret_theory.md:206` | — |
 | Proposition R3c | M2 | L6 | proved | `regret_theory.md:265` | — |
@@ -896,20 +895,20 @@ Lens: S structural, L6 single algorithm, L7 dynamics. "Test" is the real-game te
 | Proposition P2 (necessity in (ii)(b) proved; time estimate sketch) | M2 | L6 | proved | `dynamics_directions.md:237` (corrected) | E3a/E3f (measured 2026-11-16, §11): fixed share − Hedge +0.003 [−0.066, 0.072]; flips median 273 / 245 updates, analog bound not exceeded |
 | ε-safe expert in Hedge | M2 | L6 | cite | `new_directions.md:259` | PA2 |
 | Non-convexity remark (Hedge vs min expl) | M2 | L6 | proved | §6.3 | — |
-| Certificate arithmetic, gain curve | M2 | L6 | proved (arithmetic) / numeric (curve) | `dynamics_directions.md:272` | PA2; SXW failure |
+| ε-add-on arithmetic, gain curve | M2 | L6 | proved (arithmetic) / numeric (curve) | `dynamics_directions.md:272` | PA2; SXW failure |
 | Theorem L3, L3a, L3b | M2 | L6 | proved | `search_rl_links.md:115` | rlbr |
 | Proposition L3c | M2 | L6 | proved | `search_rl_links.md:130` | gray-box vs black-box |
 | AdaHedge slack | M2 | L6 | cite | `new_directions.md:287` | — |
 | A10 menu and payoff alignment | M3–M4 | S | assumption | this map §2; `game_model.md` §5 | B34 (probe) |
 | A11 information at pivot nodes | M3–M4 | S | assumption | this map §2; `game_model.md` §5 | — |
 | A12 horizon unit (decision nodes) | M2–M4 | S | assumption | this map §2; `game_model.md` §5 | — |
-| E1 agent form vs PIMC on Showdown | M4 | S | measured (numeric) | `engine/RESULTS.md` (E1) | 0.559 [0.521, 0.597], 298 pairs |
-| E2 / E2fs Hedge over experts vs stock | M4 | L6 | measured (numeric) | `engine/showdown/results/{E2,E2fs}/` | 0.3108 [0.2804, 0.3412] / 0.3033 [0.2729, 0.3336], 399 pairs each |
+| E1 Bayesian LP vs PIMC on Showdown | M4 | S | measured (numeric) | `engine/RESULTS.md` (E1) | 0.559 [0.521, 0.597], 298 pairs |
+| E2 / E2fs Hedge over experts vs Foul Play | M4 | L6 | measured (numeric) | `engine/showdown/results/{E2,E2fs}/` | 0.3108 [0.2804, 0.3412] / 0.3033 [0.2729, 0.3336], 399 pairs each |
 | E4e / E4u bandit roots (visit shares) vs RM+ | M4 | L7 | measured (numeric) | `engine/showdown/results/{E4e,E4u}/` | 0.0625 [0.0430, 0.0820], 296 / 0.0502 [0.0312, 0.0691], 299 |
 | E4emv / E4umv most-visited roots vs RM+ (B8, pre-registered) | M4 | L7 | measured (numeric) | `engine/showdown/results/{E4emv,E4umv}/` | 0.4949 [0.4547, 0.5351], 295 / 0.5933 [0.5551, 0.6316], 300; ordering confirmed |
-| E5 Hedge vs agent form | M4 | L7 | measured (numeric) | `engine/showdown/results/E5/` | 0.4583 [0.4210, 0.4956], 300 pairs |
-| BH hedge_bayes vs stock | M4 | L6 | measured (numeric) | `engine/showdown/results/BH/` | 0.3329 [0.3022, 0.3637], 398; vs E2 +0.024 [−0.018, +0.066] n.s. |
-| AF16 agent form $K=16$ vs stock | M4 | S | measured (numeric) | `engine/showdown/results/AF16/` | 0.3278 [0.2923, 0.3632], 299; vs AF +0.017 [−0.031, +0.065] n.s. |
+| E5 Hedge vs Bayesian LP | M4 | L7 | measured (numeric) | `engine/showdown/results/E5/` | 0.4583 [0.4210, 0.4956], 300 pairs |
+| BH hedge_bayes vs Foul Play | M4 | L6 | measured (numeric) | `engine/showdown/results/BH/` | 0.3329 [0.3022, 0.3637], 398; vs E2 +0.024 [−0.018, +0.066] n.s. |
+| AF16 Bayesian LP $K=16$ vs Foul Play | M4 | S | measured (numeric) | `engine/showdown/results/AF16/` | 0.3278 [0.2923, 0.3632], 299; vs AF +0.017 [−0.031, +0.065] n.s. |
 
 **Count by status (76 rows):** Lean 5; proved 36; proved with named hypothesis 4; proved with the $\omega$ term 1; sketch 3;
 conjecture 2; numeric 8; cite 7; assumption 3; measured 7 (E1, E2/E2fs, E4e/E4u, E4emv/E4umv, E5, BH, AF16). (Rows with a mixed tag are counted by the first-named tag.)
@@ -932,7 +931,7 @@ conjecture 2; numeric 8; cite 7; assumption 3; measured 7 (E1, E2/E2fs, E4e/E4u,
 - **R3d:** "the fitted drifts predict the weights" → reproduce them in-sample; $C(T)\le C_\infty$ → $C_\infty+d/2$ with the code's
   indexing, and $C_\infty$ is the limit to leading order; "$C_\infty(d_2)=10.2$ still bounds the two-phase carried run" →
   holds only when $d_1\ge d_2/2$ or over a bounded horizon (the first clause fails at the fitted drifts; the second is unchecked for the 60-game run); "four logged weights within 0.05"
-  (0.43 vs 0.38) → like-for-like 0.394 vs 0.380 with actual non-forced turn counts.
+  (0.43 vs 0.38) → like-for-like 0.394 vs 0.380 with actual scored-turn counts.
 - **P1:** Markov-only statement → history-indexed; $2H^2(\delta+\delta')$ → $H(H-1)\max(\delta,\delta')$; the $H=3$
   counterexample with "match" read as a strategy → two decision stages, pure $a_1$ at $s_1$; "mismatch two orders below
   the external term" → 18–30×.
@@ -946,7 +945,7 @@ conjecture 2; numeric 8; cite 7; assumption 3; measured 7 (E1, E2/E2fs, E4e/E4u,
   not "Jeanblanc".
 - **PA2 "loss vs sampled $\le\varepsilon\bar H$ against an exploiter" as a theorem consequence:** not implied (the theorem
   bounds each bot, not the difference).
-- **Empirical bridge failures:** 2% ε-safe certificate as game-level robustness (SXW 0.767 vs 0.713); leaf rescaling
+- **Empirical bridge failures:** 2% ε-safe best-response bound as game-level robustness (SXW 0.767 vs 0.713); leaf rescaling
   (LF $-0.040$, n.s.); gray-box over black-box RL (0.075 vs 0.125 at 8M).
 - **A5 at exact-state resolution:** vacuous ($\ge0.89$ per damaging move); A5 is stated at a coarsened resolution.
 
@@ -960,14 +959,14 @@ conjecture 2; numeric 8; cite 7; assumption 3; measured 7 (E1, E2/E2fs, E4e/E4u,
 
 *Earlier refutations in the source notes (still refuted).*
 - RM+ slope $T^{-1.46}$ (`full_game.md` §4, §7): not reproducible; superseded by $T^{-1.3}$ (median $-1.26$).
-- Two-type Example C.1 as a counterexample to the four-term form: wrong ($\eta_{\rm NL}(0)=3/5$); replaced by the three-type example.
+- Two-type Example C.1 as a counterexample to the four-term form: wrong ($\eta_{\rm NL}(0)=3/5$); replaced by the three-team example.
 - Four-term form against arbitrary opponents: false. Targets' $2R\,\mathrm{TV}$ with payoffs in $[-R,R]$: should be $2\Delta\,\mathrm{TV}$.
 - "Expected length under an equilibrium opponent" in Theorem A: equilibrium opponents need not be unique; "some".
 - Cor A′ "not proved for the alternating code": proved (cross term $\le0$).
 - Kovařík et al. author list; ReBeL Thm 3 constants (`CHECK.md` findings 3, 4).
-- Raw-unit Claim 1 with a per-turn normaliser: false (deficit $S/3$); per-turn calibration in E2: false.
+- Raw-unit Claim 1 with a per-turn normaliser: false (deficit $S/3$); per-turn affine fit in E2: false.
 - Incremental anytime MW as anytime Hedge: linear regret (R1); CBL Thm 2.3 verbatim for the code: superseded by R2a.
-- "Exploiter's surrogate edge grows with $p_F$": not supported.
+- "Exploiter's normalised-stage-payoff edge grows with $p_F$": not supported.
 - Stage-wise equilibria of $V^*$ unexploitable without a cap: false (R6c).
 - L4 "converges iff both regrets sublinear"; "0.75 rule lies between the experts" in exploitability; L2 (H) first draft; L6
   Remark 4 sign; L1 Remark 2 example (`search_rl_links.md` refuted list).
@@ -993,48 +992,48 @@ B12" and `bayes_dynamics.md`'s two-learner result is "T4 (B12 two learners)".
 | Result | Statement (one line) | Level; assumptions | Status | Literature | Experiment that supports / tests / bounds it (number; source) |
 |---|---|---|---|---|---|
 | **Lemma 1′** (profile-restricted one step) | $\operatorname{val}Q^*-\min_yx^\top Q^*y\le\varepsilon_s+x^{*\top}(Q^*-B)\hat y+\max_yx^\top(B-Q^*)y\le\varepsilon_s+2\lVert B-Q^*\rVert_\infty$; Theorem A′ = Theorem A with this per-state budget | M1 (A′: M2); A7 at one stage (A′: A1(i), A6, A7) | proved (numeric: 2000/2000 random checks, 0 violations) | adaptation / "new but small" (Per15 error propagation has the factor 2 and sup over profiles; Kov19b states no quantitative leaf-error bound) | exact abstracted endgames: along-chain budget/exploitability 1.6–9.4× against 7.6–39× for Theorem A; 89× vs 29× on the seat-2 top-move chain (`tightening/bounds_epsv.md` §2.1, one realisation; BR chain not deterministic) |
-| **Signed pathwise identity** (Theorem A-res) | $z-\varphi(v_1)=\sum_t(-R_t-S_t+D_t)$ on every path; averaged over $s_0$ under SYM, $\mathbb E\operatorname{expl}=\mathbb E\sum_t(R_t+S_t-D_t)$ along $\sigma_{\rm BR}$ | M2 (M3 with $v_t$ the agent-form value); A1(i), A6; SYM for the root term | identity proved (telescoping); root-term removal proved with named hypothesis SYM | known in structure (trajectory telescoping; Lob24 uses a signed decomposition then discards it; Per15 bounds sup quantities); new: the three-way split and its signed measurement | in-engine: closes to $10^{-14}$ on 284 games; drift per decision $-0.0127$ (exploiter, 60 games), $-0.0113$ (MCTS-2000, 100), $+0.0020$ (self-play, 100) (`bounds_epsv.md` §2.2). Real Showdown, open-item B1 (LOG, hedge_bayes vs stock, 599 games): closes to $4.4\times10^{-16}$, **by construction** (telescoping); $\mathbb E[D]=-0.0548$ logit per decision (SE 0.0015 game-clustered). These are *not* Theorem A's terms here: the logged agent-form strategy $x=Q[1]$ (Hedge's sampled expert) is not a maximin strategy of the world-averaged $\bar A$ (gap median 0.12, mean 4.6 engine units; above 1% of the payoff range on a third of decisions), and the played Hedge mixture has gap median 1.85, mean 6.12 (`engine/analysis/open_items/verify/b1_gap.py`), and leaf, mixture and opponent differ. Same formula on a different leaf and opponent; neither a replication nor a contradiction (`engine/analysis/open_items/REPORT.md` B1) |
-| **$\varepsilon_v$ lower bound** (Theorem A backwards) | $\mathbb E_{\pi,\sigma_{\rm BR}}[\overline{2\varepsilon_v}]\ge(\operatorname{expl}-\varepsilon_s\bar H)/\bar H$: the leaf error the measured exploitability *requires* | M2; Theorem A's hypotheses | proved (arithmetic on Theorem A) | not classified in the lit notes (bears on Kov19b's open question) | in-engine W1 (white-box exploiter, sampled target): path-average $\varepsilon_v\ge0.0041$ payoff per decision (point), $\ge0.0017$ (R5a LCB), 0.0027 with the replays' 0.283; sup-norm $\varepsilon_v\approx1$ is $\approx240\times$ larger (150× is the ratio of $2\varepsilon_v$ to the signed drift) (`bounds_epsv.md` §1.3). **Not updated by LOG** (reason in the row above) |
+| **Signed pathwise identity** (Theorem A-res) | $z-\varphi(v_1)=\sum_t(-R_t-S_t+D_t)$ on every path; averaged over $s_0$ under SYM, $\mathbb E\operatorname{expl}=\mathbb E\sum_t(R_t+S_t-D_t)$ along $\sigma_{\rm BR}$ | M2 (M3 with $v_t$ the Bayesian LP value); A1(i), A6; SYM for the root term | identity proved (telescoping); root-term removal proved with named hypothesis SYM | known in structure (trajectory telescoping; Lob24 uses a signed decomposition then discards it; Per15 bounds sup quantities); new: the three-way split and its signed measurement | in-engine: closes to $10^{-14}$ on 284 games; drift per decision $-0.0127$ (exploiter, 60 games), $-0.0113$ (MCTS-2000, 100), $+0.0020$ (self-play, 100) (`bounds_epsv.md` §2.2). Real Showdown, open-item B1 (LOG, hedge_bayes vs Foul Play, 599 games): closes to $4.4\times10^{-16}$, **by construction** (telescoping); $\mathbb E[D]=-0.0548$ logit per decision (SE 0.0015 game-clustered). These are *not* Theorem A's terms here: the logged Bayesian LP strategy $x=Q[1]$ (Hedge's sampled expert) is not a maximin strategy of the world-averaged $\bar A$ (gap median 0.12, mean 4.6 engine units; above 1% of the payoff range on a third of decisions), and the played Hedge mixture has gap median 1.85, mean 6.12 (`engine/analysis/open_items/verify/b1_gap.py`), and leaf, mixture and opponent differ. Same formula on a different leaf and opponent; neither a replication nor a contradiction (`engine/analysis/open_items/REPORT.md` B1) |
+| **$\varepsilon_v$ lower bound** (Theorem A backwards) | $\mathbb E_{\pi,\sigma_{\rm BR}}[\overline{2\varepsilon_v}]\ge(\operatorname{expl}-\varepsilon_s\bar H)/\bar H$: the leaf error the measured exploitability *requires* | M2; Theorem A's hypotheses | proved (arithmetic on Theorem A) | not classified in the lit notes (bears on Kov19b's open question) | in-engine W1 (depth-2 informed best response, sampled target): path-average $\varepsilon_v\ge0.0041$ payoff per decision (point), $\ge0.0017$ (R5a LCB), 0.0027 with the replays' 0.283; sup-norm $\varepsilon_v\approx1$ is $\approx240\times$ larger (150× is the ratio of $2\varepsilon_v$ to the signed drift) (`bounds_epsv.md` §1.3). **Not updated by LOG** (reason in the row above) |
 | **Comparative identity**; "common $\varepsilon_v$ cancels" | for Markov $\pi_1,\pi_2$ under A1(i), A6: $V(\pi_2,\sigma)-V(\pi_1,\sigma)=\mathbb E_{\pi_1,\sigma}\sum_t(x_{2,t}-x_{1,t})^\top Q^{\pi_2,\sigma}_t\sigma_t$; the leaf enters only through row oscillation on the support difference. The naive statement that a shared $\varepsilon_v$ cancels between two agents is **refuted** | M2; A1(i), A6 | identity proved; cancellation refuted by counterexample ($\hat Q=0$, $Q=\varepsilon\begin{psmallmatrix}1&-1\\1&1\end{psmallmatrix}$: two exactly optimal strategies differ by $2\varepsilon_v$) | not classified in the lit notes | in-engine bridge-B12 replays: drift channel differs between agents sharing $\hat Q$ (top $-0.08\pm0.25$, sampled $+0.66\pm0.12$ per game) (`bounds_epsv.md` §1, rejected list). Oscillation term not measured |
 | **B1 (Bayes) = Hedge, $\eta=1$, log loss** | $\sum_t-\ln\hat q_t(b_t)\le\min_s\sum_t-\ln q_{s,t}(b_t)+\ln k_s$, $k_s=5$ | M0; $\lambda=1$, uniform prior | cite + adaptation | known (Ces06 exponentially weighted forecasters; Rei14: constant regret $\ln\lvert\Theta\rvert/\eta$ iff $\eta$-mixable, log loss $\eta\le1$) | see N1 |
-| **N1 regret identity** | $R_T(s)=\ln5+\ln P_T(s)$ for every $T$ and style $s$ | M0; $\lambda=1$, uniform prior | proved | not separately classified (exact form of the Bayes-mixture bound above) | BH: final regret 1.609 on all 8 clean streams; open-item B6 (RQ), pre-registered P1: **pass to logging rounding** (anytime excess over $\ln5$ at most $3.9\times10^{-4}$; final regret 1.609 to 3 dp in 18 of 29 streams with $P_T\ge0.999$) (`REPORT.md` B6) |
+| **N1 regret identity** | $R_T(s)=\ln5+\ln P_T(s)$ for every $T$ and style $s$ | M0; $\lambda=1$, uniform prior | proved | not separately classified (exact form of the Bayes-mixture bound above) | BH: final regret 1.609 on all 8 matches with complete logs; open-item B6 (RQ), pre-registered P1: **pass to logging rounding** (anytime excess over $\ln5$ at most $3.9\times10^{-4}$; final regret 1.609 to 3 dp in 18 of 29 matches with $P_T\ge0.999$) (`REPORT.md` B6) |
 | **T1 discounted Bayes** (coded "predict, then discount", $\lambda<1$) | no bound $R^\lambda_T\le f(k,\lambda)$ with unbounded losses; with the shipped cap $B=\ln(n/\mathrm{MIX})$ a 2-turn example exceeds $\ln k$ for $\lambda\le\lambda^*_2(n)$ ($0.951$ at $n=13$, $0.985$ at $n=44$); data-dependent bound $\ln k+(1-\lambda)\sum\lambda^{T-t}\operatorname{range}D_{t-1}$; **fix**: discount-then-predict (store $\lambda(\log p+\log\text{lik})$), bound $\ln k$ on every path | M0; L6 | (a)–(c) proved; (d) measured; (e) conjecture (violation for every $\lambda<1$ as $T$ grows) | new (small; no prior analysis of the predict-then-discount order found); discount-first $\ln k$ is known (Che10); $\eta>1$ non-mixable is known (Rei14) | no game run with $\lambda<1$ (shipped `LAM=1.0`, `behavior.py:29`); realisable violations on the 57 real style matrices at $\lambda\in\{0.5,0.7,0.9\}$ (`bayes_dynamics.md` §1.1) |
-| **T2** MAP = FTL; oscillation | MAP is Follow-the-Leader on log loss; time on the wrong side $\approx\sigma^2/(2\mu^2)$ | M0 meta; L6 | (a),(c) proved; (b) sketch | known / adaptation (Ces06, Hut05, Kal05); measured data new | BH logs: 649 MAP-wrong turns vs 563 predicted (stream means; order of magnitude only); FTL regret 5–18 nats vs mixture 1.609 (`bayes_dynamics.md` §2) |
-| **T3 Bhattacharyya concentration** | realisable: $\mathbb E\sum_t(1-P_{t-1}(s^*))\le\sum_{s\ne s^*}1/(1-\rho_s)$, constant in $T$; misspecified Chernoff-½ version (vi) | M0 (M3 inputs); L6; T3.1 realisability, $\lambda=1$ | (i)–(v) proved; (vi) proved, hypothesis fails on the mismatch proxy | device known (Wal04, Zha06, Lat13 Lemmas 13/14); instantiation and calibration are adaptation | 57 real matrices under exact realisability: bound holds, 2–5× loose (`bayes_dynamics.md` §3.1). RQ realised $\sum_t(1-P_{t-1}(s^*))$, mean per stream: 589.0 (eq), 78.5 (safe), 16.2 (uniform) (`REPORT.md` B6 P5). vs the i.i.d. T3 bound 15.9 / 55.3 / 38.0: holds for uniform (exactly calibrated), fails for eq (realisability fails: q_safe out-predicts q_eq, 1.62 vs 2.20 nats) and on average for safe (near-tie, overconfident model) (`analysis/open_items/t3/T3_RQ.md`) |
+| **T2** MAP = FTL; oscillation | MAP is Follow-the-Leader on log loss; time on the wrong side $\approx\sigma^2/(2\mu^2)$ | M0 meta; L6 | (a),(c) proved; (b) sketch | known / adaptation (Ces06, Hut05, Kal05); measured data new | BH logs: 649 MAP-wrong turns vs 563 predicted (match means; order of magnitude only); FTL regret 5–18 nats vs mixture 1.609 (`bayes_dynamics.md` §2) |
+| **T3 Bhattacharyya concentration** | realisable: $\mathbb E\sum_t(1-P_{t-1}(s^*))\le\sum_{s\ne s^*}1/(1-\rho_s)$, constant in $T$; misspecified Chernoff-½ version (vi) | M0 (M3 inputs); L6; T3.1 realisability, $\lambda=1$ | (i)–(v) proved; (vi) proved, hypothesis fails on the mismatch proxy | device known (Wal04, Zha06, Lat13 Lemmas 13/14); instantiation and calibration are adaptation | 57 real matrices under exact realisability: bound holds, 2–5× loose (`bayes_dynamics.md` §3.1). RQ realised $\sum_t(1-P_{t-1}(s^*))$, mean per match: 589.0 (stage equilibrium), 78.5 (cautious), 16.2 (uniform) (`REPORT.md` B6 P5). vs the i.i.d. T3 bound 15.9 / 55.3 / 38.0: holds for uniform (exactly calibrated), fails for stage equilibrium (realisability fails: q_safe out-predicts q_eq, 1.62 vs 2.20 nats) and on average for cautious (near-tie, overconfident model) (`analysis/open_items/t3/T3_RQ.md`) |
 | **T4 (B12 two learners)** | two $\varepsilon$-safe players on a shared matrix: every iterate is a $2\varepsilon\Delta$-NE, time average a $2\varepsilon\Delta$-CCE; mismatch widens the band to $\varepsilon\Delta+2\delta$; Hedge vs safex: nothing bounds $\bar x_T$ | M0 shared / M1 mismatch; L7 + S | (a)–(c) proved (elementary); (d) measured; (e) conjecture | elementary / known by definition of $\varepsilon$-safety (Gan15); contrast with MWU/FTRL last iterate (Mer17, Das18); Jea23, Mul25 guarantee only cumulative quantities | 57 matrices × 400 rounds: band attained exactly ($\pm0.0030$); with $0.1\Delta$ noise the mismatched side loses $0.017\Delta$ per round (`bayes_dynamics.md` §5). Not run on Showdown (no safex-vs-safex tag) |
-| **T5 tracking after a switch** | $\lambda=1$: flip delay $\tau^*\approx\max_{s\ne b}t_0(\mu_{a\to b}-\mu_{a\to s})^+/\mu_{b\to s}$, linear in $t_0$; fixed share and discount-then-predict: independent of $t_0$ | M0; L6; i.i.d. turn matrices | (a) proved for the mean log-odds crossing; (b)–(c) sketch; **live-tested 2026-11-16 (prereg_style_switch.md)** | not separately classified (fixed-share comparator Her95) | simulated switches: $\lambda=1$ delays within 6% of (a) (`bayes_dynamics.md` §6). Open-item B2 (E3a/E3f) ran **Hedge without a posterior (anytime and fixed-share), not the posterior**, so T5 is not tested by that run (the live test is in §12); a reward-space analog gives realised crossing / analog median ratio 0.91 (E3a, 9 streams) and 0.97 (E3f, 4 streams) (`REPORT.md` B2) |
+| **T5 detection delay after a switch** | $\lambda=1$: detection delay $d^*\approx\max_{s\ne b}t_0(\mu_{a\to b}-\mu_{a\to s})^+/\mu_{b\to s}$, linear in $t_0$; fixed share and discount-then-predict: independent of $t_0$ | M0; L6; i.i.d. turn matrices | (a) proved for the mean log-odds crossing; (b)–(c) sketch; **live-tested 2026-11-16 (prereg_style_switch.md)** | not separately classified (fixed-share comparator Her95) | simulated switches: $\lambda=1$ delays within 6% of (a) (`bayes_dynamics.md` §6). Open-item B2 (E3a/E3f) ran **Hedge without a posterior (anytime and fixed-share), not the posterior**, so T5 is not tested by that run (the live test is in §12); a reward-space analog gives realised crossing / analog median ratio 0.91 (E3a, 9 matches) and 0.97 (E3f, 4 matches) (`REPORT.md` B2) |
 | **VOI $=\eta_{\rm NL}$; Theorem C at $H=2$** | VOI$_{\rm total}=\sum_\theta b_0V_0(\delta_\theta)-V_0(b_0)$ and $\eta_{\rm NL}(0)$ computed exactly by sequence-form LP in one-sided 1v1 tera subgames; sandwich $V_0\le v_{A3}\le V_0+\eta_{\rm NL}(0)$ | M3, $H=2$, $\varepsilon_s=\varepsilon_v=S=0$ by construction | numeric (exact LP per matchup); Theorem C proved (§4.3) | LP known (KMS94, vS96); applying it to measure non-locality/VOI in a real game's subgames is new empirical application (Lon10 used synthetic trees) | 46 subgames: sandwich, (C.1), VOI $\ge0$, expl $\ge0$ hold **46/46**; VOI $>0.1\%\Delta$ in 14/46, max 5.2%; expl(A3) max 3.1%, $>0.1\%\Delta$ in 3/46 (`tightening/voi.md` §2.1) |
-| **Leaf nondeterminism** | `nash._leaf` → `pe.id(child, 0)` is time-budgeted; under CPU load its background search thread occasionally returns a complete deeper search (`depth_searched` $\ge2$, or a wrapped i8), and terminal children then score $100\cdot\text{depth}\cdot$`battle_is_over`; depth 1 is never truncated; fix: retry until `depth_searched == 1` (`OURBOT_DET_LEAF=1`) | engine (affects every M2–M4 number) | measured | known in computer-chess practice (TalkChess threads); not found peer-reviewed; new as a quantification for this agent (Vol20, Aga21 for reporting) | load probe: 16/240 (1v1) and 17/240 (6v6) children change value with 12 busy processes on 14 cores, 0/480 unloaded (`voi.md` §2.5). Real games: LSs (agentform vs stock, 2-CPU containers, 120 games) 432 non-depth-1 returns in 7,246,430 leaf calls = 0.0060%, $\ge1$ in 59/120 games; LSn (agentform vs pimc, 1-CPU, 120 games) 850 / 16,172,097 = 0.0053% (both bots combined: the two bots share one process and one counter), $\ge1$ in 91/120; about 1 in 17,000–19,000 calls (1 in 40,000 in AFdet), similar rates in the two container classes. Scores LSs 0.2833 [0.2068, 0.3599], LSn 0.5917 [0.4981, 0.6853], 60 pairs each (`engine/showdown/results/{LSs,LSn}/*_summary.json`). Deterministic-leaf control AFdet: 0.3067 vs 0.3144, paired diff −0.008 [−0.057, 0.040], n = 299; no detectable effect (`analysis/open_items/out_afdet_paired.json`) |
+| **Leaf nondeterminism** | `nash._leaf` → `pe.id(child, 0)` is time-budgeted; under CPU load its background search thread occasionally returns a complete deeper search (`depth_searched` $\ge2$, or a wrapped i8), and terminal children then score $100\cdot\text{depth}\cdot$`battle_is_over`; depth 1 is never truncated; fix: retry until `depth_searched == 1` (`OURBOT_DET_LEAF=1`) | engine (affects every M2–M4 number) | measured | known in computer-chess practice (TalkChess threads); not found peer-reviewed; new as a quantification for this agent (Vol20, Aga21 for reporting) | load probe: 16/240 (1v1) and 17/240 (6v6) children change value with 12 busy processes on 14 cores, 0/480 unloaded (`voi.md` §2.5). Real games: LSs (Bayesian LP vs Foul Play, 2-CPU containers, 120 games) 432 non-depth-1 returns in 7,246,430 leaf calls = 0.0060%, $\ge1$ in 59/120 games; LSn (Bayesian LP vs PIMC averaging, 1-CPU, 120 games) 850 / 16,172,097 = 0.0053% (both bots combined: the two bots share one process and one counter), $\ge1$ in 91/120; about 1 in 17,000–19,000 calls (1 in 40,000 in AFdet), similar rates in the two container classes. Scores LSs 0.2833 [0.2068, 0.3599], LSn 0.5917 [0.4981, 0.6853], 60 pairs each (`engine/showdown/results/{LSs,LSn}/*_summary.json`). Deterministic-leaf control AFdet: 0.3067 vs 0.3144, paired diff −0.008 [−0.057, 0.040], n = 299; no detectable effect (`analysis/open_items/out_afdet_paired.json`) |
 
-T3 against the RQ data: the i.i.d. bound Σ_{s≠s*} 1/(1−mean BC_s) from the logged per-turn style predictives is 15.9 (eq) / 55.3 (safe) / 38.0 (uniform) vs realised 589.0 / 78.5 / 16.2. Holds for uniform (9/10 streams; exactly calibrated: cross-entropy 2.291 = model entropy). Fails for eq (0/10) because realisability fails — q_eq on our world-averaged Abar predicts the eq opponent worse than q_safe (log loss 2.20 vs 1.62 nats/update), so the posterior correctly concentrates on safe (explains P4). Fails on average for safe (5/10): safe is best but only 0.055 nats/turn ahead of br_unif, model overconfident (entropy 1.85 vs realised 2.05), one stream at 268; not clearly significant with 10 streams. Source: `engine/analysis/open_items/t3/T3_RQ.md` (log-loss ordering independently re-checked).
+T3 against the RQ data: the i.i.d. bound Σ_{s≠s*} 1/(1−mean BC_s) from the logged per-turn style predictives is 15.9 (stage equilibrium) / 55.3 (cautious) / 38.0 (uniform) vs realised 589.0 / 78.5 / 16.2. Holds for uniform (9/10 matches; exactly calibrated: cross-entropy 2.291 = model entropy). Fails for stage equilibrium (0/10) because realisability fails — q_eq on our world-averaged Abar predicts the stage-equilibrium opponent worse than q_safe (log loss 2.20 vs 1.62 nats/update), so the posterior correctly concentrates on cautious (explains P4). Fails on average for cautious (5/10): cautious is best but only 0.055 nats/turn ahead of best response to uniform, model overconfident (entropy 1.85 vs realised 2.05), one match at 268; not clearly significant with 10 matches. Source: `engine/analysis/open_items/t3/T3_RQ.md` (log-loss ordering independently re-checked).
 
-Leaf: deterministic-leaf control AFdet (agentform vs stock, `OURBOT_DET_LEAF=1`, seeds 1–300, same teams in 598/598 games): 0.3067 [0.2693, 0.3440] vs AF 0.3144; seed-paired difference −0.008 [−0.057, 0.040] (stream-clustered [−0.070, 0.053], n = 299). Retry fired on all 826 non-depth-1 returns in 33,222,584 leaf calls (829 retries, 0 fallbacks). No detectable effect; results stand. Source: `engine/analysis/open_items/out_afdet_paired.json` (`afdet_paired.py`).
+Leaf: deterministic-leaf control AFdet (Bayesian LP vs Foul Play, `OURBOT_DET_LEAF=1`, seeds 1–300, same teams in 598/598 games): 0.3067 [0.2693, 0.3440] vs AF 0.3144; seed-paired difference −0.008 [−0.057, 0.040] (match-clustered [−0.070, 0.053], n = 299). Retry fired on all 826 non-depth-1 returns in 33,222,584 leaf calls (829 retries, 0 fallbacks). No detectable effect; results stand. Source: `engine/analysis/open_items/out_afdet_paired.json` (`afdet_paired.py`).
 
 **Real-Showdown open items that test §8 predictions** (all from `../engine/analysis/open_items/REPORT.md`; pair
-scores with 95% CI; stream-clustered CIs have only 10 clusters per tag).
-- **E3 (open-item B2), P2.** E3a (`hedge`) and E3f (`hedge_fs`) vs an opponent that switches from stock to
-  `exploit_top` after 8 of 16 seeds per stream. Fixed share is no better than anytime Hedge: paired
-  $+0.0032$ [$-0.066$, $0.072$] (157 seeds). The post-switch best expert reaches the maximum weight in 8/10 streams in
+scores with 95% CI; match-clustered CIs have only 10 clusters per tag).
+- **E3 (open-item B2), P2.** E3a (`hedge`) and E3f (`hedge_fs`) vs an opponent that switches from Foul Play to
+  `exploit_top` after 8 of 16 seeds per match. Fixed share is no better than anytime Hedge: paired
+  $+0.0032$ [$-0.066$, $0.072$] (157 seeds). The post-switch best expert reaches the maximum weight in 8/10 matches in
   both runs, median 273 (E3a) and 245 (E3f) updates after the switch; the fixed-share analog bound (median 5639 / 4895
   updates) is not exceeded and is far from tight. Weights stay within 0.2–0.35, so the "flip" is a ranking change,
   not a concentration. Only one $T_1$ was run, so the E3 refutation clause "the gap does not grow with $T_1$" is not
   testable from these runs.
 - **E4 exploiter arm (open-item B3).** Model-based exploiters (pure best reply to the victim's predicted column; they
   know the victim's algorithm but not its sampled worlds or RNG) vs RM$^+$'s score against the same victim: only XU
-  (vs `bandit_ucb1`, visit shares) gains clearly, $+0.0354$ [0.014, 0.057]; XUmv $+0.0518$ [$-0.002$, 0.106] (stream-clustered [0.007, 0.097]: borderline); XEmv ($-0.0527$ [$-0.107$, 0.002]) and XR (vs RM$^+$, $0.4683$ vs 0.5 by symmetry) within noise.
-- **E5 controls (open-item B4).** E5 0.4583, E5t (`top` vs agentform) 0.5500 [0.513, 0.587], E5s (agentform vs
-  agentform) 0.5185 [0.480, 0.557]; E5 − E5t $-0.0917$, E5 − E5s $-0.0621$ (seed-paired). Descriptive only: a causal
+  (vs `bandit_ucb1`, visit shares) gains clearly, $+0.0354$ [0.014, 0.057]; XUmv $+0.0518$ [$-0.002$, 0.106] (match-clustered [0.007, 0.097]: borderline); XEmv ($-0.0527$ [$-0.107$, 0.002]) and XR (vs RM$^+$, $0.4683$ vs 0.5 by symmetry) within noise.
+- **E5 controls (open-item B4).** E5 0.4583, E5t (Bayesian LP, top move vs Bayesian LP) 0.5500 [0.513, 0.587], E5s (Bayesian LP vs
+  Bayesian LP) 0.5185 [0.480, 0.557]; E5 − E5t $-0.0917$, E5 − E5s $-0.0621$ (seed-paired). Descriptive only: a causal
   split of the deficit (mixing weights vs expert quality) is not identifiable from the logs. On the 25.9% of decisions
-  where top and safest disagree, Hedge played top's move 59.7%, safest's 31.3%; cause open.
-- **PA2-type $\varepsilon$ sweep (open-item B5).** `bayes_safex` vs stock at $\varepsilon\in\{0.001,0.003,0.01,0.03\}$:
-  0.2000, 0.2275, 0.2450, 0.2538; logistic slope $+0.087$ per $\ln\varepsilon$ ($p=0.018$ clustered by tag×stream;
-  $p=0.040$ by stream only); all four below agentform on the same seeds (0.3291, $n=199$) by 0.076–0.128.
+  where top and pure maximin disagree, Hedge played top's move 59.7%, pure maximin's 31.3%; cause open.
+- **PA2-type $\varepsilon$ sweep (open-item B5).** `bayes_safex` vs Foul Play at $\varepsilon\in\{0.001,0.003,0.01,0.03\}$:
+  0.2000, 0.2275, 0.2450, 0.2538; logistic slope $+0.087$ per $\ln\varepsilon$ ($p=0.018$ clustered by tag×match;
+  $p=0.040$ by match only); all four below Bayesian LP on the same seeds (0.3291, $n=199$) by 0.076–0.128.
 - **RQ pre-registration (open-item B6; `bayes_dynamics.md` §4, committed fb3cc8e before the runs).** P1 pass to
-  rounding; P2 partial (4 of 6 clauses pass; "$P\ge0.99$ by turn 50 in every stream" 8/10 and "MAP-wrong turns $\le10$
-  per stream" 5/10 fail); P3 high-mismatch branch (selected by the pre-registered rule: gap 0.048 nats/turn $<0.1$)
-  **fails** (final MAP = safe 10/10), and neither branch strictly covers 0.048; point prediction (MAP = safe in
-  8–10/10) passes 10/10; P4 pass (P_T(eq) < 0.1 in 10/10; speculative score 0.50–0.60 missed: 0.670); P5 pass.
-- **Audit caveats (open-item A).** 14 error games across 9 tags (each drops its seat-swapped partner). In 12 streams
+  rounding; P2 partial (4 of 6 clauses pass; "$P\ge0.99$ by turn 50 in every match" 8/10 and "MAP-wrong turns $\le10$
+  per match" 5/10 fail); P3 high-mismatch branch (selected by the pre-registered rule: gap 0.048 nats/turn $<0.1$)
+  **fails** (final MAP = cautious 10/10), and neither branch strictly covers 0.048; point prediction (MAP = cautious in
+  8–10/10) passes 10/10; P4 pass (P_T(stage equilibrium) < 0.1 in 10/10; speculative score 0.50–0.60 missed: 0.670); P5 pass.
+- **Audit caveats (open-item A).** 14 error games across 9 tags (each drops its seat-swapped partner). In 12 matches
   the carried Hedge/posterior state counts more games than game files exist; hypothesis (not a finding): an aborted
   retry attempt updated the carried state before the resume rule (`modal_showdown.py:163`, skip seeds whose two game
   JSONs exist) reran it. Config fields are constant across invocations. Scores are unaffected.
@@ -1051,12 +1050,12 @@ the middle label "adaptable"). Numbers and run details: `../engine/RESULTS.md`, 
 
 | Item | Result | Status | Label | Evidence (source) |
 |---|---|---|---|---|
-| **T5 live-confirmed** | the P3 per-stream test passes: median tau_map/tau_hat 1.06, Spearman rho = 0.86 over 20 streams (band [0.7, 1.4], rho >= 0.5); the P6 forgetting point prediction passes: SW4p (lambda = 0.98) median tau_map 37.5 against the predicted 35, ratio to SW4 0.17; P2 (delay scales with pre-switch evidence): ratio 2.09. One false alarm (SW2 stream 7), below the refutation threshold; the SW4d arm was not run | live-tested 2026-11-16 (`prereg_style_switch.md`) | adapted (T5 is the §11 flip-delay result; the live test is new) | `prereg_style_switch.md` "Results"; `switch_results/out_style_switch.md` |
-| **T3 / realisability** | per-world styles still do not make the equilibrium style realisable: eq is the final MAP in 0/10 MWeq streams (R1; at most 4/10 predicted). The T3 realisability hypothesis still fails for an eq-type opponent | measured; T3's hypothesis fails (unchanged from §11) | adapted | `prereg_mw.md` "Results", R1 |
-| **VOI (S1 measurement)** | the information-set planner gains about 0 over its frozen-posterior control: mean 0.0022 % of range, A1 and A2 choose different actions in 3/3,620 decisions. Reason: poke-engine branches only on crit/kill, so soft evidence is almost absent and information arrives as hard eliminations that both arms credit. The clairvoyance bound at the children (A0L - A1) is mean 0.35 %. This is consistent with the small eta results in `tightening/voi.md` (along-play eta-hat on the order of 1 % of range, median near 0; 87 % tera-zero), which already say that inside the agent eta = 0 by A3 and the capturable value is small. Null accepted | measured (engine simulation); pre-registered E1b, E2a fail, E4 pass | adapted (the VOI = eta identification is §11; the S1 measurement is new) | `s1_results.md` Headline, §4, Decision; `tightening/voi.md` |
+| **T5 live-confirmed** | the P3 per-match test passes: median tau_map/tau_hat 1.06, Spearman rho = 0.86 over 20 matches (band [0.7, 1.4], rho >= 0.5); the P6 forgetting point prediction passes: SW4p (lambda = 0.98) median tau_map 37.5 against the predicted 35, ratio to SW4 0.17; P2 (delay scales with pre-switch evidence): ratio 2.09. One false alarm (SW2 match 7), below the refutation threshold; the SW4d arm was not run | live-tested 2026-11-16 (`prereg_style_switch.md`) | adapted (T5 is the §11 detection-delay result; the live test is new) | `prereg_style_switch.md` "Results"; `switch_results/out_style_switch.md` |
+| **T3 / realisability** | per-world styles still do not make the equilibrium style realisable: stage equilibrium is the final MAP in 0/10 MWeq matches (R1; at most 4/10 predicted). The T3 realisability hypothesis still fails for a stage-equilibrium opponent | measured; T3's hypothesis fails (unchanged from §11) | adapted | `prereg_mw.md` "Results", R1 |
+| **VOI (S1 measurement)** | the planner that updates the posterior inside the lookahead gains about 0 over its frozen-posterior control: mean 0.0022 % of range, A1 and A2 choose different actions in 3/3,620 decisions. Reason: poke-engine branches only on crit/kill, so soft evidence is almost absent and information arrives as hard eliminations that both arms credit. The clairvoyance bound at the children (A0L - A1) is mean 0.35 %. This is consistent with the small eta results in `tightening/voi.md` (along-play eta-hat on the order of 1 % of range, median near 0; 87 % tera-zero), which already say that inside the agent eta = 0 by A3 and the capturable value is small. Null accepted | measured (engine simulation); pre-registered E1b, E2a fail, E4 pass | adapted (the VOI = eta identification is §11; the S1 measurement is new) | `s1_results.md` Headline, §4, Decision; `tightening/voi.md` |
 | **Concealment** | its value is measured: ex-ante mean 1.113 %, median 0.241 % of range (species known). The omniscient-opponent model (each world's opponent knows our true team) is the safe side by maxmin: x_AF guarantees v_AF against any opponent, including all type-blind ones. The comparison 0.948 % vs 3.4 % is not the argument | measured; safe side proved by maxmin (not by the numbers) | known (the principle) / new (the measured value in a real game) | `info_gathering_concealment.md` Headline 2, §1.3 |
-| **Joint set x style** | the measured correlation term is about 0: a carried joint (active set x style) posterior adds +0.001 ± 0.001 nats over the factorised one. The real gains are the support fix (+0.324 ± 0.031 vs stock; pooled +0.325 ± 0.027) and a per-world style likelihood (+0.028 ± 0.011). The analogy to HBA (Albrecht and Ramamoorthy 2013) is structural only | measured (offline, 18 games) | adapted (HBA-style beliefs); new (the measurement) | `joint_posterior.md` Corrections, §3.1 |
+| **Joint set x style** | the measured correlation term is about 0: a carried joint (active set x style) posterior adds +0.001 ± 0.001 nats over the factorised one. The real gains are restricting the likelihood to each world's legal actions (+0.324 ± 0.031 vs Foul Play; pooled +0.325 ± 0.027) and a per-world style likelihood (+0.028 ± 0.011). The analogy to HBA (Albrecht and Ramamoorthy 2013) is structural only | measured (offline, 18 games) | adapted (HBA-style beliefs); new (the measurement) | `joint_posterior.md` Corrections, §3.1 |
 
-What this does not change: the leaf bottleneck of §11 (the loss is charged to $\varepsilon_v$). Better prediction (the
-support fix, `hedge_bayes_mw`) did not move the win rate in the replication (+0.0075 for seeds 201-400), the same
+What this does not change: the leaf evaluation error dominating the bound (§11; the loss is charged to $\varepsilon_v$). Better prediction (restricting
+the likelihood to each world's legal actions; `hedge_bayes_mw`) did not move the win rate in the replication (+0.0075 for seeds 201-400), the same
 pattern as BH.
