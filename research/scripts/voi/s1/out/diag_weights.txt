@@ -1,0 +1,2 @@
+multi-world groups 1003: TV(pi1,pi2) mean 0.004 median 0.000 frac>0.01 0.01 max 0.663
+x1 != x2 in 3/1003; V1-V2: frac>1e-9 0.003, max 12.2530, min 0.00e+00

@@ -1,0 +1,34 @@
+32 pairs, 2 workers, deadline in 85.0 min -> /Users/biofanat/Documents/classes/f26/cs535/final-integration/research/scripts/voi/s1/out/s1_eval.jsonl
+pair 0 seed 5000011 decisions 42 (total 42) | 139s pair, 139s elapsed
+pair 1 seed 5007930 decisions 60 (total 102) | 222s pair, 222s elapsed
+pair 2 seed 5015849 decisions 94 (total 196) | 251s pair, 390s elapsed
+pair 3 seed 5023768 decisions 74 (total 270) | 197s pair, 419s elapsed
+pair 4 seed 5031687 decisions 129 (total 399) | 424s pair, 814s elapsed
+pair 5 seed 5039606 decisions 587 (total 986) | 412s pair, 831s elapsed
+pair 7 seed 5055444 decisions 31 (total 1017) | 101s pair, 933s elapsed
+pair 6 seed 5047525 decisions 66 (total 1083) | 142s pair, 956s elapsed
+pair 9 seed 5071282 decisions 64 (total 1147) | 265s pair, 1221s elapsed
+pair 8 seed 5063363 decisions 81 (total 1228) | 319s pair, 1252s elapsed
+pair 10 seed 5079201 decisions 86 (total 1314) | 261s pair, 1482s elapsed
+pair 11 seed 5087120 decisions 73 (total 1387) | 238s pair, 1490s elapsed
+pair 13 seed 5102958 decisions 59 (total 1446) | 220s pair, 1710s elapsed
+pair 14 seed 5110877 decisions 36 (total 1482) | 168s pair, 1879s elapsed
+pair 12 seed 5095039 decisions 113 (total 1595) | 453s pair, 1936s elapsed
+pair 16 seed 5126715 decisions 71 (total 1666) | 339s pair, 2275s elapsed
+pair 17 seed 5134634 decisions 59 (total 1725) | 252s pair, 2527s elapsed
+pair 15 seed 5118796 decisions 139 (total 1864) | 965s pair, 2844s elapsed
+pair 18 seed 5142553 decisions 55 (total 1919) | 451s pair, 2978s elapsed
+pair 19 seed 5150472 decisions 42 (total 1961) | 278s pair, 3122s elapsed
+pair 20 seed 5158391 decisions 590 (total 2551) | 311s pair, 3289s elapsed
+pair 22 seed 5174229 decisions 32 (total 2583) | 114s pair, 3402s elapsed
+pair 21 seed 5166310 decisions 83 (total 2666) | 311s pair, 3433s elapsed
+pair 23 seed 5182148 decisions 69 (total 2735) | 280s pair, 3682s elapsed
+pair 24 seed 5190067 decisions 94 (total 2829) | 350s pair, 3783s elapsed
+pair 26 seed 5205905 decisions 53 (total 2882) | 171s pair, 3954s elapsed
+pair 25 seed 5197986 decisions 79 (total 2961) | 394s pair, 4076s elapsed
+pair 27 seed 5213824 decisions 100 (total 3061) | 344s pair, 4298s elapsed
+pair 28 seed 5221743 decisions 77 (total 3138) | 370s pair, 4446s elapsed
+pair 29 seed 5229662 decisions 120 (total 3258) | 561s pair, 4859s elapsed
+pair 31 seed 5245500 decisions 67 (total 3325) | 160s pair, 5019s elapsed
+pair 30 seed 5237581 decisions 302 (total 3627) | 851s pair, 5297s elapsed
+exit 0

@@ -36,3 +36,6 @@ engine/results/belief/engine_events.jsonl
 # regenerable leaf-probe states (build_states.py)
 theory/tightening/verify/leaf/states_s0.jsonl
 engine/analysis/open_items/out_B1_log_games.json
+
+# S1 per-decision log (12 MB); archived at ~/sandbox/ourbot/research_logs/s1_eval.jsonl.gz
+research/scripts/voi/s1/out/s1_eval.jsonl

@@ -1,0 +1,27 @@
+pairs 32, games 64 (0 errors), decisions 3627 (3620 with range > 0, 0 analysis errors); leaf {'calls': 14107208, 'non_d1': 30168, 'fallback': 0}
+E1[rep] dV(a*)/range: mean 0.0022% median 0.0000% p90 0.0000% max 2.8502% min 0.0000% >0 in 0.6% | violations a*: 0, any a: 0
+   by turn: 1-9: n=524 mean 0.0086% p90 0.0000%; 10-19: n=549 mean 0.0018% p90 0.0000%; 20-29: n=484 mean 0.0008% p90 0.0000%; 30+: n=2063 mean 0.0009% p90 0.0000%
+   max over a: mean 0.0166% p90 0.0000% max 4.3912%
+E2[rep] {'changed': 3, 'frac_changed': 0.0008287292817679558, 'kinds': {'attack+status': 2, 'attack+switch': 1}, 'tera_involved': 0, 'switch_status_pivot_involved': 3, 'regret_gt_1pct': 0.0}
+E1[pw] dV(a*)/range: mean 0.0026% median 0.0000% p90 0.0000% max 3.9855% min -0.3325% >0 in 0.5% | violations a*: 3, any a: 19
+   by turn: 1-9: n=524 mean 0.0122% p90 0.0000%; 10-19: n=549 mean 0.0020% p90 0.0000%; 20-29: n=484 mean 0.0008% p90 0.0000%; 30+: n=2063 mean 0.0007% p90 0.0000%
+   max over a: mean 0.0194% p90 0.0000% max 5.2742%
+E2[pw] {'changed': 2, 'frac_changed': 0.0005524861878453039, 'kinds': {'switch+tera': 1, 'attack+status': 1}, 'tera_involved': 1, 'switch_status_pivot_involved': 2, 'regret_gt_1pct': 0.0005524861878453039}
+E1[rep] per pair (n, mean%): 0:42/0.0000, 1:60/0.0000, 2:94/0.0000, 3:74/0.0000, 4:129/0.0072, 5:587/0.0000, 6:65/0.0023, 7:31/0.0919, 8:81/0.0000, 9:64/0.0000, 10:86/0.0038, 11:73/0.0000, 12:113/0.0021, 13:59/0.0157, 14:36/0.0002, 15:139/0.0000, 16:71/0.0000, 17:59/0.0000, 18:53/0.0000, 19:42/0.0012, 20:590/0.0020, 21:83/0.0011, 22:31/0.0000, 23:69/0.0000, 24:93/0.0029, 25:79/0.0000, 26:53/0.0000, 27:100/0.0000, 28:77/0.0106, 29:119/0.0000, 30:302/0.0000, 31:66/0.0000
+E1[rep] without largest pair 20: n 3030 mean 0.0022% p90 0.0000%; mean of pair means 0.0044%
+E4[keys] keys/cell {'move': {'median': 2.0, 'mean': 2.480213855066115, 'p90': 4.0, 'n_cells': 703093}, 'switch': {'median': 1.0, 'mean': 1.5145721165100492, 'p90': 3.0, 'n_cells': 358836}}; merged pooled 67.9% (per-dec mean count 76.4%, mass 75.4%); strict-support mass mean 38.3%; within-world 5.5%; cells missing worlds 40.8%
+E4[keys_report] keys/cell {'move': {'median': 2.0, 'mean': 2.1286842565634987, 'p90': 4.0, 'n_cells': 703093}, 'switch': {'median': 1.0, 'mean': 1.4014006398466152, 'p90': 2.0, 'n_cells': 358836}}; merged pooled 78.5% (per-dec mean count 84.6%, mass 83.1%); strict-support mass mean 13.1%; within-world 18.1%; cells missing worlds 40.8%
+CPU s/decision: A0 mean 0.312 med 0.198 p90 0.763; A1 mean 1.559 med 0.708 p90 4.028; A2 mean 1.556 med 0.706 p90 4.024; expand_shared mean 1.320 med 0.582 p90 3.371; lp_shared mean 0.128 med 0.012 p90 0.404; lp_A1 mean 0.110 med 0.080 p90 0.254; lp_A2 mean 0.108 med 0.078 p90 0.249; lp_A0L mean 0.243 med 0.129 p90 0.608; s1_analysis_all_arms mean 1.923 med 1.007 p90 4.875; s1_analysis_wall mean 2.089 med 1.046 p90 5.242; d1_calls mean 3897.019 med 1407.000 p90 10880.400; nodes mean 648.902 med 405.000 p90 1444.100; ratio_A1_over_A0 mean 4.129 med 3.913 p90 6.210
+supplementary: {"clairvoyance_gap_children_pw": {"n": 3620, "mean": 0.0034940162390716734, "median": 0.0, "p90": 0.005882764788245205, "max": 0.22861451738244765, "min": -4.14611187973328e-15, "frac_pos": 0.27900552486187846}, "clairvoyance_gap_root_value_pw": {"n": 3620, "mean": 0.003782514062371324, "median": 0.0, "p90": 0.006321927310432651, "max": 0.26399282268198127, "min": -1.5810755106278926e-14, "frac_pos": 0.3784530386740331}, "argmax_A0L_vs_A1pw": 0.025966850828729283, "argmax_A0L_vs_A1rep": 0.04143646408839779, "regret_gt1pct_A0L_vs_A1pw": 0.014364640883977901, "argmax_A0_vs_A0L (leaf change)": 0.026519337016574586, "root_value_A0_minus_A0L (leaf change)": {"n": 3620, "mean": -0.0006185460059883309, "median": 2.743906086516644e-16, "p90": 0.004433665742313749, "max": 1.0, "min": -1.787363790749655, "frac_pos": 0.49337016574585635}, "argmax_A0_vs_A1rep": 0.05276243093922652, "argmax_A1rep_vs_A1pw": 0.03729281767955801, "root_value_A1rep_minus_A1pw": {"n": 3620, "mean": 7.960916592816988e-05, "median": 0.0, "p90": 0.0016610973892016725, "max": 0.10218723680339653, "min": -0.13926694067304576, "frac_pos": 0.17734806629834254}, "groups_multi_world_mean": 147.12209944751382, "groups_with_V1_gt_V2_frac": 0.002773281860821432, "groups_with_row_alignment": 0.0033149171270718232, "payoff_range": {"n": 3620, "mean": 305.2415872181524, "median": 322.0831391162292, "p90": 415.47133788558676, "max": 645.7981467317592, "min": 0.155731201171875, "frac_pos": 1.0}}
+  E1 PASS nonneg at every decision (rep): 0 violations at a*, 0 decisions with some a violated
+  E1 FAIL mean in [0.5%, 1.5%]: mean 0.0022%
+  E1 PASS median <= 0.4%: median 0.0000%
+  E1 PASS p90 <= 4%: p90 0.0000%
+  E1 PASS turns 1-9 >= 5x turns 30+: means 0.0086% vs 0.0009%
+  E2 FAIL A1/A2 argmax differ in 5-12%: 0.08% (3/3620); regret>1%-weighted 0.00%
+  E2 PASS of those < 1% involve -tera: 0/3
+  E2 PASS most involve switch or status/pivot: 3/3
+  E4 PASS keys/cell median 2-3 for opponent move choices: median 2.0, mean 2.48
+  E4 PASS keys/cell median 1 for opponent switches: median 1.0, mean 1.51
+  E4 PASS children merged across worlds > 50%: pooled 67.9% of children; per-decision mean 76.4% (count), 75.4% (mass)
+  E4 n/a  conditional: if merged < 20% then E1 mean < 0.2%: antecedent false (merged >= 20%): not triggered

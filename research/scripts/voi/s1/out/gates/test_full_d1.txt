@@ -1,0 +1,11 @@
+182 children
+ok  stock cells reproduced, move rows (621 cells, 0 mismatches)
+ok  stock cells reproduced, tera rows (182 cells, 0 mismatches)
+ok  stock cells reproduced, switch rows (988 cells, 0 mismatches)
+ok  stock cells reproduced, row0/full rows (3465 cells, 0 mismatches)
+ok  tera rows were exercised (182 cells)
+ok  pure maximin(F) == nash._child_value (182 children, 0 bad)
+    mirror: 24/5071 stock mirror cells differ from -F^T (engine side asymmetry, not asserted)
+    leaf change |val(F) - mid leaf| / ptp(F): mean 0.0070 median 0.0000 p90 0.0251 max 0.0957; zero (pure saddle, both sides) in 0.26
+    full_d1 stats {'children': 182, 'calls': 1246, 'cache_hits': 0}
+ALL OK
