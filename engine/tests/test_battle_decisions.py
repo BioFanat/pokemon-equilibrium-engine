@@ -130,6 +130,39 @@ class MechanicsRegressions(unittest.TestCase):
         _, rows, _ = self.nash.full_matrix(self.state(p, q), side_one_options=["knockoff"])
         self.assertEqual(rows, ["knockoff"])
 
+    def test_information_planner_uses_exact_terminal_rewards(self):
+        import info_planner as ip
+        import numpy as np
+        p = self.mon("hippowdon", ("ground", "typeless"), ["earthquake"])
+        q = self.hd.copy_pokemon(self.mon("hatterene", ("psychic", "fairy"), ["splash"]), hp=1)
+        s = self.state(p, q)
+        child = s.apply_instructions(self.pe.generate_instructions(s, "earthquake", "splash")[0])
+        for side, expected in ((1, 10000), (2, -10000)):
+            M, rows, cols = ip.own_child_matrix(child, side)
+            np.testing.assert_array_equal(M, [[expected]])
+            self.assertEqual((rows, cols), (["none"], ["none"]))
+        draw = self.state(self.hd.copy_pokemon(p, hp=0), self.hd.copy_pokemon(q, hp=0))
+        self.assertEqual(ip.own_child_matrix(draw, 1)[0][0, 0], 0)
+        M, rows, _ = ip.full_matrix_lpleaf(s)
+        np.testing.assert_array_equal(M[rows.index("earthquake")], 10000)
+        result = ip.plan([s], 1, ["earthquake"], {0})
+        for arm in ("A1_rep", "A2_rep", "A1_pw", "A2_pw", "A0L"):
+            self.assertEqual(result[arm]["v"], 10000)
+
+
+class RevivalIntegrationTests(unittest.TestCase):
+    def test_revival_and_trapped_recharge_bypass_search(self):
+        from revival_guard import guard
+        search = lambda battle: self.fail("forced action must bypass search")
+        battle = NS(request_json=dict(forceSwitch=[True], side=dict(pokemon=[dict(reviving=True)])),
+                    user=NS(reserve=[NS(name="heatran", hp=20), NS(name="toxapex", hp=0)]))
+        self.assertEqual(guard(search)(battle), "switch toxapex")
+        battle.request_json = dict(active=[dict(trapped=True, moves=[dict(id="recharge")])])
+        self.assertEqual(guard(search)(battle), "recharge")
+
+
+@unittest.skipUnless(NATIVE, "poke-engine unavailable; use .local-play/venv/bin/python")
+class OfflineReplayTests(unittest.TestCase):
     def test_offline_replay_aligns_each_world_by_action_name(self):
         from replay_decision import replay
         record = dict(method="agentform", turn=3, move="knockoff", search=dict(

@@ -4,6 +4,10 @@ Resumed the unfinished review from **Assess proposal progress** using the local
 checkout, installed Foul Play/poke-engine, saved spectator replays, decision
 mixtures, and sampler logs. No login or public games were started.
 
+After merging `origin/integration/joint-belief` at `014ad4b`, see the
+[joint-belief reassessment](joint-belief-reassessment.md) for what the new
+posterior, planner, and harness work changes about these findings.
+
 ## Confirmed fixes
 
 1. **Completed battles used material scores.** `pe.id` on a state with no

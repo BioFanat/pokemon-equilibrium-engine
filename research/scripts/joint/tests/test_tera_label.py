@@ -35,7 +35,7 @@ class Mode:
 
 real = (nash.full_matrix, nash.pe)
 ro.battle_to_poke_engine_state = lambda b: b
-nash.full_matrix = lambda st: (st.M, st.s1, st.s2)
+nash.full_matrix = lambda st, side_one_options=None: (st.M, st.s1, st.s2)
 nash.pe = NS(id=lambda st, side: NS(s1=st.s1))
 rng = np.random.default_rng(5)
 n = 0
@@ -49,6 +49,7 @@ try:
                 for t in range(3):
                     worlds = [(NS(M=rng.normal(0, 100, (3, len(c))), s1=ROWS, s2=c), 0.25) for c in cols]
                     fn(NS(team_preview=False, turn=t + 1, _ourlines=list(lines), opponent=NS(name="p2"),
+                          request_json=None, user=NS(reserve=[]),
                           battle_tag="battle-x", mode=Mode(worlds)))
                     lines += ["|-terastallize|p2a: Foo|Fire", "|move|p2a: Foo|Flare Blitz|p1a: Bar", f"|turn|{t + 2}"]
                 recs = [json.loads(ln) for ln in open(log)]

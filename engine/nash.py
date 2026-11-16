@@ -141,6 +141,14 @@ def _mirror(st: pe.State) -> pe.State:
     return pe.State(side_one=st.side_two, side_two=st.side_one, **{f: getattr(st, f) for f in GF})
 
 
+def terminal_value(state: pe.State) -> float | None:
+    """Exact side-one win/loss/draw reward, or None while the battle continues."""
+    a1, a2 = pb.alive(state.side_one), pb.alive(state.side_two)
+    if a1 == 0 or a2 == 0:
+        return 0.0 if a1 == a2 else (10000.0 if a1 else -10000.0)
+    return None
+
+
 def _leaf(child: pe.State, leaf: str) -> float:
     """'mid' (default): midpoint of side one's maximin and side two's maximin (via the mirrored
     position) -- both bracket the child's matrix-game value, the midpoint is exact when the child
@@ -150,9 +158,9 @@ def _leaf(child: pe.State, leaf: str) -> float:
     # pe.id on an already finished battle returns its material heuristic, not
     # the search's win/loss reward. A guaranteed win must outrank healing or
     # setup in a position that still has an opponent left.
-    a1, a2 = pb.alive(child.side_one), pb.alive(child.side_two)
-    if a1 == 0 or a2 == 0:
-        return 0.0 if a1 == a2 else (10000.0 if a1 else -10000.0)
+    terminal = terminal_value(child)
+    if terminal is not None:
+        return terminal
     lo = _child_value(child)
     return lo if leaf == "maximin" else 0.5 * (lo - _child_value(_mirror(child)))
 

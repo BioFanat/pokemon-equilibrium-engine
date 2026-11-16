@@ -75,7 +75,7 @@ def run(mod, method, turns, work, log_abar):
     if log_abar:
         os.environ["OURBOT_LOG_ABAR"] = "1"
     mod.battle_to_poke_engine_state = lambda b: b
-    nash.full_matrix = lambda st: (st.M, st.s1, st.s2)
+    nash.full_matrix = lambda st, side_one_options=None: (st.M, st.s1, st.s2)
     nash.pe = NS(id=lambda st, side: NS(s1=st.s1))
     mod.RNG = random.Random(1234)
     log, state = os.path.join(work, "dec.jsonl"), os.path.join(work, "hedge_state", "x.json")
@@ -83,6 +83,7 @@ def run(mod, method, turns, work, log_abar):
     lines, moves = [], []
     for t, (worlds, opp) in enumerate(turns):
         battle = NS(team_preview=False, turn=t + 1, _ourlines=list(lines), opponent=NS(name="p2"),
+                    request_json=None, user=NS(reserve=[]),
                     battle_tag="battle-x", mode=Mode(worlds))
         moves.append(fn(battle))
         lines += opp
