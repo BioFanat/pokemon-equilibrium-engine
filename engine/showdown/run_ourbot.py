@@ -41,6 +41,7 @@ import pkbattle as pb  # noqa: E402
 from exp3_live import Learner  # noqa: E402
 
 import behavior  # noqa: E402
+from belief_worlds import MechanicsWorldProvider  # noqa: E402
 
 RNG = random.Random()
 ROOT_METHODS = ("agentform", "pimc")
@@ -353,6 +354,13 @@ def make_move_fn(method: str, K: int, log=None, seed: int = 0, game: int = 0, st
         post, bmeta = behavior.load_posterior(bpath)
         behavior.save_posterior(bpath, post, bmeta)
     ctx = dict(pending=None, n=0)
+    belief_source = os.environ.get("OURBOT_BELIEF_SOURCE", "foulplay_baseline")
+    if belief_source not in {"foulplay_baseline", "reveals_v2", "mechanics_v2"}:
+        raise ValueError(f"unknown OURBOT_BELIEF_SOURCE: {belief_source}")
+    mechanics = (MechanicsWorldProvider(belief_source,
+                 shadow=os.environ.get("OURBOT_BELIEF_SHADOW", "1") != "0",
+                 rng=random.Random((seed or 0) * 1009 + (game or 0)))
+                 if belief_source != "foulplay_baseline" else None)
     log_abar = os.environ.get("OURBOT_LOG_ABAR") == "1"    # open item 1: log Abar, labels, legal, full p (+ Q, qs)
 
     def write(rec):
@@ -399,6 +407,9 @@ def make_move_fn(method: str, K: int, log=None, seed: int = 0, game: int = 0, st
         fb = feedback(lines, final=True)
         if fb is not None:
             write(dict(method=method, final=True, feedback=fb))
+        if mechanics is not None:
+            mechanics.finish(lines)
+            write(dict(method=method, final=True, mechanics=mechanics.summary()))
 
     def find_best_move(battle) -> str:
         from copy import deepcopy
@@ -411,10 +422,18 @@ def make_move_fn(method: str, K: int, log=None, seed: int = 0, game: int = 0, st
         if method in LEARN_METHODS:
             fb = feedback(lines)
             _FINISHERS[battle.battle_tag] = finish
-        worlds = battle.mode.prepare_battles(battle, K)
+        # The v2 provider owns its prior and posterior independently of Foul
+        # Play's inference. Never reweight prepare_battles with our likelihoods.
+        worlds, states = None, None
+        if mechanics is not None:
+            mechanics.update(battle, battle_to_poke_engine_state)
+            _FINISHERS[battle.battle_tag] = finish
+            states = mechanics.sample_states(battle, battle_to_poke_engine_state, K)
+        if states is None:
+            worlds = battle.mode.prepare_battles(battle, K)
+            states = ((battle_to_poke_engine_state(b), chance) for b, chance in worlds)
         Ms, ws, rows, cols, legal, raw = [], [], [], [], None, {}
-        for b, chance in worlds:
-            state = battle_to_poke_engine_state(b)
+        for state, chance in states:
             r = nash.pe.id(state, 0)                         # raw engine option strings for side one (us)
             M, s1, s2 = nash.full_matrix(state)
             if legal is None:
@@ -515,9 +534,11 @@ def make_move_fn(method: str, K: int, log=None, seed: int = 0, game: int = 0, st
                        secs=round(time.time() - t0, 2))
         if method in LEARN_METHODS:
             rec["feedback"] = fb
-        if os.environ.get("OURBOT_LOG_WORLDS") == "1":
+        if os.environ.get("OURBOT_LOG_WORLDS") == "1" and worlds is not None:
             rec["belief"] = belief_log(battle, worlds)
         ctx["n"] += 1
+        if mechanics is not None:
+            rec["mechanics"] = mechanics.summary()
         write(rec)
         return move
     return find_best_move
