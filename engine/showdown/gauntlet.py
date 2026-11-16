@@ -159,7 +159,8 @@ def equivalent_budgets(bots, ratings):
 def fit(args, bots, plan):
     resolved = {m: method_spec(m) for m in bots}             # "ours" -> "agentform": the key the records use
     data = {(a, b): load_pairing(args.prefix, a, b, n) for a, b, n in plan}
-    anchor = bots.index("random") if "random" in bots else 0
+    anchor = (bots.index(args.anchor) if args.anchor else
+              bots.index("random") if "random" in bots else 0)   # a bot with a perfect record makes a poor anchor
     t = fit_bt(wins_matrix(bots, data), args.l2, anchor) * ELO
     rng = np.random.default_rng(args.boot_seed)
     boots, pair_boots = [], {k: [] for k in data}
@@ -172,6 +173,7 @@ def fit(args, bots, plan):
                 pair_boots[k].append(np.mean([np.mean(d["seeds"][s]) for s in pick[d["tag"]]]))
     boots = np.array(boots)
     ci = lambda x: [round(float(v), 1) for v in np.percentile(x, [2.5, 97.5])] if len(x) else None
+    ci_score = lambda x: [round(float(v), 4) for v in np.percentile(x, [2.5, 97.5])] if len(x) else None  # scores in [0, 1]
     ratings = {m: round(float(t[i]), 1) for i, m in enumerate(bots)}
     cpu = cpu_per_decision(args.prefix, plan, data)
     games = {m: 0 for m in bots}
@@ -184,7 +186,7 @@ def fit(args, bots, plan):
             errs[m] += d["error_games"]
         mean = float(np.mean([np.mean(v) for v in d["seeds"].values()])) if d["seeds"] else None
         pairwise.append(dict(a=a, b=b, tag=d["tag"], score_a=round(mean, 4) if mean is not None else None,
-                             ci95=ci(pair_boots[(a, b)]), n_pairs=len(d["seeds"]), games_used=ng,
+                             ci95=ci_score(pair_boots[(a, b)]), n_pairs=len(d["seeds"]), games_used=ng,
                              error_games=d["error_games"], sim_error_games=d["sim_error_games"],
                              missing_games=d["missing_games"]))
     out = dict(
@@ -234,6 +236,7 @@ def main():
     ap.add_argument("--fit-only", action="store_true", help="skip running; fit what is on disk")
     ap.add_argument("--bootstrap", type=int, default=1000)
     ap.add_argument("--boot-seed", type=int, default=0)
+    ap.add_argument("--anchor", default=None, help="bot rated 0 (default: random if present, else the first bot)")
     ap.add_argument("--l2", type=float, default=0.01, help="L2 prior on natural log-strengths (keeps sweeps finite)")
     args = ap.parse_args()
     bots = [m.strip() for m in args.bots.split(",") if m.strip()]
