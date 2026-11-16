@@ -234,7 +234,9 @@ def setup_foulplay(search_time_ms, k):
             return state["timers"][side].run(state["fns"][side], battle)
         finally:
             TLS.ms = None
-    fp_base.find_best_move = dispatch
+    import revival_guard                                    # Revival Blessing picks (see revival_guard.py)
+    fp_base.find_best_move = revival_guard.guard(dispatch)
+    revival_guard.install_keep_last_move()
     return state, run_ourbot
 
 

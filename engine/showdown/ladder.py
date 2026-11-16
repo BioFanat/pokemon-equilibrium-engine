@@ -190,7 +190,9 @@ def setup_runtime(cfg):
         DECISION_SECS.setdefault(battle.battle_tag, []).append(time.time() - t0)
         return move
 
-    fp_base.find_best_move = timed_move
+    import revival_guard                                    # Revival Blessing picks (see revival_guard.py)
+    fp_base.find_best_move = revival_guard.guard(timed_move)
+    revival_guard.install_keep_last_move()
     recv = fp_ws.PSWebsocketClient.receive_message          # run_ourbot.recording_receive
 
     async def ladder_receive(self):
