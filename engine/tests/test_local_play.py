@@ -78,6 +78,37 @@ class LocalPlayTests(unittest.TestCase):
                 lp.ensure_source(root, "foul-play")
             self.assertEqual(sentinel.read_text(), "keep me")
 
+    def test_local_guest_names_are_scoped_to_testclient_and_loopback(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            client = Path(tmp)
+            source = client / "play.pokemonshowdown.com/src/client-main.ts"
+            source.parent.mkdir(parents=True)
+            source.write_text("\t\tif (userid === this.userid) {\n")
+            lp.configure_client(client)
+            patched = source.read_text()
+            self.assertIn("Config.testclient && location.hostname === '127.0.0.1' && PS.server.host === '127.0.0.1'", patched)
+            self.assertIn("PS.send(`/trn ${name},0,`)", patched)
+            lp.configure_client(client)
+            self.assertEqual(source.read_text(), patched)
+
+    def test_unrecognized_client_login_flow_is_not_modified(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp) / "play.pokemonshowdown.com/src/client-main.ts"
+            source.parent.mkdir(parents=True)
+            source.write_text("different upstream login flow")
+            with self.assertRaises(lp.SetupError):
+                lp.configure_client(Path(tmp))
+            self.assertEqual(source.read_text(), "different upstream login flow")
+
+    def test_occupied_client_port_never_starts_processes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "environment.json").write_text("{}")
+            with patch.object(lp, "port_is_open", side_effect=lambda port: port == 8002), patch.object(lp.subprocess, "Popen") as spawn:
+                with self.assertRaises(lp.SetupError):
+                    lp.play(root, types.SimpleNamespace(port=8000, client_port=8002))
+                spawn.assert_not_called()
+
     def test_runtime_environment_does_not_modify_shell_configuration(self):
         original = dict(os.environ)
         env = lp.tool_environment(Path("/tmp/example-local-play"))
@@ -111,6 +142,26 @@ class LocalPlayTests(unittest.TestCase):
     def test_node_version_detection_does_not_accept_node20(self):
         with patch.object(lp.subprocess, "check_output", return_value="v20.13.1\n"):
             self.assertEqual(lp.node_major("node"), 20)
+
+    def test_existing_dataset_needs_no_network(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            target = root / "fp/data/pkmn_sets_cache/gen9randombattle.json"
+            target.parent.mkdir(parents=True)
+            target.write_text('{"pikachu":{"set":1}}')
+            with patch.object(lp, "download") as fetch:
+                self.assertEqual(lp.ensure_dataset(root, root), target)
+                fetch.assert_not_called()
+
+    def test_dataset_download_is_validated_before_caching(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            downloaded = root / "download.json"
+            downloaded.write_text("{}")
+            with patch.object(lp, "download", return_value=downloaded):
+                with self.assertRaises(lp.SetupError):
+                    lp.ensure_dataset(root, root)
+            self.assertFalse((root / "fp/data/pkmn_sets_cache/gen9randombattle.json").exists())
 
 
 if __name__ == "__main__":

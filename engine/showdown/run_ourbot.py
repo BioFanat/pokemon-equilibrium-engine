@@ -655,6 +655,15 @@ fp_ws.PSWebsocketClient.receive_message = recording_receive
 
 if __name__ == "__main__":
     import asyncio
+    from local_bot_safety import validate_local_bot_identity
+
+    _create_client = fp_ws.PSWebsocketClient.create
+
+    async def create_local_client(cls, username, password, address):
+        validate_local_bot_identity(username, password, address)
+        return await _create_client(username, password, address)
+
+    fp_ws.PSWebsocketClient.create = classmethod(create_local_client)
     defaults = ["--websocket-uri", "ws://127.0.0.1:8000/showdown/websocket", "--ps-username", "eqbot",
                 "--bot-mode", "accept_challenge", "--pokemon-format", "gen9randombattle", "--run-count", "100",
                 "--log-level", "INFO"]
