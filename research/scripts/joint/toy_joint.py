@@ -6,7 +6,7 @@ Styles: greedy (plays its best column vs the public reference mixture x_ref with
 uniform; prior 1/2 each. Payoff matrix (to us, opponent minimises; rows r1, r2) chosen by a small integer search so
 that the best reply flips. The "product" tracker runs two independent Bayes filters (set belief updated with
 P(obs|S) = Σ_σ P(σ) q_σ(obs|S); style belief with Σ_S P(S) q_σ(obs|S)) and predicts with their product, which is
-exactly what the current pipeline does (foul-play's sampler for S, behavior.Posterior for σ), modulo sampling.
+a hypothetical product tracker (the real pipeline is not this: foul-play applies hard set filters only, behavior.Posterior tracks σ).
 """
 import itertools
 
