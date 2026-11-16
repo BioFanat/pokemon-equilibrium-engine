@@ -11,6 +11,10 @@ replays_headless/<tag>-s<seed>.batch.log. The summary is aggregated from the gam
   hedge feedback turns (updated / skipped, by reason) and bandit / RM+ Nash gaps (`learning`).
 --streams S: seed list split into S streams (stream k = seeds[k::S]); each stream runs its seeds one after another in
 one worker, passing --stream k, so hedge players carry their weights (<OURBOT_WORK>/hedge_state/) from seed to seed.
+--a/--b may be a switch spec "switch:<m1>@<T1>:<m2>": the i-th seed of a stream (0-based, position in the stream's full
+seed list, so resume does not shift it) plays m1 if i < T1 else m2 (without --streams: i = position in --seeds). The
+carried state files are keyed by role, not method, so the other side's weights carry across the switch; the summary
+then records the method each side actually played per seed (`active`).
 """
 import argparse
 import json
@@ -45,12 +49,30 @@ def parse_seeds(spec):
     return out
 
 
+def resolve_method(spec, i):
+    """The method a side plays at position i of its stream: spec itself, or for "switch:<m1>@<T1>:<m2>" m1 if i < T1
+    else m2."""
+    if not spec.startswith("switch:"):
+        return spec
+    m1, rest = spec[len("switch:"):].split("@", 1)
+    t1, m2 = rest.split(":", 1)
+    return m1 if i < int(t1) else m2
+
+
+def spec_methods(spec):
+    """All methods a side spec can play (one, or both halves of a switch spec)."""
+    if not spec.startswith("switch:"):
+        return [spec]
+    return [resolve_method(spec, 0), resolve_method(spec, 1 << 30)]
+
+
 def game_path(tag, seed, game):
     return os.path.join(OUT, f"{tag}-s{seed}-g{game}.json")
 
 
-def run_seed(args, seed, stream=None):
-    cmd = [PY, os.path.join(HERE, "headless.py"), "--seed", str(seed), "--tag", args.tag, "--a", args.a, "--b", args.b,
+def run_seed(args, seed, stream=None, i=0):
+    a, b = resolve_method(args.a, i), resolve_method(args.b, i)
+    cmd = [PY, os.path.join(HERE, "headless.py"), "--seed", str(seed), "--tag", args.tag, "--a", a, "--b", b,
            "--k", str(args.k), "--search-time-ms", str(args.search_time_ms)]
     if stream is not None:
         cmd += ["--stream", str(stream)]
@@ -70,8 +92,9 @@ def split_streams(seeds, n):
     return [seeds[k::n] for k in range(n)]
 
 
-def run_stream(args, stream, seeds):
-    return [run_seed(args, s, stream) for s in seeds]
+def run_stream(args, stream, seeds, todo=None):
+    """Run the stream's seeds in order, skipping those not in `todo`; position i in the full list picks a switch half."""
+    return [run_seed(args, s, stream, i) for i, s in enumerate(seeds) if todo is None or s in todo]
 
 
 def learning_stats(per_learn, decisions, method):
@@ -120,7 +143,7 @@ def t95(n):
 
 
 def summarize(args, seeds, exit_codes):
-    pairs, errors, missing, turns, cpu_game, per_method, per_learn = {}, [], [], [], [], {}, {}
+    pairs, errors, missing, turns, cpu_game, per_method, per_learn, active = {}, [], [], [], [], {}, {}, {}
     for seed in seeds:
         recs = []
         for game in (1, 2):
@@ -142,6 +165,8 @@ def summarize(args, seeds, exit_codes):
                     m[key] += t[r][key]
                 m["games"] += 1
                 learning_stats(per_learn, rec.get("decisions", {}).get(r, []), rec["methods"][r])
+        if recs:
+            active[str(seed)] = dict(recs[0]["methods"])
         ok = [r for r in recs if not r.get("error")]   # recoverable sim errors (re-requested) still count; reported separately
         if len(ok) == 2:
             pairs[seed] = sum(game_score(r) for r in ok) / 2
@@ -154,7 +179,7 @@ def summarize(args, seeds, exit_codes):
                             cpu_s_per_decision=round(d["cpu_s"] / max(d["decisions"], 1), 3),
                             cpu_s_per_game=round(d["cpu_s"] / max(d["games"], 1), 2))
                     for m, d in per_method.items()}
-    return dict(
+    out = dict(
         tag=args.tag, A=args.a, B=args.b, k=args.k, seeds=f"{seeds[0]}-{seeds[-1]}" if seeds else "",
         n_seeds=len(seeds), n_pairs=n,
         pair_score_A=dict(mean=round(mean, 4) if n else None, sd=round(sd, 4) if sd is not None else None,
@@ -167,6 +192,9 @@ def summarize(args, seeds, exit_codes):
         cpu_s_per_game=round(sum(cpu_game) / len(cpu_game), 2) if cpu_game else None,
         streams=args.streams, learning=learning_summary(per_learn),
     )
+    if args.a.startswith("switch:") or args.b.startswith("switch:"):   # per seed: the method each role played
+        out["active"] = active
+    return out
 
 
 def main():
@@ -181,7 +209,7 @@ def main():
     ap.add_argument("--streams", type=int, default=0,
                     help="split seeds into S carried-weight streams (sequential within, parallel across); 0 = per seed")
     args = ap.parse_args()
-    if args.streams == 0 and {args.a, args.b} & {"hedge", "hedge_fs"} and args.workers > 1:
+    if args.streams == 0 and set(spec_methods(args.a) + spec_methods(args.b)) & {"hedge", "hedge_fs"} and args.workers > 1:
         sys.exit("hedge players carry weights in one file per stream: use --streams S (or --workers 1)")
     os.makedirs(OUT, exist_ok=True)
     seeds = parse_seeds(args.seeds)
@@ -191,10 +219,10 @@ def main():
     t0 = time.time()
     with ThreadPoolExecutor(max_workers=args.workers) as pool:
         if args.streams:
-            streams = [(k, [s for s in ss if s in todo]) for k, ss in enumerate(split_streams(seeds, args.streams))]
-            exit_codes = {s: rc for res in pool.map(lambda kv: run_stream(args, *kv), streams) for s, rc in res}
+            streams = list(enumerate(split_streams(seeds, args.streams)))
+            exit_codes = {s: rc for res in pool.map(lambda kv: run_stream(args, *kv, set(todo)), streams) for s, rc in res}
         else:
-            exit_codes = dict(pool.map(lambda s: run_seed(args, s), todo))
+            exit_codes = dict(pool.map(lambda s: run_seed(args, s, i=seeds.index(s)), todo))
     summary = summarize(args, seeds, exit_codes)
     summary["batch_wall_s"] = round(time.time() - t0, 1)
     summary["workers"] = args.workers

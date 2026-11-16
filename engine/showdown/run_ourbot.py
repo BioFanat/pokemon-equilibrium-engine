@@ -48,7 +48,12 @@ HEDGE_METHODS = ("hedge", "hedge_fs", "hedge_bayes")       # PA1 (E2, E5): carri
 SAFEX_METHODS = ("bayes_safex",)                           # eps-safe exploit of the Bayesian style posterior's q-hat
 BAYES_METHODS = ("hedge_bayes", "bayes_safex")             # carry a style posterior (behavior.py)
 BANDIT_METHODS = ("bandit_ucb1", "bandit_exp3", "bandit_ucb1_mv", "bandit_exp3_mv", "rmplus_avg")   # *_mv: play the most-visited arm (MCTS decision rule)   # PA3 (E4): bandit root vs full-information RM+
-METHODS = ROOT_METHODS + HEDGE_METHODS + SAFEX_METHODS + BANDIT_METHODS
+EXPLOIT_VICTIMS = ("bandit_ucb1", "bandit_ucb1_mv", "bandit_exp3_mv", "rmplus_avg", "top", "agentform")
+EXPLOIT_METHODS = tuple(f"exploit_{v}" for v in EXPLOIT_VICTIMS)   # model-based pure best reply to a known algorithm
+STYLE_METHODS = ("style_eq", "style_safe", "style_uniform")       # realisability: play a behavior.py style
+CONTROL_METHODS = ("top",)                                         # E5 control: argmax of the agent-form LP
+METHODS = ROOT_METHODS + HEDGE_METHODS + SAFEX_METHODS + BANDIT_METHODS + EXPLOIT_METHODS + STYLE_METHODS + \
+    CONTROL_METHODS
 LEARN_METHODS = HEDGE_METHODS + SAFEX_METHODS              # read the opponent's realised action after each decision
 HEDGE_EXPERTS = ["top", "sampled", "safest", "safex"]
 HEDGE_CONFIG = {"hedge": dict(eta=None, alpha=0.0, scale=400.0),        # anytime FTRL, eta_t = sqrt(8 ln k / t)
@@ -181,6 +186,50 @@ def bandit_selfplay(A01, kind, N, rng):
     return cnt[0] / N, cnt[1] / N
 
 
+# ---------------------------------------------------------------- open items: exploiter, style bots (new methods)
+def column_agent_form(Ms, cols, labels, w):
+    """The opponent's (column player's) agent-form equilibrium on OUR worlds: agent_form_lp over [-M_kᵀ] with each
+    world's rows (its column labels) aligned on the union `labels` by ha.align (a label missing from world k gets that
+    matrix's column-min, a dominated row, the same treatment our own rows get). Returns y over `labels`."""
+    return ha.agent_form_lp([ha.align(-M.T, cols[k], labels) for k, M in enumerate(Ms)], w)[0]
+
+
+def exploit_yhat(victim, Abar, Ms, cols, labels, w, rng):
+    """exploit_<victim>: the predicted column strategy y-hat of a victim whose algorithm is known but whose worlds and
+    RNG are not, computed on OUR view (Abar, our worlds; the victim's column side). bandit_ucb1: its column shares from
+    bandit_selfplay; *_mv: uniform over the argmax of those shares (the victim's random tie-break, in expectation);
+    rmplus_avg: RM+'s column average; top: one-hot at argmax of the column agent-form equilibrium; agentform: that
+    equilibrium."""
+    if victim in ("top", "agentform"):
+        y = column_agent_form(Ms, cols, labels, w)
+        if victim == "top":
+            y = np.eye(len(labels))[int(y.argmax())]
+        return y
+    A01 = 0.5 * (1 + np.tanh(Abar / BANDIT_TAU))
+    if victim == "rmplus_avg":
+        y = nash.rm_plus(A01, RMPLUS_ITERS)[1]
+    else:
+        y = bandit_selfplay(A01, victim.split("_")[1], BANDIT_N, rng)[1]
+    y = np.clip(y, 0, None) / np.clip(y, 0, None).sum()
+    if victim.endswith("_mv"):
+        y = (y >= y.max() - 1e-12).astype(float)
+        y /= y.sum()
+    return y
+
+
+def style_strategy(style, Abar):
+    """style_<s> bot: the distribution over OUR rows that behavior.style_dists assigns to style s for the column player
+    of -Abarᵀ, i.e. our roles swapped into the opponent model's convention (rows = the opponent's labels, columns = our
+    moves, the column player minimises). Same TAU_FRAC (tau = 0.1 ptp, invariant under -·ᵀ) and same MIX (5% uniform)
+    as the hedge_bayes posterior: eq = our maximin strategy on Abar (nash.lp), safe = softmax of our per-move worst case,
+    uniform = 1/m. The reference mixture p only enters br_us, which is not offered; it is passed as uniform over the
+    opponent's labels. Expected mismatch: the posterior evaluates the same functional on ITS Abar (its sampled worlds
+    of our hidden sets), not ours, so its q_s is not exactly this distribution."""
+    A = -Abar.T
+    q = behavior.style_dists(A, np.full(A.shape[0], 1.0 / A.shape[0]))[behavior.STYLES.index(style)]
+    return q / q.sum()
+
+
 # ---------------------------------------------------------------- PA1: carried Hedge state
 def load_learner(method, path):
     """exp3_live.Learner over HEDGE_EXPERTS with the method's constants, restored from the JSON state file if present
@@ -289,7 +338,10 @@ def make_move_fn(method: str, K: int, log=None, seed: int = 0, game: int = 0, st
     OURBOT_SAFEX_EPS). The posterior is updated with the same mapped opponent action (skipped turns leave it unchanged).
     bandit_ucb1 / bandit_exp3 / rmplus_avg (PA3): bandit self-play (BANDIT_N iterations) or RM+ (RMPLUS_ITERS) on
     Abar squashed to [0,1] by (1 + tanh(Abar / BANDIT_TAU)) / 2; plays from our row shares; logs their Nash gap on it.
-    seed/game seed the bandit RNG (with the turn and the decision index)."""
+    top: deterministic argmax of the agent-form LP. exploit_<v>: pure best reply argmax_i (Abar y-hat)_i to victim v's
+    algorithm run for the column side on our own view (exploit_yhat). style_<s>: samples behavior.py's style s with the
+    roles swapped (style_strategy). OURBOT_LOG_ABAR=1 adds abar / labels / legal / pfull (+ Q, qs) to each record.
+    seed/game seed the bandit RNG (with the turn and the decision index); exploit / style use the same seeding."""
     assert method in METHODS, method
     other = {"agentform": "pimc", "pimc": "agentform"}.get(method)
     learner = meta = post = bmeta = None
@@ -301,6 +353,7 @@ def make_move_fn(method: str, K: int, log=None, seed: int = 0, game: int = 0, st
         post, bmeta = behavior.load_posterior(bpath)
         behavior.save_posterior(bpath, post, bmeta)
     ctx = dict(pending=None, n=0)
+    log_abar = os.environ.get("OURBOT_LOG_ABAR") == "1"    # open item 1: log Abar, labels, legal, full p (+ Q, qs)
 
     def write(rec):
         with open(log or LOG, "a") as f:
@@ -371,7 +424,7 @@ def make_move_fn(method: str, K: int, log=None, seed: int = 0, game: int = 0, st
             if len(legal) == 1:
                 break
         if method in ROOT_METHODS:
-            rec, move = root_decision(method, other, Ms, ws, rows, legal, raw, t0)
+            rec, move = root_decision(method, other, Ms, ws, rows, legal, raw, t0, cols=cols if log_abar else None)
             rec = dict(method=method, turn=battle.turn, **rec)
         elif len(legal) == 1:
             move = raw.get(legal[0], legal[0])
@@ -414,6 +467,23 @@ def make_move_fn(method: str, K: int, log=None, seed: int = 0, game: int = 0, st
                                       w=w, labels=labels, qs=qs, qhat=qhat, old=behavior.old_predictor(Abar, post.mix))
                 rec.update(eps=BAYES_SAFEX_EPS,
                            p={legal[i]: round(float(p[i]), 4) for i in np.argsort(-p) if p[i] >= 0.001})
+            elif method in CONTROL_METHODS:                  # top: argmax of the agent-form LP (Hedge's top expert)
+                p = np.eye(len(legal))[int(ha.agent_form_lp(Ms, w)[0].argmax())]
+                move = raw.get(choice := legal[int(p.argmax())], choice)
+            elif method in EXPLOIT_METHODS:                  # pure best reply (lowest index) to the predicted y-hat
+                rng = np.random.default_rng([seed or 0, game or 0, battle.turn, ctx["n"], zlib.crc32(method.encode())])
+                victim = method[len("exploit_"):]
+                yhat = exploit_yhat(victim, Abar, Ms, cols, labels, w, rng)
+                br = int(np.argmax(Abar @ yhat))
+                p = np.eye(len(legal))[br]
+                move = raw.get(choice := legal[br], choice)
+                rec.update(victim=victim, br=legal[br],
+                           yhat={labels[j]: round(float(yhat[j]), 4) for j in np.argsort(-yhat)[:5] if yhat[j] > 0})
+            elif method in STYLE_METHODS:                    # sample our move from the style's distribution
+                rng = np.random.default_rng([seed or 0, game or 0, battle.turn, ctx["n"], zlib.crc32(method.encode())])
+                p = style_strategy(method[len("style_"):], Abar)
+                move = raw.get(choice := legal[int(rng.choice(len(legal), p=p))], choice)
+                rec.update(style=method[len("style_"):])
             else:
                 A01 = 0.5 * (1 + np.tanh(Abar / BANDIT_TAU))
                 rng = np.random.default_rng([seed or 0, game or 0, battle.turn, ctx["n"], zlib.crc32(method.encode())])
@@ -429,6 +499,17 @@ def make_move_fn(method: str, K: int, log=None, seed: int = 0, game: int = 0, st
                     move = raw.get(choice := legal[int(rng.choice(len(legal), p=x))], choice)
                 rec.update(played_rule="max_visit" if method.endswith("_mv") else "shares", gap=round(nash_gap(A01, x, y), 5), iters=RMPLUS_ITERS if method == "rmplus_avg" else BANDIT_N)
                 p = x
+            if log_abar:                                     # logging only: no RNG, no change to p or the move
+                pplay = p
+                if method in BANDIT_METHODS and method.endswith("_mv"):   # played: uniform over the most-visited
+                    pplay = (x >= x.max() - 1e-12).astype(float)
+                    pplay /= pplay.sum()
+                rec.update(abar=Abar.round(2).tolist(), labels=list(labels), legal=list(legal),
+                           pfull=np.round(pplay, 4).tolist())
+                if method in HEDGE_METHODS:
+                    rec["Q"] = Q.round(4).tolist()
+                if method in BAYES_METHODS:                  # q-hat is already in rec["bayes"]["qhat"]
+                    rec["qs"] = np.round(qs, 4).tolist()
             top = np.argsort(-p)[:3]
             rec.update(mix={legal[i]: round(float(p[i]), 3) for i in top if p[i] >= 0.01}, move=move,
                        secs=round(time.time() - t0, 2))
@@ -442,8 +523,9 @@ def make_move_fn(method: str, K: int, log=None, seed: int = 0, game: int = 0, st
     return find_best_move
 
 
-def root_decision(method, other, Ms, ws, rows, legal, raw, t0):
-    """agentform / pimc decision and its record fields (unchanged format: mix, move, secs and the alt_* shadow solve)."""
+def root_decision(method, other, Ms, ws, rows, legal, raw, t0, cols=None):
+    """agentform / pimc decision and its record fields (unchanged format: mix, move, secs and the alt_* shadow solve).
+    cols (OURBOT_LOG_ABAR=1 only): also log abar / labels / legal / pfull (no RNG, after the timed solve)."""
     alt = None
     if len(legal) == 1:
         move = raw.get(legal[0], legal[0]); x = np.ones(1)
@@ -466,6 +548,10 @@ def root_decision(method, other, Ms, ws, rows, legal, raw, t0):
         rec.update(alt_method=other, alt_mix={legal[i]: round(float(alt[i]), 3) for i in atop if alt[i] >= 0.01},
                    argmax_same=bool(np.argmax(x) == np.argmax(alt)), tv=round(float(0.5 * np.abs(x - alt).sum()), 4),
                    alt_secs=round(alt_secs, 3))
+        if cols is not None:
+            Abar, labels = avg_matrix(Ms, cols, w)
+            rec.update(abar_shape=list(Abar.shape), abar=Abar.round(2).tolist(), labels=list(labels),
+                       legal=list(legal), pfull=np.round(x, 4).tolist())
     return rec, move
 
 

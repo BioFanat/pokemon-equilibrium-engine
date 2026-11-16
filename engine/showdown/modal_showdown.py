@@ -58,8 +58,23 @@ def _run_capped(cmd, f, env):
         f.write(f"\nKILLED: seed exceeded {cap}s wall cap\n")
         return -9
 
+def side_methods(spec: str) -> list:
+    """The methods a --a/--b spec can play: itself, or both halves of "switch:<m1>@<T1>:<m2>" (batch.resolve_method)."""
+    if not spec.startswith("switch:"):
+        return [spec]
+    m1, rest = spec[len("switch:"):].split("@", 1)
+    return [m1, rest.split(":", 1)[1]]
+
+
+def has_stock(a: str, b: str) -> bool:
+    """A stock foul-play player on either side at any point of the stream (it needs STOCK_CPU)."""
+    return "stock" in side_methods(a) + side_methods(b)
+
+
 def container_cpu(a: str, b: str) -> float:
-    return STOCK_CPU if "stock" in (a, b) else CPU
+    """STOCK_CPU when a stock player (MCTS worker processes) may play; every other method, including the exploit_*,
+    style_* and top bots (single-process numpy/LP like the E4 bandits), gets CPU = 1."""
+    return STOCK_CPU if has_stock(a, b) else CPU
 
 
 def rate_usd_s(cpu: float) -> float:
@@ -124,25 +139,31 @@ vol = modal.Volume.from_name("showdown-results", create_if_missing=True)
 stop_flags = modal.Dict.from_name("showdown-stop", create_if_missing=True)   # tag -> True: finish current seed, return
 
 
-def _run_stream(tag: str, a: str, b: str, seeds: list, stream: int, k: int, search_time_ms: int) -> dict:
+def _run_stream(tag: str, a: str, b: str, seeds: list, stream: int, k: int, search_time_ms: int,
+                extra_env: dict | None = None) -> dict:
     """Container body: headless.py for each seed in order with OURBOT_WORK=/vol/<tag>. Returns {files: {relpath: bytes}
-    (game JSONs, decision logs, per-seed stdout, this stream's hedge state), seeds_run, exit_codes, cpu_s, wall_s}."""
+    (game JSONs, decision logs, per-seed stdout, this stream's hedge state), seeds_run, exit_codes, cpu_s, wall_s}.
+    a/b may be switch specs, resolved per seed by its position in this stream's full list (batch.resolve_method);
+    extra_env (e.g. OURBOT_SAFEX_EPS, OURBOT_LOG_ABAR) is added to every headless.py's environment."""
     import os
     import resource
     import subprocess
+    sys.path.insert(0, f"{REMOTE}/showdown")
+    from batch import resolve_method
     work = Path(VOL_DIR) / tag
     out = work / "replays_headless"
     out.mkdir(parents=True, exist_ok=True)
-    env = dict(os.environ, OURBOT_WORK=str(work))
+    env = dict(os.environ, OURBOT_WORK=str(work), **(extra_env or {}))
     vol.reload()                                           # earlier runs of this tag (resume)
     t0, ch0 = time.time(), resource.getrusage(resource.RUSAGE_CHILDREN)
     exit_codes, ran, cpu_by_seed = {}, [], {}
-    for seed in seeds:
+    for i, seed in enumerate(seeds):
         if stop_flags.get(tag, False):
             break
         if all((out / f"{tag}-s{seed}-g{g}.json").exists() for g in (1, 2)):
             continue
-        cmd = ["python", f"{REMOTE}/showdown/headless.py", "--seed", str(seed), "--tag", tag, "--a", a, "--b", b,
+        cmd = ["python", f"{REMOTE}/showdown/headless.py", "--seed", str(seed), "--tag", tag,
+               "--a", resolve_method(a, i), "--b", resolve_method(b, i),
                "--k", str(k), "--search-time-ms", str(search_time_ms), "--stream", str(stream)]
         c0 = resource.getrusage(resource.RUSAGE_CHILDREN)
         with open(out / f"{tag}-s{seed}.batch.log", "w") as f:
@@ -170,16 +191,18 @@ def _run_stream(tag: str, a: str, b: str, seeds: list, stream: int, k: int, sear
 
 @app.function(cpu=CPU, memory=MEM_MB, timeout=STREAM_TIMEOUT_S, max_containers=MAX_CONTAINERS,
               scaledown_window=SCALEDOWN_S, volumes={VOL_DIR: vol})
-def run_stream(tag: str, a: str, b: str, seeds: list, stream: int, k: int = 4, search_time_ms: int = 100) -> dict:
+def run_stream(tag: str, a: str, b: str, seeds: list, stream: int, k: int = 4, search_time_ms: int = 100,
+               extra_env: dict | None = None) -> dict:
     """One carried-weights stream of our methods only (1 CPU)."""
-    return _run_stream(tag, a, b, seeds, stream, k, search_time_ms)
+    return _run_stream(tag, a, b, seeds, stream, k, search_time_ms, extra_env)
 
 
 @app.function(cpu=STOCK_CPU, memory=MEM_MB, timeout=STREAM_TIMEOUT_S, max_containers=MAX_CONTAINERS,
               scaledown_window=SCALEDOWN_S, volumes={VOL_DIR: vol})
-def run_stream_stock(tag: str, a: str, b: str, seeds: list, stream: int, k: int = 4, search_time_ms: int = 100) -> dict:
+def run_stream_stock(tag: str, a: str, b: str, seeds: list, stream: int, k: int = 4, search_time_ms: int = 100,
+                     extra_env: dict | None = None) -> dict:
     """Same, for streams with a stock foul-play player (2 CPU: its MCTS worker processes)."""
-    return _run_stream(tag, a, b, seeds, stream, k, search_time_ms)
+    return _run_stream(tag, a, b, seeds, stream, k, search_time_ms, extra_env)
 
 
 class Meter:
@@ -213,7 +236,9 @@ def write_results(tag: str, res: dict) -> Path:
 @app.local_entrypoint()
 def main(tag: str, a: str = "hedge", b: str = "stock", seeds: str = "1-4", streams: int = 2, max_usd: float = 1.0,
          k: int = 4, search_time_ms: int = 100, cpu_s_per_game: float = CPU_S_PER_GAME, slowdown: float = SLOWDOWN,
-         util: float = UTIL, poll_s: float = 30.0):
+         util: float = UTIL, poll_s: float = 30.0, safex_eps: str = "", log_abar: bool = False):
+    """--safex-eps E sets OURBOT_SAFEX_EPS=E (bayes_safex / hedge_bayes q-hat safex) and --log-abar sets OURBOT_LOG_ABAR=1
+    in every container's bot processes (the local shell environment does not reach the containers)."""
     import argparse
     import json
     import os
@@ -221,17 +246,21 @@ def main(tag: str, a: str = "hedge", b: str = "stock", seeds: str = "1-4", strea
     import batch
     seed_list = batch.parse_seeds(seeds)
     streams = max(1, min(streams, len(seed_list)))
-    est = estimate_cost(2 * len(seed_list), streams, stock="stock" in (a, b), cpu_s_per_game=cpu_s_per_game,
+    extra_env = {**({"OURBOT_SAFEX_EPS": str(float(safex_eps))} if safex_eps else {}),
+                 **({"OURBOT_LOG_ABAR": "1"} if log_abar else {})}
+    if extra_env:
+        print(f"container env: {extra_env}")
+    est = estimate_cost(2 * len(seed_list), streams, stock=has_stock(a, b), cpu_s_per_game=cpu_s_per_game,
                         slowdown=slowdown, util=util)
     print(format_estimate(est))
     if est["usd"] > max_usd:
         raise SystemExit(f"refusing: estimated ${est['usd']:.2f} > --max-usd {max_usd}")
     if streams > MAX_CONTAINERS:
         raise SystemExit(f"--streams {streams} > MAX_CONTAINERS {MAX_CONTAINERS}: streams would queue")
-    fn = run_stream_stock if "stock" in (a, b) else run_stream
+    fn = run_stream_stock if has_stock(a, b) else run_stream
     stop_flags[tag] = False
     meter = Meter(max_usd, container_cpu(a, b))
-    calls = {kk: fn.spawn(tag, a, b, ss, kk, k, search_time_ms)
+    calls = {kk: fn.spawn(tag, a, b, ss, kk, k, search_time_ms, extra_env or None)
              for kk, ss in enumerate(batch.split_streams(seed_list, streams))}
     meter.launch(len(calls))
     results, failed, stopped = {}, {}, False
@@ -283,6 +312,8 @@ def main(tag: str, a: str = "hedge", b: str = "stock", seeds: str = "1-4", strea
                             cpu_s_per_game_measured=round(cpu_s / games_run, 1) if games_run else None,
                             stream_wall_s={kk: r["wall_s"] for kk, r in results.items()},
                             entrypoint_wall_s=round(time.time() - meter.t0, 1))
+    if extra_env:
+        summary["modal"]["env"] = extra_env
     path = root / f"{tag}_summary.json"
     path.write_text(json.dumps(summary, indent=1))
     ps = summary["pair_score_A"]
