@@ -40,6 +40,7 @@ SELF = "zzself"                     # FoulPlayConfig.username; must not be a sub
 NAMES = {"agentform": "OurAgentForm", "pimc": "OurPimc", "stock": "FoulPlay", "hedge": "OurHedge",
          "hedge_fs": "OurHedgeFS", "bandit_ucb1": "OurBanditUCB", "bandit_exp3": "OurBanditExp",
          "rmplus_avg": "OurRMPlus", "bandit_ucb1_mv": "OurMaxVisitUCB", "bandit_exp3_mv": "OurMaxVisitExp", "hedge_bayes": "OurHedgeBayes", "bayes_safex": "OurBayesSafex",
+         "hedge_bayes_mw": "OurHedgeBayesMW", "bayes_safex_mw": "OurBayesSafexMW",
          "exploit_bandit_ucb1": "OurXplUCB", "exploit_bandit_ucb1_mv": "OurXplUCBmv",
          "exploit_bandit_exp3_mv": "OurXplExpmv", "exploit_rmplus_avg": "OurXplRMPlus", "exploit_top": "OurXplTop",
          "exploit_agentform": "OurXplAgentForm", "top": "OurTop", "style_eq": "OurStyleEq", "style_safe": "OurStyleSafe",

@@ -44,9 +44,10 @@ import behavior  # noqa: E402
 
 RNG = random.Random()
 ROOT_METHODS = ("agentform", "pimc")
-HEDGE_METHODS = ("hedge", "hedge_fs", "hedge_bayes")       # PA1 (E2, E5): carried Hedge over stage experts
-SAFEX_METHODS = ("bayes_safex",)                           # eps-safe exploit of the Bayesian style posterior's q-hat
-BAYES_METHODS = ("hedge_bayes", "bayes_safex")             # carry a style posterior (behavior.py)
+HEDGE_METHODS = ("hedge", "hedge_fs", "hedge_bayes", "hedge_bayes_mw")   # PA1 (E2, E5): carried Hedge over stage experts
+SAFEX_METHODS = ("bayes_safex", "bayes_safex_mw")          # eps-safe exploit of the Bayesian style posterior's q-hat
+MW_METHODS = ("hedge_bayes_mw", "bayes_safex_mw")          # membership-aware per-world style model and exploit (opt-in)
+BAYES_METHODS = ("hedge_bayes", "bayes_safex") + MW_METHODS   # carry a style posterior (behavior.py)
 BANDIT_METHODS = ("bandit_ucb1", "bandit_exp3", "bandit_ucb1_mv", "bandit_exp3_mv", "rmplus_avg")   # *_mv: play the most-visited arm (MCTS decision rule)   # PA3 (E4): bandit root vs full-information RM+
 EXPLOIT_VICTIMS = ("bandit_ucb1", "bandit_ucb1_mv", "bandit_exp3_mv", "rmplus_avg", "top", "agentform")
 EXPLOIT_METHODS = tuple(f"exploit_{v}" for v in EXPLOIT_VICTIMS)   # model-based pure best reply to a known algorithm
@@ -58,7 +59,8 @@ LEARN_METHODS = HEDGE_METHODS + SAFEX_METHODS              # read the opponent's
 HEDGE_EXPERTS = ["top", "sampled", "safest", "safex"]
 HEDGE_CONFIG = {"hedge": dict(eta=None, alpha=0.0, scale=400.0),        # anytime FTRL, eta_t = sqrt(8 ln k / t)
                 "hedge_fs": dict(eta=0.2, alpha=0.002, scale=400.0),    # Hedge + fixed share (X6 constants)
-                "hedge_bayes": dict(eta=None, alpha=0.0, scale=400.0)}  # as hedge; its safex expert uses q-hat
+                "hedge_bayes": dict(eta=None, alpha=0.0, scale=400.0),  # as hedge; its safex expert uses q-hat
+                "hedge_bayes_mw": dict(eta=None, alpha=0.0, scale=400.0)}   # as hedge_bayes; per-world safex expert
 SAFEX_EPS = 0.003                                          # safex expert: 0.3% of the payoff range
 BAYES_SAFEX_EPS = float(os.environ.get("OURBOT_SAFEX_EPS", SAFEX_EPS))  # eps of the q-hat safex (BAYES_METHODS)
 BANDIT_N, BANDIT_TAU, RMPLUS_ITERS = 2000, 160.0, 1000     # E4: root iterations, win-prob squash, RM+ iterations
@@ -127,6 +129,13 @@ def map_column(b, cols, w):
             if c in cols[k]:
                 return k, cols[k].index(c)
     return None
+
+
+def map_columns(label, cols):
+    """{world k: column j} of `label` in EVERY world whose options contain exactly that label. `label` is the one
+    map_column resolved (cols[k][j] of its hit), so the averaged and per-world predictors score the same outcome (no
+    per-world -tera fallback: a world that only has the untera'd move contributes 0)."""
+    return {k: c.index(label) for k, c in enumerate(cols) if label in c}
 
 
 def avg_matrix(Ms, cols, w):
@@ -336,6 +345,12 @@ def make_move_fn(method: str, K: int, log=None, seed: int = 0, game: int = 0, st
     hedge_bayes / bayes_safex: a posterior over opponent styles (behavior.py, carried in <state_path>.bayes.json) gives
     q-hat; hedge_bayes = hedge with its safex expert maximising x.Abar.q-hat, bayes_safex plays that safex alone (eps
     OURBOT_SAFEX_EPS). The posterior is updated with the same mapped opponent action (skipped turns leave it unchanged).
+    hedge_bayes_mw / bayes_safex_mw: as hedge_bayes / bayes_safex, but the style model is membership-aware per world
+    (behavior.decide_worlds: each style on each world's own columns, mixed over the worlds), the safex expert / play is
+    the per-world safe exploit ha.safex_strategy_worlds (max Σ_k w_k q̂_kᵀ M_kᵀ x within eps of the agent-form value),
+    and the posterior is updated with the per-world likelihood over every world containing map_column's label
+    (map_columns).
+    Their records also carry the averaged-matrix q-hat, so both predictors are scored on the same turns.
     bandit_ucb1 / bandit_exp3 / rmplus_avg (PA3): bandit self-play (BANDIT_N iterations) or RM+ (RMPLUS_ITERS) on
     Abar squashed to [0,1] by (1 + tanh(Abar / BANDIT_TAU)) / 2; plays from our row shares; logs their Nash gap on it.
     top: deterministic argmax of the agent-form LP. exploit_<v>: pure best reply argmax_i (Abar y-hat)_i to victim v's
@@ -349,7 +364,10 @@ def make_move_fn(method: str, K: int, log=None, seed: int = 0, game: int = 0, st
         learner, meta = load_learner(method, state_path)
         save_learner(method, state_path, learner, meta)
     bpath = behavior.state_path_for(state_path)
-    if method in BAYES_METHODS:
+    if method in MW_METHODS:
+        post, bmeta = behavior.load_world_posterior(bpath)
+        behavior.save_posterior(bpath, post, bmeta)
+    elif method in BAYES_METHODS:
         post, bmeta = behavior.load_posterior(bpath)
         behavior.save_posterior(bpath, post, bmeta)
     ctx = dict(pending=None, n=0)
@@ -387,7 +405,12 @@ def make_move_fn(method: str, K: int, log=None, seed: int = 0, game: int = 0, st
                 learner.update(pend["Ms"][k], pend["Q"], j)
                 meta["updates"] += 1
                 fb.update(r=(learner.cum - before).round(4).tolist(), weights=learner.weights().round(4).tolist())
-            if post is not None:                             # prequential score of q-hat, then the Bayes step
+            if post is not None and method in MW_METHODS:  # per-world scores, then the per-world Bayes step
+                lab = pend["cols"][k][j]
+                fb["bayes"] = behavior.score_and_update_worlds(post, pend, map_columns(lab, pend["cols"]), lab,
+                                                               how == "forced")
+                bmeta["updates"] += 1
+            elif post is not None:                           # prequential score of q-hat, then the Bayes step
                 fb["bayes"] = behavior.score_and_update(post, pend, pend["cols"][k][j], how == "forced")
                 bmeta["updates"] += 1
         if learner is not None:
@@ -451,6 +474,12 @@ def make_move_fn(method: str, K: int, log=None, seed: int = 0, game: int = 0, st
                     bx = np.clip(nash.safex_strategy(Abar, BAYES_SAFEX_EPS, qhat), 0, None)
                     Q[3] = bx / bx.sum()
                     bay = dict(labels=labels, qs=qs, qhat=qhat, old=behavior.old_predictor(Abar, post.mix))
+                    if method in MW_METHODS:                 # per-world safex expert on the per-world q̂_k
+                        qsk, qmw, qk, mwrec = behavior.decide_worlds(Ms, cols, w, labels, p_ref / p_ref.sum(), post)
+                        rec["bayes"].update(mwrec)
+                        bx = np.clip(ha.safex_strategy_worlds(Ms, w, qk, BAYES_SAFEX_EPS), 0, None)
+                        Q[3] = bx / bx.sum()
+                        bay.update(qsk=qsk, qhat_mw=qmw, qhat_k=qk)
                 p = np.clip(wts @ Q, 0, None)
                 p /= p.sum()
                 move = raw.get(choice := legal[RNG.choices(range(len(legal)), weights=p)[0]], choice)
@@ -462,11 +491,19 @@ def make_move_fn(method: str, K: int, log=None, seed: int = 0, game: int = 0, st
             elif method in SAFEX_METHODS:                    # bayes_safex: eps-safe exploit of q-hat; br_us sees
                 p_ref = np.clip(nash.safex_strategy(Abar, BAYES_SAFEX_EPS), 0, None)   # the old one-hot safex
                 qs, qhat, rec["bayes"] = behavior.decide(Abar, p_ref / p_ref.sum(), post, labels)
-                p = np.clip(nash.safex_strategy(Abar, BAYES_SAFEX_EPS, qhat), 0, None)
+                mw = {}
+                if method in MW_METHODS:                     # bayes_safex_mw: per-world safex on the per-world q̂_k
+                    qsk, qmw, qk, mwrec = behavior.decide_worlds(Ms, cols, w, labels, p_ref / p_ref.sum(), post)
+                    rec["bayes"].update(mwrec)
+                    p = np.clip(ha.safex_strategy_worlds(Ms, w, qk, BAYES_SAFEX_EPS), 0, None)
+                    mw = dict(qsk=qsk, qhat_mw=qmw, qhat_k=qk)
+                else:
+                    p = np.clip(nash.safex_strategy(Abar, BAYES_SAFEX_EPS, qhat), 0, None)
                 p /= p.sum()
                 move = raw.get(choice := legal[RNG.choices(range(len(legal)), weights=p)[0]], choice)
                 ctx["pending"] = dict(turn=battle.turn, idx=len(lines), opp=battle.opponent.name, Ms=Ms, cols=cols,
-                                      w=w, labels=labels, qs=qs, qhat=qhat, old=behavior.old_predictor(Abar, post.mix))
+                                      w=w, labels=labels, qs=qs, qhat=qhat, old=behavior.old_predictor(Abar, post.mix),
+                                      **mw)
                 rec.update(eps=BAYES_SAFEX_EPS,
                            p={legal[i]: round(float(p[i]), 4) for i in np.argsort(-p) if p[i] >= 0.001})
             elif method in CONTROL_METHODS:                  # top: argmax of the agent-form LP (Hedge's top expert)
