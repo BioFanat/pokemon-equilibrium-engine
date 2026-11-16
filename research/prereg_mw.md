@@ -84,3 +84,21 @@ Runs MWs, BHs (seeds 1-200), MWeq (1-100), all local, 0 error games. Full table:
 | W1 | +0.0625 [0.003, 0.122] (iid); stream-clustered t(9) [-0.011, 0.136] | [-0.03, 0.03] | not refuted, interval missed; not robust (`mw_w1_verification.md`); replication pending (Addendum A) |
 | W2 | +0.095 [0.014, 0.176] vs RQeq | [-0.05, 0.05] | descriptive; interval missed; confounded: RQeq ran on Modal, MWeq locally (same confound as BH vs BHs) |
 | C1 | +2.0 % CPU per decision | within 10 % | as predicted |
+
+## Replication results (Addendum A; appended 2026-11-16)
+
+MWs2 / BHs2, seeds 201-400, run concurrently, 0 error games.
+
+| P | observed | criterion | verdict |
+|---|---|---|---|
+| W1-rep | MWs2 0.3425 vs BHs2 0.3350: +0.0075, iid SE 0.0316, one-sided lower bound -0.045; stream-clustered SE 0.0358 (lower -0.058); stream sign-flip one-sided p = 0.45; 5 of 10 stream means positive | supported if one-sided lower > 0; refuted if point <= 0 | **not supported** (point estimate positive, so not formally refuted; indistinguishable from 0) |
+| L1-rep | 0.311 nats/turn [0.291, 0.331] (game-clustered), 11,529 turns | [0.25, 0.40]; refuted if < 0.15 | pass (replicates) |
+
+Pooled over seeds 1-400 (reported alongside, not the test): +0.035, iid 95% [-0.008, +0.078], stream-clustered
+t(9) [-0.010, +0.080], 400 seed pairs.
+
+Reading: the prediction gain replicates (0.297 then 0.311 nats/turn); the win-rate gain does not. BHs2 (0.335) is in
+line with the earlier Modal runs of the same method (0.318-0.348), so BHs (0.2825) on seeds 1-200 was a low draw, as
+the verification suspected. Conclusion: membership-aware style prediction improves next-action prediction by about
+0.3 nats per decision and changes the hedge's behaviour, with no detectable effect on win rate against stock
+foul-play, matching the original pre-registered W1 and the earlier pattern (better prediction, same win rate).
