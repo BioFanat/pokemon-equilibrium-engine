@@ -28,11 +28,11 @@
   },
   "MWeq": {
    "work": "/Users/biofanat/sandbox/ourbot/mw_MWeq",
-   "exists": false,
-   "complete": false,
-   "games_parsed": 0,
+   "exists": true,
+   "complete": true,
+   "games_parsed": 200,
    "games_expected": 200,
-   "missing": null,
+   "missing": 0,
    "unparsable": [],
    "truncated_jsonl": 0,
    "missing_jsonl": [],
@@ -120,12 +120,15 @@
    "status": "PASS"
   },
   "L3": {
-   "mean": null,
-   "se": null,
-   "ci95": null,
-   "n_turns": 0,
-   "n_games": 0,
-   "n_forced": 0,
+   "mean": 0.24987910745336897,
+   "se": 0.01305780718400762,
+   "ci95": [
+    0.22412967912328757,
+    0.27562853578345037
+   ],
+   "n_turns": 5764,
+   "n_games": 200,
+   "n_forced": 617,
    "n_floored": 0,
    "arms": [
     "MWeq"
@@ -134,15 +137,59 @@
     0.25,
     0.45
    ],
-   "in_interval": null,
+   "in_interval": false,
    "criterion": "refuted if mean < 0.15",
-   "status": "UNTESTABLE"
+   "status": "PASS"
   },
   "R1": {
-   "n_streams": 0,
+   "n_streams": 10,
    "n_eq": 0,
-   "boot95": null,
-   "per_stream": {},
+   "boot95": [
+    0.0,
+    0.0
+   ],
+   "per_stream": {
+    "0": {
+     "map": "safe",
+     "source": "hedge_state"
+    },
+    "1": {
+     "map": "br_us",
+     "source": "hedge_state"
+    },
+    "2": {
+     "map": "safe",
+     "source": "hedge_state"
+    },
+    "3": {
+     "map": "safe",
+     "source": "hedge_state"
+    },
+    "4": {
+     "map": "safe",
+     "source": "hedge_state"
+    },
+    "5": {
+     "map": "safe",
+     "source": "hedge_state"
+    },
+    "6": {
+     "map": "safe",
+     "source": "hedge_state"
+    },
+    "7": {
+     "map": "safe",
+     "source": "hedge_state"
+    },
+    "8": {
+     "map": "safe",
+     "source": "hedge_state"
+    },
+    "9": {
+     "map": "safe",
+     "source": "hedge_state"
+    }
+   },
    "reference_RQeq": {
     "n_streams": 10,
     "n_eq": 0,
@@ -201,9 +248,9 @@
     0,
     4
    ],
-   "in_interval": null,
+   "in_interval": true,
    "criterion": "refuted if eq is the final MAP in >= 8 of 10 MWeq streams",
-   "status": "UNTESTABLE"
+   "status": "PASS"
   },
   "W1": {
    "n_pairs": 200,
@@ -234,7 +281,7 @@
    "status": "PASS"
   },
   "W2": {
-   "n_pairs": 0,
+   "n_pairs": 100,
    "error_games": {
     "MWeq": 0,
     "RQeq": 0
@@ -243,9 +290,12 @@
     "MWeq": 0,
     "RQeq": 0
    },
-   "mean": null,
-   "se": null,
-   "ci95": null,
+   "mean": 0.095,
+   "se": 0.04125248691615667,
+   "ci95": [
+    0.014145125644332929,
+    0.17585487435566707
+   ],
    "arms": [
     "MWeq",
     "RQeq"
@@ -254,9 +304,9 @@
     -0.05,
     0.05
    ],
-   "in_interval": null,
+   "in_interval": false,
    "criterion": "none stated (descriptive)",
-   "status": "UNTESTABLE"
+   "status": "NO_CRITERION"
   },
   "C1": {
    "MWs": {
@@ -285,6 +335,6 @@
    "status": "NO_CRITERION"
   }
  },
- "title": "PARTIAL: hedge_bayes_mw live test (prereg_mw)",
- "partial": true
+ "title": "hedge_bayes_mw live test (prereg_mw)",
+ "partial": false
 }

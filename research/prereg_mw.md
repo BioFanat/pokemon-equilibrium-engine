@@ -69,3 +69,18 @@ excludes 0, it is treated as a hypothesis, tested on fresh seeds:
   (mean - 1.645 SE) is > 0; refuted if the point estimate is <= 0. The pooled 400-seed estimate is reported alongside
   but is not the test (seeds 1-200 selected the hypothesis).
 - **L1-rep.** L1 on MWs2 in [0.25, 0.40] (should replicate; refuted if < 0.15).
+
+## Results (appended 2026-11-16; predictions above unchanged)
+
+Runs MWs, BHs (seeds 1-200), MWeq (1-100), all local, 0 error games. Full table: `research/out_mw.md` (+ `.json`), from
+`research/scripts/joint/analyze_mw.py`.
+
+| P | observed | predicted | verdict |
+|---|---|---|---|
+| L1 | 0.297 nats/turn [0.281, 0.314] | [0.25, 0.40] | pass |
+| L2 | 0.270 [0.233, 0.307] | [0.20, 0.45] | pass |
+| L3 | 0.2499 [0.224, 0.276] | [0.25, 0.45] | not refuted (< 0.15 refutes); point estimate 1e-4 below the interval |
+| R1 | eq is the final MAP in 0/10 MWeq streams | at most 4/10 | pass: realisability still fails with per-world styles |
+| W1 | +0.0625 [0.003, 0.122] (iid); stream-clustered t(9) [-0.011, 0.136] | [-0.03, 0.03] | not refuted, interval missed; not robust (`mw_w1_verification.md`); replication pending (Addendum A) |
+| W2 | +0.095 [0.014, 0.176] vs RQeq | [-0.05, 0.05] | descriptive; interval missed; confounded: RQeq ran on Modal, MWeq locally (same confound as BH vs BHs) |
+| C1 | +2.0 % CPU per decision | within 10 % | as predicted |

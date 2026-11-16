@@ -178,3 +178,26 @@ with SW4d) over the exhausted $15 budget.
 5. Controls: RQsafe / RQunif game logs exist only in the main checkout
    (`/Users/biofanat/Documents/classes/f26/cs535/final/engine/showdown/results/<tag>/replays_headless`, gitignored); point
    the analysis script's control root there.
+
+## Results (appended 2026-11-16; predictions above unchanged)
+
+Runs: SW2 (seeds 1-100), SW4 (1-180), SW4p (1-80, lambda = 0.98, shipped predict-then-discount), all local, 0 error
+games; SW4d not run. Full tables: `research/switch_results/out_style_switch.md` (+ `.json`), produced by
+`research/scripts/switch/analyze_style_switch.py`. All 30 streams pass the posterior reconstruction check (max error
+2.3e-4 vs the 1e-3 clean threshold).
+
+| P | prediction | observed | verdict |
+|---|---|---|---|
+| P1 | median tau_map SW2 in [70,170] (pt 112), SW4 in [130,330] (pt 220) | 107.5 [77, 138]; 225 [150, 274]; tau_map/t0 1.13 and 1.09 | pass |
+| P2 | tau_map(SW4)/tau_map(SW2) in [1.5, 2.7] | 2.09 | pass |
+| P3 (primary) | median tau_map/tau_hat in [0.7, 1.4], Spearman >= 0.5 (20 streams) | 1.06, rho = 0.86 | pass |
+| P4 | median tau_90 - tau_map in [0, 25] | 4 (SW2), 6.5 (SW4) | pass |
+| P5 | X: SW2 in [20,60], SW4 in [45,110] | 29.2, 66.2 | pass |
+| P6 | SW4p median tau_map in [15,70] (pt 35), ratio to SW4 <= 0.4; false alarms 0/10 per arm (refuted at >= 2) | 37.5 [26, 62], ratio 0.17; false alarms SW2 1/10, SW4 0/10, SW4p 0/10 | pass (the 0/10 point prediction missed in SW2: stream 7 had P(uniform) = 0.067 at the switch, i.e. the posterior had not yet separated safe from uniform; below the refutation threshold) |
+| P7 | descriptive score differences within +-0.05 (post) / +-0.10 (pre) | post +0.006, +0.009; pre 0.000, 0.000 | as predicted |
+| P8 | identity error <= 1e-3 (reconstruction), <= 5e-3 (logged) | 6.3e-4; 4.9e-3 | pass |
+
+Reading: this is the first live test of T5 (bayes_dynamics.md §6). The posterior's re-concentration time after a
+style switch is predicted per stream from its own switch-time posterior and the RQ drift rates (P3: median ratio 1.06,
+rank correlation 0.86 over 20 streams), and scales linearly with the pre-switch evidence (P2). Forgetting at
+lambda = 0.98 cuts the delay about 6x, matching the T1-based point prediction (35 vs 37.5).

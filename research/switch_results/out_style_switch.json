@@ -1,0 +1,3215 @@
+{
+ "label": "",
+ "skip_validate": false,
+ "controls": "/Users/biofanat/Documents/classes/f26/cs535/final/engine/showdown/results",
+ "arms": {
+  "SW2": {
+   "root": "/Users/biofanat/sandbox/ourbot/sw/replays_headless",
+   "variant": "bayes",
+   "lam": 1.0,
+   "rows": [
+    {
+     "stream": 0,
+     "seeds": [
+      1,
+      11,
+      21,
+      31,
+      41,
+      51,
+      61,
+      71,
+      81,
+      91
+     ],
+     "games": 20,
+     "T": 396,
+     "t0": 87,
+     "phase1_is_prefix": true,
+     "n_forced": 24,
+     "val_err_phase1": 7.283257349516292e-05,
+     "val_err_post": 0.00012722896546496498,
+     "val_err": 0.00012722896546496498,
+     "P_t0": {
+      "eq": 1.7388315077767518e-43,
+      "br_unif": 0.004483991540023436,
+      "br_us": 0.05214539931853389,
+      "safe": 0.943370609127312,
+      "uniform": 1.4130782876220533e-11
+     },
+     "lnP_t0": {
+      "eq": -98.45794565836113,
+      "br_unif": -5.407241660477073,
+      "br_us": -2.9537193215893245,
+      "safe": -0.05829606281771049,
+      "uniform": -24.982665515514235
+     },
+     "state_file": "/Users/biofanat/sandbox/ourbot/sw/hedge_state/SW2-stream0-A.bayes.json",
+     "meta_updates": 396,
+     "meta_games": 20,
+     "meta_config": {
+      "styles": [
+       "eq",
+       "br_unif",
+       "br_us",
+       "safe",
+       "uniform"
+      ],
+      "lam": 1.0,
+      "tau_frac": 0.1,
+      "mix": 0.05
+     },
+     "meta_ok": true,
+     "clean": true,
+     "t_sustained_P90_b6_logged": 196,
+     "t_sustained_P90_b6_recon": 196,
+     "false_alarm": false,
+     "false_alarm_at": null,
+     "id_err_rec": 0.0003034084547230975,
+     "id_err_logged": 0.004572199579769176,
+     "post_updates": 309,
+     "tau_map": 108,
+     "tau_map_censored": false,
+     "tau_90": 109,
+     "tau_90_censored": false,
+     "tau_99": 123,
+     "tau_99_censored": false,
+     "tau_leave": 109,
+     "tau_leave_censored": false,
+     "tau_hat": 70.60559677540036,
+     "tau_leave_hat": 34.884617575561606,
+     "X": 24.98266551551422,
+     "X_logged": 24.98302205650642,
+     "X_identity": 24.982665515514235,
+     "X_identity_err": 1.4210854715202004e-14,
+     "X_logged_identity_err": 0.00035654099218618285
+    },
+    {
+     "stream": 1,
+     "seeds": [
+      2,
+      12,
+      22,
+      32,
+      42,
+      52,
+      62,
+      72,
+      82,
+      92
+     ],
+     "games": 20,
+     "T": 379,
+     "t0": 112,
+     "phase1_is_prefix": true,
+     "n_forced": 24,
+     "val_err_phase1": 5.9761031087873784e-05,
+     "val_err_post": 4.9953992245832524e-05,
+     "val_err": 5.9761031087873784e-05,
+     "P_t0": {
+      "eq": 2.924042735287251e-63,
+      "br_unif": 0.5716514204165786,
+      "br_us": 3.3307056199094723e-06,
+      "safe": 0.4283452467466517,
+      "uniform": 2.131149947491176e-09
+     },
+     "lnP_t0": {
+      "eq": -143.98989370149283,
+      "br_unif": -0.5592258782310795,
+      "br_us": -12.612326378548392,
+      "safe": -0.847825757291405,
+      "uniform": -19.96660412145738
+     },
+     "state_file": "/Users/biofanat/sandbox/ourbot/sw/hedge_state/SW2-stream1-A.bayes.json",
+     "meta_updates": 379,
+     "meta_games": 20,
+     "meta_config": {
+      "styles": [
+       "eq",
+       "br_unif",
+       "br_us",
+       "safe",
+       "uniform"
+      ],
+      "lam": 1.0,
+      "tau_frac": 0.1,
+      "mix": 0.05
+     },
+     "meta_ok": true,
+     "clean": true,
+     "t_sustained_P90_b6_logged": 172,
+     "t_sustained_P90_b6_recon": 172,
+     "false_alarm": false,
+     "false_alarm_at": null,
+     "id_err_rec": 0.00017358957054192103,
+     "id_err_logged": 0.003948600849824402,
+     "post_updates": 267,
+     "tau_map": 59,
+     "tau_map_censored": false,
+     "tau_90": 60,
+     "tau_90_censored": false,
+     "tau_99": 70,
+     "tau_99_censored": false,
+     "tau_leave": 4,
+     "tau_leave_censored": false,
+     "tau_hat": 66.23678581305906,
+     "tau_leave_hat": -2.829410579022798,
+     "X": 19.966604121457394,
+     "X_logged": 19.96654699077187,
+     "X_identity": 19.96660412145738,
+     "X_identity_err": 1.4210854715202004e-14,
+     "X_logged_identity_err": 5.713068550861067e-05
+    },
+    {
+     "stream": 2,
+     "seeds": [
+      3,
+      13,
+      23,
+      33,
+      43,
+      53,
+      63,
+      73,
+      83,
+      93
+     ],
+     "games": 20,
+     "T": 308,
+     "t0": 82,
+     "phase1_is_prefix": true,
+     "n_forced": 21,
+     "val_err_phase1": 0.00010902632903975196,
+     "val_err_post": 0.00020317578153050686,
+     "val_err": 0.00020317578153050686,
+     "P_t0": {
+      "eq": 1.2319779862844317e-54,
+      "br_unif": 0.8170622073392253,
+      "br_us": 4.1458731225466347e-07,
+      "safe": 0.18293737807345617,
+      "uniform": 6.170005773912821e-15
+     },
+     "lnP_t0": {
+      "eq": -124.1309740250024,
+      "br_unif": -0.2020400458466438,
+      "br_us": -14.69598223978959,
+      "safe": -1.6986113810231487,
+      "uniform": -32.71907662118948
+     },
+     "state_file": "/Users/biofanat/sandbox/ourbot/sw/hedge_state/SW2-stream2-A.bayes.json",
+     "meta_updates": 308,
+     "meta_games": 20,
+     "meta_config": {
+      "styles": [
+       "eq",
+       "br_unif",
+       "br_us",
+       "safe",
+       "uniform"
+      ],
+      "lam": 1.0,
+      "tau_frac": 0.1,
+      "mix": 0.05
+     },
+     "meta_ok": true,
+     "clean": true,
+     "t_sustained_P90_b6_logged": 181,
+     "t_sustained_P90_b6_recon": 181,
+     "false_alarm": false,
+     "false_alarm_at": null,
+     "id_err_rec": 0.00029236229424234317,
+     "id_err_logged": 0.0030991971103082605,
+     "post_updates": 226,
+     "tau_map": 95,
+     "tau_map_censored": false,
+     "tau_90": 99,
+     "tau_90_censored": false,
+     "tau_99": 107,
+     "tau_99_censored": false,
+     "tau_leave": 1,
+     "tau_leave_censored": false,
+     "tau_hat": 110.97964701482198,
+     "tau_leave_hat": -14.672267991926514,
+     "X": 32.719076621189465,
+     "X_logged": 32.71923880167543,
+     "X_identity": 32.71907662118948,
+     "X_identity_err": 1.4210854715202004e-14,
+     "X_logged_identity_err": 0.00016218048595106893
+    },
+    {
+     "stream": 3,
+     "seeds": [
+      4,
+      14,
+      24,
+      34,
+      44,
+      54,
+      64,
+      74,
+      84,
+      94
+     ],
+     "games": 20,
+     "T": 445,
+     "t0": 110,
+     "phase1_is_prefix": true,
+     "n_forced": 52,
+     "val_err_phase1": 5.3558772773090735e-05,
+     "val_err_post": 0.00010886513144464649,
+     "val_err": 0.00010886513144464649,
+     "P_t0": {
+      "eq": 1.489012995263127e-60,
+      "br_unif": 7.692391230743447e-05,
+      "br_us": 0.0003717120867077029,
+      "safe": 0.9995513639438891,
+      "uniform": 5.7095718179061615e-11
+     },
+     "lnP_t0": {
+      "eq": -137.75699209846846,
+      "br_unif": -9.472693776505995,
+      "br_us": -7.897390963816319,
+      "safe": -0.0004487367233760864,
+      "uniform": -23.586291990185835
+     },
+     "state_file": "/Users/biofanat/sandbox/ourbot/sw/hedge_state/SW2-stream3-A.bayes.json",
+     "meta_updates": 445,
+     "meta_games": 20,
+     "meta_config": {
+      "styles": [
+       "eq",
+       "br_unif",
+       "br_us",
+       "safe",
+       "uniform"
+      ],
+      "lam": 1.0,
+      "tau_frac": 0.1,
+      "mix": 0.05
+     },
+     "meta_ok": true,
+     "clean": true,
+     "t_sustained_P90_b6_logged": 224,
+     "t_sustained_P90_b6_recon": 224,
+     "false_alarm": false,
+     "false_alarm_at": null,
+     "id_err_rec": 0.0003241611018240942,
+     "id_err_logged": 0.004261496916648788,
+     "post_updates": 335,
+     "tau_map": 107,
+     "tau_map_censored": false,
+     "tau_90": 114,
+     "tau_90_censored": false,
+     "tau_99": 125,
+     "tau_99_censored": false,
+     "tau_leave": 49,
+     "tau_leave_censored": false,
+     "tau_hat": 59.71099557838596,
+     "tau_leave_hat": 59.71099557838596,
+     "X": 23.58629199018583,
+     "X_logged": 23.586701424931405,
+     "X_identity": 23.586291990185835,
+     "X_identity_err": 3.552713678800501e-15,
+     "X_logged_identity_err": 0.00040943474557053605
+    },
+    {
+     "stream": 4,
+     "seeds": [
+      5,
+      15,
+      25,
+      35,
+      45,
+      55,
+      65,
+      75,
+      85,
+      95
+     ],
+     "games": 20,
+     "T": 380,
+     "t0": 116,
+     "phase1_is_prefix": true,
+     "n_forced": 38,
+     "val_err_phase1": 7.135256120957556e-05,
+     "val_err_post": 6.50139444900999e-05,
+     "val_err": 7.135256120957556e-05,
+     "P_t0": {
+      "eq": 6.3272187586838705e-46,
+      "br_unif": 0.148492380718484,
+      "br_us": 3.3636854184577076e-05,
+      "safe": 0.8514739824273315,
+      "uniform": 1.0869892719099633e-21
+     },
+     "lnP_t0": {
+      "eq": -104.07405351273883,
+      "br_unif": -1.9072216303487353,
+      "br_us": -10.299888241364913,
+      "safe": -0.16078633433466116,
+      "uniform": -48.270875214232646
+     },
+     "state_file": "/Users/biofanat/sandbox/ourbot/sw/hedge_state/SW2-stream4-A.bayes.json",
+     "meta_updates": 380,
+     "meta_games": 20,
+     "meta_config": {
+      "styles": [
+       "eq",
+       "br_unif",
+       "br_us",
+       "safe",
+       "uniform"
+      ],
+      "lam": 1.0,
+      "tau_frac": 0.1,
+      "mix": 0.05
+     },
+     "meta_ok": true,
+     "clean": true,
+     "t_sustained_P90_b6_logged": 249,
+     "t_sustained_P90_b6_recon": 249,
+     "false_alarm": false,
+     "false_alarm_at": null,
+     "id_err_rec": 0.00041819425804945354,
+     "id_err_logged": 0.0037326506565351636,
+     "post_updates": 264,
+     "tau_map": 127,
+     "tau_map_censored": false,
+     "tau_90": 133,
+     "tau_90_censored": false,
+     "tau_99": 134,
+     "tau_99_censored": false,
+     "tau_leave": 41,
+     "tau_leave_censored": false,
+     "tau_hat": 158.2377255422659,
+     "tau_leave_hat": 17.121914666804642,
+     "X": 48.27087521423116,
+     "X_logged": 48.2709046414832,
+     "X_identity": 48.27087521423118,
+     "X_identity_err": 2.1316282072803006e-14,
+     "X_logged_identity_err": 2.9427252016489547e-05
+    },
+    {
+     "stream": 5,
+     "seeds": [
+      6,
+      16,
+      26,
+      36,
+      46,
+      56,
+      66,
+      76,
+      86,
+      96
+     ],
+     "games": 20,
+     "T": 355,
+     "t0": 87,
+     "phase1_is_prefix": true,
+     "n_forced": 21,
+     "val_err_phase1": 5.925837366888009e-05,
+     "val_err_post": 0.0001392244497706585,
+     "val_err": 0.0001392244497706585,
+     "P_t0": {
+      "eq": 2.6480410585016873e-47,
+      "br_unif": 0.00016623325168301897,
+      "br_us": 3.901531078744775e-05,
+      "safe": 0.9997947514363754,
+      "uniform": 1.1542341131483939e-12
+     },
+     "lnP_t0": {
+      "eq": -107.24767922728913,
+      "br_unif": -8.702118625259379,
+      "br_us": -10.151556404582147,
+      "safe": -0.00020526962999367626,
+      "uniform": -27.48758409740571
+     },
+     "state_file": "/Users/biofanat/sandbox/ourbot/sw/hedge_state/SW2-stream5-A.bayes.json",
+     "meta_updates": 355,
+     "meta_games": 20,
+     "meta_config": {
+      "styles": [
+       "eq",
+       "br_unif",
+       "br_us",
+       "safe",
+       "uniform"
+      ],
+      "lam": 1.0,
+      "tau_frac": 0.1,
+      "mix": 0.05
+     },
+     "meta_ok": true,
+     "clean": true,
+     "t_sustained_P90_b6_logged": 181,
+     "t_sustained_P90_b6_recon": 181,
+     "false_alarm": false,
+     "false_alarm_at": null,
+     "id_err_rec": 0.000345037784544866,
+     "id_err_logged": 0.003351737382021547,
+     "post_updates": 268,
+     "tau_map": 92,
+     "tau_map_censored": false,
+     "tau_90": 94,
+     "tau_90_censored": false,
+     "tau_99": 96,
+     "tau_99_censored": false,
+     "tau_leave": 94,
+     "tau_leave_censored": false,
+     "tau_hat": 69.58830082981193,
+     "tau_leave_hat": 69.58830082981193,
+     "X": 27.487584097405705,
+     "X_logged": 27.487966426185594,
+     "X_identity": 27.48758409740571,
+     "X_identity_err": 3.552713678800501e-15,
+     "X_logged_identity_err": 0.0003823287798851993
+    },
+    {
+     "stream": 6,
+     "seeds": [
+      7,
+      17,
+      27,
+      37,
+      47,
+      57,
+      67,
+      77,
+      87,
+      97
+     ],
+     "games": 20,
+     "T": 326,
+     "t0": 84,
+     "phase1_is_prefix": true,
+     "n_forced": 28,
+     "val_err_phase1": 5.588809901102554e-05,
+     "val_err_post": 7.842356379961224e-05,
+     "val_err": 7.842356379961224e-05,
+     "P_t0": {
+      "eq": 5.23427730039539e-56,
+      "br_unif": 1.6912764003693766e-06,
+      "br_us": 6.0229510717650815e-06,
+      "safe": 0.9999922857724866,
+      "uniform": 4.138540126498996e-14
+     },
+     "lnP_t0": {
+      "eq": -127.28953642437445,
+      "br_unif": -13.290027047608746,
+      "br_us": -12.019933207501172,
+      "safe": -7.714257268198743e-06,
+      "uniform": -30.81584820271626
+     },
+     "state_file": "/Users/biofanat/sandbox/ourbot/sw/hedge_state/SW2-stream6-A.bayes.json",
+     "meta_updates": 326,
+     "meta_games": 20,
+     "meta_config": {
+      "styles": [
+       "eq",
+       "br_unif",
+       "br_us",
+       "safe",
+       "uniform"
+      ],
+      "lam": 1.0,
+      "tau_frac": 0.1,
+      "mix": 0.05
+     },
+     "meta_ok": true,
+     "clean": true,
+     "t_sustained_P90_b6_logged": 212,
+     "t_sustained_P90_b6_recon": 212,
+     "false_alarm": false,
+     "false_alarm_at": null,
+     "id_err_rec": 0.00039416222767840736,
+     "id_err_logged": 0.003130730446611274,
+     "post_updates": 242,
+     "tau_map": 124,
+     "tau_map_censored": false,
+     "tau_90": 128,
+     "tau_90_censored": false,
+     "tau_99": 130,
+     "tau_99_censored": false,
+     "tau_leave": 99,
+     "tau_leave_censored": false,
+     "tau_hat": 78.01478604673161,
+     "tau_leave_hat": 78.01478604673161,
+     "X": 30.815848202716314,
+     "X_logged": 30.815807020798488,
+     "X_identity": 30.81584820271626,
+     "X_identity_err": 5.3290705182007514e-14,
+     "X_logged_identity_err": 4.1181917772803445e-05
+    },
+    {
+     "stream": 7,
+     "seeds": [
+      8,
+      18,
+      28,
+      38,
+      48,
+      58,
+      68,
+      78,
+      88,
+      98
+     ],
+     "games": 20,
+     "T": 392,
+     "t0": 105,
+     "phase1_is_prefix": true,
+     "n_forced": 43,
+     "val_err_phase1": 8.590891511384147e-05,
+     "val_err_post": 8.605013663631755e-05,
+     "val_err": 8.605013663631755e-05,
+     "P_t0": {
+      "eq": 1.2476546849553755e-66,
+      "br_unif": 0.9330255285453186,
+      "br_us": 1.3352099978064467e-08,
+      "safe": 1.6919375561204887e-07,
+      "uniform": 0.06697428890882584
+     },
+     "lnP_t0": {
+      "eq": -151.74935060069413,
+      "br_unif": -0.06932271672421264,
+      "br_us": -18.131592162743097,
+      "safe": -15.59222129582145,
+      "uniform": -2.7034464808706002
+     },
+     "state_file": "/Users/biofanat/sandbox/ourbot/sw/hedge_state/SW2-stream7-A.bayes.json",
+     "meta_updates": 392,
+     "meta_games": 20,
+     "meta_config": {
+      "styles": [
+       "eq",
+       "br_unif",
+       "br_us",
+       "safe",
+       "uniform"
+      ],
+      "lam": 1.0,
+      "tau_frac": 0.1,
+      "mix": 0.05
+     },
+     "meta_ok": true,
+     "clean": true,
+     "t_sustained_P90_b6_logged": 122,
+     "t_sustained_P90_b6_recon": 122,
+     "false_alarm": true,
+     "false_alarm_at": 30,
+     "id_err_rec": 0.0001605807408577853,
+     "id_err_logged": 0.0035758179590397177,
+     "post_updates": 287,
+     "tau_map": 12,
+     "tau_map_censored": false,
+     "tau_90": 17,
+     "tau_90_censored": false,
+     "tau_99": 26,
+     "tau_99_censored": false,
+     "tau_leave": 1,
+     "tau_leave_censored": false,
+     "tau_hat": 8.990183495380164,
+     "tau_leave_hat": -152.18528018722776,
+     "X": 2.703446480870605,
+     "X_logged": 2.7036582464234673,
+     "X_identity": 2.7034464808706002,
+     "X_identity_err": 4.884981308350689e-15,
+     "X_logged_identity_err": 0.00021176555286706034
+    },
+    {
+     "stream": 8,
+     "seeds": [
+      9,
+      19,
+      29,
+      39,
+      49,
+      59,
+      69,
+      79,
+      89,
+      99
+     ],
+     "games": 20,
+     "T": 411,
+     "t0": 158,
+     "phase1_is_prefix": true,
+     "n_forced": 40,
+     "val_err_phase1": 9.596780999621135e-05,
+     "val_err_post": 8.941250484506558e-05,
+     "val_err": 9.596780999621135e-05,
+     "P_t0": {
+      "eq": 5.91101655900837e-69,
+      "br_unif": 0.999566650295545,
+      "br_us": 5.434483496872448e-06,
+      "safe": 0.0004279152209581006,
+      "uniform": 5.719873068928973e-19
+     },
+     "lnP_t0": {
+      "eq": -157.10155359336218,
+      "br_unif": -0.000433443627573471,
+      "br_us": -12.12274607468116,
+      "safe": -7.756585463876879,
+      "uniform": -42.00517015248806
+     },
+     "state_file": "/Users/biofanat/sandbox/ourbot/sw/hedge_state/SW2-stream8-A.bayes.json",
+     "meta_updates": 411,
+     "meta_games": 20,
+     "meta_config": {
+      "styles": [
+       "eq",
+       "br_unif",
+       "br_us",
+       "safe",
+       "uniform"
+      ],
+      "lam": 1.0,
+      "tau_frac": 0.1,
+      "mix": 0.05
+     },
+     "meta_ok": true,
+     "clean": true,
+     "t_sustained_P90_b6_logged": 405,
+     "t_sustained_P90_b6_recon": 405,
+     "false_alarm": false,
+     "false_alarm_at": null,
+     "id_err_rec": 0.00038511717083977715,
+     "id_err_logged": 0.003949154466570626,
+     "post_updates": 253,
+     "tau_map": 253,
+     "tau_map_censored": true,
+     "tau_90": 253,
+     "tau_90_censored": true,
+     "tau_99": 253,
+     "tau_99_censored": true,
+     "tau_leave": 1,
+     "tau_leave_censored": false,
+     "tau_hat": 143.3608761394556,
+     "tau_leave_hat": -76.04070608087552,
+     "X": 42.0051162709065,
+     "X_logged": 42.005327288800174,
+     "X_identity": 42.005116270906576,
+     "X_identity_err": 7.815970093361102e-14,
+     "X_logged_identity_err": 0.0002110178935978979
+    },
+    {
+     "stream": 9,
+     "seeds": [
+      10,
+      20,
+      30,
+      40,
+      50,
+      60,
+      70,
+      80,
+      90,
+      100
+     ],
+     "games": 20,
+     "T": 340,
+     "t0": 126,
+     "phase1_is_prefix": true,
+     "n_forced": 36,
+     "val_err_phase1": 5.242579291733773e-05,
+     "val_err_post": 0.00021206485056607383,
+     "val_err": 0.00021206485056607383,
+     "P_t0": {
+      "eq": 2.95400987276934e-47,
+      "br_unif": 1.0425087012129569e-06,
+      "br_us": 2.416292696846525e-05,
+      "safe": 0.9999747945643302,
+      "uniform": 2.700885038636824e-19
+     },
+     "lnP_t0": {
+      "eq": -107.13833584444683,
+      "br_unif": -13.773880536821038,
+      "br_us": -10.630691042878645,
+      "safe": -2.520575333209152e-05,
+      "uniform": -42.75553725550096
+     },
+     "state_file": "/Users/biofanat/sandbox/ourbot/sw/hedge_state/SW2-stream9-A.bayes.json",
+     "meta_updates": 340,
+     "meta_games": 20,
+     "meta_config": {
+      "styles": [
+       "eq",
+       "br_unif",
+       "br_us",
+       "safe",
+       "uniform"
+      ],
+      "lam": 1.0,
+      "tau_frac": 0.1,
+      "mix": 0.05
+     },
+     "meta_ok": true,
+     "clean": true,
+     "t_sustained_P90_b6_logged": 299,
+     "t_sustained_P90_b6_recon": 299,
+     "false_alarm": false,
+     "false_alarm_at": null,
+     "id_err_rec": 0.0006042697513066742,
+     "id_err_logged": 0.003942064643635668,
+     "post_updates": 214,
+     "tau_map": 167,
+     "tau_map_censored": false,
+     "tau_90": 173,
+     "tau_90_censored": false,
+     "tau_99": 176,
+     "tau_99_censored": false,
+     "tau_leave": 87,
+     "tau_leave_censored": false,
+     "tau_hat": 108.24180265758893,
+     "tau_leave_hat": 108.24180265758893,
+     "X": 42.75553717399325,
+     "X_logged": 42.75591996501966,
+     "X_identity": 42.755537173993226,
+     "X_identity_err": 2.1316282072803006e-14,
+     "X_logged_identity_err": 0.0003827910264320167
+    }
+   ],
+   "summary": {
+    "n_streams": 10,
+    "n_clean": 10,
+    "n_switch_streams": 10,
+    "n_post_streams": 10,
+    "tau_map": {
+     "median": 107.5,
+     "lo": 77.0,
+     "hi": 137.6999999999989,
+     "n": 10,
+     "n_censored": 1,
+     "median_bounds": [
+      107.5,
+      107.5
+     ]
+    },
+    "tau_90": {
+     "median": 111.5,
+     "lo": 84.5,
+     "hi": 150.5,
+     "n": 10,
+     "n_censored": 1,
+     "median_bounds": [
+      111.5,
+      111.5
+     ]
+    },
+    "tau_99": {
+     "median": 124.0,
+     "lo": 83.0,
+     "hi": 153.0,
+     "n": 10,
+     "n_censored": 1,
+     "median_bounds": [
+      124.0,
+      124.0
+     ]
+    },
+    "tau_leave": {
+     "median": 45.0,
+     "lo": 1.0,
+     "hi": 94.0,
+     "n": 10,
+     "n_censored": 0,
+     "median_bounds": [
+      45.0,
+      45.0
+     ]
+    },
+    "tau_hat": {
+     "median": 74.31019141106599,
+     "lo": 64.64964820409895,
+     "hi": 110.97964701482198,
+     "n": 10,
+     "n_censored": 0,
+     "median_bounds": [
+      74.31019141106599,
+      74.31019141106599
+     ]
+    },
+    "tau_leave_hat": {
+     "median": 26.003266121183124,
+     "lo": -39.43505832994916,
+     "hi": 69.58830082981193,
+     "n": 10,
+     "n_censored": 0,
+     "median_bounds": [
+      26.003266121183124,
+      26.003266121183124
+     ]
+    },
+    "X": {
+     "median": 29.15171615006101,
+     "lo": 22.4571801494192,
+     "hi": 42.0051162709065,
+     "n": 10,
+     "n_censored": 0,
+     "median_bounds": [
+      29.15171615006101,
+      29.15171615006101
+     ]
+    },
+    "X_logged": {
+     "median": 29.15188672349204,
+     "lo": 23.586701424931405,
+     "hi": 42.005327288800174,
+     "n": 10,
+     "n_censored": 0,
+     "median_bounds": [
+      29.15188672349204,
+      29.15188672349204
+     ]
+    },
+    "tau_map_over_t0": {
+     "median": 1.126682085786375,
+     "lo": 0.8108066502463054,
+     "hi": 1.3587848932676518,
+     "n": 10,
+     "n_censored": 1,
+     "median_bounds": [
+      1.126682085786375,
+      1.126682085786375
+     ]
+    },
+    "tau_map_over_tau_hat": {
+     "median": 1.4322065003531983,
+     "lo": 0.89074370496353,
+     "hi": 1.6538095837811042,
+     "n": 10,
+     "n_censored": 1,
+     "median_bounds": [
+      1.4322065003531983,
+      1.4322065003531983
+     ]
+    },
+    "tau90_minus_tau_map": {
+     "median": 4.0,
+     "lo": 1.0,
+     "hi": 6.0,
+     "n": 9,
+     "n_unknown": 1,
+     "median_bounds": [
+      4.0,
+      4.5
+     ]
+    },
+    "spearman_tau_hat_tau_map": {
+     "rho": 0.7696969696969697,
+     "p": 0.009221952722215996,
+     "n": 10
+    },
+    "false_alarm_streams": 1,
+    "early_flips_le30": 1,
+    "max_val_err": 0.00021206485056607383,
+    "max_val_err_phase1": 0.00010902632903975196,
+    "max_val_err_post": 0.00021206485056607383,
+    "max_id_err_rec": 0.0006042697513066742,
+    "max_id_err_logged": 0.004572199579769176,
+    "max_X_identity_err": 7.815970093361102e-14,
+    "max_X_logged_identity_err": 0.00040943474557053605,
+    "meta_ok": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ]
+   },
+   "scores": {
+    "dropped_error_seeds": [],
+    "pre": {
+     "n_seeds": 20,
+     "mean": 0.925,
+     "vs_RQsafe": {
+      "mean_diff": 0.0,
+      "se": 0.07254762501100116,
+      "lo": -0.14219334502156228,
+      "hi": 0.14219334502156228,
+      "n_pairs": 20
+     }
+    },
+    "post": {
+     "n_seeds": 80,
+     "mean": 1.0,
+     "vs_RQunif": {
+      "mean_diff": 0.00641025641025641,
+      "se": 0.006410256410256409,
+      "lo": -0.006153846153846152,
+      "hi": 0.018974358974358972,
+      "n_pairs": 78
+     }
+    }
+   }
+  },
+  "SW4": {
+   "root": "/Users/biofanat/sandbox/ourbot/sw/replays_headless",
+   "variant": "bayes",
+   "lam": 1.0,
+   "rows": [
+    {
+     "stream": 0,
+     "seeds": [
+      1,
+      11,
+      21,
+      31,
+      41,
+      51,
+      61,
+      71,
+      81,
+      91,
+      101,
+      111,
+      121,
+      131,
+      141,
+      151,
+      161,
+      171
+     ],
+     "games": 36,
+     "T": 599,
+     "t0": 189,
+     "phase1_is_prefix": true,
+     "n_forced": 39,
+     "val_err_phase1": 5.201670446863815e-05,
+     "val_err_post": 0.00020329350953679493,
+     "val_err": 0.00020329350953679493,
+     "P_t0": {
+      "eq": 4.8134720399842585e-123,
+      "br_unif": 0.0011932444365304288,
+      "br_us": 0.002173264128187404,
+      "safe": 0.9966334914352822,
+      "uniform": 1.0497770675807054e-20
+     },
+     "lnP_t0": {
+      "eq": -281.646547776715,
+      "br_unif": -6.7310792645400666,
+      "br_us": -6.131525035077236,
+      "safe": -0.0033721880048475468,
+      "uniform": -46.003124034843644
+     },
+     "state_file": "/Users/biofanat/sandbox/ourbot/sw/hedge_state/SW4-stream0-A.bayes.json",
+     "meta_updates": 599,
+     "meta_games": 36,
+     "meta_config": {
+      "styles": [
+       "eq",
+       "br_unif",
+       "br_us",
+       "safe",
+       "uniform"
+      ],
+      "lam": 1.0,
+      "tau_frac": 0.1,
+      "mix": 0.05
+     },
+     "meta_ok": true,
+     "clean": true,
+     "t_sustained_P90_b6_logged": 464,
+     "t_sustained_P90_b6_recon": 464,
+     "false_alarm": false,
+     "false_alarm_at": null,
+     "id_err_rec": 0.0005864439438845181,
+     "id_err_logged": 0.0041639160298467814,
+     "post_updates": 410,
+     "tau_map": 268,
+     "tau_map_censored": false,
+     "tau_90": 275,
+     "tau_90_censored": false,
+     "tau_99": 276,
+     "tau_99_censored": false,
+     "tau_leave": 48,
+     "tau_leave_censored": false,
+     "tau_hat": 134.0342824925037,
+     "tau_leave_hat": 65.95791251505113,
+     "X": 46.00312403484362,
+     "X_logged": 46.003690712447366,
+     "X_identity": 46.003124034843644,
+     "X_identity_err": 2.1316282072803006e-14,
+     "X_logged_identity_err": 0.0005666776037216437
+    },
+    {
+     "stream": 1,
+     "seeds": [
+      2,
+      12,
+      22,
+      32,
+      42,
+      52,
+      62,
+      72,
+      82,
+      92,
+      102,
+      112,
+      122,
+      132,
+      142,
+      152,
+      162,
+      172
+     ],
+     "games": 36,
+     "T": 643,
+     "t0": 225,
+     "phase1_is_prefix": true,
+     "n_forced": 66,
+     "val_err_phase1": 5.325293549085508e-05,
+     "val_err_post": 0.00014666239742155973,
+     "val_err": 0.00014666239742155973,
+     "P_t0": {
+      "eq": 3.9646159647067674e-112,
+      "br_unif": 1.9973199351607493e-08,
+      "br_us": 4.9922639724994904e-21,
+      "safe": 0.9999999800268007,
+      "uniform": 1.0988987607740255e-39
+     },
+     "lnP_t0": {
+      "eq": -256.51212142125325,
+      "br_unif": -17.72887449445839,
+      "br_us": -46.746397444099415,
+      "safe": -1.997319953872534e-08,
+      "uniform": -89.70651007499444
+     },
+     "state_file": "/Users/biofanat/sandbox/ourbot/sw/hedge_state/SW4-stream1-A.bayes.json",
+     "meta_updates": 643,
+     "meta_games": 36,
+     "meta_config": {
+      "styles": [
+       "eq",
+       "br_unif",
+       "br_us",
+       "safe",
+       "uniform"
+      ],
+      "lam": 1.0,
+      "tau_frac": 0.1,
+      "mix": 0.05
+     },
+     "meta_ok": true,
+     "clean": true,
+     "t_sustained_P90_b6_logged": 476,
+     "t_sustained_P90_b6_recon": 476,
+     "false_alarm": false,
+     "false_alarm_at": null,
+     "id_err_rec": 0.0005067581368036755,
+     "id_err_logged": 0.002993287270037115,
+     "post_updates": 418,
+     "tau_map": 247,
+     "tau_map_censored": false,
+     "tau_90": 251,
+     "tau_90_censored": false,
+     "tau_99": 258,
+     "tau_99_censored": false,
+     "tau_leave": 82,
+     "tau_leave_censored": false,
+     "tau_hat": 245.6574593192357,
+     "tau_leave_hat": 173.81249484789393,
+     "X": 89.70651007499453,
+     "X_logged": 89.70662969132354,
+     "X_identity": 89.70651007499444,
+     "X_identity_err": 8.526512829121202e-14,
+     "X_logged_identity_err": 0.00011961632910129083
+    },
+    {
+     "stream": 2,
+     "seeds": [
+      3,
+      13,
+      23,
+      33,
+      43,
+      53,
+      63,
+      73,
+      83,
+      93,
+      103,
+      113,
+      123,
+      133,
+      143,
+      153,
+      163,
+      173
+     ],
+     "games": 36,
+     "T": 674,
+     "t0": 177,
+     "phase1_is_prefix": true,
+     "n_forced": 64,
+     "val_err_phase1": 8.785554258039507e-05,
+     "val_err_post": 0.00011103768094333777,
+     "val_err": 0.00011103768094333777,
+     "P_t0": {
+      "eq": 8.522503033861606e-90,
+      "br_unif": 0.37091270503737417,
+      "br_us": 1.958202343157611e-06,
+      "safe": 0.6290853367602826,
+      "uniform": 1.1618945830016612e-18
+     },
+     "lnP_t0": {
+      "eq": -205.08994828845167,
+      "br_unif": -0.9917885404564597,
+      "br_us": -13.143483677439672,
+      "safe": -0.46348836095901835,
+      "uniform": -41.29647973988682
+     },
+     "state_file": "/Users/biofanat/sandbox/ourbot/sw/hedge_state/SW4-stream2-A.bayes.json",
+     "meta_updates": 674,
+     "meta_games": 36,
+     "meta_config": {
+      "styles": [
+       "eq",
+       "br_unif",
+       "br_us",
+       "safe",
+       "uniform"
+      ],
+      "lam": 1.0,
+      "tau_frac": 0.1,
+      "mix": 0.05
+     },
+     "meta_ok": true,
+     "clean": true,
+     "t_sustained_P90_b6_logged": 307,
+     "t_sustained_P90_b6_recon": 307,
+     "false_alarm": false,
+     "false_alarm_at": null,
+     "id_err_rec": 0.00022029784698496258,
+     "id_err_logged": 0.0041294778256411035,
+     "post_updates": 497,
+     "tau_map": 121,
+     "tau_map_censored": false,
+     "tau_90": 130,
+     "tau_90_censored": false,
+     "tau_99": 143,
+     "tau_99_censored": false,
+     "tau_leave": 71,
+     "tau_leave_censored": false,
+     "tau_hat": 137.5586730355985,
+     "tau_leave_hat": 5.179413524484717,
+     "X": 41.29647973988682,
+     "X_logged": 41.29674349551948,
+     "X_identity": 41.29647973988682,
+     "X_identity_err": 0.0,
+     "X_logged_identity_err": 0.0002637556326590129
+    },
+    {
+     "stream": 3,
+     "seeds": [
+      4,
+      14,
+      24,
+      34,
+      44,
+      54,
+      64,
+      74,
+      84,
+      94,
+      104,
+      114,
+      124,
+      134,
+      144,
+      154,
+      164,
+      174
+     ],
+     "games": 36,
+     "T": 635,
+     "t0": 177,
+     "phase1_is_prefix": true,
+     "n_forced": 54,
+     "val_err_phase1": 5.6147389219440846e-05,
+     "val_err_post": 0.00011499243025769879,
+     "val_err": 0.00011499243025769879,
+     "P_t0": {
+      "eq": 1.0156472783174867e-89,
+      "br_unif": 0.9930311834986739,
+      "br_us": 2.8593610495508027e-08,
+      "safe": 0.006968787907715571,
+      "uniform": 6.652096629661119e-25
+     },
+     "lnP_t0": {
+      "eq": -204.91454715460054,
+      "br_unif": -0.006993212108110991,
+      "br_us": -17.37008255332814,
+      "safe": -4.96631397066435,
+      "uniform": -55.669695237218704
+     },
+     "state_file": "/Users/biofanat/sandbox/ourbot/sw/hedge_state/SW4-stream3-A.bayes.json",
+     "meta_updates": 635,
+     "meta_games": 36,
+     "meta_config": {
+      "styles": [
+       "eq",
+       "br_unif",
+       "br_us",
+       "safe",
+       "uniform"
+      ],
+      "lam": 1.0,
+      "tau_frac": 0.1,
+      "mix": 0.05
+     },
+     "meta_ok": true,
+     "clean": true,
+     "t_sustained_P90_b6_logged": 416,
+     "t_sustained_P90_b6_recon": 416,
+     "false_alarm": false,
+     "false_alarm_at": null,
+     "id_err_rec": 0.0003034625928748369,
+     "id_err_logged": 0.004773641451224719,
+     "post_updates": 458,
+     "tau_map": 206,
+     "tau_map_censored": false,
+     "tau_90": 239,
+     "tau_90_censored": false,
+     "tau_99": 242,
+     "tau_99_censored": false,
+     "tau_leave": 1,
+     "tau_leave_censored": false,
+     "tau_hat": 189.97509223587232,
+     "tau_leave_hat": -48.62079175055135,
+     "X": 55.66969523721861,
+     "X_logged": 55.6700738976766,
+     "X_identity": 55.669695237218704,
+     "X_identity_err": 9.237055564881302e-14,
+     "X_logged_identity_err": 0.00037866045789769487
+    },
+    {
+     "stream": 4,
+     "seeds": [
+      5,
+      15,
+      25,
+      35,
+      45,
+      55,
+      65,
+      75,
+      85,
+      95,
+      105,
+      115,
+      125,
+      135,
+      145,
+      155,
+      165,
+      175
+     ],
+     "games": 36,
+     "T": 638,
+     "t0": 199,
+     "phase1_is_prefix": true,
+     "n_forced": 54,
+     "val_err_phase1": 5.386068609336547e-05,
+     "val_err_post": 4.972268271558663e-05,
+     "val_err": 5.386068609336547e-05,
+     "P_t0": {
+      "eq": 1.7433625154794075e-118,
+      "br_unif": 0.9995127648082853,
+      "br_us": 1.7202020876885714e-08,
+      "safe": 0.00048721798969376425,
+      "uniform": 7.713531583566879e-27
+     },
+     "lnP_t0": {
+      "eq": -271.14922524474804,
+      "br_unif": -0.00048735392935106425,
+      "br_us": -17.878238967186554,
+      "safe": -7.626798917591492,
+      "uniform": -60.12682137579464
+     },
+     "state_file": "/Users/biofanat/sandbox/ourbot/sw/hedge_state/SW4-stream4-A.bayes.json",
+     "meta_updates": 638,
+     "meta_games": 36,
+     "meta_config": {
+      "styles": [
+       "eq",
+       "br_unif",
+       "br_us",
+       "safe",
+       "uniform"
+      ],
+      "lam": 1.0,
+      "tau_frac": 0.1,
+      "mix": 0.05
+     },
+     "meta_ok": true,
+     "clean": true,
+     "t_sustained_P90_b6_logged": 422,
+     "t_sustained_P90_b6_recon": 422,
+     "false_alarm": false,
+     "false_alarm_at": null,
+     "id_err_rec": 0.00017035988224023413,
+     "id_err_logged": 0.0038041029330662113,
+     "post_updates": 439,
+     "tau_map": 213,
+     "tau_map_censored": false,
+     "tau_90": 223,
+     "tau_90_censored": false,
+     "tau_99": 227,
+     "tau_99_censored": false,
+     "tau_leave": 1,
+     "tau_leave_censored": false,
+     "tau_hat": 205.20933113264604,
+     "tau_leave_hat": -74.76776042806017,
+     "X": 60.12682137579459,
+     "X_logged": 60.1268958340267,
+     "X_identity": 60.12682137579464,
+     "X_identity_err": 4.973799150320701e-14,
+     "X_logged_identity_err": 7.44582320564291e-05
+    },
+    {
+     "stream": 5,
+     "seeds": [
+      6,
+      16,
+      26,
+      36,
+      46,
+      56,
+      66,
+      76,
+      86,
+      96,
+      106,
+      116,
+      126,
+      136,
+      146,
+      156,
+      166,
+      176
+     ],
+     "games": 36,
+     "T": 716,
+     "t0": 246,
+     "phase1_is_prefix": true,
+     "n_forced": 68,
+     "val_err_phase1": 5.027476357624726e-05,
+     "val_err_post": 0.00018618847756268764,
+     "val_err": 0.00018618847756268764,
+     "P_t0": {
+      "eq": 3.5084561032259038e-127,
+      "br_unif": 0.9999999995795947,
+      "br_us": 3.334804704722975e-23,
+      "safe": 4.204051549700909e-10,
+      "uniform": 5.535357007531325e-43
+     },
+     "lnP_t0": {
+      "eq": -291.1731307261621,
+      "br_unif": -4.20405266154944e-10,
+      "br_us": -51.75504302051358,
+      "safe": -21.58980221494077,
+      "uniform": -97.30000293465774
+     },
+     "state_file": "/Users/biofanat/sandbox/ourbot/sw/hedge_state/SW4-stream5-A.bayes.json",
+     "meta_updates": 716,
+     "meta_games": 36,
+     "meta_config": {
+      "styles": [
+       "eq",
+       "br_unif",
+       "br_us",
+       "safe",
+       "uniform"
+      ],
+      "lam": 1.0,
+      "tau_frac": 0.1,
+      "mix": 0.05
+     },
+     "meta_ok": true,
+     "clean": true,
+     "t_sustained_P90_b6_logged": 634,
+     "t_sustained_P90_b6_recon": 634,
+     "false_alarm": false,
+     "false_alarm_at": null,
+     "id_err_rec": 0.0006319316296694577,
+     "id_err_logged": 0.0034884317496448602,
+     "post_updates": 470,
+     "tau_map": 334,
+     "tau_map_censored": false,
+     "tau_90": 388,
+     "tau_90_censored": false,
+     "tau_99": 392,
+     "tau_99_censored": false,
+     "tau_leave": 1,
+     "tau_leave_censored": false,
+     "tau_hat": 332.08192127726056,
+     "tau_leave_hat": -211.66472759333683,
+     "X": 97.300002934658,
+     "X_logged": 97.30067412354843,
+     "X_identity": 97.30000293465773,
+     "X_identity_err": 2.7000623958883807e-13,
+     "X_logged_identity_err": 0.0006711888907062757
+    },
+    {
+     "stream": 6,
+     "seeds": [
+      7,
+      17,
+      27,
+      37,
+      47,
+      57,
+      67,
+      77,
+      87,
+      97,
+      107,
+      117,
+      127,
+      137,
+      147,
+      157,
+      167,
+      177
+     ],
+     "games": 36,
+     "T": 666,
+     "t0": 219,
+     "phase1_is_prefix": true,
+     "n_forced": 47,
+     "val_err_phase1": 8.342316335230304e-05,
+     "val_err_post": 6.898037728969575e-05,
+     "val_err": 8.342316335230304e-05,
+     "P_t0": {
+      "eq": 3.6581976865252676e-121,
+      "br_unif": 0.028581191964765898,
+      "br_us": 3.6099182341264828e-09,
+      "safe": 0.9714188044253158,
+      "uniform": 3.1454615501777124e-37
+     },
+     "lnP_t0": {
+      "eq": -277.315825661528,
+      "br_unif": -3.5550064010951674,
+      "br_us": -19.439580714684592,
+      "safe": -0.028997591191854077,
+      "uniform": -84.04968780458175
+     },
+     "state_file": "/Users/biofanat/sandbox/ourbot/sw/hedge_state/SW4-stream6-A.bayes.json",
+     "meta_updates": 666,
+     "meta_games": 36,
+     "meta_config": {
+      "styles": [
+       "eq",
+       "br_unif",
+       "br_us",
+       "safe",
+       "uniform"
+      ],
+      "lam": 1.0,
+      "tau_frac": 0.1,
+      "mix": 0.05
+     },
+     "meta_ok": true,
+     "clean": true,
+     "t_sustained_P90_b6_logged": 459,
+     "t_sustained_P90_b6_recon": 459,
+     "false_alarm": false,
+     "false_alarm_at": null,
+     "id_err_rec": 0.0004610615533380269,
+     "id_err_logged": 0.004934231386933163,
+     "post_updates": 447,
+     "tau_map": 237,
+     "tau_map_censored": false,
+     "tau_90": 240,
+     "tau_90_censored": false,
+     "tau_99": 256,
+     "tau_99_censored": false,
+     "tau_leave": 90,
+     "tau_leave_censored": false,
+     "tau_hat": 274.7258750972238,
+     "tau_leave_hat": 34.56871382258149,
+     "X": 84.04968780458182,
+     "X_logged": 84.05023346523092,
+     "X_identity": 84.04968780458175,
+     "X_identity_err": 7.105427357601002e-14,
+     "X_logged_identity_err": 0.0005456606491662797
+    },
+    {
+     "stream": 7,
+     "seeds": [
+      8,
+      18,
+      28,
+      38,
+      48,
+      58,
+      68,
+      78,
+      88,
+      98,
+      108,
+      118,
+      128,
+      138,
+      148,
+      158,
+      168,
+      178
+     ],
+     "games": 36,
+     "T": 631,
+     "t0": 154,
+     "phase1_is_prefix": true,
+     "n_forced": 32,
+     "val_err_phase1": 9.717364163375208e-05,
+     "val_err_post": 8.418635085183368e-05,
+     "val_err": 9.717364163375208e-05,
+     "P_t0": {
+      "eq": 2.2098493053813555e-96,
+      "br_unif": 5.656535349960986e-06,
+      "br_us": 0.029225269390726727,
+      "safe": 0.9707690617217877,
+      "uniform": 1.2352135646768872e-08
+     },
+     "lnP_t0": {
+      "eq": -220.25524460183385,
+      "br_unif": -12.082698982158776,
+      "br_us": -3.5327215538486367,
+      "safe": -0.029666674486104494,
+      "uniform": -18.209436861958675
+     },
+     "state_file": "/Users/biofanat/sandbox/ourbot/sw/hedge_state/SW4-stream7-A.bayes.json",
+     "meta_updates": 631,
+     "meta_games": 36,
+     "meta_config": {
+      "styles": [
+       "eq",
+       "br_unif",
+       "br_us",
+       "safe",
+       "uniform"
+      ],
+      "lam": 1.0,
+      "tau_frac": 0.1,
+      "mix": 0.05
+     },
+     "meta_ok": true,
+     "clean": true,
+     "t_sustained_P90_b6_logged": 225,
+     "t_sustained_P90_b6_recon": 225,
+     "false_alarm": false,
+     "false_alarm_at": null,
+     "id_err_rec": 0.0002926031792946926,
+     "id_err_logged": 0.004208047396872416,
+     "post_updates": 477,
+     "tau_map": 65,
+     "tau_map_censored": false,
+     "tau_90": 71,
+     "tau_90_censored": false,
+     "tau_99": 77,
+     "tau_99_censored": false,
+     "tau_leave": 71,
+     "tau_leave_censored": false,
+     "tau_hat": 47.04075419266038,
+     "tau_leave_hat": 42.205480474247366,
+     "X": 18.20943686195869,
+     "X_logged": 18.20966225297456,
+     "X_identity": 18.209436861958675,
+     "X_identity_err": 1.4210854715202004e-14,
+     "X_logged_identity_err": 0.00022539101588492372
+    },
+    {
+     "stream": 8,
+     "seeds": [
+      9,
+      19,
+      29,
+      39,
+      49,
+      59,
+      69,
+      79,
+      89,
+      99,
+      109,
+      119,
+      129,
+      139,
+      149,
+      159,
+      169,
+      179
+     ],
+     "games": 36,
+     "T": 626,
+     "t0": 203,
+     "phase1_is_prefix": true,
+     "n_forced": 36,
+     "val_err_phase1": 6.712616604159782e-05,
+     "val_err_post": 0.00011772433832490936,
+     "val_err": 0.00011772433832490936,
+     "P_t0": {
+      "eq": 5.811903557812024e-99,
+      "br_unif": 9.412652137680229e-08,
+      "br_us": 2.8110285832256378e-08,
+      "safe": 0.9999998777631927,
+      "uniform": 4.345026373849626e-32
+     },
+     "lnP_t0": {
+      "eq": -226.19601605447195,
+      "br_unif": -16.178625987591218,
+      "br_us": -17.387130283731878,
+      "safe": -1.2223681478129578e-07,
+      "uniform": -72.21369114717966
+     },
+     "state_file": "/Users/biofanat/sandbox/ourbot/sw/hedge_state/SW4-stream8-A.bayes.json",
+     "meta_updates": 626,
+     "meta_games": 36,
+     "meta_config": {
+      "styles": [
+       "eq",
+       "br_unif",
+       "br_us",
+       "safe",
+       "uniform"
+      ],
+      "lam": 1.0,
+      "tau_frac": 0.1,
+      "mix": 0.05
+     },
+     "meta_ok": true,
+     "clean": true,
+     "t_sustained_P90_b6_logged": 356,
+     "t_sustained_P90_b6_recon": 356,
+     "false_alarm": false,
+     "false_alarm_at": null,
+     "id_err_rec": 0.0005835951294947961,
+     "id_err_logged": 0.00323164058140879,
+     "post_updates": 423,
+     "tau_map": 150,
+     "tau_map_censored": false,
+     "tau_90": 153,
+     "tau_90_censored": false,
+     "tau_99": 158,
+     "tau_99_censored": false,
+     "tau_leave": 77,
+     "tau_leave_censored": false,
+     "tau_hat": 191.24595617606977,
+     "tau_leave_hat": 158.61397907210193,
+     "X": 72.2136911471796,
+     "X_logged": 72.21420480845842,
+     "X_identity": 72.21369114717966,
+     "X_identity_err": 5.684341886080802e-14,
+     "X_logged_identity_err": 0.0005136612787595141
+    },
+    {
+     "stream": 9,
+     "seeds": [
+      10,
+      20,
+      30,
+      40,
+      50,
+      60,
+      70,
+      80,
+      90,
+      100,
+      110,
+      120,
+      130,
+      140,
+      150,
+      160,
+      170,
+      180
+     ],
+     "games": 36,
+     "T": 688,
+     "t0": 252,
+     "phase1_is_prefix": true,
+     "n_forced": 94,
+     "val_err_phase1": 5.556707216802792e-05,
+     "val_err_post": 0.00023404325921771996,
+     "val_err": 0.00023404325921771996,
+     "P_t0": {
+      "eq": 7.726421644211852e-122,
+      "br_unif": 0.13598633859443351,
+      "br_us": 4.531971596264335e-11,
+      "safe": 0.8640136613602468,
+      "uniform": 4.030444222551023e-46
+     },
+     "lnP_t0": {
+      "eq": -278.8707355078083,
+      "br_unif": -1.9952008498031943,
+      "br_us": -23.817278947161654,
+      "safe": -0.1461666985435411,
+      "uniform": -104.52503767892142
+     },
+     "state_file": "/Users/biofanat/sandbox/ourbot/sw/hedge_state/SW4-stream9-A.bayes.json",
+     "meta_updates": 688,
+     "meta_games": 36,
+     "meta_config": {
+      "styles": [
+       "eq",
+       "br_unif",
+       "br_us",
+       "safe",
+       "uniform"
+      ],
+      "lam": 1.0,
+      "tau_frac": 0.1,
+      "mix": 0.05
+     },
+     "meta_ok": true,
+     "clean": true,
+     "t_sustained_P90_b6_logged": 620,
+     "t_sustained_P90_b6_recon": 620,
+     "false_alarm": false,
+     "false_alarm_at": null,
+     "id_err_rec": 0.0004760318910861372,
+     "id_err_logged": 0.00476193714430817,
+     "post_updates": 436,
+     "tau_map": 365,
+     "tau_map_censored": false,
+     "tau_90": 368,
+     "tau_90_censored": false,
+     "tau_99": 370,
+     "tau_99_censored": false,
+     "tau_leave": 205,
+     "tau_leave_censored": false,
+     "tau_hat": 349.93118371712706,
+     "tau_leave_hat": 18.12778579666326,
+     "X": 104.52503767536759,
+     "X_logged": 104.52535580832642,
+     "X_identity": 104.52503767536732,
+     "X_identity_err": 2.7000623958883807e-13,
+     "X_logged_identity_err": 0.00031813295910865236
+    }
+   ],
+   "summary": {
+    "n_streams": 10,
+    "n_clean": 10,
+    "n_switch_streams": 10,
+    "n_post_streams": 10,
+    "tau_map": {
+     "median": 225.0,
+     "lo": 150.0,
+     "hi": 273.5,
+     "n": 10,
+     "n_censored": 0,
+     "median_bounds": [
+      225.0,
+      225.0
+     ]
+    },
+    "tau_90": {
+     "median": 239.5,
+     "lo": 153.0,
+     "hi": 321.5,
+     "n": 10,
+     "n_censored": 0,
+     "median_bounds": [
+      239.5,
+      239.5
+     ]
+    },
+    "tau_99": {
+     "median": 249.0,
+     "lo": 158.0,
+     "hi": 314.0,
+     "n": 10,
+     "n_censored": 0,
+     "median_bounds": [
+      249.0,
+      249.0
+     ]
+    },
+    "tau_leave": {
+     "median": 71.0,
+     "lo": 1.0,
+     "hi": 82.0,
+     "n": 10,
+     "n_censored": 0,
+     "median_bounds": [
+      71.0,
+      71.0
+     ]
+    },
+    "tau_hat": {
+     "median": 198.2276436543579,
+     "lo": 137.5586730355985,
+     "hi": 288.86969029824814,
+     "n": 10,
+     "n_censored": 0,
+     "median_bounds": [
+      198.2276436543579,
+      198.2276436543579
+     ]
+    },
+    "tau_leave_hat": {
+     "median": 26.348249809622377,
+     "lo": -48.62079175055135,
+     "hi": 100.40972977317465,
+     "n": 10,
+     "n_censored": 0,
+     "median_bounds": [
+      26.348249809622377,
+      26.348249809622377
+     ]
+    },
+    "X": {
+     "median": 66.1702562614871,
+     "lo": 46.00312403484362,
+     "hi": 90.6748453696199,
+     "n": 10,
+     "n_censored": 0,
+     "median_bounds": [
+      66.1702562614871,
+      66.1702562614871
+     ]
+    },
+    "X_logged": {
+     "median": 66.17055032124256,
+     "lo": 46.003690712447366,
+     "hi": 90.67545379438968,
+     "n": 10,
+     "n_censored": 0,
+     "median_bounds": [
+      66.17055032124256,
+      66.17055032124256
+     ]
+    },
+    "tau_map_over_t0": {
+     "median": 1.0899847792998478,
+     "lo": 0.738225000695778,
+     "hi": 1.3577235772357723,
+     "n": 10,
+     "n_censored": 0,
+     "median_bounds": [
+      1.0899847792998478,
+      1.0899847792998478
+     ]
+    },
+    "tau_map_over_tau_hat": {
+     "median": 1.021870208257331,
+     "lo": 0.8796246527377207,
+     "hi": 1.2098725315840075,
+     "n": 10,
+     "n_censored": 0,
+     "median_bounds": [
+      1.021870208257331,
+      1.021870208257331
+     ]
+    },
+    "tau90_minus_tau_map": {
+     "median": 6.5,
+     "lo": 3.0,
+     "hi": 20.0,
+     "n": 10,
+     "n_unknown": 0,
+     "median_bounds": [
+      6.5,
+      6.5
+     ]
+    },
+    "spearman_tau_hat_tau_map": {
+     "rho": 0.7212121212121211,
+     "p": 0.018573155089460232,
+     "n": 10
+    },
+    "false_alarm_streams": 0,
+    "early_flips_le30": 0,
+    "max_val_err": 0.00023404325921771996,
+    "max_val_err_phase1": 9.717364163375208e-05,
+    "max_val_err_post": 0.00023404325921771996,
+    "max_id_err_rec": 0.0006319316296694577,
+    "max_id_err_logged": 0.004934231386933163,
+    "max_X_identity_err": 2.7000623958883807e-13,
+    "max_X_logged_identity_err": 0.0006711888907062757,
+    "meta_ok": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ]
+   },
+   "scores": {
+    "dropped_error_seeds": [],
+    "pre": {
+     "n_seeds": 40,
+     "mean": 0.85,
+     "vs_RQsafe": {
+      "mean_diff": 0.0,
+      "se": 0.050636968354183326,
+      "lo": -0.09924845797419932,
+      "hi": 0.09924845797419932,
+      "n_pairs": 40
+     }
+    },
+    "post": {
+     "n_seeds": 140,
+     "mean": 0.9964285714285714,
+     "vs_RQunif": {
+      "mean_diff": 0.008620689655172414,
+      "se": 0.008620689655172412,
+      "lo": -0.008275862068965512,
+      "hi": 0.02551724137931034,
+      "n_pairs": 58
+     }
+    }
+   }
+  },
+  "SW4p": {
+   "root": "/Users/biofanat/sandbox/ourbot/sw_p/replays_headless",
+   "variant": "ptd",
+   "lam": 0.98,
+   "rows": [
+    {
+     "stream": 0,
+     "seeds": [
+      1,
+      11,
+      21,
+      31,
+      41,
+      51,
+      61,
+      71
+     ],
+     "games": 16,
+     "T": 333,
+     "t0": 176,
+     "phase1_is_prefix": true,
+     "n_forced": 32,
+     "val_err_phase1": 6.108228810758343e-05,
+     "val_err_post": 9.092185076878256e-05,
+     "val_err": 9.092185076878256e-05,
+     "P_t0": {
+      "eq": 3.445308707526389e-33,
+      "br_unif": 0.7054234605728547,
+      "br_us": 1.676541705469004e-05,
+      "safe": 0.29455909336494773,
+      "uniform": 6.806451430680917e-07
+     },
+     "lnP_t0": {
+      "eq": -74.7482945580402,
+      "br_unif": -0.3489570031950264,
+      "br_us": -10.996192301845504,
+      "safe": -1.2222756394320773,
+      "uniform": -14.200224748739398
+     },
+     "state_file": "/Users/biofanat/sandbox/ourbot/sw_p/hedge_state/SW4p-stream0-A.bayes.json",
+     "meta_updates": 333,
+     "meta_games": 16,
+     "meta_config": {
+      "styles": [
+       "eq",
+       "br_unif",
+       "br_us",
+       "safe",
+       "uniform"
+      ],
+      "lam": 0.98,
+      "tau_frac": 0.1,
+      "mix": 0.05
+     },
+     "meta_ok": true,
+     "clean": true,
+     "t_sustained_P90_b6_logged": 205,
+     "t_sustained_P90_b6_recon": 205,
+     "false_alarm": false,
+     "false_alarm_at": null,
+     "id_err_rec": null,
+     "id_err_logged": null,
+     "post_updates": 157,
+     "tau_map": 26,
+     "tau_map_censored": false,
+     "tau_90": 29,
+     "tau_90_censored": false,
+     "tau_99": 33,
+     "tau_99_censored": false,
+     "tau_leave": 28,
+     "tau_leave_censored": false,
+     "tau_hat": 32.94153712482411,
+     "tau_leave_hat": -8.561947414088731,
+     "X": 10.716815308476916,
+     "X_logged": 10.717060358176555
+    },
+    {
+     "stream": 1,
+     "seeds": [
+      2,
+      12,
+      22,
+      32,
+      42,
+      52,
+      62,
+      72
+     ],
+     "games": 16,
+     "T": 392,
+     "t0": 201,
+     "phase1_is_prefix": true,
+     "n_forced": 36,
+     "val_err_phase1": 9.184402797829394e-05,
+     "val_err_post": 6.760937910493814e-05,
+     "val_err": 9.184402797829394e-05,
+     "P_t0": {
+      "eq": 8.164320895394833e-31,
+      "br_unif": 0.30109154036032443,
+      "br_us": 0.00018067969010218942,
+      "safe": 0.6987266896373941,
+      "uniform": 1.0903121792617766e-06
+     },
+     "lnP_t0": {
+      "eq": -69.28036433249197,
+      "br_unif": -1.2003409396701974,
+      "br_us": -8.618784762354295,
+      "safe": -0.3584956151588852,
+      "uniform": -13.729046499736274
+     },
+     "state_file": "/Users/biofanat/sandbox/ourbot/sw_p/hedge_state/SW4p-stream1-A.bayes.json",
+     "meta_updates": 392,
+     "meta_games": 16,
+     "meta_config": {
+      "styles": [
+       "eq",
+       "br_unif",
+       "br_us",
+       "safe",
+       "uniform"
+      ],
+      "lam": 0.98,
+      "tau_frac": 0.1,
+      "mix": 0.05
+     },
+     "meta_ok": true,
+     "clean": true,
+     "t_sustained_P90_b6_logged": 260,
+     "t_sustained_P90_b6_recon": 260,
+     "false_alarm": false,
+     "false_alarm_at": null,
+     "id_err_rec": null,
+     "id_err_logged": null,
+     "post_updates": 191,
+     "tau_map": 37,
+     "tau_map_censored": false,
+     "tau_90": 59,
+     "tau_90_censored": false,
+     "tau_99": 66,
+     "tau_99_censored": false,
+     "tau_leave": 31,
+     "tau_leave_censored": false,
+     "tau_hat": 30.58963522519003,
+     "tau_leave_hat": 8.253385534424627,
+     "X": 10.449150709893335,
+     "X_logged": 10.449404953627681
+    },
+    {
+     "stream": 2,
+     "seeds": [
+      3,
+      13,
+      23,
+      33,
+      43,
+      53,
+      63,
+      73
+     ],
+     "games": 16,
+     "T": 373,
+     "t0": 197,
+     "phase1_is_prefix": true,
+     "n_forced": 37,
+     "val_err_phase1": 7.759590331846145e-05,
+     "val_err_post": 7.609449599593754e-05,
+     "val_err": 7.759590331846145e-05,
+     "P_t0": {
+      "eq": 4.9231087739947465e-29,
+      "br_unif": 0.14230701630210232,
+      "br_us": 0.22228567459853035,
+      "safe": 0.6354073087125482,
+      "uniform": 3.8681913738801417e-10
+     },
+     "lnP_t0": {
+      "eq": -65.18102750123244,
+      "br_unif": -1.9497684686921373,
+      "br_us": -1.5037919018404453,
+      "safe": -0.4534890546750276,
+      "uniform": -21.673063877389204
+     },
+     "state_file": "/Users/biofanat/sandbox/ourbot/sw_p/hedge_state/SW4p-stream2-A.bayes.json",
+     "meta_updates": 373,
+     "meta_games": 16,
+     "meta_config": {
+      "styles": [
+       "eq",
+       "br_unif",
+       "br_us",
+       "safe",
+       "uniform"
+      ],
+      "lam": 0.98,
+      "tau_frac": 0.1,
+      "mix": 0.05
+     },
+     "meta_ok": true,
+     "clean": true,
+     "t_sustained_P90_b6_logged": 312,
+     "t_sustained_P90_b6_recon": 312,
+     "false_alarm": false,
+     "false_alarm_at": null,
+     "id_err_rec": null,
+     "id_err_logged": null,
+     "post_updates": 176,
+     "tau_map": 114,
+     "tau_map_censored": false,
+     "tau_90": 115,
+     "tau_90_censored": false,
+     "tau_99": 116,
+     "tau_99_censored": false,
+     "tau_leave": 77,
+     "tau_leave_censored": false,
+     "tau_hat": 42.21412594756192,
+     "tau_leave_hat": 12.65425117066768,
+     "X": 4.475197461897703,
+     "X_logged": 4.475330594762742
+    },
+    {
+     "stream": 3,
+     "seeds": [
+      4,
+      14,
+      24,
+      34,
+      44,
+      54,
+      64,
+      74
+     ],
+     "games": 16,
+     "T": 359,
+     "t0": 256,
+     "phase1_is_prefix": true,
+     "n_forced": 34,
+     "val_err_phase1": 7.789978064004499e-05,
+     "val_err_post": 6.12115931415691e-05,
+     "val_err": 7.789978064004499e-05,
+     "P_t0": {
+      "eq": 1.3436416671440313e-21,
+      "br_unif": 0.9554099442492526,
+      "br_us": 0.03438435703021711,
+      "safe": 0.010202697734227903,
+      "uniform": 3.0009863021950855e-06
+     },
+     "lnP_t0": {
+      "eq": -48.058903363030865,
+      "br_unif": -0.04561476961356803,
+      "br_us": -3.3701535555209223,
+      "safe": -4.585103109913739,
+      "uniform": -12.716569555929961
+     },
+     "state_file": "/Users/biofanat/sandbox/ourbot/sw_p/hedge_state/SW4p-stream3-A.bayes.json",
+     "meta_updates": 359,
+     "meta_games": 16,
+     "meta_config": {
+      "styles": [
+       "eq",
+       "br_unif",
+       "br_us",
+       "safe",
+       "uniform"
+      ],
+      "lam": 0.98,
+      "tau_frac": 0.1,
+      "mix": 0.05
+     },
+     "meta_ok": true,
+     "clean": true,
+     "t_sustained_P90_b6_logged": 297,
+     "t_sustained_P90_b6_recon": 297,
+     "false_alarm": false,
+     "false_alarm_at": null,
+     "id_err_rec": null,
+     "id_err_logged": null,
+     "post_updates": 103,
+     "tau_map": 37,
+     "tau_map_censored": false,
+     "tau_90": 41,
+     "tau_90_censored": false,
+     "tau_99": 43,
+     "tau_99_censored": false,
+     "tau_leave": 1,
+     "tau_leave_censored": false,
+     "tau_hat": 30.848026310959956,
+     "tau_leave_hat": -44.50478765000166,
+     "X": 6.400025773799858,
+     "X_logged": 6.40013355649055
+    },
+    {
+     "stream": 4,
+     "seeds": [
+      5,
+      15,
+      25,
+      35,
+      45,
+      55,
+      65,
+      75
+     ],
+     "games": 16,
+     "T": 303,
+     "t0": 189,
+     "phase1_is_prefix": true,
+     "n_forced": 31,
+     "val_err_phase1": 7.453352662434298e-05,
+     "val_err_post": 7.142612092392309e-05,
+     "val_err": 7.453352662434298e-05,
+     "P_t0": {
+      "eq": 9.70775302407397e-21,
+      "br_unif": 0.9620404412259622,
+      "br_us": 0.012652284385157319,
+      "safe": 0.022476119516015785,
+      "uniform": 0.0028311548728646068
+     },
+     "lnP_t0": {
+      "eq": -46.081362105788074,
+      "br_unif": -0.03869879050360536,
+      "br_us": -4.369917496304998,
+      "safe": -3.7953018882514047,
+      "uniform": -5.867070568285607
+     },
+     "state_file": "/Users/biofanat/sandbox/ourbot/sw_p/hedge_state/SW4p-stream4-A.bayes.json",
+     "meta_updates": 303,
+     "meta_games": 16,
+     "meta_config": {
+      "styles": [
+       "eq",
+       "br_unif",
+       "br_us",
+       "safe",
+       "uniform"
+      ],
+      "lam": 0.98,
+      "tau_frac": 0.1,
+      "mix": 0.05
+     },
+     "meta_ok": true,
+     "clean": true,
+     "t_sustained_P90_b6_logged": 222,
+     "t_sustained_P90_b6_recon": 222,
+     "false_alarm": false,
+     "false_alarm_at": null,
+     "id_err_rec": null,
+     "id_err_logged": null,
+     "post_updates": 114,
+     "tau_map": 25,
+     "tau_map_censored": false,
+     "tau_90": 33,
+     "tau_90_censored": false,
+     "tau_99": 36,
+     "tau_99_censored": false,
+     "tau_leave": 1,
+     "tau_leave_censored": false,
+     "tau_hat": 16.578419577422853,
+     "tau_leave_hat": -36.82944213478233,
+     "X": 4.721290940324195,
+     "X_logged": 4.721499492661156
+    },
+    {
+     "stream": 5,
+     "seeds": [
+      6,
+      16,
+      26,
+      36,
+      46,
+      56,
+      66,
+      76
+     ],
+     "games": 16,
+     "T": 306,
+     "t0": 195,
+     "phase1_is_prefix": true,
+     "n_forced": 26,
+     "val_err_phase1": 7.014260037174758e-05,
+     "val_err_post": 0.00010181581756985025,
+     "val_err": 0.00010181581756985025,
+     "P_t0": {
+      "eq": 9.604006705079097e-23,
+      "br_unif": 0.0013782401302165417,
+      "br_us": 0.03565916482368469,
+      "safe": 0.9629625639234339,
+      "uniform": 3.1122664941950214e-08
+     },
+     "lnP_t0": {
+      "eq": -50.697276762349446,
+      "br_unif": -6.586947861618223,
+      "br_us": -3.333749087357451,
+      "safe": -0.03774074237013614,
+      "uniform": -17.2853295069212
+     },
+     "state_file": "/Users/biofanat/sandbox/ourbot/sw_p/hedge_state/SW4p-stream5-A.bayes.json",
+     "meta_updates": 306,
+     "meta_games": 16,
+     "meta_config": {
+      "styles": [
+       "eq",
+       "br_unif",
+       "br_us",
+       "safe",
+       "uniform"
+      ],
+      "lam": 0.98,
+      "tau_frac": 0.1,
+      "mix": 0.05
+     },
+     "meta_ok": true,
+     "clean": true,
+     "t_sustained_P90_b6_logged": 254,
+     "t_sustained_P90_b6_recon": 254,
+     "false_alarm": false,
+     "false_alarm_at": null,
+     "id_err_rec": null,
+     "id_err_logged": null,
+     "post_updates": 111,
+     "tau_map": 44,
+     "tau_map_censored": false,
+     "tau_90": 59,
+     "tau_90_censored": false,
+     "tau_99": 111,
+     "tau_99_censored": true,
+     "tau_leave": 20,
+     "tau_leave_censored": false,
+     "tau_hat": 31.622806835794762,
+     "tau_leave_hat": 39.71094391550981,
+     "X": 10.238802012916658,
+     "X_logged": 10.239034556029626
+    },
+    {
+     "stream": 6,
+     "seeds": [
+      7,
+      17,
+      27,
+      37,
+      47,
+      57,
+      67,
+      77
+     ],
+     "games": 16,
+     "T": 274,
+     "t0": 173,
+     "phase1_is_prefix": true,
+     "n_forced": 18,
+     "val_err_phase1": 8.579658333784934e-05,
+     "val_err_post": 6.497870769933689e-05,
+     "val_err": 8.579658333784934e-05,
+     "P_t0": {
+      "eq": 4.460139672399033e-31,
+      "br_unif": 0.0021305183227942476,
+      "br_us": 0.00015110481085997432,
+      "safe": 0.9977183214947526,
+      "uniform": 5.537159315312984e-08
+     },
+     "lnP_t0": {
+      "eq": -69.8849578005924,
+      "br_unif": -6.1513899848293025,
+      "br_us": -8.797536850277972,
+      "safe": -0.0022842854999521878,
+      "uniform": -16.709199133667784
+     },
+     "state_file": "/Users/biofanat/sandbox/ourbot/sw_p/hedge_state/SW4p-stream6-A.bayes.json",
+     "meta_updates": 274,
+     "meta_games": 16,
+     "meta_config": {
+      "styles": [
+       "eq",
+       "br_unif",
+       "br_us",
+       "safe",
+       "uniform"
+      ],
+      "lam": 0.98,
+      "tau_frac": 0.1,
+      "mix": 0.05
+     },
+     "meta_ok": true,
+     "clean": true,
+     "t_sustained_P90_b6_logged": 196,
+     "t_sustained_P90_b6_recon": 196,
+     "false_alarm": false,
+     "false_alarm_at": null,
+     "id_err_rec": null,
+     "id_err_logged": null,
+     "post_updates": 101,
+     "tau_map": 20,
+     "tau_map_censored": false,
+     "tau_90": 23,
+     "tau_90_censored": false,
+     "tau_99": 48,
+     "tau_99_censored": false,
+     "tau_leave": 23,
+     "tau_leave_censored": false,
+     "tau_hat": 30.341362038759705,
+     "tau_leave_hat": 42.29598695738691,
+     "X": 13.281468068566472,
+     "X_logged": 13.281673317640342
+    },
+    {
+     "stream": 7,
+     "seeds": [
+      8,
+      18,
+      28,
+      38,
+      48,
+      58,
+      68,
+      78
+     ],
+     "games": 16,
+     "T": 433,
+     "t0": 282,
+     "phase1_is_prefix": true,
+     "n_forced": 51,
+     "val_err_phase1": 6.678302800267044e-05,
+     "val_err_post": 8.993985239932889e-05,
+     "val_err": 8.993985239932889e-05,
+     "P_t0": {
+      "eq": 1.3135753643496277e-17,
+      "br_unif": 0.0004129685149823139,
+      "br_us": 0.0018244978314299594,
+      "safe": 0.997762533638699,
+      "uniform": 1.4888582050966254e-11
+     },
+     "lnP_t0": {
+      "eq": -38.871193875660055,
+      "br_unif": -7.792139202818921,
+      "br_us": -6.306450490671674,
+      "safe": -0.002239973229213099,
+      "uniform": -24.930426502043407
+     },
+     "state_file": "/Users/biofanat/sandbox/ourbot/sw_p/hedge_state/SW4p-stream7-A.bayes.json",
+     "meta_updates": 433,
+     "meta_games": 16,
+     "meta_config": {
+      "styles": [
+       "eq",
+       "br_unif",
+       "br_us",
+       "safe",
+       "uniform"
+      ],
+      "lam": 0.98,
+      "tau_frac": 0.1,
+      "mix": 0.05
+     },
+     "meta_ok": true,
+     "clean": true,
+     "t_sustained_P90_b6_logged": 367,
+     "t_sustained_P90_b6_recon": 367,
+     "false_alarm": false,
+     "false_alarm_at": null,
+     "id_err_rec": null,
+     "id_err_logged": null,
+     "post_updates": 151,
+     "tau_map": 80,
+     "tau_map_censored": false,
+     "tau_90": 85,
+     "tau_90_censored": false,
+     "tau_99": 88,
+     "tau_99_censored": false,
+     "tau_leave": 76,
+     "tau_leave_censored": false,
+     "tau_hat": 40.40705442170548,
+     "tau_leave_hat": 63.10933298433973,
+     "X": 10.55319603127983,
+     "X_logged": 10.553250059638458
+    },
+    {
+     "stream": 8,
+     "seeds": [
+      9,
+      19,
+      29,
+      39,
+      49,
+      59,
+      69,
+      79
+     ],
+     "games": 16,
+     "T": 401,
+     "t0": 276,
+     "phase1_is_prefix": true,
+     "n_forced": 45,
+     "val_err_phase1": 8.157760957527849e-05,
+     "val_err_post": 5.60055502565604e-05,
+     "val_err": 8.157760957527849e-05,
+     "P_t0": {
+      "eq": 2.8016445484359093e-26,
+      "br_unif": 0.058209499073895124,
+      "br_us": 0.32423742418507084,
+      "safe": 0.6168458088240296,
+      "uniform": 0.0007072679170044082
+     },
+     "lnP_t0": {
+      "eq": -58.8370058343528,
+      "br_unif": -2.8437067232346593,
+      "br_us": -1.1262792408551525,
+      "safe": -0.4831361909693386,
+      "uniform": -7.254101014763915
+     },
+     "state_file": "/Users/biofanat/sandbox/ourbot/sw_p/hedge_state/SW4p-stream8-A.bayes.json",
+     "meta_updates": 401,
+     "meta_games": 16,
+     "meta_config": {
+      "styles": [
+       "eq",
+       "br_unif",
+       "br_us",
+       "safe",
+       "uniform"
+      ],
+      "lam": 0.98,
+      "tau_frac": 0.1,
+      "mix": 0.05
+     },
+     "meta_ok": true,
+     "clean": true,
+     "t_sustained_P90_b6_logged": 347,
+     "t_sustained_P90_b6_recon": 347,
+     "false_alarm": false,
+     "false_alarm_at": null,
+     "id_err_rec": null,
+     "id_err_logged": null,
+     "post_updates": 125,
+     "tau_map": 38,
+     "tau_map_censored": false,
+     "tau_90": 71,
+     "tau_90_censored": false,
+     "tau_99": 74,
+     "tau_99_censored": false,
+     "tau_leave": 13,
+     "tau_leave_censored": false,
+     "tau_hat": 16.399912609727664,
+     "tau_leave_hat": 7.7487114444073955,
+     "X": 6.207069744452981,
+     "X_logged": 6.2073586182427665
+    },
+    {
+     "stream": 9,
+     "seeds": [
+      10,
+      20,
+      30,
+      40,
+      50,
+      60,
+      70,
+      80
+     ],
+     "games": 16,
+     "T": 291,
+     "t0": 194,
+     "phase1_is_prefix": true,
+     "n_forced": 23,
+     "val_err_phase1": 8.239957825240118e-05,
+     "val_err_post": 6.50826494625889e-05,
+     "val_err": 8.239957825240118e-05,
+     "P_t0": {
+      "eq": 7.536831741864582e-24,
+      "br_unif": 0.024890507943800624,
+      "br_us": 0.09496498101524306,
+      "safe": 0.8801445046492816,
+      "uniform": 6.391674630669679e-09
+     },
+     "lnP_t0": {
+      "eq": -53.24224033152987,
+      "br_unif": -3.6932687552656436,
+      "br_us": -2.3542470762311565,
+      "safe": -0.12766917516211396,
+      "uniform": -18.868269532364113
+     },
+     "state_file": "/Users/biofanat/sandbox/ourbot/sw_p/hedge_state/SW4p-stream9-A.bayes.json",
+     "meta_updates": 291,
+     "meta_games": 16,
+     "meta_config": {
+      "styles": [
+       "eq",
+       "br_unif",
+       "br_us",
+       "safe",
+       "uniform"
+      ],
+      "lam": 0.98,
+      "tau_frac": 0.1,
+      "mix": 0.05
+     },
+     "meta_ok": true,
+     "clean": true,
+     "t_sustained_P90_b6_logged": 242,
+     "t_sustained_P90_b6_recon": 242,
+     "false_alarm": false,
+     "false_alarm_at": null,
+     "id_err_rec": null,
+     "id_err_logged": null,
+     "post_updates": 97,
+     "tau_map": 46,
+     "tau_map_censored": false,
+     "tau_90": 48,
+     "tau_90_censored": false,
+     "tau_99": 56,
+     "tau_99_censored": false,
+     "tau_leave": 44,
+     "tau_leave_censored": false,
+     "tau_hat": 35.73886637008606,
+     "tau_leave_hat": 26.826239771916168,
+     "X": 14.262565708281866,
+     "X_logged": 14.26258995758873
+    }
+   ],
+   "summary": {
+    "n_streams": 10,
+    "n_clean": 10,
+    "n_switch_streams": 10,
+    "n_post_streams": 10,
+    "tau_map": {
+     "median": 37.5,
+     "lo": 26.0,
+     "hi": 62.0,
+     "n": 10,
+     "n_censored": 0,
+     "median_bounds": [
+      37.5,
+      37.5
+     ]
+    },
+    "tau_90": {
+     "median": 53.5,
+     "lo": 33.0,
+     "hi": 72.0,
+     "n": 10,
+     "n_censored": 0,
+     "median_bounds": [
+      53.5,
+      53.5
+     ]
+    },
+    "tau_99": {
+     "median": 61.0,
+     "lo": 42.0,
+     "hi": 92.5,
+     "n": 10,
+     "n_censored": 1,
+     "median_bounds": [
+      61.0,
+      61.0
+     ]
+    },
+    "tau_leave": {
+     "median": 25.5,
+     "lo": 10.5,
+     "hi": 53.5,
+     "n": 10,
+     "n_censored": 0,
+     "median_bounds": [
+      25.5,
+      25.5
+     ]
+    },
+    "tau_hat": {
+     "median": 31.235416573377357,
+     "lo": 23.70999305561928,
+     "hi": 36.93495052029111,
+     "n": 10,
+     "n_censored": 0,
+     "median_bounds": [
+      31.235416573377357,
+      31.235416573377357
+     ]
+    },
+    "tau_leave_hat": {
+     "median": 10.453818352546154,
+     "lo": -14.288028300178853,
+     "hi": 39.71094391550981,
+     "n": 10,
+     "n_censored": 0,
+     "median_bounds": [
+      10.453818352546154,
+      10.453818352546154
+     ]
+    },
+    "X": {
+     "median": 10.343976361404996,
+     "lo": 5.560658357062026,
+     "hi": 11.91733204992315,
+     "n": 10,
+     "n_censored": 0,
+     "median_bounds": [
+      10.343976361404996,
+      10.343976361404996
+     ]
+    },
+    "X_logged": {
+     "median": 10.344219754828654,
+     "lo": 6.2073586182427665,
+     "hi": 11.865539135634013,
+     "n": 10,
+     "n_censored": 0,
+     "median_bounds": [
+      10.344219754828654,
+      10.344219754828654
+     ]
+    },
+    "tau_map_over_t0": {
+     "median": 0.16590343735866125,
+     "lo": 0.13768115942028986,
+     "hi": 0.2604006726621335,
+     "n": 10,
+     "n_censored": 0,
+     "median_bounds": [
+      0.16590343735866125,
+      0.16590343735866125
+     ]
+    },
+    "tau_map_over_tau_hat": {
+     "median": 1.3392574865545541,
+     "lo": 1.0246368907226884,
+     "hi": 1.9798523090816131,
+     "n": 10,
+     "n_censored": 0,
+     "median_bounds": [
+      1.3392574865545541,
+      1.3392574865545541
+     ]
+    },
+    "tau90_minus_tau_map": {
+     "median": 4.5,
+     "lo": 2.5,
+     "hi": 15.0,
+     "n": 10,
+     "n_unknown": 0,
+     "median_bounds": [
+      4.5,
+      4.5
+     ]
+    },
+    "spearman_tau_hat_tau_map": {
+     "rho": 0.7173285415424762,
+     "p": 0.01952834313830294,
+     "n": 10
+    },
+    "false_alarm_streams": 0,
+    "early_flips_le30": 3,
+    "max_val_err": 0.00010181581756985025,
+    "max_val_err_phase1": 9.184402797829394e-05,
+    "max_val_err_post": 0.00010181581756985025,
+    "max_id_err_rec": null,
+    "max_id_err_logged": null,
+    "max_X_identity_err": null,
+    "max_X_logged_identity_err": null,
+    "meta_ok": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ]
+   },
+   "scores": {
+    "dropped_error_seeds": [],
+    "pre": {
+     "n_seeds": 40,
+     "mean": 0.9,
+     "vs_RQsafe": {
+      "mean_diff": 0.05,
+      "se": 0.05310850045437944,
+      "lo": -0.05409266089058369,
+      "hi": 0.1540926608905837,
+      "n_pairs": 40
+     }
+    },
+    "post": {
+     "n_seeds": 40,
+     "mean": 1.0,
+     "vs_RQunif": {
+      "mean_diff": 0.01282051282051282,
+      "se": 0.012820512820512822,
+      "lo": -0.012307692307692311,
+      "hi": 0.03794871794871795,
+      "n_pairs": 39
+     }
+    }
+   }
+  }
+ },
+ "predictions": {
+  "P1": {
+   "status": "PASS",
+   "detail": {
+    "SW2": {
+     "median_tau_map": {
+      "median": 107.5,
+      "lo": 77.0,
+      "hi": 137.6999999999989,
+      "n": 10,
+      "n_censored": 1,
+      "median_bounds": [
+       107.5,
+       107.5
+      ]
+     },
+     "median_ratio_t0": {
+      "median": 1.126682085786375,
+      "lo": 0.8108066502463054,
+      "hi": 1.3587848932676518,
+      "n": 10,
+      "n_censored": 1,
+      "median_bounds": [
+       1.126682085786375,
+       1.126682085786375
+      ]
+     },
+     "refuted_ratio": false,
+     "early_flips_le30": 1,
+     "refuted_early": false,
+     "interval": [
+      70,
+      170
+     ],
+     "median_in_interval": true,
+     "censored_counting_against": 1,
+     "censored_inconclusive": 0
+    },
+    "SW4": {
+     "median_tau_map": {
+      "median": 225.0,
+      "lo": 150.0,
+      "hi": 273.5,
+      "n": 10,
+      "n_censored": 0,
+      "median_bounds": [
+       225.0,
+       225.0
+      ]
+     },
+     "median_ratio_t0": {
+      "median": 1.0899847792998478,
+      "lo": 0.738225000695778,
+      "hi": 1.3577235772357723,
+      "n": 10,
+      "n_censored": 0,
+      "median_bounds": [
+       1.0899847792998478,
+       1.0899847792998478
+      ]
+     },
+     "refuted_ratio": false,
+     "early_flips_le30": 0,
+     "refuted_early": false,
+     "interval": [
+      130,
+      330
+     ],
+     "median_in_interval": true,
+     "censored_counting_against": 0,
+     "censored_inconclusive": 0
+    }
+   }
+  },
+  "P2": {
+   "status": "PASS",
+   "detail": {
+    "ratio_point": 2.0930232558139537,
+    "ratio_bounds": [
+     2.0930232558139537,
+     2.0930232558139537
+    ],
+    "in_interval_1p5_2p7": true,
+    "refuted_lt_1p25": false
+   }
+  },
+  "P3": {
+   "status": "PASS",
+   "detail": {
+    "n_streams": 20,
+    "arms": [
+     "SW2",
+     "SW4"
+    ],
+    "median_ratio_bounds": [
+     1.0637074527568808,
+     1.0637074527568808
+    ],
+    "n_tau_hat_zero": 0,
+    "spearman": 0.8571428571428572,
+    "ratio_in_0p7_1p4": true,
+    "rho_ge_0p5": true,
+    "refuted_ratio": false,
+    "refuted_rho": false
+   }
+  },
+  "P4": {
+   "status": "PASS",
+   "detail": {
+    "SW2": {
+     "tau90_minus_tau_map": {
+      "median": 4.0,
+      "lo": 1.0,
+      "hi": 6.0,
+      "n": 9,
+      "n_unknown": 1,
+      "median_bounds": [
+       4.0,
+       4.5
+      ]
+     },
+     "in_0_25": true,
+     "tau_leave": {
+      "median": 45.0,
+      "lo": 1.0,
+      "hi": 94.0,
+      "n": 10,
+      "n_censored": 0,
+      "median_bounds": [
+       45.0,
+       45.0
+      ]
+     },
+     "tau_leave_hat": {
+      "median": 26.003266121183124,
+      "lo": -39.43505832994916,
+      "hi": 69.58830082981193,
+      "n": 10,
+      "n_censored": 0,
+      "median_bounds": [
+       26.003266121183124,
+       26.003266121183124
+      ]
+     }
+    },
+    "SW4": {
+     "tau90_minus_tau_map": {
+      "median": 6.5,
+      "lo": 3.0,
+      "hi": 20.0,
+      "n": 10,
+      "n_unknown": 0,
+      "median_bounds": [
+       6.5,
+       6.5
+      ]
+     },
+     "in_0_25": true,
+     "tau_leave": {
+      "median": 71.0,
+      "lo": 1.0,
+      "hi": 82.0,
+      "n": 10,
+      "n_censored": 0,
+      "median_bounds": [
+       71.0,
+       71.0
+      ]
+     },
+     "tau_leave_hat": {
+      "median": 26.348249809622377,
+      "lo": -48.62079175055135,
+      "hi": 100.40972977317465,
+      "n": 10,
+      "n_censored": 0,
+      "median_bounds": [
+       26.348249809622377,
+       26.348249809622377
+      ]
+     }
+    }
+   },
+   "note": "no refutation clause in the prereg; the [0, 25] interval is used as the criterion"
+  },
+  "P5": {
+   "status": "PASS",
+   "detail": {
+    "SW2": {
+     "X": {
+      "median": 29.15171615006101,
+      "lo": 22.4571801494192,
+      "hi": 42.0051162709065,
+      "n": 10,
+      "n_censored": 0,
+      "median_bounds": [
+       29.15171615006101,
+       29.15171615006101
+      ]
+     },
+     "interval": [
+      20,
+      60
+     ],
+     "in_interval": true,
+     "refuted_lt_10": false
+    },
+    "SW4": {
+     "X": {
+      "median": 66.1702562614871,
+      "lo": 46.00312403484362,
+      "hi": 90.6748453696199,
+      "n": 10,
+      "n_censored": 0,
+      "median_bounds": [
+       66.1702562614871,
+       66.1702562614871
+      ]
+     },
+     "interval": [
+      45,
+      110
+     ],
+     "in_interval": true,
+     "refuted_lt_10": false
+    }
+   }
+  },
+  "P6": {
+   "status": "PASS",
+   "detail": {
+    "false_alarm_streams": {
+     "SW2": 1,
+     "SW4": 0,
+     "SW4p": 0
+    },
+    "SW4p_median_tau_map": {
+     "median": 37.5,
+     "lo": 26.0,
+     "hi": 62.0,
+     "n": 10,
+     "n_censored": 0,
+     "median_bounds": [
+      37.5,
+      37.5
+     ]
+    },
+    "SW4p_in_15_70": true,
+    "SW4p_ratio_tau_hat": {
+     "median": 1.3392574865545541,
+     "lo": 1.0246368907226884,
+     "hi": 1.9798523090816131,
+     "n": 10,
+     "n_censored": 0,
+     "median_bounds": [
+      1.3392574865545541,
+      1.3392574865545541
+     ]
+    },
+    "ratio_SW4p_SW4_bounds": [
+     0.16666666666666666,
+     0.16666666666666666
+    ],
+    "ratio_le_0p4": true
+   }
+  },
+  "P7": {
+   "status": "PASS",
+   "detail": {
+    "SW2_post_vs_RQunif": {
+     "mean_diff": 0.00641025641025641,
+     "se": 0.006410256410256409,
+     "lo": -0.006153846153846152,
+     "hi": 0.018974358974358972,
+     "n_pairs": 78,
+     "in_interval": true,
+     "bound": 0.05
+    },
+    "SW2_pre_vs_RQsafe": {
+     "mean_diff": 0.0,
+     "se": 0.07254762501100116,
+     "lo": -0.14219334502156228,
+     "hi": 0.14219334502156228,
+     "n_pairs": 20,
+     "in_interval": true,
+     "bound": 0.1
+    },
+    "SW4_post_vs_RQunif": {
+     "mean_diff": 0.008620689655172414,
+     "se": 0.008620689655172412,
+     "lo": -0.008275862068965512,
+     "hi": 0.02551724137931034,
+     "n_pairs": 58,
+     "in_interval": true,
+     "bound": 0.05
+    },
+    "SW4_pre_vs_RQsafe": {
+     "mean_diff": 0.0,
+     "se": 0.050636968354183326,
+     "lo": -0.09924845797419932,
+     "hi": 0.09924845797419932,
+     "n_pairs": 40,
+     "in_interval": true,
+     "bound": 0.1
+    },
+    "SW4p_post_vs_RQunif": {
+     "mean_diff": 0.01282051282051282,
+     "se": 0.012820512820512822,
+     "lo": -0.012307692307692311,
+     "hi": 0.03794871794871795,
+     "n_pairs": 39,
+     "in_interval": true,
+     "bound": 0.05
+    },
+    "SW4p_pre_vs_RQsafe": {
+     "mean_diff": 0.05,
+     "se": 0.05310850045437944,
+     "lo": -0.05409266089058369,
+     "hi": 0.1540926608905837,
+     "n_pairs": 40,
+     "in_interval": true,
+     "bound": 0.1
+    }
+   },
+   "note": "descriptive, no refutation in the prereg; FAIL here only means outside the stated interval"
+  },
+  "P8": {
+   "status": "PASS",
+   "detail": {
+    "SW2": {
+     "max_id_err_rec": 0.0006042697513066742,
+     "max_id_err_logged": 0.004572199579769176,
+     "n_streams": 10,
+     "violated": false
+    },
+    "SW4": {
+     "max_id_err_rec": 0.0006319316296694577,
+     "max_id_err_logged": 0.004934231386933163,
+     "n_streams": 10,
+     "violated": false
+    }
+   }
+  }
+ }
+}
