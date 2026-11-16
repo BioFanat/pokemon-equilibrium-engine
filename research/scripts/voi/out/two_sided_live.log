@@ -1,0 +1,10 @@
+seed 40022 turns 24 sampled 10 conc(spk)/range mean 0.0203 max 0.0849 argmax_change 0.20 | 175s
+seed 20011 turns 38 sampled 16 conc(spk)/range mean 0.0139 max 0.0742 argmax_change 0.38 | 206s
+seed 60033 turns 38 sampled 15 conc(spk)/range mean 0.0081 max 0.0373 argmax_change 0.07 | 91s
+seed 80044 turns 25 sampled 10 conc(spk)/range mean 0.0115 max 0.0354 argmax_change 0.30 | 185s
+seed 120066 turns 61 sampled 28 conc(spk)/range mean 0.0051 max 0.0559 argmax_change 0.25 | 214s
+Traceback (most recent call last):
+  File "/Users/biofanat/Documents/classes/f26/cs535/final-integration/research/scripts/voi/two_sided_live.py", line 327, in <module>
+    cv = [r["spk"]["conc_value"] / r["payoff_range"] for r in d if "conc_value" in r.get("spk", {})]
+          ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~
+ZeroDivisionError: float division by zero
