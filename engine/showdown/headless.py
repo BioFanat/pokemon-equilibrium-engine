@@ -6,8 +6,9 @@
 Spawns `node pokemon-showdown simulate-battle` and drives two foul-play battle loops (fp.run_battle.pokemon_battle)
 in one asyncio process, each through a FakePSClient that turns sim blocks into the websocket messages foul-play
 expects and its `/choose ...|rqid` messages into `>pN ...` sim commands. Move choice is per player A / B, each one of
-one of run_ourbot.METHODS (make_move_fn over K worlds; "ours" = agentform) or stock (foul-play MCTS,
-fp.search.main.find_best_move). --a/--b pick them; --p1fn/--p2fn are the same flags named by game-1 seat.
+one of run_ourbot.METHODS (make_move_fn over K worlds; "ours" = agentform), stock (foul-play MCTS,
+fp.search.main.find_best_move; stock@<ms> scales its per-state search time to <ms>, plain stock uses --search-time-ms)
+or simple_bots.METHODS (random, maxpower). --a/--b pick them; --p1fn/--p2fn are the same flags named by game-1 seat.
 
 Paired: one --seed plays two games with the same battle seed and the same per-player team seeds (p1 always gets
 team A, p2 team B); player A is p1 in game 1 and p2 in game 2. Outputs go to ~/sandbox/ourbot/replays_headless/ as
@@ -21,8 +22,10 @@ import argparse
 import asyncio
 import json
 import os
+import re
 import resource
 import sys
+import threading
 import time
 
 HOME = os.path.expanduser("~")
@@ -40,10 +43,35 @@ NAMES = {"agentform": "OurAgentForm", "pimc": "OurPimc", "stock": "FoulPlay", "h
          "exploit_bandit_ucb1": "OurXplUCB", "exploit_bandit_ucb1_mv": "OurXplUCBmv",
          "exploit_bandit_exp3_mv": "OurXplExpmv", "exploit_rmplus_avg": "OurXplRMPlus", "exploit_top": "OurXplTop",
          "exploit_agentform": "OurXplAgentForm", "top": "OurTop", "style_eq": "OurStyleEq", "style_safe": "OurStyleSafe",
-         "style_uniform": "OurStyleUnif"}                                             # + player letter: distinct
+         "style_uniform": "OurStyleUnif", "random": "OurRandom", "maxpower": "OurMaxPower"}   # + player letter: distinct
 FNS = {"ours": "agentform", "stock": "stock", **{m: m for m in NAMES if m != "stock"}}
+STOCK_AT = re.compile(r"stock@([1-9][0-9]*)")   # stock foul-play at a per-player MCTS budget (ms per state)
+TLS = threading.local()                         # .ms: the deciding player's stock@<ms> budget (None: --search-time-ms)
 STALL_S = 60                        # fail-fast after an [Invalid choice] with no new request
 sys.path[:0] = [FP, os.path.dirname(os.path.abspath(__file__))]
+
+
+def is_stock(m):
+    return m == "stock" or bool(STOCK_AT.fullmatch(m))
+
+
+def stock_ms(m):
+    """The budget of a stock@<ms> method; None for plain stock and every other method."""
+    hit = STOCK_AT.fullmatch(m)
+    return int(hit.group(1)) if hit else None
+
+
+def player_name(m):
+    return NAMES[m] if m in NAMES else f"FoulPlay{stock_ms(m)}"
+
+
+def method_spec(s):
+    """argparse type of --a/--b: an FNS key, or stock@<positive int>."""
+    if s in FNS:
+        return FNS[s]
+    if STOCK_AT.fullmatch(s):
+        return s
+    raise argparse.ArgumentTypeError(f"{s!r}: expected one of {sorted(FNS)} or stock@<ms>")
 
 
 def seeds(s):
@@ -156,6 +184,7 @@ def setup_foulplay(search_time_ms, k):
     from fp.data.sets.randbats import RandomBattleTeamDatasets
     import fp.modes.base as fp_base
     import fp.search.main as fp_search
+    from fp.modes.random_battle import RandomBattleMode
     import run_ourbot                                        # patches fp_base.find_best_move; replaced below
     run_ourbot.K_WORLDS = k
 
@@ -182,11 +211,29 @@ def setup_foulplay(search_time_ms, k):
             orig_init(self, format_spec, pkmn_names)
     RandomBattleTeamDatasets.initialize = init_once
 
-    state = dict(fns=None, timers=None)                      # per game: side (p1/p2) -> move fn, Timer
+    # stock@<ms>: the two players may search at once in different executor threads, so the budget is thread-local
+    # (set by dispatch) and scales foul-play's per-state search time; num_battles is unchanged.
+    if not getattr(RandomBattleMode.search_params, "_per_player", False):
+        orig_params = RandomBattleMode.search_params
+
+        def search_params(self, battle):
+            num_battles, t = orig_params(self, battle)
+            ms = getattr(TLS, "ms", None)
+            if ms is not None:
+                t = max(1, int(round(t * ms / FoulPlayConfig.search_time_ms)))
+            return num_battles, t
+        search_params._per_player = True
+        RandomBattleMode.search_params = search_params
+
+    state = dict(fns=None, timers=None, ms=None)             # per game: side (p1/p2) -> move fn, Timer, stock@ budget
 
     def dispatch(battle):
         side = battle.user.name
-        return state["timers"][side].run(state["fns"][side], battle)
+        TLS.ms = state["ms"][side]
+        try:
+            return state["timers"][side].run(state["fns"][side], battle)
+        finally:
+            TLS.ms = None
     fp_base.find_best_move = dispatch
     return state, run_ourbot
 
@@ -197,17 +244,23 @@ async def play_game(seed, game, a_side, fns, run_tag, k, state, run_ourbot, stre
     import logging
     from fp.run_battle import pokemon_battle
     import fp.search.main as fp_search
+    import simple_bots
     battle_seed, seed_a, seed_b = seeds(seed)
     tag = f"{run_tag}-s{seed}-g{game}"
     os.makedirs(OUT, exist_ok=True)
     b_side = "p2" if a_side == "p1" else "p1"
     side_of = {"A": a_side, "B": b_side}
     role = {a_side: "A", b_side: "B"}
-    names = {s: NAMES[fns[role[s]]] + role[s] for s in ("p1", "p2")}
+    names = {s: player_name(fns[role[s]]) + role[s] for s in ("p1", "p2")}
     logs, move_fns, timers = {}, {}, {}
+    budgets = {side_of[r]: stock_ms(fns[r]) for r in side_of}
     for r, side in side_of.items():
-        if fns[r] == "stock":
+        if is_stock(fns[r]):
             move_fns[side], timers[side] = fp_search.find_best_move, Timer(children=True)
+            continue
+        if fns[r] in simple_bots.METHODS:
+            move_fns[side] = simple_bots.make_move_fn(fns[r], seed=seed, game=game, role=r)
+            timers[side] = Timer(children=False)
             continue
         logs[r] = os.path.join(OUT, f"{tag}.{r}.decisions.jsonl")
         if os.path.exists(logs[r]):
@@ -216,7 +269,7 @@ async def play_game(seed, game, a_side, fns, run_tag, k, state, run_ourbot, stre
             fns[r], k, log=logs[r], seed=seed, game=game,
             state_path=os.path.join(HEDGE_STATE, f"{run_tag}-stream{stream}-{r}.json"))
         timers[side] = Timer(children=False)
-    state.update(fns=move_fns, timers=timers)
+    state.update(fns=move_fns, timers=timers, ms=budgets)
 
     fh = logging.FileHandler(os.path.join(OUT, tag + ".fp.log"), mode="w")
     fh.setLevel(logging.INFO)
@@ -361,7 +414,7 @@ async def play_game(seed, game, a_side, fns, run_tag, k, state, run_ourbot, stre
 
 async def main_async(args):
     state, run_ourbot = setup_foulplay(args.search_time_ms, args.k)
-    fns = {"A": FNS[args.a], "B": FNS[args.b]}
+    fns = {"A": args.a, "B": args.b}
     recs = []
     for game, a_side in ((1, "p1"), (2, "p2")):
         rec = await play_game(args.seed, game, a_side, fns, args.tag, args.k, state, run_ourbot, args.stream)
@@ -380,9 +433,9 @@ async def main_async(args):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--seed", type=int, required=True)
-    ap.add_argument("--a", "--p1fn", dest="a", choices=sorted(FNS), default="ours",
-                    help="player A (p1 in game 1, p2 in game 2); ours = agentform")
-    ap.add_argument("--b", "--p2fn", dest="b", choices=sorted(FNS), default="stock",
+    ap.add_argument("--a", "--p1fn", dest="a", type=method_spec, default="ours",
+                    help=f"player A (p1 in game 1, p2 in game 2): one of {sorted(FNS)} or stock@<ms>; ours = agentform")
+    ap.add_argument("--b", "--p2fn", dest="b", type=method_spec, default="stock",
                     help="player B (p2 in game 1, p1 in game 2)")
     ap.add_argument("--tag", default="headless", help="run tag: outputs are <tag>-s<seed>-g<game>.*")
     ap.add_argument("--k", type=int, default=int(os.environ.get("OURBOT_K", "4")), help="worlds for our solver")

@@ -130,6 +130,11 @@ $PY showdown/headless.py --seed 1
 # head to head, e.g. experiment E1 (agent form vs PIMC), 300 paired seeds on 6 workers
 $PY showdown/batch.py --tag E1 --a agentform --b pimc --seeds 1-300 --workers 6
 #   -> $OURBOT_WORK/replays_headless/E1_summary.json (pair score of A, 95% CI, errors, CPU per decision)
+# baselines: random, maxpower (max basePower x STAB x effectiveness), stock@<ms> (foul-play at <ms> per state)
+$PY showdown/headless.py --seed 1 --a maxpower --b stock@25
+# gauntlet: every pairing through batch.py, then Bradley-Terry/Elo ratings (random = 0) with bootstrap CIs
+$PY showdown/gauntlet.py --bots random,maxpower,agentform,stock@25,stock@100 --seeds-per-pair 20 --workers 10 --prefix G
+#   -> showdown/results/gauntlet/G_ratings.{json,md} (--dry-run: commands only; --fit-only: refit what is on disk)
 
 # live server: play our bot in the browser
 (cd $SHOWDOWN_DIR && node pokemon-showdown start --no-security 8000) &
@@ -141,7 +146,7 @@ $PY showdown/record_replay.py $OURBOT_WORK/replays/<battle>.html 240 Fast
 ```
 
 Move-choice methods (`--a/--b`): `agentform` (one LP over K sampled worlds), `pimc` (LP per world, blended by
-weights), `stock` (foul-play MCTS), `ours` (= agentform). Each game writes a replay `.html`, the spectator `.log`,
+weights), `stock` (foul-play MCTS; `stock@<ms>` at its own budget), `random`, `maxpower`, `ours` (= agentform). Each game writes a replay `.html`, the spectator `.log`,
 a record `.json` (seed, sides, winner, true teams of both sides, timing, sim errors) and per-player decision logs
 (mixture, move, and a shadow solve of the other method on the same worlds).
 

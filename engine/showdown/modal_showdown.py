@@ -67,8 +67,8 @@ def side_methods(spec: str) -> list:
 
 
 def has_stock(a: str, b: str) -> bool:
-    """A stock foul-play player on either side at any point of the stream (it needs STOCK_CPU)."""
-    return "stock" in side_methods(a) + side_methods(b)
+    """A stock foul-play player (stock or stock@<ms>) on either side at any point of the stream (it needs STOCK_CPU)."""
+    return any(m == "stock" or m.startswith("stock@") for m in side_methods(a) + side_methods(b))
 
 
 def container_cpu(a: str, b: str) -> float:
