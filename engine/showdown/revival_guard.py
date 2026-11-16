@@ -1,4 +1,4 @@
-"""Revival Blessing guard for foul-play's battle loop (all methods, stock included).
+"""Revival Blessing (and forced-recharge) guard for foul-play's battle loop (all methods, stock included).
 
 After Revival Blessing, Showdown sends a forceSwitch request whose active Pokemon has "reviving": true; the player must
 pick a FAINTED reserve. foul-play (8f541f8) stores pkmn.reviving but never uses it and poke-engine has no notion of it,
@@ -26,9 +26,25 @@ def revival_choice(battle):
     return f"switch {fainted[0].name}" if fainted else None
 
 
+def recharge_choice(battle):
+    """A recharge turn (after Hyper Beam / Giga Impact) offers only the move 'recharge'. When the user is also
+    trapped (e.g. by Arena Trap) poke-engine sees no option, returns 'No Move', and format_decision fails
+    (AttributeError ... can_z). 'recharge' is the only legal choice, so answer it directly."""
+    req = battle.request_json or {}
+    act = req.get("active") or []
+    if req.get("forceSwitch") or len(act) != 1:
+        return None
+    moves = act[0].get("moves") or []
+    if len(moves) == 1 and moves[0].get("id") == "recharge":
+        return "recharge"
+    return None
+
+
 def guard(fn):
     def guarded(battle):
         pick = revival_choice(battle)
+        if pick is None:
+            pick = recharge_choice(battle)
         return pick if pick is not None else fn(battle)
     return guarded
 
