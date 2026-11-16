@@ -147,16 +147,29 @@ def _leaf(child: pe.State, leaf: str) -> float:
     has a pure saddle and makes the matrix (nearly) antisymmetric under swapping sides.
     'maximin': side one's maximin only (the engine's own pick_safest leaf; biased toward side two:
     swapping sides changes cells by a median 32% of the payoff range on test positions)."""
+    # pe.id on an already finished battle returns its material heuristic, not
+    # the search's win/loss reward. A guaranteed win must outrank healing or
+    # setup in a position that still has an opponent left.
+    a1, a2 = pb.alive(child.side_one), pb.alive(child.side_two)
+    if a1 == 0 or a2 == 0:
+        return 0.0 if a1 == a2 else (10000.0 if a1 else -10000.0)
     lo = _child_value(child)
     return lo if leaf == "maximin" else 0.5 * (lo - _child_value(_mirror(child)))
 
 
-def full_matrix(state: pe.State, leaf: str = "mid"):
+def full_matrix(state: pe.State, leaf: str = "mid", side_one_options=None):
     """Unpruned depth-2 joint-action matrix: M[i, j] = sum_b p_b * leaf(apply(branch_b)).
     Every cell is computed (pe.id's root alpha-beta leaves 55-80% of cells NaN). Note the Python
     generate_instructions branches on damage rolls while the engine's search does not, so cells
-    differ slightly (~2% of payoff range at worst position) from the engine's own depth-2 values."""
+    differ slightly (~2% of payoff range at worst position) from the engine's own depth-2 values.
+    side_one_options optionally intersects root rows with the live server's request.
+    """
     s1, s2 = pb.options(state)
+    if side_one_options is not None:
+        allowed = set(side_one_options)
+        s1 = [a for a in s1 if a in allowed]
+        if not s1:
+            raise ValueError("No engine options match the server's legal actions")
     M = np.empty((len(s1), len(s2)))
     for i, a in enumerate(s1):
         for j, b in enumerate(s2):

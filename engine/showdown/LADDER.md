@@ -3,9 +3,11 @@
 This guide runs our equilibrium bot, `agentform` (the per-turn agent-form matrix-game solver), in rated **Gen 9 Random
 Battle** games on play.pokemonshowdown.com. The goal is a rating against the live ladder.
 
-The ladder entry point is `ladder.py`. It plays one game at a time through foul-play's client, logs every game,
-and stops after N games. It has been tested end to end on a local Showdown server only; the public login
-has not been exercised yet (do the 1-game trial below first).
+The ladder entry point is `ladder.py`. It logs every game and stops after N games.
+The default is one battle at a time. `--concurrency 5` manages up to five battles
+through one signed-in connection, with isolated queues, beliefs and decision logs.
+A three-game public trial completed on 2026-11-16 (2 wins, including one opponent
+disconnect, and 1 loss). Larger batches remain evaluations rather than established ratings.
 
 ## 0. Before anything: register the account as a bot
 
@@ -64,16 +66,18 @@ replay opens.
 
 ```bash
 $PY ladder.py --server wss://sim3.psim.us/showdown/websocket --username cs535eqbot --games 100 --i-am-registered
+# Up to five overlapping battles, one account and one connection:
+$PY ladder.py --server wss://sim3.psim.us/showdown/websocket --username cs535eqbot --games 100 --concurrency 5 --i-am-registered
 ```
 
-- **Stopping:** press Ctrl-C once to stop after the current game; press it twice to abort now. Rerunning continues the
+- **Stopping:** press Ctrl-C once to stop new searches and finish the active games; press it twice to abort now. Rerunning continues the
   same account's rating and appends to the same log.
 - **Length:** a game takes about 5–10 minutes, so plan about 10–15 hours for 100 games. It can be split over several
   sessions.
 - **Time per move:** decisions take about 0.3–1 s (local test: mean 0.3 s, max 1.1 s), far inside the 150 s
   ladder timer.
 - **Hardware:** use a machine that is otherwise idle. Our bot needs one core.
-- **Do not** run two instances at once, run the account against itself, or play more games than planned to improve
+- **Do not** run two separate instances on the same account, run the account against itself, or play more games than planned to improve
   the number.
 - **Stopping rule:** 100 games, or earlier once the Glicko deviation (RD, shown on the ladder page) is below 50.
 
@@ -99,7 +103,21 @@ player) is the number to report.
 | `--k` | 4 | sampled hidden-information worlds per decision |
 | `--format` | `gen9randombattle` | ladder format |
 | `--games` | 1 | games to play, then exit |
+| `--concurrency` | 1 | maximum active battles, from 1 to 5 |
 | `--local` | off | local `--no-security` server, no password (testing only) |
+
+Concurrent play currently supports Gen 9 Random Battle with `agentform`, `pimc`,
+`top`, `random`, or `maxpower`. Stateful Hedge/style learning keeps the sequential
+runner until its cross-game update semantics support overlapping battles.
+The concurrent runner serializes solver calls because upstream sampling uses
+global RNG state. Network waits and battle state machines overlap. New searches
+are paced at least 20 seconds apart on public servers. Reaching five active games
+depends on matchmaking and game length. A battle error stops new searches and
+forfeits the failed battle while allowing other active battles to finish.
+
+`progress.json` records started/completed/failed counts, active room IDs, peak
+concurrency and a heartbeat. Concurrent decision logs live in `decisions/<battle>.jsonl`.
+`errors.jsonl` records failures. The game ledger and local replay locations are unchanged.
 
 Local test, two terminals against a local server started as in `SETUP.md`:
 

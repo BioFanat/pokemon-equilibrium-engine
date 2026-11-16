@@ -33,7 +33,7 @@ import fp.modes.base as fp_base  # noqa: E402
 import fp.run_battle as fp_run  # noqa: E402
 from fp import websocket_client as fp_ws  # noqa: E402
 from fp.battle.helpers import normalize_name  # noqa: E402
-from fp.search.poke_engine_helpers import battle_to_poke_engine_state  # noqa: E402
+from battle_adapter import battle_to_poke_engine_state, request_options, raw_action  # noqa: E402
 
 import hidden_agents as ha  # noqa: E402
 import nash  # noqa: E402
@@ -435,12 +435,17 @@ def make_move_fn(method: str, K: int, log=None, seed: int = 0, game: int = 0, st
             worlds = battle.mode.prepare_battles(battle, K)
             states = ((battle_to_poke_engine_state(b), chance) for b, chance in worlds)
         Ms, ws, rows, cols, legal, raw = [], [], [], [], None, {}
+        allowed = request_options(battle)
+        snapshots = [] if os.environ.get("OURBOT_LOG_STATES") == "1" else None
+        search_matrices = []
         for state, chance in states:
-            r = nash.pe.id(state, 0)                         # raw engine option strings for side one (us)
-            M, s1, s2 = nash.full_matrix(state)
+            M, s1, s2 = nash.full_matrix(state, side_one_options=allowed)
             if legal is None:
                 legal = s1
-                raw = {pb._canon(o): o for o in r.s1}
+                raw = {label: raw_action(label, battle) for label in s1}
+            if snapshots is not None:
+                snapshots.append(state.to_string())
+                search_matrices.append(M.tolist())
             Ms.append(M); ws.append(chance); rows.append(s1); cols.append(s2)
             if len(legal) == 1:
                 break
@@ -536,6 +541,13 @@ def make_move_fn(method: str, K: int, log=None, seed: int = 0, game: int = 0, st
                        secs=round(time.time() - t0, 2))
         if method in LEARN_METHODS:
             rec["feedback"] = fb
+        rec["battle_tag"] = battle.battle_tag
+        rec["decision_index"] = ctx["n"]
+        if snapshots is not None:
+            # Matrices retain the exact payoffs even if timed native leaf
+            # searches differ on a subsequent run. No account/request data.
+            rec["search"] = dict(states=snapshots, weights=ws, rows=rows, cols=cols,
+                                 legal=legal, matrices=search_matrices)
         if os.environ.get("OURBOT_LOG_WORLDS") == "1" and worlds is not None:
             rec["belief"] = belief_log(battle, worlds)
         if nash.LEAF_STATS_ON:

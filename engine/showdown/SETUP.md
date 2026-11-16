@@ -58,6 +58,19 @@ launcher; its unverified damage backend is not enabled automatically.
 
 Logs are `.local-play/logs/server.log`, `.local-play/logs/client.log`, and `.local-play/logs/bot.log`.
 Battle replays and decisions are under `.local-play/work/`.
+Set `OURBOT_LOG_STATES=1` to include sampled engine states and exact payoff
+matrices in decision logs. Re-solve a saved `agentform`, `pimc`, or `top`
+decision without a server connection with:
+
+```bash
+.local-play/venv/bin/python engine/showdown/replay_decision.py path/to/decisions.jsonl --line 1
+```
+
+These snapshots include our team and sampled opponent hypotheses. Mixture-only
+historical logs cannot recover their original sampled worlds. The offline
+[decision review](../../docs/bot-decision-review.md) records the November 16
+findings, fixes, and remaining search limitations.
+
 An occupied port produces an error rather than stopping another server.
 The older manual instructions below remain available for an existing setup.
 

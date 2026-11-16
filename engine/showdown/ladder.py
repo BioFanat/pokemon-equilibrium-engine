@@ -26,6 +26,7 @@ import signal
 import sys
 import time
 import traceback
+import threading
 from datetime import datetime, timezone
 from urllib.parse import urlparse
 
@@ -49,6 +50,7 @@ def parse_args(argv):
     p.add_argument("--k", type=int, default=4, help="sampled worlds per decision")
     p.add_argument("--format", default="gen9randombattle")
     p.add_argument("--games", type=int, default=1)
+    p.add_argument("--concurrency", type=int, default=1, help="Simultaneous battles, 1 to 5")
     p.add_argument("--out", default=None, help="default ~/sandbox/ourbot/ladder/<username>/")
     p.add_argument("--local", action="store_true", help="local --no-security server: no password, no assertion")
     p.add_argument("--i-am-registered", action="store_true",
@@ -64,7 +66,7 @@ def resolve(args):
     out = os.path.abspath(os.path.expanduser(args.out or os.path.join(HOME, "sandbox", "ourbot", "ladder", args.username)))
     return dict(server=args.server, scheme=u.scheme, host=host, local=args.local or host in LOCAL_HOSTS,
                 local_flag=args.local, username=args.username, method=args.method, k=args.k, format=args.format,
-                games=args.games, out=out, i_am_registered=args.i_am_registered,
+                games=args.games, concurrency=args.concurrency, out=out, i_am_registered=args.i_am_registered,
                 password_set=bool(os.environ.get(PASSWORD_ENV)))
 
 
@@ -77,6 +79,13 @@ def refusals(cfg):
         why.append(f"--local given but the server host {cfg['host']!r} is not one of {LOCAL_HOSTS}")
     if cfg["games"] < 1:
         why.append("--games must be >= 1")
+    if not 1 <= cfg["concurrency"] <= 5:
+        why.append("--concurrency must be from 1 to 5")
+    if cfg["concurrency"] > 1:
+        if cfg["format"] != "gen9randombattle":
+            why.append("concurrent play currently supports gen9randombattle only")
+        if cfg["method"] not in ("agentform", "pimc", "top", "random", "maxpower"):
+            why.append("concurrent play requires a stateless method: agentform, pimc, top, random or maxpower")
     if not cfg["local"]:
         if not cfg["i_am_registered"]:
             why.append("public server: pass --i-am-registered to confirm the account is registered as a bot (/ht)")
@@ -90,7 +99,7 @@ def refusals(cfg):
 def banner(cfg):
     kind = "LOCAL" if cfg["local"] else "PUBLIC"
     print(f"=== ladder.py [{kind}] server={cfg['server']} username={cfg['username']} format={cfg['format']} "
-          f"games={cfg['games']} method={cfg['method']} k={cfg['k']} ===", flush=True)
+          f"games={cfg['games']} concurrency={cfg['concurrency']} method={cfg['method']} k={cfg['k']} ===", flush=True)
 
 
 def scrub(text, secret):
@@ -190,6 +199,33 @@ def setup_runtime(cfg):
         DECISION_SECS.setdefault(battle.battle_tag, []).append(time.time() - t0)
         return move
 
+    if cfg["concurrency"] > 1:
+        # Foul Play and the engine sampler use global RNG state. Serialize
+        # computations while keeping each battle's protocol and beliefs separate.
+        solver_lock = threading.Lock()
+        per_battle = {}
+        decision_dir = os.path.join(cfg["out"], "decisions")
+        os.makedirs(decision_dir, exist_ok=True)
+
+        def timed_move(battle):
+            t0 = time.monotonic()
+            with solver_lock:
+                tag = battle.battle_tag
+                if tag not in per_battle:
+                    if cfg["method"] in simple_bots.METHODS:
+                        per_battle[tag] = simple_bots.make_move_fn(cfg["method"], seed=int(time.time()))
+                    else:
+                        per_battle[tag] = run_ourbot.make_move_fn(
+                            cfg["method"], cfg["k"], log=os.path.join(decision_dir, tag + ".jsonl"))
+                move = per_battle[tag](battle)
+            DECISION_SECS.setdefault(tag, []).append(time.monotonic() - t0)
+            return move
+
+        # Upstream's default RandomBattleMode resets a shared dataset at every
+        # battle start. Give each room its own mode and dataset instead.
+        from fp.modes.random_battle import RandomBattleMode
+        fp_run.battle_mode = lambda battle_type: RandomBattleMode()
+
     fp_base.find_best_move = timed_move
     recv = fp_ws.PSWebsocketClient.receive_message          # run_ourbot.recording_receive
 
@@ -236,6 +272,33 @@ async def run(cfg, password):
     FoulPlayConfig.user_id = await client.login()
     mode = battle_mode(FoulPlayConfig.format_spec.battle_type)
     try:
+        if cfg["concurrency"] > 1:
+            from ladder_concurrency import ConcurrentLadder
+
+            def completed(tag):
+                rec = game_record(tag, cfg, os.path.join(cfg["out"], "replays"))
+                if rec["result"] is None:
+                    raise RuntimeError("Battle returned without a result")
+                with open(ledger, "a") as f:
+                    f.write(json.dumps(rec) + "\n")
+                print(f"[ladder] completed {tag}: {rec['result']} vs {rec['opponent']}; "
+                      f"rating {rec['rating']}", flush=True)
+
+            def failed(tag, exc):
+                with open(os.path.join(cfg["out"], "errors.jsonl"), "a") as f:
+                    f.write(json.dumps(dict(battle_tag=tag, error=scrub(str(exc), password))) + "\n")
+
+            runner = ConcurrentLadder(
+                client, games=cfg["games"], concurrency=cfg["concurrency"],
+                format_name=cfg["format"],
+                play_battle=lambda room: fp_run.pokemon_battle(room, cfg["format"], None),
+                completed=completed, failed=failed, should_stop=lambda: STOP["flag"],
+                progress_path=os.path.join(cfg["out"], "progress.json"),
+                search_interval=0.05 if cfg["local"] else 20.0,
+                rating_ready=lambda tag: toid(cfg["username"]) in GAMES.get(tag, {}).get("ratings", {}),
+            )
+            await runner.run()
+            return
         for i in range(cfg["games"]):
             if mode.requires_team:
                 team_packed, team_dict, _ = load_team(FoulPlayConfig.team_name)
