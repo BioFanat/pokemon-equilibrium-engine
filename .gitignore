@@ -1,5 +1,6 @@
 # Repo root = final/ (engine/ keeps its own .gitignore for engine-local rules)
 .DS_Store
+.local-play/
 **/__pycache__/
 *.pyc
 

@@ -10,6 +10,55 @@ Runs our agents in real Pokémon Showdown games, two ways:
 Our move choice plugs into **foul-play**'s client (battle tracking, sampling of hidden opponent sets). foul-play is
 GPL-3.0 and is NOT vendored here; it is cloned separately and imported at runtime.
 
+## Play against the bot: one-command local setup
+
+From this repository's root, run:
+
+```bash
+bash play_bot.command
+```
+
+The first run installs a project-local Node 22 runtime if needed, an isolated
+Rust toolchain if needed, the pinned Showdown/Foul Play sources, and a Python
+3.12 environment under `.local-play/`. It builds the simulator and starts both
+the local server and our bot. It does not change global packages or shell
+profiles. Initial installation requires internet access and may take several
+minutes to compile the Rust engine. Later runs reuse the environment.
+
+Once `eqbot` is confirmed online, the launcher opens
+[the local server](http://127.0.0.1:8000). The server redirects to Showdown's
+hosted client configured for your local server, so the browser also needs
+internet access for the client/assets. Pick an unregistered nickname, find
+`eqbot`, click **Challenge**, and select **[Gen 9] Random Battle**.
+Both battle participants connect to your local server; no port forwarding or
+Pokémon Showdown account is needed. Keep the Terminal open; **Ctrl+C** stops
+the server and bot started by this launcher.
+
+Options:
+
+```bash
+bash play_bot.command --method hedge_bayes    # opponent-style adaptation
+bash play_bot.command --mechanics-shadow     # log new mechanics beliefs without changing moves
+bash play_bot.command --port 8001            # if port 8000 is occupied
+bash play_bot.command --no-browser           # print the URL without opening a browser
+python3.12 engine/showdown/local_play.py doctor
+python3.12 engine/showdown/local_play.py setup # install/build without starting games
+```
+
+The default method is `agentform`, with four sampled worlds. The experimental
+mechanics tracker is optional and runs only in shadow mode through this
+launcher; its unverified damage backend is not enabled automatically.
+
+Logs are `.local-play/logs/server.log` and `.local-play/logs/bot.log`.
+Battle replays and decisions are under `.local-play/work/`.
+An occupied port produces an error rather than stopping another server.
+The older manual instructions below remain available for an existing setup.
+
+The launcher was checked with dependency-free tests. Full installation and
+play could not be exercised in the restricted tool environment because GitHub,
+PyPI and npm downloads were unreachable. If that restriction affects the first
+run, execute the command in your normal macOS Terminal.
+
 ## Pinned components
 
 | Component | Source | Version |

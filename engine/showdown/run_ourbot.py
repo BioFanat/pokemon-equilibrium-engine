@@ -576,7 +576,7 @@ def root_decision(method, other, Ms, ws, rows, legal, raw, t0, cols=None):
     return rec, move
 
 
-our_find_best_move = make_move_fn("agentform", K_WORLDS)
+our_find_best_move = make_move_fn(os.environ.get("OURBOT_METHOD", "agentform"), K_WORLDS)
 
 
 async def local_login(self):
