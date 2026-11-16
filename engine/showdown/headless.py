@@ -277,7 +277,7 @@ async def play_game(seed, game, a_side, fns, run_tag, k, state, run_ourbot, stre
     logging.getLogger().addHandler(fh)
 
     proc = await asyncio.create_subprocess_exec(
-        "node", "pokemon-showdown", "simulate-battle", cwd=SHOWDOWN, limit=2 ** 24,
+        "node", "pokemon-showdown", "simulate-battle", "--skip-build", cwd=SHOWDOWN, limit=2 ** 24,
         stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
     raw = open(os.path.join(OUT, tag + ".raw.txt"), "w")
 
@@ -299,7 +299,9 @@ async def play_game(seed, game, a_side, fns, run_tag, k, state, run_ourbot, stre
         block = []
         while True:
             line = await proc.stdout.readline()
-            if not line:
+            if not line:                             # EOF: a sim that dies before |end| fails the game now
+                if not end:
+                    raise RuntimeError("sim exited before end")
                 return
             line = line.decode().rstrip("\n")
             raw.write(line + "\n")
@@ -369,7 +371,7 @@ async def play_game(seed, game, a_side, fns, run_tag, k, state, run_ourbot, stre
     self1 = resource.getrusage(resource.RUSAGE_SELF)
     ch_mid = resource.getrusage(resource.RUSAGE_CHILDREN)
     proc.stdin.close()
-    if error:
+    if error and proc.returncode is None:                # the sim may already have exited
         proc.kill()
     try:
         await asyncio.wait_for(proc.wait(), timeout=10)
