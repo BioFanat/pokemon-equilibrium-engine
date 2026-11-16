@@ -1,0 +1,2 @@
+identity Regret_T(s) = ln5 + ln P_T(s): max abs error over 18161 turns x styles with P_T>=0.01: 0.0048 nats at (8, 13426, 'br_unif', np.float64(0.01))
+Consequence: Regret_T(s) <= ln 5 for every s, T, with equality iff P_T(s) = 1; the regret curve is the log-posterior of the comparator.

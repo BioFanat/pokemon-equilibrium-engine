@@ -1,0 +1,16 @@
+E4e-A: 15277 two-sided decisions; gap median 0.0828 mean 0.0981 p90 0.221; >0.05: 0.61; Thm-A sum/game 2.50; shape med 7x19; rules {'n/a': 15277}
+   by column count: {'n in [2,8)': (0.0527, 838), 'n in [8,14)': (0.0568, 2688), 'n in [14,27)': (0.0717, 9350), 'n in [27,99)': (0.2001, 2401)}
+E4e-B: 15374 two-sided decisions; gap median 0.0000 mean 0.0000 p90 0.000; >0.05: 0.00; Thm-A sum/game 0.00; shape med 12x12; rules {'n/a': 15374}
+   by column count: {'n in [2,8)': (0.0, 4711), 'n in [8,14)': (0.0, 4067), 'n in [14,27)': (0.0, 5004), 'n in [27,99)': (0.0, 1592)}
+E4u-A: 15336 two-sided decisions; gap median 0.0837 mean 0.1056 p90 0.247; >0.05: 0.60; Thm-A sum/game 2.70; shape med 7x19; rules {'n/a': 15336}
+   by column count: {'n in [2,8)': (0.0574, 800), 'n in [8,14)': (0.0565, 2802), 'n in [14,27)': (0.0712, 9188), 'n in [27,99)': (0.2162, 2546)}
+E4u-B: 15464 two-sided decisions; gap median 0.0000 mean 0.0000 p90 0.000; >0.05: 0.00; Thm-A sum/game 0.00; shape med 12x11; rules {'n/a': 15464}
+   by column count: {'n in [2,8)': (0.0, 4852), 'n in [8,14)': (0.0, 4269), 'n in [14,27)': (0.0, 4839), 'n in [27,99)': (0.0, 1504)}
+E4emv-A: 17674 two-sided decisions; gap median 0.1212 mean 0.1236 p90 0.234; >0.05: 0.77; Thm-A sum/game 3.64; shape med 10x15; rules {'max_visit': 17674}
+   by column count: {'n in [2,8)': (0.0477, 2599), 'n in [8,14)': (0.0882, 4770), 'n in [14,27)': (0.1523, 8227), 'n in [27,99)': (0.2206, 2078)}
+E4emv-B: 17847 two-sided decisions; gap median 0.0000 mean 0.0000 p90 0.000; >0.05: 0.00; Thm-A sum/game 0.00; shape med 11x16; rules {'shares': 17847}
+   by column count: {'n in [2,8)': (0.0, 2563), 'n in [8,14)': (0.0, 4204), 'n in [14,27)': (0.0, 8408), 'n in [27,99)': (0.0, 2672)}
+E4umv-A: 17973 two-sided decisions; gap median 0.1408 mean 0.1440 p90 0.262; >0.05: 0.82; Thm-A sum/game 4.31; shape med 11x14; rules {'max_visit': 17973}
+   by column count: {'n in [2,8)': (0.0588, 2949), 'n in [8,14)': (0.1115, 5454), 'n in [14,27)': (0.1805, 7574), 'n in [27,99)': (0.247, 1996)}
+E4umv-B: 18092 two-sided decisions; gap median 0.0000 mean 0.0000 p90 0.000; >0.05: 0.00; Thm-A sum/game 0.00; shape med 10x17; rules {'shares': 18092}
+   by column count: {'n in [2,8)': (0.0, 1380), 'n in [8,14)': (0.0, 4619), 'n in [14,27)': (0.0, 9294), 'n in [27,99)': (0.0, 2799)}
