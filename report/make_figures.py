@@ -41,6 +41,7 @@ COL = {
     "eq_sampled": "#56B4E9",  # Equilibrium, sampled
     "hedge_carried": "#009E73",  # Hedge, weights carried across games
     "hedge_reset": "#E69F00",    # Hedge, weights reset each game
+    "bayes": "#CC79A7",          # Bayesian style posterior (opponent model)
 }
 INK, GRAY, LIGHT = "#222222", "#888888", "#EDEDED"
 

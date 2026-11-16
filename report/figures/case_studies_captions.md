@@ -1,0 +1,9 @@
+# Case-study caption drafts
+
+Every number below is read from `case_studies.json`.
+
+**Case study 1.** Our equilibrium at one turn splits between Hyper Voice and a switch to Kyogre; the table shows payoffs to us against the opponent's likely replies (game LOG-s15-g2, turn 2). The opponent is the MCTS bot (stock foul-play); our side won in 21 turns. The equilibrium puts 56% on Hyper Voice and 44% on Kyogre; against the opponent's 4 most likely replies our top 3 options each win against different replies, so neither dominates, and the played Hedge mixture is within 0.015 (total variation) of the equilibrium. The agent played Hyper Voice and the opponent used Earthquake, worth +7 to us, against −22 for Kyogre and −8 for Ting-Lu. Solid box: our move; dashed box: the opponent's reply. → marks a switch. Payoffs are in engine units, averaged over the four sampled opponent teams.
+
+**Case study 2.** The belief over five opponent styles up to turn 15, and the move the believed style predicts (game LOG-s2-g1). Our side won in 40 turns. From an even start (0.20 per style) the belief moves to Best reply to uniform (the opponent best-responds to a uniformly random guess about our move), 0.92 at turn 15. The prediction gives Swords Dance 44% among 14 opponent options (uniform: 7%), and the opponent then used Swords Dance. → marks a switch.
+
+**Case study 3.** Four experts' strategies and the Hedge-weighted mixture we played at one decision (game LOG-s272-g2, turn 18). Our side won in 34 turns. The experts disagree: Equilibrium, top move and Equilibrium, sampled favour Shiftry; Safest move picks Mystical Fire; Safe exploit picks Shadow Ball. With Hedge weights 0.52, 0.24, 0.12, 0.12 (carried over from earlier games), the played mixture puts 65% on Shiftry, which the agent played; the opponent used Shadow Ball. Rows are the four experts and, at the bottom, the played mixture; columns are our 4 most-played options (of 12). → marks a switch.
