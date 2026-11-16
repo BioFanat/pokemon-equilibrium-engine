@@ -1,0 +1,781 @@
+{
+ "prefix": "G1",
+ "bots": [
+  "agentform",
+  "stock@25",
+  "stock@100",
+  "stock@400",
+  "stock@1000",
+  "pimc",
+  "top",
+  "maxpower",
+  "random"
+ ],
+ "anchor": "agentform",
+ "scale": "Elo (400 log10), Bradley-Terry MAP",
+ "l2_prior": 0.01,
+ "bootstrap": 1000,
+ "boot_seed": 0,
+ "ratings": {
+  "agentform": 0.0,
+  "stock@25": 135.3,
+  "stock@100": 159.9,
+  "stock@400": 149.6,
+  "stock@1000": 192.0,
+  "pimc": -40.9,
+  "top": 42.7,
+  "maxpower": -285.9,
+  "random": -910.6
+ },
+ "ci95": {
+  "agentform": [
+   0.0,
+   0.0
+  ],
+  "stock@25": [
+   93.5,
+   178.8
+  ],
+  "stock@100": [
+   119.3,
+   200.2
+  ],
+  "stock@400": [
+   109.6,
+   192.0
+  ],
+  "stock@1000": [
+   151.6,
+   232.7
+  ],
+  "pimc": [
+   -89.9,
+   5.3
+  ],
+  "top": [
+   -4.4,
+   92.3
+  ],
+  "maxpower": [
+   -367.0,
+   -220.2
+  ],
+  "random": [
+   -1494.8,
+   -751.8
+  ]
+ },
+ "cpu_s_per_decision": {
+  "agentform": 0.4047,
+  "stock@25": 0.1429,
+  "stock@100": 0.3234,
+  "stock@400": 0.9711,
+  "stock@1000": 2.4321,
+  "pimc": 0.384,
+  "top": 0.3873,
+  "maxpower": 0.0,
+  "random": 0.0
+ },
+ "games_used": {
+  "agentform": 680,
+  "stock@25": 400,
+  "stock@100": 400,
+  "stock@400": 400,
+  "stock@1000": 400,
+  "pimc": 360,
+  "top": 320,
+  "maxpower": 320,
+  "random": 320
+ },
+ "error_games": {
+  "agentform": 0,
+  "stock@25": 0,
+  "stock@100": 0,
+  "stock@400": 0,
+  "stock@1000": 0,
+  "pimc": 0,
+  "top": 0,
+  "maxpower": 0,
+  "random": 0
+ },
+ "pairwise": [
+  {
+   "a": "agentform",
+   "b": "stock@25",
+   "tag": "G1_agentform_stockat25",
+   "score_a": 0.3167,
+   "ci95": [
+    0.2417,
+    0.3919
+   ],
+   "n_pairs": 60,
+   "games_used": 120,
+   "error_games": 0,
+   "sim_error_games": 0,
+   "missing_games": 0
+  },
+  {
+   "a": "agentform",
+   "b": "stock@100",
+   "tag": "G1_agentform_stockat100",
+   "score_a": 0.3167,
+   "ci95": [
+    0.2417,
+    0.4
+   ],
+   "n_pairs": 60,
+   "games_used": 120,
+   "error_games": 0,
+   "sim_error_games": 0,
+   "missing_games": 0
+  },
+  {
+   "a": "agentform",
+   "b": "stock@400",
+   "tag": "G1_agentform_stockat400",
+   "score_a": 0.275,
+   "ci95": [
+    0.2,
+    0.3417
+   ],
+   "n_pairs": 60,
+   "games_used": 120,
+   "error_games": 0,
+   "sim_error_games": 0,
+   "missing_games": 0
+  },
+  {
+   "a": "agentform",
+   "b": "stock@1000",
+   "tag": "G1_agentform_stockat1000",
+   "score_a": 0.225,
+   "ci95": [
+    0.1583,
+    0.2917
+   ],
+   "n_pairs": 60,
+   "games_used": 120,
+   "error_games": 0,
+   "sim_error_games": 0,
+   "missing_games": 0
+  },
+  {
+   "a": "agentform",
+   "b": "pimc",
+   "tag": "G1_agentform_pimc",
+   "score_a": 0.5375,
+   "ci95": [
+    0.425,
+    0.65
+   ],
+   "n_pairs": 40,
+   "games_used": 80,
+   "error_games": 0,
+   "sim_error_games": 0,
+   "missing_games": 0
+  },
+  {
+   "a": "agentform",
+   "b": "top",
+   "tag": "G1_agentform_top",
+   "score_a": 0.55,
+   "ci95": [
+    0.4,
+    0.675
+   ],
+   "n_pairs": 20,
+   "games_used": 40,
+   "error_games": 0,
+   "sim_error_games": 0,
+   "missing_games": 0
+  },
+  {
+   "a": "agentform",
+   "b": "maxpower",
+   "tag": "G1_agentform_maxpower",
+   "score_a": 0.8,
+   "ci95": [
+    0.675,
+    0.925
+   ],
+   "n_pairs": 20,
+   "games_used": 40,
+   "error_games": 0,
+   "sim_error_games": 0,
+   "missing_games": 0
+  },
+  {
+   "a": "agentform",
+   "b": "random",
+   "tag": "G1_agentform_random",
+   "score_a": 1.0,
+   "ci95": [
+    1.0,
+    1.0
+   ],
+   "n_pairs": 20,
+   "games_used": 40,
+   "error_games": 0,
+   "sim_error_games": 0,
+   "missing_games": 0
+  },
+  {
+   "a": "stock@25",
+   "b": "stock@100",
+   "tag": "G1_stockat25_stockat100",
+   "score_a": 0.475,
+   "ci95": [
+    0.325,
+    0.625
+   ],
+   "n_pairs": 20,
+   "games_used": 40,
+   "error_games": 0,
+   "sim_error_games": 0,
+   "missing_games": 0
+  },
+  {
+   "a": "stock@25",
+   "b": "stock@400",
+   "tag": "G1_stockat25_stockat400",
+   "score_a": 0.45,
+   "ci95": [
+    0.3,
+    0.6006
+   ],
+   "n_pairs": 20,
+   "games_used": 40,
+   "error_games": 0,
+   "sim_error_games": 0,
+   "missing_games": 0
+  },
+  {
+   "a": "stock@25",
+   "b": "stock@1000",
+   "tag": "G1_stockat25_stockat1000",
+   "score_a": 0.475,
+   "ci95": [
+    0.325,
+    0.625
+   ],
+   "n_pairs": 20,
+   "games_used": 40,
+   "error_games": 0,
+   "sim_error_games": 0,
+   "missing_games": 0
+  },
+  {
+   "a": "stock@25",
+   "b": "pimc",
+   "tag": "G1_stockat25_pimc",
+   "score_a": 0.725,
+   "ci95": [
+    0.575,
+    0.875
+   ],
+   "n_pairs": 20,
+   "games_used": 40,
+   "error_games": 0,
+   "sim_error_games": 0,
+   "missing_games": 0
+  },
+  {
+   "a": "stock@25",
+   "b": "top",
+   "tag": "G1_stockat25_top",
+   "score_a": 0.6,
+   "ci95": [
+    0.45,
+    0.75
+   ],
+   "n_pairs": 20,
+   "games_used": 40,
+   "error_games": 0,
+   "sim_error_games": 0,
+   "missing_games": 0
+  },
+  {
+   "a": "stock@25",
+   "b": "maxpower",
+   "tag": "G1_stockat25_maxpower",
+   "score_a": 0.925,
+   "ci95": [
+    0.8494,
+    1.0
+   ],
+   "n_pairs": 20,
+   "games_used": 40,
+   "error_games": 0,
+   "sim_error_games": 0,
+   "missing_games": 0
+  },
+  {
+   "a": "stock@25",
+   "b": "random",
+   "tag": "G1_stockat25_random",
+   "score_a": 1.0,
+   "ci95": [
+    1.0,
+    1.0
+   ],
+   "n_pairs": 20,
+   "games_used": 40,
+   "error_games": 0,
+   "sim_error_games": 0,
+   "missing_games": 0
+  },
+  {
+   "a": "stock@100",
+   "b": "stock@400",
+   "tag": "G1_stockat100_stockat400",
+   "score_a": 0.625,
+   "ci95": [
+    0.5,
+    0.75
+   ],
+   "n_pairs": 20,
+   "games_used": 40,
+   "error_games": 0,
+   "sim_error_games": 0,
+   "missing_games": 0
+  },
+  {
+   "a": "stock@100",
+   "b": "stock@1000",
+   "tag": "G1_stockat100_stockat1000",
+   "score_a": 0.475,
+   "ci95": [
+    0.35,
+    0.6
+   ],
+   "n_pairs": 20,
+   "games_used": 40,
+   "error_games": 0,
+   "sim_error_games": 0,
+   "missing_games": 0
+  },
+  {
+   "a": "stock@100",
+   "b": "pimc",
+   "tag": "G1_stockat100_pimc",
+   "score_a": 0.775,
+   "ci95": [
+    0.675,
+    0.875
+   ],
+   "n_pairs": 20,
+   "games_used": 40,
+   "error_games": 0,
+   "sim_error_games": 0,
+   "missing_games": 0
+  },
+  {
+   "a": "stock@100",
+   "b": "top",
+   "tag": "G1_stockat100_top",
+   "score_a": 0.625,
+   "ci95": [
+    0.475,
+    0.775
+   ],
+   "n_pairs": 20,
+   "games_used": 40,
+   "error_games": 0,
+   "sim_error_games": 0,
+   "missing_games": 0
+  },
+  {
+   "a": "stock@100",
+   "b": "maxpower",
+   "tag": "G1_stockat100_maxpower",
+   "score_a": 0.925,
+   "ci95": [
+    0.85,
+    1.0
+   ],
+   "n_pairs": 20,
+   "games_used": 40,
+   "error_games": 0,
+   "sim_error_games": 0,
+   "missing_games": 0
+  },
+  {
+   "a": "stock@100",
+   "b": "random",
+   "tag": "G1_stockat100_random",
+   "score_a": 1.0,
+   "ci95": [
+    1.0,
+    1.0
+   ],
+   "n_pairs": 20,
+   "games_used": 40,
+   "error_games": 0,
+   "sim_error_games": 0,
+   "missing_games": 0
+  },
+  {
+   "a": "stock@400",
+   "b": "stock@1000",
+   "tag": "G1_stockat400_stockat1000",
+   "score_a": 0.425,
+   "ci95": [
+    0.3,
+    0.55
+   ],
+   "n_pairs": 20,
+   "games_used": 40,
+   "error_games": 0,
+   "sim_error_games": 0,
+   "missing_games": 0
+  },
+  {
+   "a": "stock@400",
+   "b": "pimc",
+   "tag": "G1_stockat400_pimc",
+   "score_a": 0.825,
+   "ci95": [
+    0.725,
+    0.925
+   ],
+   "n_pairs": 20,
+   "games_used": 40,
+   "error_games": 0,
+   "sim_error_games": 0,
+   "missing_games": 0
+  },
+  {
+   "a": "stock@400",
+   "b": "top",
+   "tag": "G1_stockat400_top",
+   "score_a": 0.575,
+   "ci95": [
+    0.425,
+    0.725
+   ],
+   "n_pairs": 20,
+   "games_used": 40,
+   "error_games": 0,
+   "sim_error_games": 0,
+   "missing_games": 0
+  },
+  {
+   "a": "stock@400",
+   "b": "maxpower",
+   "tag": "G1_stockat400_maxpower",
+   "score_a": 0.95,
+   "ci95": [
+    0.875,
+    1.0
+   ],
+   "n_pairs": 20,
+   "games_used": 40,
+   "error_games": 0,
+   "sim_error_games": 0,
+   "missing_games": 0
+  },
+  {
+   "a": "stock@400",
+   "b": "random",
+   "tag": "G1_stockat400_random",
+   "score_a": 1.0,
+   "ci95": [
+    1.0,
+    1.0
+   ],
+   "n_pairs": 20,
+   "games_used": 40,
+   "error_games": 0,
+   "sim_error_games": 0,
+   "missing_games": 0
+  },
+  {
+   "a": "stock@1000",
+   "b": "pimc",
+   "tag": "G1_stockat1000_pimc",
+   "score_a": 0.775,
+   "ci95": [
+    0.6494,
+    0.9
+   ],
+   "n_pairs": 20,
+   "games_used": 40,
+   "error_games": 0,
+   "sim_error_games": 0,
+   "missing_games": 0
+  },
+  {
+   "a": "stock@1000",
+   "b": "top",
+   "tag": "G1_stockat1000_top",
+   "score_a": 0.75,
+   "ci95": [
+    0.6,
+    0.9
+   ],
+   "n_pairs": 20,
+   "games_used": 40,
+   "error_games": 0,
+   "sim_error_games": 0,
+   "missing_games": 0
+  },
+  {
+   "a": "stock@1000",
+   "b": "maxpower",
+   "tag": "G1_stockat1000_maxpower",
+   "score_a": 0.9,
+   "ci95": [
+    0.825,
+    0.975
+   ],
+   "n_pairs": 20,
+   "games_used": 40,
+   "error_games": 0,
+   "sim_error_games": 0,
+   "missing_games": 0
+  },
+  {
+   "a": "stock@1000",
+   "b": "random",
+   "tag": "G1_stockat1000_random",
+   "score_a": 1.0,
+   "ci95": [
+    1.0,
+    1.0
+   ],
+   "n_pairs": 20,
+   "games_used": 40,
+   "error_games": 0,
+   "sim_error_games": 0,
+   "missing_games": 0
+  },
+  {
+   "a": "pimc",
+   "b": "top",
+   "tag": "G1_pimc_top",
+   "score_a": 0.4,
+   "ci95": [
+    0.225,
+    0.575
+   ],
+   "n_pairs": 20,
+   "games_used": 40,
+   "error_games": 0,
+   "sim_error_games": 0,
+   "missing_games": 0
+  },
+  {
+   "a": "pimc",
+   "b": "maxpower",
+   "tag": "G1_pimc_maxpower",
+   "score_a": 0.8,
+   "ci95": [
+    0.65,
+    0.925
+   ],
+   "n_pairs": 20,
+   "games_used": 40,
+   "error_games": 0,
+   "sim_error_games": 0,
+   "missing_games": 0
+  },
+  {
+   "a": "pimc",
+   "b": "random",
+   "tag": "G1_pimc_random",
+   "score_a": 1.0,
+   "ci95": [
+    1.0,
+    1.0
+   ],
+   "n_pairs": 20,
+   "games_used": 40,
+   "error_games": 0,
+   "sim_error_games": 0,
+   "missing_games": 0
+  },
+  {
+   "a": "top",
+   "b": "maxpower",
+   "tag": "G1_top_maxpower",
+   "score_a": 0.9,
+   "ci95": [
+    0.825,
+    0.975
+   ],
+   "n_pairs": 20,
+   "games_used": 40,
+   "error_games": 0,
+   "sim_error_games": 0,
+   "missing_games": 0
+  },
+  {
+   "a": "top",
+   "b": "random",
+   "tag": "G1_top_random",
+   "score_a": 1.0,
+   "ci95": [
+    1.0,
+    1.0
+   ],
+   "n_pairs": 20,
+   "games_used": 40,
+   "error_games": 0,
+   "sim_error_games": 0,
+   "missing_games": 0
+  },
+  {
+   "a": "maxpower",
+   "b": "random",
+   "tag": "G1_maxpower_random",
+   "score_a": 0.95,
+   "ci95": [
+    0.875,
+    1.0
+   ],
+   "n_pairs": 20,
+   "games_used": 40,
+   "error_games": 0,
+   "sim_error_games": 0,
+   "missing_games": 0
+  }
+ ],
+ "foulplay_equivalent_ms": {
+  "agentform": {
+   "ms": null,
+   "note": "out of range: rating 0 vs stock@25..1000 ratings 135..192"
+  },
+  "pimc": {
+   "ms": null,
+   "note": "out of range: rating -41 vs stock@25..1000 ratings 135..192"
+  },
+  "top": {
+   "ms": null,
+   "note": "out of range: rating 43 vs stock@25..1000 ratings 135..192"
+  },
+  "maxpower": {
+   "ms": null,
+   "note": "out of range: rating -286 vs stock@25..1000 ratings 135..192"
+  },
+  "random": {
+   "ms": null,
+   "note": "out of range: rating -911 vs stock@25..1000 ratings 135..192"
+  }
+ },
+ "meta_game": {
+  "game": "symmetric zero-sum, P[i, j] = score of i vs j - 0.5",
+  "bots": [
+   "agentform",
+   "stock@25",
+   "stock@100",
+   "stock@400",
+   "stock@1000",
+   "pimc",
+   "top",
+   "maxpower",
+   "random"
+  ],
+  "excluded": [],
+  "value": -0.0,
+  "sigma": {
+   "agentform": 0.0,
+   "stock@25": 0.0,
+   "stock@100": 0.0,
+   "stock@400": 0.0,
+   "stock@1000": 1.0,
+   "pimc": 0.0,
+   "top": 0.0,
+   "maxpower": 0.0,
+   "random": 0.0
+  },
+  "support": [
+   "stock@1000"
+  ],
+  "nash_avg_payoff": {
+   "agentform": -0.275,
+   "stock@25": -0.025,
+   "stock@100": -0.025,
+   "stock@400": -0.075,
+   "stock@1000": 0.0,
+   "pimc": -0.275,
+   "top": -0.25,
+   "maxpower": -0.4,
+   "random": -0.5
+  },
+  "exploitability": 0.0,
+  "check_passed": true,
+  "uniqueness_note": null,
+  "dual_sigma": {
+   "agentform": 0.0,
+   "stock@25": 0.0,
+   "stock@100": 0.0,
+   "stock@400": 0.0,
+   "stock@1000": 1.0,
+   "pimc": 0.0,
+   "top": 0.0,
+   "maxpower": 0.0,
+   "random": 0.0
+  },
+  "sigma_boot_mean": {
+   "agentform": 0.0,
+   "stock@25": 0.147,
+   "stock@100": 0.3476,
+   "stock@400": 0.0371,
+   "stock@1000": 0.4661,
+   "pimc": 0.0,
+   "top": 0.0022,
+   "maxpower": 0.0,
+   "random": 0.0
+  },
+  "sigma_ci95": {
+   "agentform": [
+    0.0,
+    0.0
+   ],
+   "stock@25": [
+    0.0,
+    1.0
+   ],
+   "stock@100": [
+    0.0,
+    1.0
+   ],
+   "stock@400": [
+    0.0,
+    0.4
+   ],
+   "stock@1000": [
+    0.0,
+    1.0
+   ],
+   "pimc": [
+    0.0,
+    0.0
+   ],
+   "top": [
+    0.0,
+    0.0
+   ],
+   "maxpower": [
+    0.0,
+    0.0
+   ],
+   "random": [
+    0.0,
+    0.0
+   ]
+  },
+  "support_freq": {
+   "agentform": 0.0,
+   "stock@25": 0.301,
+   "stock@100": 0.51,
+   "stock@400": 0.133,
+   "stock@1000": 0.623,
+   "pimc": 0.0,
+   "top": 0.014,
+   "maxpower": 0.0,
+   "random": 0.0
+  },
+  "boot_check_failures": 0
+ }
+}
