@@ -38,7 +38,7 @@ TRAJ = DATA / "switch_traj.json"
 
 C_OURS = COL["eq_top"]               # agent-form: our agent (same hex as "Agent-form" in engine/figures)
 C_COMP = "#666666"                   # comparators that are not foul-play: gray
-# foul-play budgets: one hue (COL["mcts"] at 400 ms), darker = more time per state
+# foul-play budgets: one hue (COL["mcts"] at 400 ms), darker = more time per sampled battle
 FOUL = {25: "#EE9A5E", 100: "#E2772E", 400: COL["mcts"], 1000: "#8F3E00"}
 NAME = {"agentform": "Agent-form (ours)", "top": "Agent-form, top move", "pimc": "PIMC blend",
         "maxpower": "Max damage", "random": "Uniform random"}
@@ -123,7 +123,7 @@ def fig_gauntlet():
     b.xaxis.set_minor_formatter(NullFormatter())
     b.set_xlim(18, 1400)
     b.set_ylim(0, 0.6)
-    b.set_xlabel("Foul-play budget (ms per state, log)")
+    b.set_xlabel("Foul-play ms per sampled battle (log)")
     b.set_ylabel("Agent-form score")
     b.set_title("Agent-form vs foul-play")
     panel_letters(fig, a, b)

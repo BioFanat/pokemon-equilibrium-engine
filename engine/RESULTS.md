@@ -698,9 +698,8 @@ Meta-game (symmetric zero-sum, P = score - 0.5): the equilibrium puts all weight
 
 Reading (ours): the agent sits below foul-play's smallest budget (rating 0 against 135 for stock@25; the foul-play
 equivalent budget is out of range, reported as such in G1_ratings.md). Foul-play's strength saturates early: the four
-budgets span only 135 to 192, and stock@25 against stock@1000 scores 0.475 (20 pairs). The agent is level with top and
-pimc: their intervals (-4 to 92 and -90 to 5) overlap the agent's 0. The meta-game puts its weight on the top foul-play budget,
-which scores above 0.5 against every other bot in the table (most intervals include 0.5).
+budgets span only 135 to 192, and stock@25 against stock@1000 scores 0.475 (20 pairs). The agent is not separable from PIMC and the top move at the gauntlet's sample size (0.5375 against PIMC over 40 pairs, consistent with the larger E1 result): their intervals (-4 to 92 and -90 to 5) overlap the agent's 0. The meta-game puts its weight on the top foul-play budget,
+which scores above 0.5 against every other bot in the table (only the intervals against the other three foul-play budgets include 0.5).
 
 ### Style-switch test, live T5 (`research/prereg_style_switch.md` "Results"; `research/switch_results/out_style_switch.md`)
 
@@ -767,7 +766,7 @@ averaged-matrix call (1.0 vs 3.9 ms per decision).
 
 ### Scouting and concealment (`research/info_gathering_concealment.md`, corrected; `research/s1_results.md`)
 
-Strategy-fusion value along real 6v6 play, per hidden variable (fraction of the depth-2 payoff range; per-world best
+Strategy-fusion value along 6v6 play in the engine simulation, per hidden variable (fraction of the depth-2 payoff range; per-world best
 action disagrees in the given share of decisions):
 
 | hidden variable | mean | median | per-world argmax disagrees |
