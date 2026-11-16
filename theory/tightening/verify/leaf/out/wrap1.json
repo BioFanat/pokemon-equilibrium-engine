@@ -1,0 +1,159 @@
+{
+ "calls": 9180,
+ "hits": [
+  {
+   "i": 96,
+   "side": "child",
+   "terminal": false,
+   "bytes_equal": true,
+   "s1_same_order": true,
+   "nan": 0,
+   "ref_nan": 0,
+   "maximin": 51.79069519042969,
+   "ref_maximin": 51.79069519042969
+  },
+  {
+   "i": 249,
+   "side": "mirror",
+   "terminal": false,
+   "bytes_equal": false,
+   "s1_same_order": false,
+   "nan": 0,
+   "ref_nan": 0,
+   "maximin": 66.33744812011719,
+   "ref_maximin": 66.33744812011719
+  },
+  {
+   "i": 94,
+   "side": "child",
+   "terminal": false,
+   "bytes_equal": true,
+   "s1_same_order": true,
+   "nan": 1,
+   "ref_nan": 1,
+   "maximin": 18.787872314453125,
+   "ref_maximin": 18.787872314453125
+  },
+  {
+   "i": 240,
+   "side": "child",
+   "terminal": true,
+   "bytes_equal": true,
+   "s1_same_order": true,
+   "nan": 0,
+   "ref_nan": 0,
+   "maximin": 215.0,
+   "ref_maximin": 215.0
+  },
+  {
+   "i": 269,
+   "side": "mirror",
+   "terminal": false,
+   "bytes_equal": false,
+   "s1_same_order": true,
+   "nan": 0,
+   "ref_nan": 0,
+   "maximin": -65.0,
+   "ref_maximin": -65.0
+  },
+  {
+   "i": 270,
+   "side": "mirror",
+   "terminal": false,
+   "bytes_equal": true,
+   "s1_same_order": true,
+   "nan": 0,
+   "ref_nan": 0,
+   "maximin": -88.2758560180664,
+   "ref_maximin": -88.2758560180664
+  },
+  {
+   "i": 116,
+   "side": "mirror",
+   "terminal": false,
+   "bytes_equal": false,
+   "s1_same_order": false,
+   "nan": 0,
+   "ref_nan": 1,
+   "maximin": -37.78435516357422,
+   "ref_maximin": -37.78435516357422
+  },
+  {
+   "i": 418,
+   "side": "child",
+   "terminal": true,
+   "bytes_equal": true,
+   "s1_same_order": true,
+   "nan": 0,
+   "ref_nan": 0,
+   "maximin": 32.083335876464844,
+   "ref_maximin": 32.083335876464844
+  },
+  {
+   "i": 242,
+   "side": "mirror",
+   "terminal": false,
+   "bytes_equal": false,
+   "s1_same_order": true,
+   "nan": 0,
+   "ref_nan": 0,
+   "maximin": 13.325122833251953,
+   "ref_maximin": 13.325122833251953
+  },
+  {
+   "i": 243,
+   "side": "child",
+   "terminal": false,
+   "bytes_equal": true,
+   "s1_same_order": true,
+   "nan": 7,
+   "ref_nan": 7,
+   "maximin": 73.84236145019531,
+   "ref_maximin": 73.84236145019531
+  },
+  {
+   "i": 259,
+   "side": "mirror",
+   "terminal": false,
+   "bytes_equal": true,
+   "s1_same_order": true,
+   "nan": 3,
+   "ref_nan": 3,
+   "maximin": -215.0,
+   "ref_maximin": -215.0
+  },
+  {
+   "i": 271,
+   "side": "mirror",
+   "terminal": false,
+   "bytes_equal": false,
+   "s1_same_order": true,
+   "nan": 0,
+   "ref_nan": 0,
+   "maximin": -12.635467529296875,
+   "ref_maximin": -12.635467529296875
+  },
+  {
+   "i": 94,
+   "side": "mirror",
+   "terminal": false,
+   "bytes_equal": true,
+   "s1_same_order": true,
+   "nan": 1,
+   "ref_nan": 1,
+   "maximin": -18.787872314453125,
+   "ref_maximin": -18.787872314453125
+  },
+  {
+   "i": 94,
+   "side": "child",
+   "terminal": false,
+   "bytes_equal": true,
+   "s1_same_order": true,
+   "nan": 1,
+   "ref_nan": 1,
+   "maximin": 18.787872314453125,
+   "ref_maximin": 18.787872314453125
+  }
+ ]
+}

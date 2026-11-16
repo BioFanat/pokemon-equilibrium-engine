@@ -1,0 +1,76 @@
+new records 46 errors in new: []
+missing: []
+
+== reported 30: max |new - old| per field ==
+  Delta         max 0.000e+00  n=30
+  V0            max 0.000e+00  n=30
+  voi_total     max 0.000e+00  n=30
+  v_a3          max 0.000e+00  n=30
+  eta_NL0       max 0.000e+00  n=30
+  eta_b0_max    max 0.000e+00  n=30
+  eta_b0_mean   max 0.000e+00  n=30
+  sandwich_gap  max 0.000e+00  n=30
+  expl_a3       max 0.000e+00  n=30
+  e_tv1         max 0.000e+00  n=30
+  e_eta_play    max 0.000e+00  n=30
+  bound_C1      max 0.000e+00  n=30
+  Vfull         max 0.000e+00
+  beta_star identical: 30 / 30
+  leaf: non_d1 first tries total 135 fallback total 0 det mismatches total 0 leaf calls 12301856
+
+== reported 30 (det leaf): n=30, k dist {np.int64(2): np.int64(21), np.int64(3): np.int64(5), np.int64(4): np.int64(4)} ==
+  Delta q[0,25,50,75,100]: [228.9 402.7 455.9 499.9 655. ]
+  voi_total     med    0.00 max   25.92 | /D med 0.0000 max 0.0521 | >0.1%D 9/30 >1%D 4/30 | >1e-6D 11/30
+  eta_NL0       med    1.76 max   38.36 | /D med 0.0040 max 0.0673 | >0.1%D 17/30 >1%D 12/30 | >1e-6D 17/30
+  eta_b0_max    med    1.66 max   31.97 | /D med 0.0036 max 0.0608 | >0.1%D 16/30 >1%D 12/30 | >1e-6D 17/30
+  e_eta_play    med    0.00 max   14.18 | /D med 0.0000 max 0.0285 | >0.1%D 4/30 >1%D 2/30 | >1e-6D 8/30
+  e_eta_true    med    0.00 max   14.18 | /D med 0.0000 max 0.0285 | >0.1%D 2/30 >1%D 1/30 | >1e-6D 5/30
+  sandwich_gap  med    0.00 max   14.10 | /D med 0.0000 max 0.0284 | >0.1%D 3/30 >1%D 2/30 | >1e-6D 7/30
+  expl_a3       med    0.00 max   16.14 | /D med 0.0000 max 0.0309 | >0.1%D 2/30 >1%D 1/30 | >1e-6D 6/30
+  checks: VOI>=0 30 expl>=0 30 sandwich 30 C1 30 expl<=etaNL (no TV) 30 along_b0 30 along_true 30 along_true w/o TV 27 along_b0 w/o TV 28 / 30
+  max |V0 primal - dual| / Delta: 3.05e-12
+  E_TV1>0: 7 [(2013, 'Illumise', 0.25, 0.0), (2012, 'Arceus-Ground', 0.25, 0.0), (2024, 'Cresselia', 0.187, 0.0), (2027, 'Venomoth', 0.188, 0.0), (3002, 'Rotom-Fan', 0.5, 0.37), (3004, 'Floatzel', 0.5, 16.14), (3013, 'Eiscue', 0.25, 0.04)]
+  expl/bound_C1 (expl>0): [0.0001, 0.0008, 0.0009, 0.0025, 0.0291, 0.054] -> loose by >= 18.5x
+   top: 3004 Floatzel(2) vs Braviary-Hisui D 522.4 VOI 8.29 etaNL 31.76 sand 6.97 expl 16.14 (0.0309) ETV 0.500 Eeta_b0 12.32 Eeta_true 0.00
+   top: 2016 Tauros-Paldea-Combat(3) vs Rillaboom D 470.6 VOI 1.92 etaNL 13.51 sand 1.64 expl 0.73 (0.0016) ETV 0.000 Eeta_b0 2.37 Eeta_true 2.37
+   top: 3002 Rotom-Fan(2) vs Dedenne D 479.0 VOI 0.21 etaNL 3.21 sand 0.21 expl 0.37 (0.0008) ETV 0.500 Eeta_b0 0.73 Eeta_true 0.00
+   top: 3009 Mimikyu(2) vs Kingdra D 497.1 VOI 25.92 etaNL 32.40 sand 14.10 expl 0.08 (0.0002) ETV 0.000 Eeta_b0 14.18 Eeta_true 14.18
+  corr VOI-etaNL 0.35 VOI-expl 0.23 etaNL-expl 0.35 VOI-Eeta_b0 0.82
+
+== dropped 16 (det leaf): n=16, k dist {np.int64(2): np.int64(8), np.int64(3): np.int64(6), np.int64(4): np.int64(2)} ==
+  Delta q[0,25,50,75,100]: [394.  416.3 441.3 487.2 528.6]
+  voi_total     med    0.00 max    6.41 | /D med 0.0000 max 0.0132 | >0.1%D 5/16 >1%D 2/16 | >1e-6D 7/16
+  eta_NL0       med    5.18 max   17.86 | /D med 0.0120 max 0.0407 | >0.1%D 12/16 >1%D 9/16 | >1e-6D 14/16
+  eta_b0_max    med    4.16 max   17.01 | /D med 0.0097 max 0.0388 | >0.1%D 12/16 >1%D 8/16 | >1e-6D 14/16
+  e_eta_play    med    0.00 max    1.80 | /D med 0.0000 max 0.0043 | >0.1%D 3/16 >1%D 0/16 | >1e-6D 5/16
+  e_eta_true    med    0.00 max    1.80 | /D med 0.0000 max 0.0043 | >0.1%D 2/16 >1%D 0/16 | >1e-6D 2/16
+  sandwich_gap  med    0.00 max    1.80 | /D med 0.0000 max 0.0043 | >0.1%D 2/16 >1%D 0/16 | >1e-6D 3/16
+  expl_a3       med    0.00 max    2.00 | /D med 0.0000 max 0.0043 | >0.1%D 1/16 >1%D 0/16 | >1e-6D 4/16
+  checks: VOI>=0 16 expl>=0 16 sandwich 16 C1 16 expl<=etaNL (no TV) 16 along_b0 16 along_true 16 along_true w/o TV 13 along_b0 w/o TV 14 / 16
+  max |V0 primal - dual| / Delta: 2.04e-13
+  E_TV1>0: 5 [(2003, 'Dialga', 0.222, 0.0), (2011, 'Mamoswine', 0.25, 0.0), (2014, 'Ludicolo', 0.5, 0.01), (2015, 'Azelf', 0.444, 0.0), (2018, 'Calyrex-Ice', 0.25, 2.0)]
+  expl/bound_C1 (expl>0): [0.0, 0.0, 0.0081, 0.0215] -> loose by >= 46.6x
+   top: 2018 Calyrex-Ice(2) vs Magcargo D 460.0 VOI 2.38 etaNL 15.95 sand 0.00 expl 2.00 (0.0043) ETV 0.250 Eeta_b0 1.74 Eeta_true -0.00
+   top: 2019 Electivire(2) vs Moltres D 485.8 VOI 6.41 etaNL 14.06 sand 0.68 expl 0.30 (0.0006) ETV 0.000 Eeta_b0 0.98 Eeta_true 0.98
+   top: 2014 Ludicolo(2) vs Kleavor D 417.1 VOI 0.01 etaNL 5.06 sand 0.00 expl 0.01 (0.0000) ETV 0.500 Eeta_b0 0.00 Eeta_true -0.00
+   top: 2011 Mamoswine(2) vs Lurantis D 491.3 VOI 2.88 etaNL 15.29 sand 0.00 expl 0.00 (0.0000) ETV 0.250 Eeta_b0 0.00 Eeta_true 0.00
+  corr VOI-etaNL 0.50 VOI-expl 0.28 etaNL-expl 0.41 VOI-Eeta_b0 0.46
+
+== all 46 (det leaf): n=46, k dist {np.int64(2): np.int64(29), np.int64(3): np.int64(11), np.int64(4): np.int64(6)} ==
+  Delta q[0,25,50,75,100]: [228.9 410.6 451.7 495.  655. ]
+  voi_total     med    0.00 max   25.92 | /D med 0.0000 max 0.0521 | >0.1%D 14/46 >1%D 6/46 | >1e-6D 18/46
+  eta_NL0       med    2.85 max   38.36 | /D med 0.0061 max 0.0673 | >0.1%D 29/46 >1%D 21/46 | >1e-6D 31/46
+  eta_b0_max    med    2.49 max   31.97 | /D med 0.0052 max 0.0608 | >0.1%D 28/46 >1%D 20/46 | >1e-6D 31/46
+  e_eta_play    med    0.00 max   14.18 | /D med 0.0000 max 0.0285 | >0.1%D 7/46 >1%D 2/46 | >1e-6D 13/46
+  e_eta_true    med    0.00 max   14.18 | /D med 0.0000 max 0.0285 | >0.1%D 4/46 >1%D 1/46 | >1e-6D 7/46
+  sandwich_gap  med    0.00 max   14.10 | /D med 0.0000 max 0.0284 | >0.1%D 5/46 >1%D 2/46 | >1e-6D 10/46
+  expl_a3       med    0.00 max   16.14 | /D med 0.0000 max 0.0309 | >0.1%D 3/46 >1%D 1/46 | >1e-6D 10/46
+  checks: VOI>=0 46 expl>=0 46 sandwich 46 C1 46 expl<=etaNL (no TV) 46 along_b0 46 along_true 46 along_true w/o TV 40 along_b0 w/o TV 42 / 46
+  max |V0 primal - dual| / Delta: 3.05e-12
+  E_TV1>0: 12 [(2013, 'Illumise', 0.25, 0.0), (2012, 'Arceus-Ground', 0.25, 0.0), (2024, 'Cresselia', 0.187, 0.0), (2027, 'Venomoth', 0.188, 0.0), (3002, 'Rotom-Fan', 0.5, 0.37), (3004, 'Floatzel', 0.5, 16.14), (3013, 'Eiscue', 0.25, 0.04), (2003, 'Dialga', 0.222, 0.0), (2011, 'Mamoswine', 0.25, 0.0), (2014, 'Ludicolo', 0.5, 0.01), (2015, 'Azelf', 0.444, 0.0), (2018, 'Calyrex-Ice', 0.25, 2.0)]
+  expl/bound_C1 (expl>0): [0.0, 0.0, 0.0001, 0.0008, 0.0009, 0.0025, 0.0081, 0.0215, 0.0291, 0.054] -> loose by >= 18.5x
+   top: 3004 Floatzel(2) vs Braviary-Hisui D 522.4 VOI 8.29 etaNL 31.76 sand 6.97 expl 16.14 (0.0309) ETV 0.500 Eeta_b0 12.32 Eeta_true 0.00
+   top: 2018 Calyrex-Ice(2) vs Magcargo D 460.0 VOI 2.38 etaNL 15.95 sand 0.00 expl 2.00 (0.0043) ETV 0.250 Eeta_b0 1.74 Eeta_true -0.00
+   top: 2016 Tauros-Paldea-Combat(3) vs Rillaboom D 470.6 VOI 1.92 etaNL 13.51 sand 1.64 expl 0.73 (0.0016) ETV 0.000 Eeta_b0 2.37 Eeta_true 2.37
+   top: 3002 Rotom-Fan(2) vs Dedenne D 479.0 VOI 0.21 etaNL 3.21 sand 0.21 expl 0.37 (0.0008) ETV 0.500 Eeta_b0 0.73 Eeta_true 0.00
+  corr VOI-etaNL 0.37 VOI-expl 0.24 etaNL-expl 0.35 VOI-Eeta_b0 0.80

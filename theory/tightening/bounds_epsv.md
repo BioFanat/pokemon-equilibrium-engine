@@ -1,7 +1,9 @@
+Verified 2026-11-16 (theory/tightening/verify/); corrections applied.
+
 # Tightening the game-level bounds past $\varepsilon_v\approx1$: measured options, ranked
 
 Brainstorm output (2026-11-16). Scripts: `theory/tightening/scripts/`; raw outputs in the session scratchpad
-`.../scratchpad/tightening/` (`slack_small.json`/`.log` (two cases), `slack_garchomp.json`/`.log`, `neutral_mcts.jsonl`, `neutral_self.jsonl`,
+`.../scratchpad/tightening/` (`slack.log` (`verify/rerun_slack_r{1,2}.log`), `slack_garchomp.json`/`.log`, `neutral_mcts.jsonl`, `neutral_self.jsonl`,
 `replay_sampled_{a,b,c}.jsonl`, `drift_summary.json`). Nothing outside `theory/tightening/` was edited.
 Status words follow `theory_map.md` §0.4. Every number is tagged **measured** / **estimated** / **speculative**;
 "payoff units" means the $[-1,1]$ scale, "range" means the matrix range $\Delta=2$ on that scale.
@@ -21,8 +23,8 @@ separable parts, which the exact endgames now let us measure (§2.1):
 
 On real mid-game play the same picture holds (§2.2–2.3, **measured**): the signed per-decision drift of the
 calibrated depth-2 value is $\approx-0.012$ payoff per non-forced decision against *both* the white-box exploiter and
-MCTS-2000 (0.6% of range, vs Theorem A's $2\varepsilon_v=2$ per decision), while the per-decision absolute drift
-$\mathbb E|D_t|\approx0.04$–$0.056$ sums to 2.3–3.1 per game, above the range 2. So: **the path-average
+MCTS-2000 (not distinguishable at $n=60/100$: difference $-0.0014\pm0.0040$; self-play differs, $z\approx-3.7$ to $-4.7$) (0.6% of range, vs Theorem A's $2\varepsilon_v=2$ per decision), while the per-decision absolute drift
+$\mathbb E|D_t|\approx0.04$–$0.056$ sums to 2.2–3.2 per game, above the range 2. So: **the path-average
 *signed* residual explains the exploitability and is $\approx150$× smaller than $2\varepsilon_v$; every sup/absolute
 restatement, including per-state and visited-state versions, stays vacuous.** The honest tightenings are therefore
 (i) identities with one unmeasurable root term that symmetry removes, and (ii) Lemma 1′; not a smaller $\varepsilon_v$.
@@ -33,9 +35,9 @@ Ranking = (what it would say on our data) × (proof status) ÷ (cost). The first
 
 | # | Option | Statement (short) | Proof status | On our data | Cost |
 |---|---|---|---|---|---|
-| 1 | **Signed path-residual identity, averaged over $s_0$** (§1.1) | $\mathbb E_{s_0}[V^*_0-V(\pi,\sigma)]=\mathbb E[\sum_t(R_t+S_t-D_t)]$ for every $\sigma$; with $\sigma=\sigma_{\rm BR}$ it is the average-case exploitability | identity: **proved** (pathwise algebra, checked to $10^{-14}$ on 284 games); root-term removal: **proved with named hypothesis** SYM | measured along the exploiter's path (60 games): drift channel $0.66\pm0.12$/game (sampled), per decision $-0.013$; along MCTS-2000 (100 games): $0.64\pm0.10$, $-0.011$; self-play (100): $-0.11\pm0.09$, $+0.002$ | none (the agent already computes $v_t$); one log field |
-| 2 | **Lemma 1′ / Theorem A′: profile-restricted budget** (§1.2) | $\ell_t\le\varepsilon_s+x^{*\top}(Q^*-B)\hat y+\max_y x^\top(B-Q^*)y\le\varepsilon_s+2\varepsilon_v$ | **proved** (3 lines from L5.0; 2000/2000 random checks, 0 violations); composes through Theorem A's induction unchanged | exact endgames (7 rows): budget/exploitability 1.6–9.4× (vs 7.6–39× for Theorem A), 29× vs 89× on the 49-node chain | none to state; mid-game needs $Q^*$, so it is a theorem about *where the slack is*, not a mid-game number |
-| 3 | **Theorem A backwards: necessary path-average $\varepsilon_v$** (§1.3) | $\mathbb E_{\pi,\sigma_{\rm BR}}[\overline{2\varepsilon_v}]\ge(\operatorname{expl}-\varepsilon_s\bar H)/\bar H$ | **proved** (arithmetic on Theorem A's trajectory form) | path-average $\varepsilon_v\ge0.0067$ payoff per decision (point, $0.426/(2\cdot32)$), $\ge0.0028$ (R5a LCB 0.18): a leaf 100× better than $\varepsilon_v=1$ in sup norm would still allow all of the measured exploitability | none |
+| 1 | **Signed path-residual identity, averaged over $s_0$** (§1.1) | $\mathbb E_{s_0}[V^*_0-V(\pi,\sigma)]=\mathbb E[\sum_t(R_t+S_t-D_t)]$ for every $\sigma$; with $\sigma=\sigma_{\rm BR}$ it is the average-case exploitability | identity: **proved** (pathwise algebra, checked to $10^{-14}$ on 284 games); root-term removal: **proved with named hypothesis** SYM | measured along the exploiter's path (60 games): drift channel $0.66\pm0.12$/game (sampled), per decision $-0.013$; along MCTS-2000 (100 games): $0.64\pm0.10$ ($\sum R=-0.43$, so $-\mathbb Ez=0.11$), $-0.011$; self-play (100): $-0.11\pm0.09$, $+0.002$ | none (the agent already computes $v_t$); one log field |
+| 2 | **Lemma 1′ / Theorem A′: profile-restricted budget** (§1.2) | $\ell_t\le\varepsilon_s+x^{*\top}(Q^*-B)\hat y+\max_y x^\top(B-Q^*)y\le\varepsilon_s+2\varepsilon_v$ | **proved** (3 lines from L5.0; 2000/2000 random checks, 0 violations); composes through Theorem A's induction unchanged | exact endgames (7 of 8 rows): budget/exploitability 1.6–9.4× (seat-2 top-move chain 29×; Theorem A 89×) (vs 7.6–39× for Theorem A); 29× vs 89× on one realisation of the seat-2 BR chain (49 nodes; another run gives 45×→11× on a 34-node chain) | none to state; mid-game needs $Q^*$, so it is a theorem about *where the slack is*, not a mid-game number |
+| 3 | **Theorem A backwards: necessary path-average $\varepsilon_v$** (§1.3) | $\mathbb E_{\pi,\sigma_{\rm BR}}[\overline{2\varepsilon_v}]\ge(\operatorname{expl}-\varepsilon_s\bar H)/\bar H$ | **proved** (arithmetic on Theorem A's trajectory form) | path-average $\varepsilon_v\ge0.0041$ payoff per decision (point, mean length 52), $\ge0.0017$ (R5a LCB 0.18), or 0.0027 using the replays' own exploitability 0.283: a leaf 100× better than $\varepsilon_v=1$ in sup norm would still allow all of the measured exploitability | none |
 | 4 | **Comparative identity with the continuation value** (§1.4) | $V(\pi_2,\sigma)-V(\pi_1,\sigma)=\mathbb E_{\pi_1,\sigma}\sum_t(x_{2,t}-x_{1,t})^\top Q^{\pi_2,\sigma}_t\sigma_t$; $\operatorname{expl}(\pi_1)-\operatorname{expl}(\pi_2)\le$ this at $\sigma=\sigma_{\rm BR}(\pi_1)$; the leaf enters only through $\lVert x_1-x_2\rVert_1\cdot$ row-oscillation of $(Q^{\pi_2,\sigma}-\hat Q)\sigma$ | **proved** (P1(i) + one inequality); the naive "common $\varepsilon_v$ cancels" version is **false** (counterexample + B12) | not run; the oscillation term is a policy-evaluation quantity (rollouts, no minimax) | 1–4 CPU-h of rollouts for one pair of agents (estimated) |
 | 5 | **Typical-state / visited-state $\varepsilon_v$** (direction 3 as stated) | Theorem A's trajectory form with $\varepsilon_v(t,s)$ on reached states | already in Theorem A | exact endgames: reach-mean $\varepsilon_v^{\rm cal}$ 0.16–0.49 vs max 1.0, but the reach-weighted budget is still 9–39× the exploitability (`refined_bound`) | none; **insufficient alone** |
 | 6 | **Opponent-class ("restricted") exploitability** (direction 5b) | $\operatorname{expl}_\Sigma(\pi)=\sup_{\sigma\in\Sigma}[V^*-V(\pi,\sigma)]$ with the option-1 identity per $\sigma$ | definitional; identity proved | vs MCTS-2000: $0.11\pm0.10$ payoff; vs wb2: 0.426 (W1); the identity splits each into stage / sampling / drift channels | none beyond logging |
@@ -46,13 +48,12 @@ Rejected (one line each):
 - *Deeper search or self-play rollouts as a $V^*$ reference.* Lemma L5: mid-game $\rho_D\approx1$, depth does not
   contract the leaf error; rollouts of $(\pi,\sigma)$ estimate $V^{\pi,\sigma}$, which is neither above nor below $V^*$.
 - *Naive comparative bound where $\varepsilon_v$ cancels.* False: two agents $\varepsilon_s$-optimal in the same
-  $\hat Q$ can differ by $2\varepsilon_v$ in stage loss (column-only error $\hat Q=I$, $Q=\hat Q+\mathbf 1(0,-10)$: losses
-  0.5 vs 0); and B12 shows the drift channel differs across agents sharing $\hat Q$ (top $-0.08\pm0.25$, sampled $+0.66\pm0.12$).
+  $\hat Q$ can differ by $2\varepsilon_v$ in stage loss ($\hat Q=0$ ($2\times2$), $Q=\varepsilon\begin{psmallmatrix}1&-1\\1&1\end{psmallmatrix}$: both strategies are exactly optimal in $\hat Q$ ($\varepsilon_s=0$); $x=(1,0)$ loses $2\varepsilon$, $x=(0,1)$ loses 0, $\varepsilon_v=\varepsilon$, so the gap is exactly $2\varepsilon_v$; the earlier column-only example $\hat Q=I$, $Q=\hat Q+\mathbf 1(0,-10)$ failed because its $x$ has $\varepsilon_s=0.5$ and its error has identical rows, so it actually cancels); and B12 shows the drift channel differs across agents sharing $\hat Q$ (top $-0.08\pm0.25$, sampled $+0.66\pm0.12$).
 - *Mean instead of sup $\varepsilon_v$.* Still 9–39× vacuous on endgames (option 5).
-- *Absolute along-path residual $\sum|D_t|$.* Measured 2.3–3.1 per game $>$ range 2: vacuous on every path.
+- *Absolute along-path residual $\sum|D_t|$.* Measured 2.2–3.2 per game $>$ range 2: vacuous on every path.
 - *Global affine calibration.* $a=0$ on 6/6 endgames (R6b); E2′ does not apply.
-- *Fixing the terminal inversions to shrink the real-play loss.* The last-decision drift (terminal mis-scoring) is
-  $-0.13$ to $+0.03$ per game, i.e. the mid-game deepening drift, not the terminal scoring, carries the loss (§2.2).
+- *Fixing the terminal inversions to shrink the real-play loss.* The signed last-decision term is
+  $-0.13$ to $+0.04$ per game ($\mathbb E|D_{\rm last}|=0.14$–$0.38$ per game; $D_{\rm last}$ covers everything after the last non-forced decision), which reads as the mid-game deepening drift, not the terminal scoring, carrying the loss (§2.2).
 
 ### 1.1 Option 1: the signed path-residual identity (Theorem A-res)
 
@@ -76,10 +77,9 @@ from $V^*_0$. SYM: $\mathbb E_{s_0}V^*_0=0$ by zero-sum symmetry,
 $\mathbb E_{s_0}\varphi(v_1)=0$ by antisymmetry of the mid leaf ($\operatorname{val}$ of the mirrored root is $-\operatorname{val}$ to
 $10^{-14}$ on a test state; $\varphi$ odd). $\square$ Status: identity **proved**; SYM is a **named hypothesis**
 (speed ties, the draw convention and the generator's side asymmetries are the known violations, all measure-small;
-$\mathbb E\varphi(v_1)$ is directly measurable and was $+0.000$ to $+0.004$ on the seat-balanced logs). *Sharper:* on
-seat-paired logs (W1 is paired; the neutral runs alternate seats by seed) the root term cancels *exactly* across each
-pair under antisymmetry of $V^*$ and of the mid leaf, so SYM reduces to the engine's own side asymmetries (speed
-ties, draw convention), not to an assumption on the team generator.
+$\mathbb E\varphi(v_1)$ is directly measurable; on the neutral runs it was $-0.001$ (MCTS) and $-0.004$ (self-play), $\pm0.015$). *Sharper:* on
+W1 seat-paired logs, $\varphi(v_1)$ cancels exactly across each pair ($8.9\times10^{-16}$) and the $V^*_0$ term cancels by zero-sum, with no symmetry hypothesis needed.
+The neutral runs are not seat-paired (one game per seed), so there SYM is still used. Capped games scored $z=0$ (3 of the 60 replays) break $\mathbb E[z]=V$.
 
 *Reading.* $R_t$ is the opponent's realised stage gain in $\hat A_t$; $R_t\le$ the stage gap, which is $\approx0$ for RM+
 play, and the measured $\sum R$ is *negative* ($-0.26$ to $-0.43$ per game) because the opponent's column is not the
@@ -107,7 +107,7 @@ Each middle term is bounded by $\lVert B-Q^*\rVert_\infty$. $\square$ Numeric: 2
 column-only and single-cell errors, 0 violations of either inequality; median ratio of the new budget to the old
 0.16 (`scripts/check_lemma1_profile.py`).
 
-**Theorem A′.** Theorem A holds with the per-state budget $\delta'(t,s)=\varepsilon_s+x^{*\top}(Q^*-B)\hat y+\max_yx^\top(B-Q^*)y$,
+**Theorem A′.** Theorem A holds with the per-state budget $\delta'(t,s)=a_{t,s}\varepsilon_s+x^{*\top}(Q^*-B)\hat y+\max_yx^\top(B-Q^*)y$,
 $B=a_{t,s}\hat Q+c_{t,s}$ any per-state calibration (R6a). *Proof.* Theorem A's induction applies Lemma 1 one node at a
 time; substitute Lemma 1′. $\square$ **Proved.**
 
@@ -116,7 +116,7 @@ $T_1=V^*-\operatorname{val}B$, $T_2=\operatorname{val}B-x^\top B\sigma$ ($\le\va
 two faces of the leaf error (value side, guarantee side); Lemma 1 bounds each by $\varepsilon_v$ *separately*; on the data
 they cancel.
 
-*What it buys.* On the endgames (§2.1) the along-chain budget falls from 9–39× the exploitability to 1.6–9.4×.
+*What it buys.* On the endgames (§2.1) the along-chain budget falls from 7.6–39× the exploitability to 1.6–9.4× on 7 of 8 rows (89× to 29× on the seat-2 top-move chain).
 It cannot be evaluated mid-game (needs $Q^*$), so its role is to say precisely which part of Lemma 1 is loose.
 Direction for a mid-game proxy: the guarantee-side term $\max_yx^\top(B-Q^*)y$ only involves our own mixture's rows —
 a one-sided, support-restricted error that a leaf could be trained to keep small (option 7).
@@ -125,11 +125,11 @@ a one-sided, support-restricted error that a leaf could be trained to keep small
 
 From Theorem A's trajectory form, $\operatorname{expl}(\pi)\le\mathbb E_{\pi,\sigma_{\rm BR}}[\sum_t(\varepsilon_s+2\varepsilon_v(t,s_t))]$, so the
 BR-path average of $2\varepsilon_v(t,s)$ is at least $(\operatorname{expl}-\varepsilon_s\bar H)/\bar H$. With $\varepsilon_s\approx0$ (RM+),
-$\operatorname{expl}\ge0.426$ (W1 point) or $\ge0.18$ (R5a LCB, payoff) and $\bar H=32$ non-forced decisions (median over the
-60 replayed W1 sampled-target games; the mean, 52, is inflated by 3 capped games): path-average
-$\varepsilon_v\ge0.0067$ (point) / $0.0028$ (LCB) payoff — 0.3%/0.14% of range. **Proved**, honest, and weak: it says a
-leaf with sup error 0.006 would already permit the whole measured exploitability. Its use is rhetorical: the
-sup-norm number 1.0 is $\approx150$× larger than anything the data require, so lowering $\varepsilon_v$ is not the lever.
+$\operatorname{expl}\ge0.426$ (W1 point) or $\ge0.18$ (R5a LCB, payoff) and $\bar H=52$ non-forced decisions (mean over the
+60 replayed W1 sampled-target games; these lengths are under the logged exploiter, not the true best response): path-average
+$\varepsilon_v\ge0.0041$ (point) / $0.0017$ (LCB) payoff, or 0.0027 using the replays' own exploitability 0.283. The total $\sum2\varepsilon_v\ge\operatorname{expl}$ (0.426, LCB 0.18) holds without any length assumption. **Proved**, honest, and weak: it says a
+leaf with sup error 0.0041 would already permit the whole measured exploitability. Its use is rhetorical: the
+sup-norm number 1.0 is $\approx240$× larger (1/0.0041) than anything the data require, so lowering $\varepsilon_v$ is not the lever.
 
 ### 1.4 Option 4: comparative statements that are actually true
 
@@ -176,8 +176,7 @@ calibration, exact best response, BR chain with the longest tie-break = `refined
 sums, for "equilibrium sampled" (and top move), the true loss $\ell_t$ (L1(a); sums to the exact exploitability — the
 code check passed on every row to $10^{-4}$), the stage exploitability $e_t$ in $Q^*$ (L1(b) upper sandwich), the
 Theorem A budget $\varepsilon_s+2\varepsilon_v^{\rm cal}$ (= `refined_bound`), the Lemma 1′ budget, and the split $T_1+T_2+T_3$.
-Output: `scratchpad/tightening/slack_small.{json,log}`, `slack_garchomp.{json,log}`; the `expl` and Theorem A
-budget columns reproduce `results/endgame/eps.jsonl` (`expl`, `refined_bound`) to 3 decimals on every row. **Measured** (abstracted endgames, PP* and HP buckets as in
+Output: `theory/tightening/verify/rerun_slack_r1.{log,json}`, `rerun_slack_r2.{log,json}` (i.e. `slack.log`; not `slack_small.*`, which contradicts the table: its 0.2704 run is unexplained). The BR chain is not deterministic: $\bar H$, the budgets and $T_1/T_3$ vary between runs (sampled $\bar H$ 31.4–31.9; top move $\bar H$ 49.2 vs 33.7); only `expl` reproduces (to 4 dp) against `results/endgame/eps.jsonl` (`expl`). The table is one realisation. **Measured** (abstracted endgames, PP* and HP buckets as in
 RESULTS "Exact endgames"):
 
 | Case (seat, agent) | expl | $\bar H$ | $\sum e_t$ | Thm A budget | Lemma 1′ budget | $T_1$ | $T_2$ | $T_3$ | $\varepsilon_v^{\rm cal}$ reach max / mean |
@@ -191,7 +190,7 @@ RESULTS "Exact endgames"):
 | same (2, sampled) | 0.602 | 3.0 | 0.602 | 4.583 | 1.088 | −0.22 | −0.01 | +0.83 | 0.92 / 0.45 |
 | same (1, top move) | 0.356 | 3.3 | 0.491 | 4.675 | 1.064 | −0.41 | +0.05 | +0.71 | 0.78 / 0.49 |
 
-Reading: (a) Lemma 1′ removes 3–6× of the slack (budget/expl 9.3→1.6, 16.7→2.8, 21→7.0, 39→9.4, 89→29, 13.3→2.7, 7.6→1.8); on the
+Reading: (a) Lemma 1′ removes 3–6× of the slack (budget/expl 9.3→1.6, 16.7→2.8, 21→7.0, 39→9.4, 89→29, 13.3→2.7, 13.1→3.0, 7.6→1.8); on the
 three short chains it is within a factor 1.6–2.8 of the exact exploitability; (b) what remains is the
 signed cancellation $T_1\approx-T_3$: the value-side and guarantee-side errors are each large (the leaf is far from
 $Q^*$ at every reached state) and nearly cancel along the path; (c) the L1(b) sandwich $\sum e_t$ is within 20% of the
@@ -226,19 +225,19 @@ capped at 300 turns, hence the SE).
 
 Reading (sampled target): (a) the exploitation runs through a **signed** drift of $\approx-0.012$ payoff per
 non-forced decision — against the exploiter *and* against MCTS-2000, i.e. any competent opponent steers play to the
-children where one more ply of search lowers our value; (b) $\sum|D|$ is 2.3–3.1 per game $>$ range: the
+children where one more ply of search lowers our value; (b) $\sum|D|$ is 2.2–3.2 per game $>$ range: the
 absolute along-path residual is vacuous, exactly like L6's sup form (median 4.2 in the earlier probe); (c) the
-terminal-scoring part (last decision) is $-0.13$ to $+0.03$ per game: on real paths the loss is mid-game drift, not the
+signed last-decision term is $-0.13$ to $+0.04$ per game, with $\mathbb E|D_{\rm last}|=0.14$–$0.38$ per game ($D_{\rm last}$ covers everything after the last non-forced decision, not only terminal scoring): one reading is that on real paths the loss is mid-game drift, not the
 terminal inversions that drive $\varepsilon_v^{\rm cal}\approx1$ on the endgames; (d) the $\varphi$ dependence is material
 for the channel split (logit vs tanh move $\sum R$ and $-\sum D$ by 0.1–0.2) but not for the conclusions above.
 
 ### 2.3 Self-play control (by symmetry $\mathbb Ez=0$, so the identity forces $\sum R+\sum S=\sum D$)
 
 100 games, sampled vs sampled, seat alternating (`neutral_self.jsonl`). **Measured**: $-\sum D=-0.11\pm0.09$ per game
-(logit; $-0.08\pm0.09$ tanh), per-decision $\mathbb ED=+0.002$, $\mathbb E\varphi(v_1)=+0.004$ — consistent with SYM and
+(logit; $-0.08\pm0.09$ tanh), per-decision $\mathbb ED=+0.002$, $\mathbb E\varphi(v_1)=-0.004$ ($\pm0.015$) — consistent with SYM and
 with zero signed drift, while $\mathbb E|D|=0.057$ and $\sum|D|=3.2$ per game are the *same* as on the adversarial paths.
 So the absolute residual is a property of the leaf everywhere; the signed drift ($-0.012$ per decision) is created by
-the opponent's selection of children and is absent in symmetric play. $\sum R=0$ exactly: against a column drawn from
+the opponent's selection of children and is absent in symmetric play. $|\sum R|\le0.009$ per game: against a column drawn from
 the same matrix's equilibrium, the realised stage gain vanishes (support property of the equilibrium), as it should.
 
 ### 2.4 Lemma 1′ numeric check — `scripts/check_lemma1_profile.py`
@@ -250,7 +249,7 @@ holds to $10^{-9}$; budget ratio new/old: median 0.16, 90th percentile 0.62, max
 
 - Self-play drift came out $\approx0$ ($-0.11\pm0.09$), as SYM requires; had it not, option 1's root-term removal
   would have been in doubt.
-- The extended exploiter replay (60 games) gives the same per-decision drift as MCTS-2000 ($-0.0127$ vs $-0.0119$):
+- The extended exploiter replay (60 games) gives a per-decision drift not distinguishable from MCTS-2000's at $n=60/100$ ($-0.0127$ vs $-0.0113$; difference $-0.0014\pm0.0040$; self-play differs, $z\approx-3.7$ to $-4.7$):
   the drift is what any competent opponent extracts, not a white-box artefact; the exploiter's extra edge over MCTS on
   the full W1 log (0.426 vs 0.11) is not resolved by these 60 games ($0.283\pm0.12$) and must come from more decisions
   per game and the stage/sampling channels, which this sample cannot split.

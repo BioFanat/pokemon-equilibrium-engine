@@ -1,3 +1,5 @@
+Verified 2026-11-16 (theory/tightening/verify/); corrections applied.
+
 # Bayesian opponent model and learning dynamics: settled items, new statements, pre-registered predictions
 
 Companion to `../experts_extensions.md` (B1–B12, §6 ranking, §7 refuted list) and `../synthesis.md` (§3.2 N1/N2,
@@ -23,12 +25,12 @@ Real matrices: the 57 stage matrices of `scratchpad/experts_ext/real_matrices.np
 
 | item | before | now |
 |---|---|---|
-| B3(c) coded forgetting, discounted regret $\le\ln k$ | refuted for $\lambda<\tfrac12$, open for $\lambda\ge\tfrac12$ | **refuted for every $\lambda<1$ with unbounded losses; with the shipped cap $B=\ln(n/\mathrm{MIX})$ refuted for all $\lambda\le\lambda^*_2(n)$ by a 2-turn example ($\lambda^*_2=0.953$ at $n=13$, $0.986$ at $n=44$), further by longer paths; realisable violations on the real style matrices at $\lambda\in\{0.5,0.7,0.9\}$; a correct data-dependent bound is proved (T1)** |
-| posterior oscillation | described (synthesis §3.2) | characterised as FTL leader switching on a random walk with drift; $\sigma^2/(2\mu^2)$ predicts the number of MAP-wrong turns (563 predicted vs 649 measured per stream); FTL regret 5–18 nats vs the mixture's 1.609 (T2) |
+| B3(c) coded forgetting, discounted regret $\le\ln k$ | refuted for $\lambda<\tfrac12$, open for $\lambda\ge\tfrac12$ | **refuted for every $\lambda<1$ with unbounded losses; with the shipped cap $B=\ln(n/\mathrm{MIX})$ refuted for all $\lambda\le\lambda^*_2(n)$ by a 2-turn example ($\lambda^*=0.951$ at $n=13$, $0.985$ at $n=44$, on the attainable loss range), further by longer paths; realisable violations on the real style matrices at $\lambda\in\{0.5,0.7,0.9\}$; a correct data-dependent bound is proved (T1)** |
+| posterior oscillation | described (synthesis §3.2) | characterised as FTL leader switching on a random walk with drift; $\sigma^2/(2\mu^2)$ agrees in order of magnitude with the number of MAP-wrong turns (563 vs 649 measured per stream mean; per-stream ratio 0.03–2.0; autocorrelation-corrected estimate $\approx740$); FTL regret 5–18 nats vs the mixture's 1.609 (T2) |
 | B4 realisability rate | Pinsker, $\sqrt{2T\ln k}$ | Bhattacharyya: $\mathbb E\sum_t(1-P_{t-1}(s^*))\le\sum_{s\ne s^*}1/(1-\rho_s)$, **constant in $T$**; replaces B6(c)'s $\sqrt{2T\ln5}$ by $2\sum_s1/(1-\rho_s)$ (33–82 on real matrices: better than Pinsker beyond $T\approx350$–2,100, i.e. at BH/E2 lengths, not within one RQ stream for safe/br_unif); misspecified version with a Chernoff-½ coefficient (T3) |
 | RQ outcome | not predicted | pre-registered: ordering uniform ≻ safe ≻ eq in identification speed/robustness, with mismatch thresholds (§4) |
 | B12 two posterior learners | cite + open | every last iterate of two $\varepsilon$-safe players is a $2\varepsilon\Delta$-NE (no regret argument); Hedge vs safex sandwiched; self-play posteriors measured (T4) |
-| tracking after a style switch | — | flip time $\approx t_0\mu_a/\mu_b$ for $\lambda=1$ (N1), $\le\ln(k/\alpha)/\mu_b$ for fixed share, $\ln((\mu_a+\mu_b)/\mu_b)/\ln(1/\lambda)$ for discount-then-predict; checked (T5) |
+| tracking after a style switch | — | flip time $\approx t_0\mu_a/\mu_b$ for $\lambda=1$ (N1), $\lesssim(\ln(k/\alpha)+B)/\min_s\mu_{b\to s}$ for fixed share, $\ln((\mu_a+\mu_b)/\mu_b)/\ln(1/\lambda)$ for discount-then-predict; checked (T5) |
 
 ---
 
@@ -64,18 +66,18 @@ $$R^\lambda_T(s)\ \le\ \ln k+(1-\lambda)\sum_{t\le T}\lambda^{T-t}\operatorname{
 \operatorname{range}_sD=\max_sD(s)-\min_sD(s).$$
 Since $\operatorname{range}D_{t-1}\le B(1-\lambda^{t-1})/(1-\lambda)$ this is at most $\ln k+B/(1-\lambda)$, i.e. no
 better than the trivial bound $B/(1-\lambda)$ in the worst case — the content is the data-dependent form (tight to
-0.70–0.98 on the examples of (b)) and the mechanism it exposes.
+0.66–0.98 depending on the example set) and the mechanism it exposes.
 
 (d) *Thresholds for the shipped loss class* (measured, `b3c_all_lambda.py`, exact grid over $B_0$, $k=5$):
 
-| $n_{\max}$ | $B=\ln(n/\mathrm{MIX})$ | $\lambda^*_2$ exact | $\lambda^*_2$ from $B=\ln k+H/(1-\lambda)$ | $R^{\lambda,*}_2$ at $\lambda=0.9$ |
+| $n_{\max}$ | $B=\ln(n/\mathrm{MIX})$ | $\lambda^*_2$ (attainable range) | $\lambda^*_2$ from $B=\ln k+H/(1-\lambda)$ | $R^{\lambda,*}_2$ at $\lambda=0.9$ (attainable range) |
 |---|---|---|---|---|
-| 13 | 5.561 | 0.953 | 0.949 | 1.683 |
-| 18 | 5.886 | 0.966 | 0.963 | 1.715 |
-| 27 | 6.292 | 0.977 | 0.975 | 1.754 |
-| 44 | 6.780 | 0.986 | 0.985 | 1.802 |
+| 13 | 5.561 | 0.9506 | 0.949 | 1.678 |
+| 18 | 5.886 | 0.9640 | 0.963 | 1.710 |
+| 27 | 6.292 | 0.9759 | 0.975 | 1.749 |
+| 44 | 6.780 | 0.9851 | 0.985 | 1.797 |
 
-($\ln5=1.609$.) The shipped class `behavior.Posterior(lam)` reproduces the closed form to $10^{-4}$ on each path
+($\ln5=1.609$.) Losses $0$ and $B=\ln(n/\mathrm{MIX})$ cannot occur on the same turn: the attainable range is $\ln(n(1-\mathrm{MIX})/\mathrm{MIX}+1)$ (5.513 at $n=13$, 6.730 at $n=44$), which gives $\lambda^*=0.951$ ($n=13$) $\ldots$ $0.985$ ($n=44$); the exact-value columns above use that range. The shipped class `behavior.Posterior(lam)` reproduces the closed form to $10^{-4}$ on each path
 (violations at $\lambda=0.3,0.5,0.7,0.9,0.95$ for both $n=13$ and $n=44$). Longer paths violate more: a log-space
 hill-climb over $[0,B]^{T\times5}$ at $B=6.78$ finds $R^\lambda_T$ of 2.16 ($T=3$), 2.38 ($T=4$), 2.77 ($T=6$) at
 $\lambda=0.9$ and 1.85 / 1.99 / 2.22 at $\lambda=0.95$ (2-turn optimum 1.80 / 1.67). The old `b3c_search.py` "inf" at
@@ -157,7 +159,7 @@ per turn the excess is tiny (0.0036 nats) because the two leaders are near-ident
 Then $\mathbb E\,\#\{t\le T:\ G_t<0\}=\sum_t\Pr(G_t<0)\approx\int_0^\infty\Phi(-\mu\sqrt t/\sigma)\,dt=\frac{\sigma^2}{\mu^2}\int_0^\infty\Phi(-\sqrt u)\,du=\frac{\sigma^2}{2\mu^2}$
 (substitute $u=z^2$; $\int_0^\infty2z\Phi(-z)dz=\int_0^\infty z^2\varphi(z)dz=\tfrac12$). Measured per stream the ratio
 measured/predicted ranges over 0.03–2.0 (the time on the wrong side of a drifted walk has a heavy-tailed law, so
-single paths scatter), with means 649 vs 563 over the 8 streams. The discrete Hoeffding bound
+single paths scatter), with means 649 vs 563 over the 8 streams; the autocorrelation-corrected estimate is $\approx740$, which brackets the measured 649 together with 563. The estimate therefore agrees in order of magnitude, not per stream. The discrete Hoeffding bound
 ($g_t$ has range $2B$, so $\sum_t\exp(-\mu^2t/(2B^2))$, even closer to $T$ than the 2,219 of the table, which used range $B$) is $\approx T$: vacuous at $\mu\approx0.02$, $B=5.6$ — the honest *bound* says
 oscillation can last the whole run; the Brownian *estimate* says a quarter of it, and that is what is seen. The
 number of sign changes has no robust prediction (Brownian motion crosses 0 infinitely often; the discrete count
@@ -242,7 +244,7 @@ p_ref = the one-hot safex strategy (as `bayes_safex`); turns i.i.d. over the 57 
 
 (entries: $-\ln\mathrm{BC}$ / KL). `eq` and `uniform` are the best separated; `safe`, `br_unif`, `br_us` form a cluster
 (0.07 nats Bhattacharyya per turn, 11–12% of matrices with $\mathrm{BC}>0.99$ to a neighbour). The a.s. constants
-$\rho_s=\max_{\rm matrices}\mathrm{BC}$ are 0.95–1.00 (safe vs br_us: 1.000), so the **sup-version of (ii) is vacuous
+$\rho_s=\max_{\rm matrices}\mathrm{BC}$ are 0.81–1.00 (safe vs br_us: 1.000), so the **sup-version of (ii) is vacuous
 on real matrices** ($\sum_s1/(1-\rho_s)$ = 132 for `eq`, $\infty$ for `safe`); the mean-coefficient version (v) is the usable one.
 
 *Concentration under exact realisability ($\sigma_m=0$), $T=600$.*
@@ -254,7 +256,7 @@ on real matrices** ($\sum_s1/(1-\rho_s)$ = 132 for `eq`, $\infty$ for `safe`); t
 | uniform | 0.986 | 1.000 | 1.000 | 1.00 | 40/40 | 4.86 (21.0) | 26.1 | 26.3 | 52 vs 43.9 / 850 |
 | br_unif | 0.943 | 0.999 | 1.000 | 0.97 | 40/40 | 8.08 (35.5) | 41.0 | 41.1 | 82 vs 43.9 / 2,090 |
 
-The bound holds (expectation form; the per-path maxima 17–35 are below the bound) and is 2–5× loose. Compared on the
+The bound holds (expectation form, T3 is an expectation bound) and is 2–5× loose. Compared on the
 quantity B4(ii) bounds, $\sum_t\lVert\hat q_t-q_{s^*,t}\rVert_1$ (realised $\le2\times$ the column above, i.e. 8–16), the
 new constant $2\sum_s1/(1-\bar\rho_s)$ beats Pinsker's $\sqrt{2T\ln5}$ only beyond the crossover
 $T^\times=(2\sum_s1/(1-\bar\rho_s))^2/(2\ln5)$: at the RQ stream length $T=600$ it wins for `eq` only (33 vs 44);
@@ -275,6 +277,8 @@ and the realised $b_t$'s empirical law).
 ---
 
 ## 4. Pre-registered predictions for the RQ runs (`hedge_bayes` vs `style_eq` / `style_safe` / `style_uniform`)
+
+Pre-registered: committed in fb3cc8e (2026-11-16 01:13 −05:00) before any RQ run was launched; predictions below unchanged since.
 
 *What the runs are* (from `run_ourbot.py:220–231`): the style bot samples the style distribution over **its own**
 rows computed on **its own** $\bar A$ (its worlds for our hidden sets); our posterior scores $q_s$ computed on **our**
@@ -405,7 +409,7 @@ report. (d) new measurements.
 
 ## 6. Tracking after a style switch (T5)
 
-**Proposition T5.** [M0; L6; (a) **proved** (expectation / drift form), (b)–(c) **sketch**; **measured**]
+**Proposition T5.** [M0; L6; (a) **proved** for the mean log-odds crossing, not the expected first-passage time; (b)–(c) **sketch**; **measured**]
 *Setting.* The opponent plays style $s_a$ for $t_0$ feedback turns, then $s_b$; turn matrices i.i.d.; per-turn mean
 log-likelihood drifts $\mu_{x\to y}:=\mathbb E\,\mathrm{KL}(q_x\|q_y)$ (the expected increment of $\ln q_x(b)/q_y(b)$ when
 $b\sim q_x$).
@@ -425,17 +429,16 @@ giving $\tau^*\approx\ln\!\big((\mu_{a\to b}+\mu_{b\to a})/\mu_{b\to a}\big)/\ln
 *Measured* (`b4_concentration.py` §5; $t_0=300$, run to 1,200, 40 paths, "flip" = first turn after which the MAP
 is $s_b$ for 20 consecutive turns):
 
-| switch | $\mu_{a\to b}$ / $\mu_{b\to a}$ | (a) prediction, $s=a$ term only | (a) prediction with all $s$ | $\lambda=1$ measured mean (median, max) | fixed share $\alpha=0.01$ | (b) bound $\ln(k/\alpha)/\mu_{b\to a}$ | DTP $\lambda=0.98$ | (c) prediction |
+| switch | $\mu_{a\to b}$ / $\mu_{b\to a}$ | (a) prediction, $s=a$ term only | (a) prediction with all $s$ | $\lambda=1$ measured mean (median, max) | fixed share $\alpha=0.01$ | reference $\ln(k/\alpha)/\mu_{b\to a}$ | DTP $\lambda=0.98$ | (c) prediction |
 |---|---|---|---|---|---|---|---|---|
 | safe → br_unif | 0.266 / 0.315 | 254 | 254 | 252 (243, 452) | 16 (14, 93) | 20 | 34 (32, 96) | 30 |
 | eq → safe | 0.614 / 1.107 | 167 | 167 | 169 (167, 233) | 11 (9, 37) | 5.6 | 25 (24, 38) | 22 |
 | uniform → eq | 2.064 / 1.509 | 410 | **642** (via safe/br_us) | 667 (670, 763) | 6 (4, 36) | 4.1 | 61 (61, 82) | 43 |
 | br_unif → safe | 0.315 / 0.266 | 355 | 355 | 336 (335, 481) | 17 (16, 54) | 23 | 41 (39, 92) | 39 |
 
-The $\lambda=1$ delays match (a) within 5% once the third-style term is included (uniform → eq: `safe` and `br_us`
+The $\lambda=1$ delays match (a) within 6% once the third-style term is included (uniform → eq: `safe` and `br_us`
 were only 0.5–0.75 nats/turn behind `uniform` during the first phase while `eq` was 2.06 behind, so `eq` has to
-overtake *them*). Fixed share and DTP react in 6–60 turns regardless of $t_0$, as (b)–(c) say. (b)'s crude bound is
-loose by 2× for the fast pairs (it ignores the noise). **For E3-type switch tests of a posterior bot** (E3a/E3f run
+overtake *them*). Fixed share and DTP react in 6–60 turns regardless of $t_0$, as (b)–(c) say. The reference column $\ln(k/\alpha)/\mu_{b\to a}$ is not the (b) bound and is exceeded by the measurements (eq → safe: 11 vs 5.6; uniform → eq: 6 vs 4.1); the actual bound $(\ln(k/\alpha)+B)/\min_s\mu_{b\to s}$ ($\approx48$ for eq → safe) holds. **For E3-type switch tests of a posterior bot** (E3a/E3f run
 `hedge`, which has no posterior, so they do not test this): a carried $\lambda=1$ posterior will not track a mid-run
 switch; ship fixed share or DTP if the switch is to be detected within a game or two. The per-turn drifts here are
 for 9-column matrices; on 18-column matrices the softmax styles are peakier and the drifts larger, so the delays in
@@ -450,11 +453,11 @@ turns shrink but the ratio $t_0\mu_{a\to b}/\mu_{b\to a}$ does not change its or
 | # | result | status | new vs known | evidence | what to do with it |
 |---|---|---|---|---|---|
 | 1 | **T3 Bhattacharyya concentration**: $\mathbb E\sum_t(1-P_{t-1}(s^*))\le\sum_s1/(1-\rho_s)$, constant in $T$; B6(c)'s $\sqrt{2T\ln5}$ → $2\sum_s1/(1-\rho_s)$ | proved (i)–(v); (vi) proved but hypothesis fails on the proxy | **new in this setting** (classical ingredients) | 57 matrices: realised $\sum(1-P)$ 4–8 vs bound 16–41; on the $\ell_1$ sum 33–82 vs Pinsker 44 ($T=600$), 86 (BH), 272 (E2): wins beyond $T\approx350$–2,100 | replace B4(ii)/B6(c)'s rate in the report; the only gain statement that is non-vacuous within one match |
-| 2 | **T1 B3(c) settled**: coded forgetting violates $\ln k$ for all $\lambda<1$ (unbounded losses) and for $\lambda\le0.986$ at the logged $n=44$; closed form, threshold $B=\ln k+H(\lambda)/(1-\lambda)$; data-dependent bound | proved; thresholds measured; realisable at 0.5/0.7/0.9 | **new** (closes the open item; explains the ½ in the verifier's finding) | `b3c_all_lambda.py`, `b3c_realisable.py` | one-line fix to DTP if forgetting is ever turned on; keep `LAM=1` otherwise |
-| 3 | **T2 oscillation = FTL on a drifted walk**; $\sigma^2/(2\mu^2)$ predicts MAP-wrong turns; FTL regret 5–18 vs 1.609 | (a),(c) proved; (b) sketch + measured | new measurement + framing (Lecture 6 object) | BH logs: 649 vs 563 | panel D caption; justifies the mixture over the MAP with a number |
+| 2 | **T1 B3(c) settled**: coded forgetting violates $\ln k$ for all $\lambda<1$ (unbounded losses) and for $\lambda\le0.985$ at the logged $n=44$; closed form, threshold $B=\ln k+H(\lambda)/(1-\lambda)$; data-dependent bound | proved; thresholds measured; realisable at 0.5/0.7/0.9 | **new** (closes the open item; explains the ½ in the verifier's finding) | `b3c_all_lambda.py`, `b3c_realisable.py` | one-line fix to DTP if forgetting is ever turned on; keep `LAM=1` otherwise |
+| 3 | **T2 oscillation = FTL on a drifted walk**; $\sigma^2/(2\mu^2)$ agrees in order of magnitude with MAP-wrong turns; FTL regret 5–18 vs 1.609 | (a),(c) proved; (b) sketch + measured | new measurement + framing (Lecture 6 object) | BH logs: 649 vs 563 | panel D caption; justifies the mixture over the MAP with a number |
 | 4 | **§4 RQ pre-registration**: uniform ≻ safe ≻ eq; `eq` misidentified as `safe` at ≥0.05Δ mismatch | model-based prediction | new, falsifiable | `b4_concentration.py` §2–3 | compare when RQ lands; the `eq` outcome measures the equilibrium-functional mismatch |
 | 5 | **T4 B12**: two $\varepsilon$-safe players are a $2\varepsilon\Delta$-NE at every last iterate (no averaging); Hedge vs safex sandwich; self-play posteriors → eq; mismatch sets the band | proved (elementary) + measured | new as statements; the Lecture 7 contrast | 57 matrices × 400 rounds | one paragraph in the dynamics section; replaces B12's "open" |
-| 6 | **T5 tracking**: flip delay $t_0\mu_{a\to b}/\mu_{b\to a}$ with the third-style correction; fixed share / DTP constant | proved (drift form) + measured | new (quantifies B3(a)) | 4 switches × 3 learners | decide before any posterior switch test (E3 does not test it) |
+| 6 | **T5 tracking**: flip delay $t_0\mu_{a\to b}/\mu_{b\to a}$ with the third-style correction; fixed share / DTP constant | proved (mean log-odds crossing) + measured | new (quantifies B3(a)) | 4 switches × 3 learners | decide before any posterior switch test (E3 does not test it) |
 
 ### 7.2 Experiments run (all scratch, CPU, `engine/.venv/bin/python`; total ≈ 17 min)
 - `theory/tightening/scripts/b3c_all_lambda.py` (15 s) → `out_b3c_all_lambda.txt`: closed form, thresholds, shipped-class check, log-space search, bound check.
@@ -469,7 +472,7 @@ turns shrink but the ratio $t_0\mu_{a\to b}/\mu_{b\to a}$ does not change its or
 - "The coded forgetting has *some* finite discounted bound $f(k,\lambda)$": refuted for unbounded losses (T1(a)); with the cap only the trivial $B/(1-\lambda)$-type bound and the data-dependent T1(c).
 - "Bound the number of leader switches": no robust statement (Brownian crossings are discretisation-dependent); the duration $\sigma^2/(2\mu^2)$ is the quantity. Hoeffding's duration bound is vacuous at $\mu\approx0.02$.
 - "The posterior's time average is a Lecture 7 object": no payoff, no game; it is FTL vs MWU (Lecture 6).
-- "Sup-Bhattacharyya constant $\rho_s$ on real matrices": 0.95–1.00, vacuous; use the mean coefficient (i.i.d. form) or the realised product.
+- "Sup-Bhattacharyya constant $\rho_s$ on real matrices": 0.81–1.00, vacuous; use the mean coefficient (i.i.d. form) or the realised product.
 - "Chernoff-½ geometric rate under misspecification" (T3(vi)): hypothesis $c<1$ fails on the mismatch proxy at every level tried; concentration on the KL-closest style still occurs, by the LLN only.
 - "Pathwise payoff regret of bayes_safex vs the best style in hindsight": not available — the safex argmax is not Lipschitz in $q$; only the expectation route (T3(iv)+B5(c)) goes through.
 - "Both self-play posteriors might lock on `safe`/`br_us`" (concern raised in planning): measured 52–54/57 on `eq` at $\varepsilon=0.003$; the 3–5 exceptions have degenerate equilibria.

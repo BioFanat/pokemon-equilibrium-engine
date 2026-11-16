@@ -1,0 +1,12 @@
+seed 10007 turns 31 dec 52 eta_set/range mean 0.0226 max 0.1670 | tera n=23 mean 0.0029 max 0.0527 | 21s
+seed 30021 turns 46 dec 80 eta_set/range mean 0.0219 max 0.2003 | tera n=57 mean 0.0012 max 0.0285 | 57s
+seed 20014 turns 100 dec 190 eta_set/range mean 0.0070 max 0.1000 | tera n=163 mean 0.0000 max 0.0033 | 87s
+seed 40028 turns 35 dec 60 eta_set/range mean 0.0286 max 0.2183 | tera n=36 mean 0.0063 max 0.1561 | 37s
+seed 50035 turns 37 dec 62 eta_set/range mean 0.0116 max 0.0736 | tera n=28 mean 0.0020 max 0.0252 | 40s
+seed 70049 turns 38 dec 65 eta_set/range mean 0.0179 max 0.1697 | tera n=20 mean -0.0000 max 0.0000 | 25s
+seed 60042 turns 33 dec 58 eta_set/range mean 0.0092 max 0.0845 | tera n=37 mean 0.0006 max 0.0103 | 42s
+seed 80056 turns 63 dec 109 eta_set/range mean 0.0111 max 0.0742 | tera n=59 mean 0.0023 max 0.1109 | 114s
+seed 90063 turns 68 dec 124 eta_set/range mean 0.0085 max 0.0563 | tera n=65 mean 0.0007 max 0.0306 | 111s
+seed 100070 turns 31 dec 49 eta_set/range mean 0.0180 max 0.0719 | tera n=29 mean 0.0015 max 0.0256 | 44s
+seed 110077 turns 46 dec 83 eta_set/range mean 0.0161 max 0.0938 | tera n=39 mean 0.0004 max 0.0053 | 50s
+seed 120084 turns 40 dec 71 eta_set/range mean 0.0077 max 0.0560 | tera n=36 mean 0.0015 max 0.0350 | 47s
