@@ -1,0 +1,290 @@
+{
+ "arms": {
+  "MWs": {
+   "work": "/Users/biofanat/sandbox/ourbot/mw_MWs",
+   "exists": true,
+   "complete": true,
+   "games_parsed": 400,
+   "games_expected": 400,
+   "missing": 0,
+   "unparsable": [],
+   "truncated_jsonl": 0,
+   "missing_jsonl": [],
+   "error_games": [],
+   "sim_error_games": []
+  },
+  "BHs": {
+   "work": "/Users/biofanat/sandbox/ourbot/mw_BHs",
+   "exists": true,
+   "complete": true,
+   "games_parsed": 400,
+   "games_expected": 400,
+   "missing": 0,
+   "unparsable": [],
+   "truncated_jsonl": 0,
+   "missing_jsonl": [],
+   "error_games": [],
+   "sim_error_games": []
+  },
+  "MWeq": {
+   "work": "/Users/biofanat/sandbox/ourbot/mw_MWeq",
+   "exists": false,
+   "complete": false,
+   "games_parsed": 0,
+   "games_expected": 200,
+   "missing": null,
+   "unparsable": [],
+   "truncated_jsonl": 0,
+   "missing_jsonl": [],
+   "error_games": [],
+   "sim_error_games": []
+  },
+  "RQeq": {
+   "work": "/Users/biofanat/Documents/classes/f26/cs535/final/engine/showdown/results/RQeq",
+   "exists": true,
+   "complete": true,
+   "games_parsed": 200,
+   "games_expected": 200,
+   "missing": 0,
+   "unparsable": [],
+   "truncated_jsonl": 0,
+   "missing_jsonl": [],
+   "error_games": [],
+   "sim_error_games": []
+  }
+ },
+ "predictions": {
+  "L1": {
+   "mean": 0.29728501935439466,
+   "se": 0.008415886746558427,
+   "ci95": [
+    0.2807399978799567,
+    0.31383004082883265
+   ],
+   "n_turns": 11634,
+   "n_games": 400,
+   "n_forced": 1659,
+   "n_floored": 0,
+   "arms": [
+    "MWs"
+   ],
+   "interval": [
+    0.25,
+    0.4
+   ],
+   "in_interval": true,
+   "criterion": "refuted if mean < 0.15 or game-clustered 95% CI includes 0",
+   "status": "PASS"
+  },
+  "L2": {
+   "mws_loss_mw": {
+    "mean": 1.233772645629099,
+    "se": 0.01163080852169651,
+    "ci95": [
+     1.2109073216826665,
+     1.2566379695755314
+    ],
+    "n_turns": 11634,
+    "n_games": 400,
+    "n_forced": 1659,
+    "n_floored": 0
+   },
+   "bhs_loss_avg": {
+    "mean": 1.5038557113237743,
+    "se": 0.01495302343468634,
+    "ci95": [
+     1.4744591543969798,
+     1.5332522682505687
+    ],
+    "n_turns": 11647,
+    "n_games": 400,
+    "n_forced": 1690,
+    "n_floored": 0
+   },
+   "mean": 0.27008306569467533,
+   "se": 0.01894382793172085,
+   "ci95": [
+    0.23295316294850246,
+    0.3072129684408482
+   ],
+   "arms": [
+    "MWs",
+    "BHs"
+   ],
+   "interval": [
+    0.2,
+    0.45
+   ],
+   "in_interval": true,
+   "criterion": "refuted if BHs avg-loss minus MWs mw-loss < 0.10",
+   "status": "PASS"
+  },
+  "L3": {
+   "mean": null,
+   "se": null,
+   "ci95": null,
+   "n_turns": 0,
+   "n_games": 0,
+   "n_forced": 0,
+   "n_floored": 0,
+   "arms": [
+    "MWeq"
+   ],
+   "interval": [
+    0.25,
+    0.45
+   ],
+   "in_interval": null,
+   "criterion": "refuted if mean < 0.15",
+   "status": "UNTESTABLE"
+  },
+  "R1": {
+   "n_streams": 0,
+   "n_eq": 0,
+   "boot95": null,
+   "per_stream": {},
+   "reference_RQeq": {
+    "n_streams": 10,
+    "n_eq": 0,
+    "boot95": [
+     0.0,
+     0.0
+    ],
+    "per_stream": {
+     "0": {
+      "map": "safe",
+      "source": "hedge_state"
+     },
+     "1": {
+      "map": "safe",
+      "source": "hedge_state"
+     },
+     "2": {
+      "map": "safe",
+      "source": "hedge_state"
+     },
+     "3": {
+      "map": "safe",
+      "source": "hedge_state"
+     },
+     "4": {
+      "map": "safe",
+      "source": "hedge_state"
+     },
+     "5": {
+      "map": "safe",
+      "source": "hedge_state"
+     },
+     "6": {
+      "map": "safe",
+      "source": "hedge_state"
+     },
+     "7": {
+      "map": "safe",
+      "source": "hedge_state"
+     },
+     "8": {
+      "map": "safe",
+      "source": "hedge_state"
+     },
+     "9": {
+      "map": "safe",
+      "source": "hedge_state"
+     }
+    }
+   },
+   "arms": [
+    "MWeq",
+    "RQeq"
+   ],
+   "interval": [
+    0,
+    4
+   ],
+   "in_interval": null,
+   "criterion": "refuted if eq is the final MAP in >= 8 of 10 MWeq streams",
+   "status": "UNTESTABLE"
+  },
+  "W1": {
+   "n_pairs": 200,
+   "error_games": {
+    "MWs": 0,
+    "BHs": 0
+   },
+   "sim_error_games": {
+    "MWs": 0,
+    "BHs": 0
+   },
+   "mean": 0.0625,
+   "se": 0.030270451784806272,
+   "ci95": [
+    0.003169914501779704,
+    0.1218300854982203
+   ],
+   "arms": [
+    "MWs",
+    "BHs"
+   ],
+   "interval": [
+    -0.03,
+    0.03
+   ],
+   "in_interval": false,
+   "criterion": "refuted only if the 95% CI excludes 0 in the negative direction",
+   "status": "PASS"
+  },
+  "W2": {
+   "n_pairs": 0,
+   "error_games": {
+    "MWeq": 0,
+    "RQeq": 0
+   },
+   "sim_error_games": {
+    "MWeq": 0,
+    "RQeq": 0
+   },
+   "mean": null,
+   "se": null,
+   "ci95": null,
+   "arms": [
+    "MWeq",
+    "RQeq"
+   ],
+   "interval": [
+    -0.05,
+    0.05
+   ],
+   "in_interval": null,
+   "criterion": "none stated (descriptive)",
+   "status": "UNTESTABLE"
+  },
+  "C1": {
+   "MWs": {
+    "cpu_s": 6272.249999999996,
+    "decisions": 14345,
+    "cpu_s_per_decision": 0.43724294179156475,
+    "n_games": 400
+   },
+   "BHs": {
+    "cpu_s": 6175.22,
+    "decisions": 14409,
+    "cpu_s_per_decision": 0.4285668679297661,
+    "n_games": 400
+   },
+   "rel_diff": 0.02024438777479287,
+   "arms": [
+    "MWs",
+    "BHs"
+   ],
+   "interval": [
+    -0.1,
+    0.1
+   ],
+   "in_interval": true,
+   "criterion": "none stated (prediction: within 10%)",
+   "status": "NO_CRITERION"
+  }
+ },
+ "title": "PARTIAL: hedge_bayes_mw live test (prereg_mw)",
+ "partial": true
+}

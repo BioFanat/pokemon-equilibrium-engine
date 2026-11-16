@@ -53,3 +53,19 @@ Fresh `OURBOT_WORK` per arm (no carried state files). Scored turns: feedback rec
 Script to be written before the runs finish; it reads only the fields named above. Game-clustered SEs (games as
 clusters), stream bootstrap for stream-level quantities. Error games are reported and dropped by seed pair, as in
 batch.py.
+
+## Addendum A (2026-11-16, written after MWs/BHs were scored, before any replication game)
+
+Observed on seeds 1-200 (research/out_mw.md): W1 = +0.0625 [0.0032, 0.1218], outside the predicted [-0.03, +0.03]
+(no detectable effect was predicted); L1, L2 passed. Because the win-rate gain was not predicted and its CI only just
+excludes 0, it is treated as a hypothesis, tested on fresh seeds:
+
+| tag | --a | --b | seeds | notes |
+|---|---|---|---|---|
+| MWs2 | hedge_bayes_mw | stock | 201-400 | run concurrently with BHs2 |
+| BHs2 | hedge_bayes | stock | 201-400 | |
+
+- **W1-rep.** Paired MWs2 - BHs2 on seeds 201-400: point estimate > 0. Supported if the one-sided 95% interval
+  (mean - 1.645 SE) is > 0; refuted if the point estimate is <= 0. The pooled 400-seed estimate is reported alongside
+  but is not the test (seeds 1-200 selected the hypothesis).
+- **L1-rep.** L1 on MWs2 in [0.25, 0.40] (should replicate; refuted if < 0.15).
