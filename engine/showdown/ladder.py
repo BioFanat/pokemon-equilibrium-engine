@@ -226,7 +226,9 @@ def setup_runtime(cfg):
         from fp.modes.random_battle import RandomBattleMode
         fp_run.battle_mode = lambda battle_type: RandomBattleMode()
 
-    fp_base.find_best_move = timed_move
+    import revival_guard                                    # Revival Blessing picks (see revival_guard.py)
+    fp_base.find_best_move = revival_guard.guard(timed_move)
+    revival_guard.install_keep_last_move()
     recv = fp_ws.PSWebsocketClient.receive_message          # run_ourbot.recording_receive
 
     async def ladder_receive(self):
