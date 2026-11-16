@@ -1,0 +1,46 @@
+== MWs
+  stream 0: final w={'top': 0.387, 'sampled': 0.212, 'safest': 0.122, 'safex': 0.279} cum-max=[0.0, -6.3, -12.0, -3.4] t=1206 MAP=safe (1.00)
+  stream 1: final w={'top': 0.398, 'sampled': 0.2, 'safest': 0.155, 'safex': 0.248} cum-max=[0.0, -7.0, -9.7, -4.8] t=1159 MAP=safe (1.00)
+  stream 2: final w={'top': 0.344, 'sampled': 0.226, 'safest': 0.145, 'safex': 0.285} cum-max=[0.0, -4.4, -9.0, -2.0] t=1219 MAP=safe (1.00)
+  stream 3: final w={'top': 0.298, 'sampled': 0.231, 'safest': 0.157, 'safex': 0.315} cum-max=[-0.6, -3.1, -6.8, 0.0] t=1063 MAP=br_unif (0.56)
+  stream 4: final w={'top': 0.374, 'sampled': 0.209, 'safest': 0.15, 'safex': 0.268} cum-max=[0.0, -6.0, -9.4, -3.4] t=1180 MAP=safe (1.00)
+  stream 5: final w={'top': 0.363, 'sampled': 0.21, 'safest': 0.167, 'safex': 0.26} cum-max=[0.0, -5.7, -8.1, -3.4] t=1194 MAP=safe (1.00)
+  stream 6: final w={'top': 0.411, 'sampled': 0.202, 'safest': 0.128, 'safex': 0.259} cum-max=[0.0, -7.1, -11.8, -4.7] t=1125 MAP=safe (1.00)
+  stream 7: final w={'top': 0.398, 'sampled': 0.195, 'safest': 0.154, 'safex': 0.252} cum-max=[0.0, -7.0, -9.3, -4.5] t=1082 MAP=safe (0.97)
+  stream 8: final w={'top': 0.352, 'sampled': 0.22, 'safest': 0.145, 'safex': 0.283} cum-max=[0.0, -4.8, -9.1, -2.2] t=1156 MAP=safe (1.00)
+  stream 9: final w={'top': 0.332, 'sampled': 0.225, 'safest': 0.163, 'safex': 0.281} cum-max=[0.0, -4.1, -7.6, -1.8] t=1250 MAP=safe (1.00)
+  decisions with hedge mix: 13981; mean weights {'top': np.float64(0.325), 'sampled': np.float64(0.227), 'safest': np.float64(0.181), 'safex': np.float64(0.268)}
+  argmax agreement: {'safex==top': 0.892, 'safex==safest': 0.736, 'safex==sampled': 0.892, 'move==safex': 0.821, 'all4 same': 0.691}
+  played p: mean max-prob=0.854; share of decisions with max-prob>=0.99: 0.381
+  record keys: {'method': 14728, 'turn': 14345, 'worlds': 14345, 'shape': 14345, 'abar_shape': 13981, 'bayes': 13981, 'weights': 13981, 'experts': 13981, 'p': 13981, 'mix': 14345, 'move': 14345, 'secs': 14345, 'feedback': 14728, 'final': 383}
+  single-legal decisions: 364
+  decision-time posterior MAP shares: {'eq': 0.026, 'br_unif': 0.213, 'safe': 0.757, 'br_us': 0.005}
+== BHs
+  stream 0: final w={'top': 0.419, 'sampled': 0.259, 'safest': 0.174, 'safex': 0.149} cum-max=[0.0, -4.9, -8.9, -10.5] t=1134 MAP=br_unif (1.00)
+  stream 1: final w={'top': 0.425, 'sampled': 0.24, 'safest': 0.207, 'safex': 0.128} cum-max=[0.0, -5.9, -7.4, -12.4] t=1195 MAP=br_unif (1.00)
+  stream 2: final w={'top': 0.463, 'sampled': 0.279, 'safest': 0.137, 'safex': 0.121} cum-max=[0.0, -5.2, -12.4, -13.7] t=1154 MAP=safe (1.00)
+  stream 3: final w={'top': 0.394, 'sampled': 0.265, 'safest': 0.199, 'safex': 0.142} cum-max=[0.0, -3.9, -6.7, -10.1] t=1078 MAP=br_unif (0.98)
+  stream 4: final w={'top': 0.415, 'sampled': 0.262, 'safest': 0.151, 'safex': 0.172} cum-max=[0.0, -4.5, -9.8, -8.5] t=1050 MAP=br_unif (1.00)
+  stream 5: final w={'top': 0.418, 'sampled': 0.281, 'safest': 0.162, 'safex': 0.139} cum-max=[0.0, -4.1, -9.7, -11.3] t=1168 MAP=br_unif (1.00)
+  stream 6: final w={'top': 0.441, 'sampled': 0.249, 'safest': 0.185, 'safex': 0.124} cum-max=[0.0, -6.0, -9.1, -13.3] t=1217 MAP=br_unif (1.00)
+  stream 7: final w={'top': 0.425, 'sampled': 0.281, 'safest': 0.149, 'safex': 0.145} cum-max=[0.0, -4.3, -10.9, -11.2] t=1212 MAP=safe (1.00)
+  stream 8: final w={'top': 0.424, 'sampled': 0.269, 'safest': 0.165, 'safex': 0.143} cum-max=[0.0, -4.7, -9.8, -11.2] t=1188 MAP=br_unif (1.00)
+  stream 9: final w={'top': 0.445, 'sampled': 0.259, 'safest': 0.159, 'safex': 0.137} cum-max=[0.0, -5.8, -10.9, -12.6] t=1251 MAP=br_unif (1.00)
+  decisions with hedge mix: 14021; mean weights {'top': np.float64(0.357), 'sampled': np.float64(0.266), 'safest': np.float64(0.198), 'safex': np.float64(0.179)}
+  argmax agreement: {'safex==top': 0.808, 'safex==safest': 0.785, 'safex==sampled': 0.808, 'move==safex': 0.778, 'all4 same': 0.688}
+  played p: mean max-prob=0.851; share of decisions with max-prob>=0.99: 0.343
+  record keys: {'method': 14796, 'turn': 14409, 'worlds': 14409, 'shape': 14409, 'abar_shape': 14021, 'bayes': 14021, 'weights': 14021, 'experts': 14021, 'p': 14021, 'mix': 14409, 'move': 14409, 'secs': 14409, 'feedback': 14796, 'final': 387}
+  single-legal decisions: 388
+  decision-time posterior MAP shares: {'eq': 0.003, 'br_unif': 0.654, 'safe': 0.341, 'br_us': 0.002}
+
+matched first decisions: n=400, top/sampled/safest argmax identical in 158; of those safex argmax identical in 129 (0.816); {}
+  s1 g1 t1: MW experts={'top': 'abomasnow', 'sampled': 'abomasnow', 'safest': 'abomasnow', 'safex': 'abomasnow'} p={'abomasnow': 0.981, 'bravebird': 0.019} | BH experts={'top': 'abomasnow', 'sampled': 'abomasnow', 'safest': 'abomasnow', 'safex': 'abomasnow'} p={'abomasnow': 0.7286, 'barraskewda': 0.186, 'swordsdance': 0.0855}
+  s2 g1 t1: MW experts={'top': 'hydropump', 'sampled': 'hydropump', 'safest': 'hydropump', 'safex': 'hydropump'} p={'hydropump': 1.0} | BH experts={'top': 'hydropump', 'sampled': 'hydropump', 'safest': 'hydropump', 'safex': 'hydropump'} p={'hydropump': 0.8167, 'airslash': 0.15, 'secretsword': 0.0333}
+  s3 g1 t1: MW experts={'top': 'knockoff', 'sampled': 'knockoff', 'safest': 'knockoff', 'safex': 'knockoff'} p={'knockoff': 0.9723, 'uturn': 0.0178, 'knockoff-tera': 0.0099} | BH experts={'top': 'cloyster', 'sampled': 'cloyster', 'safest': 'knockoff', 'safex': 'cloyster'} p={'cloyster': 0.5089, 'knockoff': 0.4219, 'uturn': 0.0693}
+  s4 g1 t1: MW experts={'top': 'darkpulse', 'sampled': 'darkpulse', 'safest': 'darkpulse', 'safex': 'darkpulse'} p={'darkpulse': 0.9902, 'waterpulse': 0.0098} | BH experts={'top': 'darkpulse', 'sampled': 'darkpulse', 'safest': 'glaceon', 'safex': 'darkpulse'} p={'darkpulse': 0.5948, 'glaceon': 0.25, 'waterpulse': 0.133, 'jirachi': 0.0115, 'aurasphere': 0.0106}
+  s5 g1 t1: MW experts={'top': 'basculinbluestriped', 'sampled': 'basculinbluestriped', 'safest': 'stealthrock', 'safex': 'basculinbluestriped'} p={'basculinbluestriped': 0.4488, 'stealthrock': 0.2942, 'earthquake': 0.1728, 'uturn': 0.0675, 'slowbro': 0.0167} | BH experts={'top': 'uturn', 'sampled': 'uturn', 'safest': 'stealthrock', 'safex': 'uturn'} p={'uturn': 0.4581, 'stealthrock': 0.25, 'basculinbluestriped': 0.1338, 'earthquake': 0.1164, 'okidogi': 0.0326, 'klawf': 0.0092}
+  s6 g1 t1: MW experts={'top': 'stealthrock', 'sampled': 'stealthrock', 'safest': 'stealthrock', 'safex': 'stealthrock'} p={'stealthrock': 1.0} | BH experts={'top': 'stealthrock', 'sampled': 'stealthrock', 'safest': 'stealthrock', 'safex': 'stealthrock'} p={'stealthrock': 0.9688, 'heavyslam': 0.0312}
+  s7 g1 t1: MW experts={'top': 'abomasnow', 'sampled': 'abomasnow', 'safest': 'psyshock', 'safex': 'abomasnow'} p={'abomasnow': 0.5091, 'psyshock': 0.404, 'nastyplot': 0.087} | BH experts={'top': 'psyshock', 'sampled': 'psyshock', 'safest': 'psyshock', 'safex': 'psyshock'} p={'psyshock': 0.8943, 'abomasnow': 0.0795, 'dazzlinggleam': 0.0262}
+  s8 g1 t1: MW experts={'top': 'stickyweb', 'sampled': 'stickyweb', 'safest': 'stickyweb', 'safex': 'stickyweb'} p={'stickyweb': 1.0} | BH experts={'top': 'stickyweb', 'sampled': 'stickyweb', 'safest': 'stickyweb', 'safex': 'stickyweb'} p={'stickyweb': 0.8918, 'bugbuzz': 0.1082}
+  s9 g1 t1: MW experts={'top': 'espeon', 'sampled': 'espeon', 'safest': 'espeon', 'safex': 'espeon'} p={'espeon': 0.8456, 'oinkologne': 0.121, 'nastyplot': 0.0334} | BH experts={'top': 'espeon', 'sampled': 'espeon', 'safest': 'pyroar', 'safex': 'espeon'} p={'espeon': 0.5249, 'pyroar': 0.25, 'sceptile': 0.1089, 'thunderbolt': 0.0997, 'nastyplot': 0.0165}
+  s10 g1 t1: MW experts={'top': 'abomasnow', 'sampled': 'abomasnow', 'safest': 'knockoff', 'safex': 'abomasnow'} p={'abomasnow': 0.5464, 'knockoff': 0.3035, 'swordsdance': 0.15} | BH experts={'top': 'abomasnow', 'sampled': 'abomasnow', 'safest': 'swordsdance', 'safex': 'abomasnow'} p={'abomasnow': 0.5172, 'swordsdance': 0.3366, 'knockoff': 0.1101, 'closecombat': 0.0361}

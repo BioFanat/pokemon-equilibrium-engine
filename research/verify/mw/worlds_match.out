@@ -1,0 +1,2 @@
+first hedge decision: n=400 same turn 400, identical sampled-world label union 0, same Abar shape 156
+BH stream == (seed-1) % 10 for 400/400 seeds (so seeds 1-200 sit at stream positions 0-19, as in MWs/BHs)

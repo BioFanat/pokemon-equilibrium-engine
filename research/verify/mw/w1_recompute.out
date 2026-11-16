@@ -1,0 +1,53 @@
+MWs: games=400 errors=0 [] winner_role={'B': 262, 'A': 138}
+   winner_role inconsistent with winner name: 0
+BHs: games=400 errors=0 [] winner_role={'B': 287, 'A': 113}
+   winner_role inconsistent with winner name: 0
+BH: games=800 errors=2 [(291, 1), (294, 2)] winner_role={'A': 265, 'B': 533, None: 2}
+   winner_role inconsistent with winner name: 0
+
+W1: n_pairs=200 MWs=0.3450 BHs=0.2825 diff=0.0625 se=0.0303 CI=[0.0032,0.1218]
+  t-test p=0.0402  t-CI half=0.0597
+  Wilcoxon p=0.0390
+  sign-flip perm two-sided p=0.0490
+  diff distribution: {-1.0: 3, -0.5: 44, 0.0: 87, 0.5: 57, 1.0: 9}
+  MWs g1 A win rate: 0.3200
+  MWs g2 A win rate: 0.3700
+  BHs g1 A win rate: 0.2600
+  BHs g2 A win rate: 0.3050
+
+pairing mismatches (count over 400 game slots / 200 seeds): none
+input_log first divergence index: median=1, share with identical first 3 lines (start+players)=0.000, identical whole logs=0
+
+stream map: stream k = seeds[k::10]? True
+  stream 0: n=20 mean diff=-0.0500  MWs=0.200 BHs=0.250
+  stream 1: n=20 mean diff=+0.1250  MWs=0.425 BHs=0.300
+  stream 2: n=20 mean diff=+0.1750  MWs=0.450 BHs=0.275
+  stream 3: n=20 mean diff=-0.1250  MWs=0.125 BHs=0.250
+  stream 4: n=20 mean diff=+0.0750  MWs=0.400 BHs=0.325
+  stream 5: n=20 mean diff=+0.1500  MWs=0.400 BHs=0.250
+  stream 6: n=20 mean diff=-0.0500  MWs=0.325 BHs=0.375
+  stream 7: n=20 mean diff=+0.1500  MWs=0.400 BHs=0.250
+  stream 8: n=20 mean diff=+0.0750  MWs=0.350 BHs=0.275
+  stream 9: n=20 mean diff=+0.1000  MWs=0.375 BHs=0.275
+  stream-clustered SE=0.0323 (iid SE 0.0303); t(9) CI=[-0.0106,0.1356]; normal CI=[-0.0009,0.1259]
+  10 stream means: t-test on stream means p=0.0852; positive streams=7/10 zero=0
+  one-way ANOVA across streams on diffs: p=0.331
+  stream bootstrap percentile 95% CI=[0.0000,0.1200] P(boot<=0)=0.0296
+  exact stream sign-flip test (1024 flips) two-sided p=0.1016
+  seed bootstrap CI=[0.0050,0.1200]
+
+per-seed diffs: #pos=66 #neg=47 #zero=87; |diff|=1 seeds: +1:9 -1:3
+  drop top 1 seeds: mean=0.0578 CI=[-0.0011,0.1167]
+  drop top 2 seeds: mean=0.0530 CI=[-0.0054,0.1115]
+  drop top 3 seeds: mean=0.0482 CI=[-0.0098,0.1062]
+  drop top 5 seeds: mean=0.0385 CI=[-0.0185,0.0954]
+  seeds 1-100: mean=0.1050 CI=[0.0234,0.1866]
+  seeds 101-200: mean=0.0200 CI=[-0.0658,0.1058]
+
+BH (Modal) seeds 1-200: n=200 BH=0.3475 BHs=0.2825 MWs=0.3450
+BH (Modal) seeds 1-400: n=398 mean=0.3329; seeds 201-400: 0.3182
+  BHs - BH: -0.0650 CI=[-0.1233,-0.0067]  corr(per-seed)=0.020
+  MWs - BH: -0.0025 CI=[-0.0640,0.0590]  corr(per-seed)=0.038
+  corr(MWs, BHs per-seed)=0.077
+  BH vs BHs identical teams on seed g1: 200/200; battle_seed same: 200
+  BH stream field present: 0  k: 4  methods: {'A': 'hedge_bayes', 'B': 'stock'}

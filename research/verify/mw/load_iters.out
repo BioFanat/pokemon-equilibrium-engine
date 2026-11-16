@@ -1,0 +1,15 @@
+MWs: stock iters/decision mean=131924 median-of-game-means=126898; stock cpu/dec=0.263 wall/dec=0.516; A cpu/dec=0.445 A wall/dec=0.985; workers per search={2, 4}
+   time window: 1794856708 .. 1794858390  (0.47 h)
+BHs: stock iters/decision mean=132786 median-of-game-means=124815; stock cpu/dec=0.261 wall/dec=0.523; A cpu/dec=0.433 A wall/dec=0.959; workers per search={2, 4}
+   time window: 1794856708 .. 1794858379  (0.46 h)
+paired MWs-BHs it: mean=-861.2 (rel -0.65%) CI=[-5714,+3992]
+paired MWs-BHs b_cpu: mean=+0.001452 (rel +0.56%) CI=[-0.0002962,+0.003201]
+paired MWs-BHs b_wall: mean=-0.007193 (rel -1.37%) CI=[-0.01282,-0.001563]
+paired MWs-BHs a_cpu: mean=+0.01152 (rel +2.66%) CI=[-0.002641,+0.02567]
+paired MWs-BHs a_wall: mean=+0.02612 (rel +2.72%) CI=[-0.01121,+0.06346]
+start-time offset MWs-BHs for same (seed,game), minutes: median=0.5 p10=-1.4 p90=2.6
+30-min bins (start time): stock iters/decision MWs vs BHs (n games)
+  bin 0: MWs 131924 (n=400)  BHs 132786 (n=400)
+MWs: stock iters when A wins 132288 (n=138) vs A loses 131733 (n=262); MWU p=0.730
+BHs: stock iters when A wins 140948 (n=113) vs A loses 129572 (n=287); MWU p=0.054
+pooled corr(win, stock iters)=0.068
