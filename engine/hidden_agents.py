@@ -49,6 +49,30 @@ def agent_form_lp(Ms, b):
     return x / x.sum(), -r.fun
 
 
+def safex_strategy_worlds(Ms, b, qs, eps):
+    """Per-world eps-safe exploit (nash.safex_strategy over worlds): max_x Σ_k b_k q_kᵀ M_kᵀ x  s.t. the agent-form
+    guarantee Σ_k b_k v_k >= v_AF - eps * r with v_k <= (M_kᵀ x)_j ∀ j, k; x in simplex. q_k: predicted distribution
+    over world k's own columns; v_AF = agent_form_lp's value; r = ptp over all M_k (1 if 0), so K = 1 is safex_strategy
+    on M_1. eps = 0 gives the best agent-form-optimal x against the q_k. Falls back to agent_form_lp's x if the LP fails."""
+    m, K = Ms[0].shape[0], len(Ms)
+    b = np.asarray(b, float)
+    x_af, v_af = agent_form_lp(Ms, b)
+    r = float(np.ptp(np.concatenate([M.ravel() for M in Ms]))) or 1.0
+    A = []
+    for k, M in enumerate(Ms):
+        blk = np.zeros((M.shape[1], m + K))
+        blk[:, :m] = -M.T
+        blk[:, m + k] = 1
+        A.append(blk)
+    A.append(np.r_[np.zeros(m), -b][None])
+    c = -sum(bk * (M @ np.asarray(q, float)) for bk, M, q in zip(b, Ms, qs))
+    res = linprog(np.r_[c, np.zeros(K)], A_ub=np.vstack(A),
+                  b_ub=np.r_[np.zeros(sum(M.shape[1] for M in Ms)), -(v_af - eps * r)],
+                  A_eq=np.r_[np.ones(m), np.zeros(K)][None], b_eq=[1],
+                  bounds=[(0, None)] * m + [(None, None)] * K, method="highs")
+    return res.x[:m] if res.status == 0 else x_af
+
+
 def f_b(Ms, b, x):
     return float(sum(bk * (M.T @ x).min() for bk, M in zip(b, Ms)))
 

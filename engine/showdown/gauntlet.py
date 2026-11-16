@@ -11,7 +11,11 @@ likelihood on the games (a draw is half a win each way) with a weak L2 prior on 
 perfect records finite; ratings are on the Elo scale (400 log10), anchored at random = 0 (else the first bot). 95% CIs:
 --bootstrap resamples of seeds within each pairing. With >= 2 stock@<ms> bots, each other bot gets the foul-play
 budget whose interpolated rating (piecewise linear in log ms) equals its own, or "out of range".
-Outputs: engine/showdown/results/gauntlet/<prefix>_ratings.json and .md.
+Meta-game: the pairwise scores define a symmetric zero-sum game, P[i, j] = score of i vs j - 0.5 (P[i, i] = 0); its
+maximin mixture sigma (an LP) is reported with bootstrap CIs (same resampled seeds) and each bot's Nash-averaged payoff
+(P sigma)_i. Bots whose pairings have no seeds are left out of the game: while one is missing, the bot with the most
+missing pairings is dropped (ties: the later one in --bots).
+Outputs: engine/showdown/results/gauntlet/<out-prefix>_ratings.json and .md (--out-prefix defaults to --prefix).
 """
 import argparse
 import itertools
@@ -24,7 +28,7 @@ import time
 
 os.environ.setdefault("OURBOT_WORK", os.path.join(os.path.expanduser("~"), "sandbox", "ourbot"))   # as headless.py
 import numpy as np                                                                       # noqa: E402
-from scipy.optimize import minimize                                                      # noqa: E402
+from scipy.optimize import linprog, minimize                                             # noqa: E402
 
 import batch                                                                             # noqa: E402
 from headless import method_spec, stock_ms                                               # noqa: E402
@@ -112,6 +116,62 @@ def fit_bt(W, l2, anchor):
     return t - t[anchor]
 
 
+def meta_bots(bots, data):
+    """(kept, excluded): drop bots until every pairing among the kept ones has seeds; each step drops the bot with the
+    most seedless pairings among the kept, ties to the later one in --bots."""
+    empty = {frozenset(k) for k, d in data.items() if not d["seeds"]}
+    kept = list(bots)
+    while True:
+        miss = {m: sum(frozenset((m, o)) in empty for o in kept if o != m) for m in kept}
+        worst = max(reversed(kept), key=lambda m: miss[m])     # max keeps the first maximum: the later bot
+        if not miss[worst]:
+            return kept, [m for m in bots if m not in kept]
+        kept.remove(worst)
+
+
+def payoff_matrix(bots, data, pick=None):
+    """P[i, j] = mean pair score of i vs j - 0.5 (skew-symmetric, P[i, i] = 0); pick as in wins_matrix."""
+    idx = {m: i for i, m in enumerate(bots)}
+    P = np.zeros((len(bots), len(bots)))
+    for (a, b), d in data.items():
+        if a in idx and b in idx:
+            seeds = pick[d["tag"]] if pick else d["seeds"]
+            P[idx[a], idx[b]] = np.mean([np.mean(d["seeds"][s]) for s in seeds]) - 0.5
+            P[idx[b], idx[a]] = -P[idx[a], idx[b]]
+    return P
+
+
+def meta_nash(P, tol=1e-7):
+    """Maximin mixture of the symmetric zero-sum game P (row player's payoff): max v s.t. (sigma^T P)_j >= v for all
+    j, sigma in the simplex, by LP (HiGHS). As P is skew-symmetric the value is 0 and one mixture is the equilibrium.
+    check: no pure strategy gains against sigma (max_i (P sigma)_i <= tol) and min_j (sigma^T P)_j >= value - tol.
+    The dual (-ineqlin marginals) is the column player's mixture, itself an equilibrium here: if it differs from
+    sigma the equilibrium is provably not unique; an off-support bot with zero reduced cost flags possible ties."""
+    n = len(P)
+    c = np.zeros(n + 1)
+    c[-1] = -1                                              # minimize -v
+    res = linprog(c, A_ub=np.hstack([-P.T, np.ones((n, 1))]), b_ub=np.zeros(n),
+                  A_eq=[[1.0] * n + [0.0]], b_eq=[1.0], bounds=[(0, None)] * n + [(None, None)], method="highs")
+    if not res.success:
+        raise RuntimeError(f"meta-game LP failed: {res.message}")
+    sigma = np.clip(res.x[:n], 0, None)
+    sigma /= sigma.sum()
+    value = float(res.x[-1])
+    payoff = P @ sigma                                      # (P sigma)_i: pure i against the mixture
+    col = sigma @ P                                         # (sigma^T P)_j: the mixture against pure j
+    y = np.clip(-res.ineqlin.marginals, 0, None)
+    y = y / y.sum() if y.sum() > 0 else y
+    zero_rc = [i for i in range(n) if sigma[i] <= 1e-6 and abs(res.lower.marginals[i]) <= 1e-9]
+    note = None
+    if np.abs(y - sigma).max() > 1e-6:
+        note = "not unique: the LP dual's mixture is a different equilibrium"
+    elif zero_rc:
+        note = "possibly not unique: off-support strategies with zero reduced cost (dual degenerate)"
+    return dict(sigma=sigma, value=value, support=[i for i in range(n) if sigma[i] > 1e-6], payoff=payoff,
+                exploitability=float(payoff.max()), dual_sigma=y, zero_reduced_cost=zero_rc, note=note,
+                check=bool(payoff.max() <= tol and col.min() >= value - tol))
+
+
 def cpu_per_decision(prefix, plan, data):
     """Mean CPU-s per decision per bot over its pairings: batch summaries' per_method, else the game JSONs."""
     tot = {}
@@ -162,12 +222,17 @@ def fit(args, bots, plan):
     anchor = (bots.index(args.anchor) if args.anchor else
               bots.index("random") if "random" in bots else 0)   # a bot with a perfect record makes a poor anchor
     t = fit_bt(wins_matrix(bots, data), args.l2, anchor) * ELO
+    kept, excluded = meta_bots(bots, data)
+    nash = meta_nash(payoff_matrix(kept, data))
     rng = np.random.default_rng(args.boot_seed)
-    boots, pair_boots = [], {k: [] for k in data}
+    boots, pair_boots, sigma_boots, boot_check_fail = [], {k: [] for k in data}, [], 0
     for _ in range(args.bootstrap):
         pick = {d["tag"]: list(rng.choice(list(d["seeds"]), len(d["seeds"]))) if d["seeds"] else []
                 for d in data.values()}
         boots.append(fit_bt(wins_matrix(bots, data, pick), args.l2, anchor) * ELO)
+        nb = meta_nash(payoff_matrix(kept, data, pick))
+        sigma_boots.append(nb["sigma"])
+        boot_check_fail += not nb["check"]
         for k, d in data.items():
             if pick[d["tag"]]:
                 pair_boots[k].append(np.mean([np.mean(d["seeds"][s]) for s in pick[d["tag"]]]))
@@ -196,13 +261,34 @@ def fit(args, bots, plan):
         cpu_s_per_decision={m: cpu.get(resolved[m]) for m in bots},
         games_used=games, error_games=errs, pairwise=pairwise,
         foulplay_equivalent_ms=equivalent_budgets(bots, ratings),
+        meta_game=meta_block(kept, excluded, nash, np.array(sigma_boots).reshape(-1, len(kept)), boot_check_fail),
     )
     os.makedirs(RESULTS, exist_ok=True)
-    path = os.path.join(RESULTS, f"{args.prefix}_ratings")
+    path = os.path.join(RESULTS, f"{args.out_prefix or args.prefix}_ratings")
     json.dump(out, open(path + ".json", "w"), indent=1)
     open(path + ".md", "w").write(markdown(out))
     print(markdown(out))
     print(f"-> {path}.json, {path}.md", flush=True)
+
+
+def meta_block(kept, excluded, nash, sb, boot_check_fail):
+    """JSON block for the meta-game. nash_avg_payoff is (P sigma)_i, the bot's expected score margin against the
+    equilibrium mixture: <= 0, and 0 on the support ("Nash averaging", Balduzzi, Tuyls, Perolat & Graepel 2018,
+    "Re-evaluating evaluation", NeurIPS)."""
+    r4 = lambda x: round(float(x), 4)
+    return dict(
+        game="symmetric zero-sum, P[i, j] = score of i vs j - 0.5", bots=kept, excluded=excluded,
+        value=r4(nash["value"]), sigma={m: r4(nash["sigma"][i]) for i, m in enumerate(kept)},
+        support=[kept[i] for i in nash["support"]],
+        nash_avg_payoff={m: r4(nash["payoff"][i]) for i, m in enumerate(kept)},
+        exploitability=float(nash["exploitability"]), check_passed=nash["check"], uniqueness_note=nash["note"],
+        dual_sigma={m: r4(nash["dual_sigma"][i]) for i, m in enumerate(kept)},
+        sigma_boot_mean={m: r4(sb[:, i].mean()) for i, m in enumerate(kept)} if len(sb) else None,
+        sigma_ci95={m: [r4(v) for v in np.percentile(sb[:, i], [2.5, 97.5])] for i, m in enumerate(kept)}
+        if len(sb) else None,
+        support_freq={m: r4(np.mean(sb[:, i] > 0.01)) for i, m in enumerate(kept)} if len(sb) else None,
+        boot_check_failures=boot_check_fail,
+    )
 
 
 def markdown(o):
@@ -220,6 +306,22 @@ def markdown(o):
     if eq:
         lines += ["", "| bot | foul-play equivalent budget (ms per state) |", "|---|---|"]
         lines += [f"| {m} | {v['ms'] if v['ms'] is not None else v['note']} |" for m, v in eq.items()]
+    g = o["meta_game"]
+    lines += ["", f"Meta-game equilibrium (symmetric zero-sum, P = score - 0.5; value {g['value']:.4f}, "
+                  f"exploitability {g['exploitability']:.1e}, check {'passed' if g['check_passed'] else 'FAILED'})", "",
+              "| bot | sigma | bootstrap mean | 95% CI | P(sigma > 0.01) | Nash-averaged payoff |",
+              "|---|---|---|---|---|---|"]
+    for m in sorted(g["bots"], key=lambda m: (-g["sigma"][m], -g["nash_avg_payoff"][m])):
+        ci_m = f"{g['sigma_ci95'][m][0]:.3f} to {g['sigma_ci95'][m][1]:.3f}" if g["sigma_ci95"] else "-"
+        bm = f"{g['sigma_boot_mean'][m]:.3f}" if g["sigma_boot_mean"] else "-"
+        sf = f"{g['support_freq'][m]:.3f}" if g["support_freq"] else "-"
+        lines.append(f"| {m} | {g['sigma'][m]:.3f} | {bm} | {ci_m} | {sf} | {g['nash_avg_payoff'][m]:+.4f} |")
+    if g["excluded"]:
+        lines += ["", f"Left out of the meta-game (pairings without data): {', '.join(g['excluded'])}."]
+    if g["uniqueness_note"]:
+        lines += ["", f"Equilibrium {g['uniqueness_note']}; sigma is the one the LP returned."]
+    if g["boot_check_failures"]:
+        lines += ["", f"Exploitability check failed in {g['boot_check_failures']} bootstrap resamples."]
     lines += ["", f"Bootstrap: {o['bootstrap']} resamples of seeds within each pairing; L2 prior {o['l2_prior']} "
                   "on natural log-strengths."]
     return "\n".join(lines) + "\n"
@@ -232,6 +334,7 @@ def main():
     ap.add_argument("--override", default="", help="per-pairing seed counts: 'a:b=N,...'")
     ap.add_argument("--workers", type=int, default=10)
     ap.add_argument("--prefix", default="G")
+    ap.add_argument("--out-prefix", default=None, help="name the outputs <out-prefix>_ratings.* (default: --prefix)")
     ap.add_argument("--dry-run", action="store_true", help="print the batch commands and the game count only")
     ap.add_argument("--fit-only", action="store_true", help="skip running; fit what is on disk")
     ap.add_argument("--bootstrap", type=int, default=1000)

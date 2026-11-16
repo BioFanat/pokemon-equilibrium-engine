@@ -1,0 +1,5 @@
+ok  (d) hidden-attribute mutations leave the key unchanged (924/924 children)
+ok  (d) sanity: public opponent HP change changes the key (924/924)
+ok  (d) sanity: our own HP change changes the key (924/924)
+ok  (d) no group mixes root actions or opponent labels (8 decisions)
+ALL OK

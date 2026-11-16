@@ -1,0 +1,8 @@
+ok  (c) per-group V_A1(o) >= V_A2(o) (A2 evaluated under the live posterior) (0 violations)
+ok  (c) rep: V_A1(a) >= V_A2(a) for every root action (2000 instances, 0 with a violation)
+ok  (c) rep: V_A1(a*) >= V_A2(a*) at a* = argmax x_A1 
+ok  (c) pw: V_A0L(a) >= V_A1(a) (clairvoyant children bound) (0 violations)
+    pw (Jensen not a theorem): instances with some V_A1(a) < V_A2(a): 724/2000
+    rep (clairvoyance bound not a theorem): instances with some V_A0L(a) < V_A1(a): 439/2000
+ok  (c) rep: V_A1(a) >= V_A2(a) on real decisions (3 decisions)
+ALL OK

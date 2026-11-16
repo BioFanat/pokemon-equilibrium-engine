@@ -1,0 +1,6 @@
+6 decisions
+ok  (a1) all-distinguishable S1 == depth-2 AF reference (all arms, K=1,2,4) (max rel diff 2.3e-15)
+ok  (a2) K=1 public keys: A1 == A2 (6 decisions)
+ok  (a2) K=1: A1 <= reference for every root action 
+ok  (a2) K=1 without within-world merges: A1 == reference (3 such decisions; 3 had within-world merges)
+ALL OK

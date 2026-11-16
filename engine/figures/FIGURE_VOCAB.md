@@ -24,3 +24,16 @@
 | Cautious (maximin) | opponent style: plays the maximin (safest) move | (case-study figures) |
 | Uniform random | opponent style: picks uniformly among its options | (case-study figures) |
 | Ours | our agent (the Hedge/equilibrium player) in game results | (none) |
+
+## Proposed (fig_gauntlet, fig_switch; not yet accepted)
+
+| Term | Meaning | Code spec |
+|---|---|---|
+| Agent-form, top move | play the agent-form LP's most probable action | `top` (`engine/showdown/run_ourbot.py`) |
+| Max damage | max-damage baseline bot (highest base power times type effectiveness) | `maxpower` (`engine/showdown/simple_bots.py`) |
+| Uniform random | (bot) picks uniformly among its options; same term as the opponent style | `random` (`engine/showdown/simple_bots.py`) |
+| foul-play, N ms | stock Foul Play bot with N ms of search per state | `stock@N` (`engine/showdown/headless.py`) |
+| Rating (Elo) | Bradley-Terry rating on the Elo scale (400 log10), agent-form = 0 | `gauntlet.py` |
+| Realised time | updates after the switch until the posterior's top style is uniform random for 20 straight updates | `tau_map` |
+| Predicted time | re-concentration time predicted from the log-posterior gap at the switch | `tau_hat` |
+| λ | posterior forgetting factor (λ = 1: plain Bayes; λ = 0.98: forgetting) | `lam` |

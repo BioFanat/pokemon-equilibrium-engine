@@ -27,6 +27,7 @@ STYLES = ("eq", "br_unif", "br_us", "safe", "uniform")
 TAU_FRAC = float(os.environ.get("OURBOT_BAYES_TAU", "0.1"))       # softmax temperature, in units of ptp(Abar)
 MIX = float(os.environ.get("OURBOT_BAYES_MIX", "0.05"))           # uniform mixed into every style
 LAM = float(os.environ.get("OURBOT_BAYES_LAMBDA", "1.0"))         # forgetting factor (1 = none)
+DTP = os.environ.get("OURBOT_BAYES_DTP") == "1"                   # discount-then-predict (opt-in; default predict-then-discount)
 
 
 def _softmax(z):
@@ -55,14 +56,19 @@ def old_predictor(A, mix=MIX):
 
 
 class Posterior:
-    """Posterior over STYLES in log form. update(qs, j): logP <- lam * logP + log qs[:, j], renormalised."""
+    """Posterior over STYLES in log form. update(qs, j): logP <- lam * logP + log qs[:, j], renormalised. With dtp
+    (OURBOT_BAYES_DTP=1) the discount also covers the new likelihood, logP <- lam * (logP + log qs[:, j]), so the stored
+    (and predicting) posterior is the discounted one."""
 
-    def __init__(self, lam=LAM, tau_frac=TAU_FRAC, mix=MIX):
-        self.lam, self.tau_frac, self.mix = lam, tau_frac, mix
+    def __init__(self, lam=LAM, tau_frac=TAU_FRAC, mix=MIX, dtp=DTP):
+        self.lam, self.tau_frac, self.mix, self.dtp = lam, tau_frac, mix, dtp
         self.logp = np.full(len(STYLES), -np.log(len(STYLES)))
 
     def config(self):
-        return dict(styles=list(STYLES), lam=self.lam, tau_frac=self.tau_frac, mix=self.mix)
+        d = dict(styles=list(STYLES), lam=self.lam, tau_frac=self.tau_frac, mix=self.mix)
+        if self.dtp:
+            d["dtp"] = True
+        return d
 
     def probs(self):
         w = np.exp(self.logp - self.logp.max())
@@ -74,7 +80,7 @@ class Posterior:
     def update(self, qs, j):
         """Bayes step on the observed column j of the turn whose style matrix is qs; returns the likelihoods."""
         lik = qs[:, j]
-        z = self.lam * self.logp + np.log(lik)
+        z = self.lam * (self.logp + np.log(lik)) if self.dtp else self.lam * self.logp + np.log(lik)
         self.logp = z - (z.max() + np.log(np.exp(z - z.max()).sum()))
         return lik
 
@@ -131,5 +137,92 @@ def score_and_update(post, pend, label, forced):
                p_old=round(float(old[j]), 6), hit_qhat=bool(int(qhat.argmax()) == j),
                hit_style={s: bool(int(q.argmax()) == j) for s, q in zip(STYLES, qs)}, hit_old=bool(int(old.argmax()) == j))
     post.update(qs, j)
+    rec["posterior"] = dict(zip(STYLES, post.probs().round(4).tolist()))
+    return rec
+
+
+# ---------------------------------------------------------------- membership-aware per-world model (*_mw methods)
+# The functions above work on the world-averaged Abar, whose columns are the UNION of the K worlds' labels, so every
+# style spreads mass over options the opponent may not have. Below, each style is evaluated on each world's own matrix
+# M_k (columns = that world's options) and the worlds are mixed with their weights w_k:
+#   q(label) = Σ_k w_k Σ_σ P(σ) q_σ(label | M_k)     (world k contributes nothing to a label it lacks)
+#   P(b | σ) = Σ_{k ∋ b} w_k q_σ(b | M_k)             (the likelihood of the Bayes step; MIX keeps it > 0)
+# Inputs are the decision's worlds, their column labels, w and our reference mixture p only (no post-action data).
+
+def style_dists_worlds(Ms, p, tau_frac=TAU_FRAC, mix=MIX):
+    """[style_dists(M_k, p)] over the row-aligned world matrices: each style on world k's own columns."""
+    return [style_dists(M, p, tau_frac, mix) for M in Ms]
+
+
+def predict_worlds(P, qsk, cols, w, labels):
+    """Membership-aware prediction over the union `labels`: q(label) = Σ_k w_k q̂_k(label), q̂_k = P @ qsk[k] over
+    world k's columns cols[k]. Returns (q, [q̂_k])."""
+    qk = [P @ qs for qs in qsk]
+    pos = {lab: i for i, lab in enumerate(labels)}
+    q = np.zeros(len(labels))
+    for wk, c, qh in zip(w, cols, qk):
+        for j, lab in enumerate(c):
+            q[pos[lab]] += wk * qh[j]
+    return q, qk
+
+
+def lik_worlds(qsk, jk, w):
+    """Per-style likelihood of the observed action: Σ_{k in jk} w_k qsk[k][:, jk[k]]; jk = {world k: column of the
+    action in world k} over the worlds that contain it (the others contribute 0)."""
+    return sum(w[k] * qsk[k][:, j] for k, j in jk.items())
+
+
+class WorldPosterior(Posterior):
+    """Posterior updated with the per-world likelihood lik_worlds (same lam / dtp log-space step as Posterior.update)."""
+
+    def config(self):
+        # marker so a *_mw state file is never silently shared with (or resumed by) a plain Posterior method
+        return dict(super().config(), likelihood="per_world")
+
+    def update_worlds(self, qsk, jk, w):
+        lik = lik_worlds(qsk, jk, w)
+        z = self.lam * (self.logp + np.log(lik)) if self.dtp else self.lam * self.logp + np.log(lik)
+        self.logp = z - (z.max() + np.log(np.exp(z - z.max()).sum()))
+        return lik
+
+
+def load_world_posterior(path):
+    """load_posterior for the *_mw methods (a WorldPosterior; same state file format)."""
+    post = WorldPosterior()
+    meta = dict(games=0, updates=0, skipped=0)
+    if path and os.path.exists(path):
+        d = json.load(open(path))
+        if d["config"] != post.config():
+            raise ValueError(f"posterior state {path} was written with {d['config']}")
+        post.logp = np.array(d["logp"])
+        meta = d["meta"]
+    meta["games"] += 1
+    return post, meta
+
+
+def decide_worlds(Ms, cols, w, labels, p_ref, post):
+    """Per-world style distributions qsk, the membership-aware q over `labels` and the per-world q̂_k; returns
+    (qsk, q, qk, log fields)."""
+    qsk = style_dists_worlds(Ms, p_ref, post.tau_frac, post.mix)
+    q, qk = predict_worlds(post.probs(), qsk, cols, w, labels)
+    rec = dict(qhat_mw=q.round(4).tolist(), cols=[list(c) for c in cols], qhat_k=[x.round(4).tolist() for x in qk])
+    return qsk, q, qk, rec
+
+
+def score_and_update_worlds(post, pend, jk, label, forced):
+    """*_mw feedback: prequential scores BEFORE the update of the observed action under the membership-aware q
+    (p_qhat_mw = Σ_k w_k q̂_k(b)), the averaged-matrix q-hat of the same posterior (p_qhat, as score_and_update), each
+    style per world (p_style_mw, the likelihood) and on Abar (p_style), and the old predictor; then the Bayes step with
+    the per-world likelihood. `label` is the action's label in the union (map_column's), jk = {k: column in world k}."""
+    j = pend["labels"].index(label)
+    qs, qhat, old, qmw = pend["qs"], pend["qhat"], pend["old"], pend["qhat_mw"]
+    p_mw = sum(pend["w"][k] * pend["qhat_k"][k][jj] for k, jj in jk.items())
+    rec = dict(col=label, j=j, forced=forced, n_cols=len(qhat), worlds_with=sorted(jk),
+               p_qhat=round(float(qhat[j]), 6), p_qhat_mw=round(float(p_mw), 6),
+               p_style={s: round(float(q[j]), 6) for s, q in zip(STYLES, qs)},
+               p_old=round(float(old[j]), 6), hit_qhat=bool(int(qhat.argmax()) == j),
+               hit_qhat_mw=bool(int(qmw.argmax()) == j))
+    lik = post.update_worlds(pend["qsk"], jk, pend["w"])
+    rec["p_style_mw"] = {s: round(float(v), 6) for s, v in zip(STYLES, lik)}
     rec["posterior"] = dict(zip(STYLES, post.probs().round(4).tolist()))
     return rec
