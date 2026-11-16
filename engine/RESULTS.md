@@ -636,6 +636,8 @@ Per experiment (Lecture 6 = one no-regret learner against an adaptive adversary;
 
 ## Open items (2026-11)
 
+Caveat for all earlier results: 33 games dropped as error games came from harness bugs that were later fixed, and they are not a random sample (see "Harness bugs and the error-game caveat" in the next section).
+
 Showdown runs of 2026-11-16 and their analyses. Full tables, scripts and caveats: `analysis/open_items/REPORT.md`
 (independently verified; corrections applied; scripts `analysis/open_items/*.py`, outputs `out_*.json`). Pair score of
 A with a 95% CI over pairs (normal); stream-clustered CIs use only 10 streams per tag. Theory cross-references:
@@ -652,6 +654,190 @@ A with a 95% CI over pairs (normal); stream-clustered CIs use only 10 streams pe
 | B6. RQ pre-registration | hedge_bayes vs style_eq / style_safe / style_uniform | 0.6700 / 0.8550 / 0.9948 | predictions committed in fb3cc8e before the runs (`theory/tightening/bayes_dynamics.md` §4). P1 pass (to rounding); P2 partial (4 of 6 clauses); P3 high-mismatch branch **fail** (final MAP = safe 10/10), neither branch strictly covers the observed 0.048-nat gap, point prediction passes; P4 pass; P5 pass |
 | Leaf exposure | LSs agentform vs stock (2-CPU containers, 120 games); LSn agentform vs pimc (1-CPU, 120 games) | non-depth-1 leaf returns: LSs 432 / 7,246,430 calls = 0.0060% (≥1 in 59/120 games); LSn 850 / 16,172,097 = 0.0053% (≥1 in 91/120; both bots combined: the two bots share one process and one counter); scores LSs 0.2833 [0.2068, 0.3599], LSn 0.5917 [0.4981, 0.6853] (60 pairs each) | about 1 in 17,000–19,000 calls in real games (1 in 40,000 in AFdet), similar rates in the two container classes; far below the 16/240 and 17/240 changed children of the 12-process load probe (`theory/tightening/voi.md` §2.5). Mechanism: `theory/tightening/verify/leaf/README.txt`. Sources `showdown/results/{LSs,LSn}/*_summary.json` |
 | Det-leaf control | AFdet agentform vs stock, `OURBOT_DET_LEAF=1`, seeds 1–300 | 0.3067 [0.2693, 0.3440] vs AF 0.3144; paired diff −0.008 [−0.057, 0.040] (n = 299) | retry fired on all 826 non-depth-1 returns in 33.2M calls, 0 fallbacks; no detectable effect (`analysis/open_items/out_afdet_paired.json`) |
+
+## Benchmark and follow-up studies (integration branch, 2026-11-16)
+
+What was run: a ladder-style gauntlet of nine bots (G1), a live test of the style-posterior switching theory (T5), a live
+test of the membership-aware style posterior (`hedge_bayes_mw`) with a replication, offline measurements of a joint
+set x style posterior, and an engine-simulation test of an information-set planner (S1) with measurements of scouting
+and concealment value. All runs are local. After the harness fixes below, every run listed here has 0 error games
+(G1: 0 in 1,800). Full write-ups are under `research/`; sources are cited per subsection.
+
+### Gauntlet G1 (`engine/showdown/results/gauntlet/G1_ratings.{md,json}`, `research/gauntlet_fp_iterations.md`)
+
+Bradley-Terry ratings on an Elo scale, anchored at agentform = 0. "stock@N" is foul-play (stock MCTS) with N ms per
+state.
+
+| bot | rating | 95% CI |
+|---|---|---|
+| stock@1000 | 192 | 152 to 233 |
+| stock@100 | 160 | 119 to 200 |
+| stock@400 | 150 | 110 to 192 |
+| stock@25 | 135 | 94 to 179 |
+| top | 43 | -4 to 92 |
+| agentform | 0 | 0 to 0 |
+| pimc | -41 | -90 to 5 |
+| maxpower | -286 | -367 to -220 |
+| random | -911 | -1495 to -752 |
+
+Score of agentform against foul-play at each budget (60 pairs each, 0 error games):
+
+| foul-play budget (ms per state) | agentform score | 95% CI | foul-play median iterations (p10 to p90) |
+|---|---|---|---|
+| 25 | 0.3167 | 0.242 to 0.392 | 17000 (7000 to 24000) |
+| 100 | 0.3167 | 0.242 to 0.400 | 57000 (25000 to 83000) |
+| 400 | 0.275 | 0.200 to 0.342 | 157000 (77000 to 252000) |
+| 1000 | 0.225 | 0.158 to 0.292 | 377000 (196000 to 646000) |
+
+Agentform also scores 0.5375 against pimc (40 pairs), 0.55 against top (20 pairs), 0.8 against maxpower and 1.0
+against random (20 pairs each).
+
+Meta-game (symmetric zero-sum, P = score - 0.5): the equilibrium puts all weight on stock@1000 (sigma = 1.000; value
+-0.0000, exploitability 0.0e+00). The bootstrap is loose: stock@1000's 95% CI is 0.000 to 1.000 and P(sigma > 0.01) is
+0.623.
+
+Reading (ours): the agent sits below foul-play's smallest budget (rating 0 against 135 for stock@25; the foul-play
+equivalent budget is out of range, reported as such in G1_ratings.md). Foul-play's strength saturates early: the four
+budgets span only 135 to 192, and stock@25 against stock@1000 scores 0.475 (20 pairs). The agent is level with top and
+pimc: their intervals (-4 to 92 and -90 to 5) overlap the agent's 0. The meta-game puts its weight on the top foul-play budget,
+which scores above 0.5 against every other bot in the table (most intervals include 0.5).
+
+### Style-switch test, live T5 (`research/prereg_style_switch.md` "Results"; `research/switch_results/out_style_switch.md`)
+
+Runs SW2 (seeds 1-100), SW4 (1-180), SW4p (1-80, lambda = 0.98, the shipped predict-then-discount). 0 error games; all
+30 streams pass the posterior reconstruction check (max error 2.3e-4 against the 1e-3 clean threshold). **SW4d was not
+run.** Predictions were fixed before the runs.
+
+| P | prediction | observed | verdict |
+|---|---|---|---|
+| P1 | median tau_map SW2 in [70,170], SW4 in [130,330] | 107.5 [77, 138]; 225 [150, 274] | pass |
+| P2 | tau_map(SW4)/tau_map(SW2) in [1.5, 2.7] | 2.09 | pass |
+| P3 (primary) | median tau_map/tau_hat in [0.7, 1.4], Spearman >= 0.5 (20 streams) | 1.06, rho = 0.86 | pass |
+| P4 | median tau_90 - tau_map in [0, 25] | 4 (SW2), 6.5 (SW4) | pass |
+| P5 | X: SW2 in [20,60], SW4 in [45,110] | 29.2, 66.2 | pass |
+| P6 | SW4p median tau_map in [15,70] (pt 35), ratio to SW4 <= 0.4; false alarms 0/10 per arm | 37.5 [26, 62], ratio 0.17; false alarms SW2 1/10, SW4 0/10, SW4p 0/10 | pass |
+| P7 | score differences within +-0.05 (post) / +-0.10 (pre) | post +0.006, +0.009; pre 0.000, 0.000 | as predicted |
+| P8 | identity error <= 1e-3 (reconstruction), <= 5e-3 (logged) | 6.3e-4; 4.9e-3 | pass |
+
+Reading: this is the first live test of T5. The posterior's re-concentration time after a style switch is predicted per
+stream from its own switch-time posterior and the measured drift rates (P3), and it scales with the pre-switch evidence
+(P2). Forgetting at lambda = 0.98 cuts the delay about 6x, matching the point prediction (35 vs 37.5). One false
+alarm: SW2 stream 7 (P(uniform) = 0.067 at the switch, so the posterior had not yet separated safe from uniform), which
+misses the 0/10 point prediction but is below the refutation threshold (>= 2).
+
+### hedge_bayes_mw (`research/prereg_mw.md` "Results" and "Replication results"; `research/mw_w1_verification.md`; `research/out_mw.md`)
+
+Membership-aware style posterior (per-world style likelihood restricted to each world's own columns). Runs MWs, BHs
+(seeds 1-200), MWeq (1-100), replication MWs2 / BHs2 (seeds 201-400). 0 error games.
+
+| P | observed | predicted | verdict |
+|---|---|---|---|
+| L1 | 0.297 nats/turn [0.281, 0.314] | [0.25, 0.40] | pass |
+| L1-rep | 0.311 nats/turn [0.291, 0.331] | [0.25, 0.40] | pass (replicates) |
+| L2 | 0.270 [0.233, 0.307] | [0.20, 0.45] | pass |
+| L3 | 0.2499 [0.224, 0.276] | [0.25, 0.45] | not refuted (< 0.15 refutes); 1e-4 below the interval |
+| R1 | eq is the final MAP in 0/10 MWeq streams | at most 4/10 | pass; realisability still fails with per-world styles |
+| W1 | +0.0625 [0.003, 0.122] (iid); stream-clustered t(9) [-0.011, 0.136] | [-0.03, 0.03] | not refuted, interval missed; not robust |
+| W1-rep | +0.0075 (MWs2 0.3425 vs BHs2 0.3350); iid SE 0.0316, one-sided lower bound -0.045; stream-clustered SE 0.0358; sign-flip one-sided p = 0.45 | supported if one-sided lower > 0 | **not supported** |
+| W2 | +0.095 [0.014, 0.176] vs RQeq | [-0.05, 0.05] | descriptive; confounded (RQeq ran on Modal, MWeq locally) |
+| C1 | +2.0 % CPU per decision | within 10 % | as predicted |
+
+The prediction gain replicates (0.297 then 0.311 nats/turn). The win-rate gain does not: W1 was not robust to stream
+clustering (`mw_w1_verification.md`) and the replication gives +0.0075. BHs2 (0.335) is in line with earlier Modal runs
+of the same method (0.318-0.348), so BHs (0.2825) was a low draw. Pooled over seeds 1-400: +0.035, iid 95% [-0.008,
++0.078], stream-clustered t(9) [-0.010, +0.080] (reported alongside, not the test). Same pattern as BH: better
+prediction, no detectable win-rate change against stock foul-play.
+
+### Joint set x style posterior (`research/joint_posterior.md`, corrected numbers only)
+
+Offline, on logged worlds from 18 games (10 vs stock, 8 vs style_eq), paired differences in log loss (nats per turn),
+game-clustered:
+
+| difference | pooled |
+|---|---|
+| support fix (current minus membership-aware) | +0.325 ± 0.027 (vs stock +0.324 ± 0.031) |
+| per-world style likelihood (membership minus per-world) | +0.028 ± 0.011 |
+| true joint (option iii minus set-conditional style) | +0.001 ± 0.001 |
+
+The support fix is the real gain: current 1.623 vs membership-aware 1.299 nats vs stock (372 turns). The old
+"correlation term" is a per-world style likelihood, worth about +0.028; a genuinely joint (active set x style) posterior
+carried across turns adds nothing measurable. Verdict: do not build the joint posterior; the support fix is what to
+keep. The link to HBA (Albrecht & Ramamoorthy 2013) is structural only. Per-world `style_dists` costs about 4x the
+averaged-matrix call (1.0 vs 3.9 ms per decision).
+
+### Scouting and concealment (`research/info_gathering_concealment.md`, corrected; `research/s1_results.md`)
+
+Strategy-fusion value along real 6v6 play, per hidden variable (fraction of the depth-2 payoff range; per-world best
+action disagrees in the given share of decisions):
+
+| hidden variable | mean | median | per-world argmax disagrees |
+|---|---|---|---|
+| opponent unrevealed moves (active) | 0.53 % | 0 | 16 % |
+| opponent item (active) | 0.45 % | 0 | 6 % |
+| opponent tera type | 0.22 % | 0 | 9 % |
+| all opponent sets jointly | 1.2 % | 0.3 % | 37 % |
+
+Concealment value (what the opponent's ignorance of our set is worth): ex-ante mean 1.113 %, median 0.241 % of range
+(species known); mean 1.515 %, median 0.73 % with back-row species unknown (the comparison is noise-dominated, so the
+pre-registered "at least 2x" prediction is not decided). The LP argmax changes in 21/91 decisions, with one-stage
+regret above 1 % of range in 4/91. Assuming an omniscient opponent is the safe side by theory (maxmin): x_AF is maxmin
+against opponents who can condition on our type, a set that includes all type-blind opponents, so it guarantees v_AF
+against any opponent. The honest-model strategy is the exploitative side; it would lose mean 3.4 % (median 0.9 %)
+against a best-responding omniscient opponent, against 0.948 % (median 0) lost by the current assumption against one
+solver-picked equilibrium. The safe-side claim rests on the theory, not on that comparison.
+
+S1 (information-set planner, engine simulation, 3,620 decisions, 32 games): V_A1(a*) - V_A2(a*) has mean 0.0022 % of
+range, median 0, and A1 and A2 choose different actions in 3/3,620 decisions (0.08 %).
+
+| score | prediction | outcome | verdict |
+|---|---|---|---|
+| E1b | mean 0.5-1.5 % of range | 0.0022 % | **fail** |
+| E2a | A1, A2 differ in 5-12 % of decisions | 0.08 % (3/3,620) | **fail** |
+| E4 (a, b, c) | keys per cell median 2-3 (moves) and 1 (switches); merged children > 50 % | 2, 1, 67.9 % | **pass** |
+
+Why: poke-engine branches only on crit or kill (average damage rolls), so a public observation is almost always either
+impossible in a world or equally likely in every world that can produce it. Information arrives as hard eliminations,
+which the matched frozen-posterior control credits to both arms, so E1 measures soft updating only and finds almost
+none. E4's merging happened but bought no soft information. The clairvoyance bound at the children (A0L - A1) is mean
+0.35 %, median 0. Decision (2026-11-16): accept the null. Do not port S1 live and do not build S2; damage-roll
+branching is a large engine change for at most the 0.35 % bound, and no principled alternative control was found.
+
+### Harness bugs and the error-game caveat (`research/harness_bugs.md`)
+
+Three real-Showdown harness bugs were found during G1 and fixed (`engine/showdown/headless.py`,
+`engine/showdown/revival_guard.py`).
+1. **Simulator startup race (local only).** Each simulate-battle launch ran `node build`, which rewrites `dist/`; a
+   concurrent start could load a half-written file and hang. 5 G1 seeds lost and rerun; Modal runs not exposed. Fix:
+   `--skip-build`, fail fast, guard `proc.kill()`.
+2. **Revival Blessing (all methods, all runs).** The request for a fainted reserve is not understood by foul-play or
+   poke-engine: stock crashes with ZeroDivisionError, our solvers with AttributeError, and others pick a living
+   reserve that Showdown rejects. Past occurrences: 10 ZeroDivisionError (stock), 15 invalid_choice_stall, 8
+   AttributeError, i.e. 33 games. Fix: `revival_guard.guard` answers with the first fainted reserve.
+3. **Forced recharge while trapped.** poke-engine returns 'No Move'. Fix: answer `recharge`.
+
+**Caveat for earlier results:** those 33 games were dropped as error games, but not at random: they are games where a
+Revival Blessing user was on the team and used the move, and seed 4 / seat p1 (Pawmot) recurs. The direction of the bias
+on any one pair score is not established. After the fixes the 11 lost G1 seeds were rerun and G1 has 0 error games in
+1,800. The fixes leave decisions in all other states unchanged.
+
+### Ladder handoff
+
+`engine/showdown/LADDER.md` documents running agentform on the public Showdown ladder. It is untested against the public
+server; one local rated game ran clean after the guards were added.
+
+### Known / adapted / new (`lit/joint_belief_voi_concealment.md`)
+
+- **Known:** Bayesian posteriors over fixed opponent types (Albrecht and Stone survey, Baker and Cowling 2007) and over
+  strategies with hidden cards marginalised (Southey et al. 2005, Ganzfried and Sun 2016); PIMC strategy fusion
+  (Long et al. 2010, Frank and Basin 1998); ISMCTS; public belief states; the concealment principle (Schmid et al. 2021).
+- **Adapted:** the style-type posterior and its switching test (T5) in a real random-battle game; ISMCTS-style
+  information-set search for the S1 planner (the closest ISMCTS results need translation to a depth-2 matrix planner).
+- **Gap:** no prior measurement of the loss from a product posterior versus a joint (private type, style) posterior in
+  a real imperfect-information game; our measurement is the support fix (+0.325) and an about-zero joint term.
+- **Gap:** no measurement of the value of information (oracle-vs-belief gap decomposed into strategy fusion,
+  non-locality and belief error) in a real game; no scouting in any Pokemon agent.
+- **Gap:** no Pokemon agent models what the opponent infers about our hidden set, and no measured value of concealment
+  in a real game; the PokaiTrainer paper concedes our information instead (known).
 
 ## Next experiments
 
