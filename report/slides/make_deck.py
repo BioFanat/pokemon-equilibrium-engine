@@ -596,27 +596,29 @@ notes(s, "Lecture gave us multiplicative weights, a linear update on losses. Our
 
 # ===================== Section 2: Method =====================
 # 4. Where no-regret learning enters
-s, S = content(2, "Applying No-Regret Learning")
+s, S = content(2, "Equilibrium Play and No-Regret Learning")
 cols = [
-    ("Inside a turn", [
-        P("Solve the Bayesian matrix game: one LP over the sampled worlds, or RM⁺ self-play", before=8),
+    ("Each turn: play an equilibrium", [
+        P("Solve the Bayesian matrix game over the sampled worlds: an LP, or RM⁺ self-play (no-regret dynamics, Fact 1)", before=8),
         EQ_(E_BLP, before=10),
         P("PIMC averaging instead solves each world as if known, then averages → strategy fusion",
           size=SECONDARY, before=10)]),
-    ("Across games", [
-        P("Hedge over per-turn experts", before=8),
-        P("plus a Bayesian opponent memory", before=8)]),
-    ("At the search root", [
-        P("Bandit self-play (UCB1 / Exp3): the visit shares obey", before=8),
+    ("Across games: learn with Hedge", [
+        P("Hedge over per-turn experts, learning from the opponent's observed actions", before=8),
+        P("A Bayesian opponent memory, whose update is Hedge with η = 1", before=8)]),
+    ("Analysing search", [
+        P("A tree-search root, as in Foul Play, is bandit self-play (UCB1 / Exp3); its visit shares obey", before=8),
         EQ_(E_GAP_ROOT, before=10)]),
 ]
 for k, (head, paras) in enumerate(cols):
     S.text(LEFT + k * (COL3 + GAP), TOP, COL3, BOTTOM - TOP, [P(head, b=True)] + paras, f"{head} column")
-notes(s, "We apply no-regret learning in three places. Inside a turn: we solve PokaiTrainer's Bayesian matrix game, "
-      "one LP over the sampled worlds, or run RM-plus self-play: one strategy x against an opponent that "
-      "best-responds in each sampled world, unlike PIMC averaging, which suffers strategy fusion. Across games: Hedge "
-      "over per-turn experts plus a Bayesian opponent memory. At the search root: bandit self-play, where the visit "
-      "shares' duality gap equals summed regret over N.")
+notes(s, "Each turn, the agent plays an equilibrium of PokaiTrainer's Bayesian matrix game: one strategy x against "
+      "an opponent that best-responds in each sampled world. On Showdown we solve it with an LP; in the engine we run "
+      "RM-plus self-play, whose convergence is the regret-to-equilibrium fact. PIMC averaging instead solves each world "
+      "separately and suffers strategy fusion. The actual learning happens across games: Hedge over per-turn experts, "
+      "and a Bayesian opponent memory whose update is Hedge with step one. Finally, we use the same view to analyse "
+      "search: Foul Play's tree-search root is two bandits playing each other, and the duality gap of the visit shares "
+      "equals their summed regret over N.")
 
 # 5. Across games: an experts problem
 s, S = content(2, "Across games: an experts problem")
@@ -825,7 +827,7 @@ notes(s, "On real Showdown, a round-robin tournament of 1,800 games: Foul Play a
 # ===================== Section 5: Conclusions =====================
 # 12. Takeaways and next steps
 s, S = content(5, "Takeaways and next steps")
-items = ["No-regret learning composes cleanly from the turn to the search root; the measured regrets are small",
+items = ["Per-turn equilibrium play plus Hedge across games: the guarantees compose into a whole-battle bound, and the measured regrets are small",
          "Bound and experiments are consistent with the stage-matrix (leaf) error dominating; "
          "better beliefs don't move win rate",
          "Next: an evaluation function trained on exact terminal values; log the opponent's side to measure "
@@ -834,8 +836,8 @@ S.text(LEFT, TOP, WIDTH, BOTTOM - TOP, [
     P(txt, number=True, before=0 if k == 0 else 22) for k, txt in enumerate(items)
 ] + [P("Also in the paper: joint set×style belief and lookahead-posterior nulls; case study",
        size=SECONDARY, i=True, before=36)], "Takeaways")
-notes(s, "Three takeaways. First, no-regret learning composes cleanly across a turn, a match and a search root, "
-      "and the measured regrets are small. Second, the bound and the experiments are consistent with the stage-matrix "
+notes(s, "Three takeaways. First, per-turn equilibrium play and Hedge across games compose into a whole-battle "
+      "bound, and the measured regrets are small. Second, the bound and the experiments are consistent with the stage-matrix "
       "error from the leaf evaluation dominating: better beliefs improve prediction, not win rate. Third, next steps: an "
       "evaluation function trained on exact terminal values, and logging the opponent's side to measure two-sided regret. Thank you.")
 
