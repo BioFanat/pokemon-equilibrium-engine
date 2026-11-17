@@ -1,4 +1,4 @@
-"""Build deck.pptx: the 13-slide, ~4-minute CS535 final-project talk, in five sections.
+"""Build deck.pptx: the 14-slide, ~4-minute CS535 final-project talk, in five sections.
 
 Built on the user's template ("random template.pptx"): its master, theme, 16:9 size,
 title-slide style and its five-box section tracker, which lives in the template's
@@ -927,6 +927,42 @@ notes(s, "Every other test uses fixed bots, so we also played on the public Show
       "nearly deterministic, so our lower bound says it can be exploited, and we have not measured by how much: "
       "strength and guarantees pull apart.")
 
+# 12b. Hedge over the Bayesian model: why no-regret loses (numbers from analyze_noregret_h2h.py)
+H2H_SCORE, H2H_CI, H2H_N = "0.33", "[0.21, 0.45]", "31 paired seeds"
+H2H_W = [("Bayesian argmax", "0.23–0.41"), ("its visit shares", "0.10–0.12"), ("LP equilibrium", "0.46–0.66")]
+H2H_REG, H2H_BOUND = "≈ 3", "≈ 20"
+s, S = content(4, "Hedge over the Bayesian model: why it loses")
+S.header(LEFT, TOP, COL2, HDR_H, [P("Hedge over experts vs the Bayesian model", size=SECONDARY, b=True, align="ctr")],
+         "H2H header")
+S.box(LEFT, TOP + HDR_H, COL2, Inches(1.5), [P(H2H_SCORE, size=44, b=True, align="ctr"),
+                                            P(f"{H2H_CI}, {H2H_N} (0.5 = even)", size=16, align="ctr", before=4)],
+      "H2H box")
+rx = LEFT + COL2 + GAP
+S.header(rx, TOP, COL2, HDR_H, [P("Hedge's final weights (per stream)", size=SECONDARY, b=True, align="ctr")],
+         "Weights header")
+for i, (name, w) in enumerate(H2H_W):
+    y = TOP + HDR_H + i * Inches(0.5)
+    S.box(rx, y, COL2 * 3 // 5, Inches(0.5), [P(name, size=16, b=True, align="ctr")], f"Weight name {i}")
+    S.box(rx + COL2 * 3 // 5, y, COL2 - COL2 * 3 // 5, Inches(0.5), [P(w, size=16, b=(i == 2), align="ctr")],
+          f"Weight value {i}")
+by = TOP + HDR_H + Inches(1.5) + Inches(0.35)
+S.text(LEFT, by, WIDTH, BOTTOM - by, [
+    P("Hedge is no-regret here: realised regret ", ("$", H2H_REG), " against its bound ", ("$", H2H_BOUND),
+      size=18, bullet=True),
+    P("But it is credited on the 2-turn matrices, where the LP expert looks best by construction, so it learns to "
+      "trust the weakest expert in real play", size=18, bullet=True, before=10),
+    P(("No-regret is only as good as its payoffs: ", {"b": True}), "the bound says the evaluation error dominates, "
+      "so the fix is better payoffs (deeper search), which is the Bayesian model", size=18, bullet=True, before=10),
+], "H2H bullets")
+notes(s, "We then wrapped the Bayesian model in our no-regret layer: Hedge over three experts, the Bayesian model's "
+      "argmax, a sample from its visit shares, and the preliminary equilibrium. Against the plain Bayesian model it "
+      f"loses, scoring {H2H_SCORE} over {H2H_N}. It is not that Hedge fails to learn: its regret is about three, against "
+      "a bound of about twenty. The problem is what it learns on. Each expert is credited on the two-turn matrices, "
+      "and in those matrices the equilibrium expert looks best by construction, so Hedge moves its weight there, to "
+      "the expert that is weakest in real play. A no-regret guarantee is only as good as the payoffs it is measured "
+      "on. Our bound says the evaluation error dominates, so the fix is better payoffs, deeper search, and that is "
+      "exactly what the Bayesian model does.")
+
 # ===================== Section 5: Conclusions =====================
 # 12. Takeaways and next steps
 s, S = content(5, "Takeaways and next steps")
@@ -936,7 +972,9 @@ items = ["Equilibrium play and Hedge compose into a whole-battle bound; measured
          "reduce, is what our experiments point to, and better beliefs do not move win rate",
          "On the public ladder, the Bayesian model reached the top 500 while the preliminary model stayed near 1500: "
          "strength and guarantees pull apart",
-         "Next: train the evaluation on exact terminal values"]
+         "No-regret is only as good as its payoffs: Hedge over the Bayesian model loses because it learns on the "
+         "2-turn matrices; the bound pointed to deeper search instead",
+         "Next: credit the experts with search values, so the no-regret guarantee measures the payoffs that matter"]
 S.text(LEFT, TOP, WIDTH, BOTTOM - TOP, [
     P(txt, number=True, before=0 if k == 0 else 22) for k, txt in enumerate(items)
 ], "Takeaways")

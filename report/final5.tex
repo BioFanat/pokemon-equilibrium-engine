@@ -193,7 +193,7 @@ This part checks \cref{fact:hedge,fact:selfplay,cor:solver,thm:hedge} and the re
 
 \paragraph{Inside a turn: average or last iterate.} RM$^+$ self-play on 35 in-engine stage matrices reaches a median duality gap of $7\times10^{-5}$ of the payoff range at $T=1000$, against the bound 0.38 of \cref{cor:solver}. On 120 further matrices, the averages of simultaneous Hedge and optimistic Hedge reach a median gap of about 0.03 after 1,000 iterations, within the Hedge regret bound on every matrix (the gap equals $\varepsilon_R+\varepsilon_C$, \cref{fact:selfplay}), and RM$^+$ about 0. The last iterate has a lower median gap (about 0.01, settling on the 58\% of matrices with a pure saddle point) but a heavier tail. On the other 42\% no pure strategy is optimal for us, and the median pure gap $g_t$ is 0.024 of the payoff range: what \cref{prop:det} charges top move per such turn.
 
-\paragraph{Across games.} In 10 real-Showdown matches against Foul Play, Hedge's regret against its best fixed expert (top move) is $\approx0.004$ per counted turn, 13--16\% of the anytime bound of \cref{fact:hedge}, and grows sublinearly but faster than $\sqrt t$. In-engine, carried weights beat reset weights by $+0.15$ [$+0.02$, $+0.27$] against the informed BR (exploratory; 4 seeds), consistent with \cref{thm:hedge}(c). In a real-Showdown test with its prediction written in advance, carried Hedge over the four experts scored 0.46 [0.42, 0.50] against the Bayesian-LP agent with sampled play (300 pairs), inside the predicted range $[0.45,0.55]$; the theory bounds only the upper side, at $\frac12$ plus that agent's exploitability.
+\paragraph{Across games.} In 10 real-Showdown matches against Foul Play, Hedge's regret against its best fixed expert (top move) is $\approx0.004$ per counted turn, 13--16\% of the anytime bound of \cref{fact:hedge}, and grows sublinearly but faster than $\sqrt t$. In-engine, carried weights beat reset weights by $+0.15$ [$+0.02$, $+0.27$] against the informed BR (exploratory; 4 seeds), consistent with \cref{thm:hedge}(c).
 
 \paragraph{Opponent memory.}
 \label{sec:exp-belief}
@@ -221,6 +221,8 @@ At matched time (about 70\,ms per move), MCTS beats both equilibrium bots in-eng
 \paragraph{On the public ladder.}
 \label{sec:exp-ladder}
 Against human players, in sequential rated batches on one account, our preliminary model went 77--73 over 150 games (Elo 1577 to 1470); the Bayesian model then went 99--51 over 150 games (stratified worlds from game 51), climbing to 2090 (peak 2141, reported top 500). It is our strongest bot, as MCTS beat equilibrium play in-engine; its exploitability is unmeasured.
+
+\paragraph{Hedge over the Bayesian model.} Wrapping the Bayesian model in our Hedge layer (experts: its argmax, its sampled visit shares and the Bayesian-LP strategy; weights carried across games) loses to the plain Bayesian model in local Showdown games, \tbd{0.33 [0.21, 0.45] over 31 pairs}. Hedge is no-regret here (realised regret $\approx3$ against its bound $\approx20$ per stream), but \cref{thm:hedge} measures regret in the depth-2 matrices, where the LP expert is best by construction, and Hedge moves \tbd{46--66\%} of its weight to it: a no-regret guarantee is only as good as the payoffs it is measured on, and ours carry the evaluation error that dominates~\eqref{eq:A}.
 
 % =====================================================================
 \section{Conclusion}
