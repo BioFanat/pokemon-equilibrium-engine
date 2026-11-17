@@ -1,4 +1,4 @@
-"""Build deck.pptx: the 14-slide, ~4-minute CS535 final-project talk, in five sections.
+"""Build deck.pptx: the 13-slide, ~4-minute CS535 final-project talk, in five sections.
 
 Built on the user's template ("random template.pptx"): its master, theme, 16:9 size,
 title-slide style and its five-box section tracker, which lives in the template's
@@ -677,59 +677,50 @@ notes(s, "Our starting point. Each turn we sample four worlds, each a full guess
       "forgetting it is exactly Hedge with step one on log loss, which is where its regret bound comes from. This "
       "is the model our theorems cover.")
 
-# 5. Refinements: from the preliminary model to the final model, and where each sits in the theory
-s, S = content(2, "Refinements and where they sit in the theory")
-cols = [("Refinement", Inches(2.35)), ("What changes", Inches(3.05)), ("In the theory", Inches(3.3)),
-        ("Evidence", Inches(2.5))]
-gap = (WIDTH - sum(w for _, w in cols)) // (len(cols) - 1)
-xs, x = [], LEFT
-for _, w in cols:
-    xs.append(x)
-    x += w + gap
-y = TOP
-for (name, w), x in zip(cols, xs):
-    S.header(x, y, w, Inches(0.38), [P(name, size=14, b=True, align="ctr")], f"Refine col {name}")
-rows = [("Refining the matrix model: inside our bounds", None),
-        (["Exact values at game end"],
-         ["wins and losses scored exactly, not by the evaluation formula"],
-         [("removes part of ", {}), ("$", "ε_v"), (" (whole-battle bound)", {})],
-         ["exploitability cut on 2 of 3 exact endgames"]),
-        (["Per-world credit and safety"],
-         ["Hedge credit and the pure-maximin expert use each world's matrix"],
-         ["matches the LP's objective; Hedge's regret bound still holds"],
-         ["ladder 25–25: no gain"]),
-        ("Final model: outside our bounds", None),
-        (["Stratified worlds"],
-         ["4 worlds cover the opponent's item/ability groups, keeping their probabilities"],
-         ["targets the sampling error, but worlds are no longer i.i.d. (hidden-teams theorem)"],
-         ["Choice Specs missed 34% → 0%"]),
-        (["Per-world MCTS, argmax"],
-         ["search in each world replaces the matrix and Hedge layer"],
-         [("not ", {}), ("$", "ε_s"), ("-optimal in any matrix, not randomised; exploitability unmeasured", {})],
-         ["ladder 66–34, Elo 2090 (top 500)"])]
-y += Inches(0.45)
-RH = Inches(0.92)
-for row in rows:
-    if row[1] is None:
-        S.text(LEFT, y, WIDTH, Inches(0.35), [P(row[0], size=14, b=True, i=True)], f"Refine group {row[0][:20]}")
-        y += Inches(0.36)
-        continue
-    for (name, w), x, cell in zip(cols, xs, row):
-        bold = name == "Refinement"
-        S.box(x, y, w, RH, [P(*cell, size=14, b=bold, align="ctr")], f"Refine cell {name} {int(y)}")
-    y += RH + Inches(0.06)
-notes(s, "Here is how we built on the starting point, and where each change sits in the theory. Two refinements stay "
-      "inside the matrix model and inside our bounds. Scoring wins and losses exactly at the end of the game "
-      "removes part of the matrix error epsilon-v, and on exact endgames it cut exploitability on two of three. "
-      "Crediting Hedge's experts, and choosing the pure-maximin action, with each world's own matrix makes them match "
-      "the linear program's objective, and Hedge's regret bound still holds; on the ladder it made no difference. "
-      "The final model goes further and leaves the bounds. Stratified worlds cover the opponent's item and ability "
-      "groups while keeping their probabilities; plain draws missed Choice Specs a third of the time in one test, "
-      "stratified never. That targets the sampling error, but the worlds are no longer independent draws, so the "
-      "hidden-teams theorem does not apply as stated. And per-world MCTS with an argmax replaces the matrix and "
-      "Hedge layer entirely: it is not near-optimal in any matrix and does not randomise, so the whole-battle bound "
-      "does not cover it and its exploitability is unmeasured. That is the trade: the final model is far stronger "
-      "on the ladder, and our guarantees no longer apply to it.")
+# 5. The Bayesian model: the model we play, built on the preliminary formulation
+s, S = content(2, "The Bayesian model: what we play")
+S.text(LEFT, TOP, WIDTH, Inches(0.5), [
+    P("Same belief over worlds, used more carefully; search in each world replaces the matrix and Hedge layer",
+      size=18),
+], "Bayesian model intro")
+steps = [("1. Belief", [P("prior: how often each set occurs, conditioned on everything revealed", size=SECONDARY,
+                              align="ctr")]),
+         ("2. Stratified worlds", [P("a world for each item/ability group of the active opponent; weights ",
+                                     ("$", "β_k"), " keep each group's probability", size=SECONDARY, align="ctr")]),
+         ("3. Search each world", [P("MCTS (DUCT, as in Foul Play), 250 ms → share of root visits", size=SECONDARY,
+                                     align="ctr")]),
+         ("4. Weighted choice", [P("play the largest ", ("$", "β"), "-weighted visit share", size=SECONDARY,
+                                         align="ctr")])]
+sy = TOP + Inches(0.6)
+BH = Inches(1.5)
+for k, (name, paras) in enumerate(steps):
+    x = LEFT + k * (COL4 + GAP)
+    S.header(x, sy, COL4, HDR_H, [P(name, size=SECONDARY, b=True, align="ctr")], f"Bayes step {k + 1} header")
+    S.box(x, sy + HDR_H, COL4, BH, paras, f"Bayes step {k + 1} box")
+    if k < 3:
+        ym = sy + HDR_H + BH // 2
+        S.line(x + COL4 + Inches(0.05), ym, x + COL4 + GAP - Inches(0.05), ym, f"Bayes arrow {k + 1}", arrow=True)
+ty = sy + HDR_H + BH + Inches(0.15)
+S.text(LEFT, ty, WIDTH, BOTTOM - ty, [
+    EQ_(r"a = arg\max_a{\sum_k{β_k \frac{n_k(a)}{\sum_b{n_k(b)}}}}", size=20),
+    P(("Stratified worlds: ", {"b": True}), "still unbiased, every group covered, no between-group sampling error "
+      "(Choice Specs missed 34% of the time → never)", size=16, bullet=True, before=6),
+    P(("Search: ", {"b": True}), "goes deeper, at the evaluation error our bound points to, but gives up the solver "
+      "guarantee (each world searched as if known)", size=16, bullet=True, before=6),
+    P(("Argmax: ", {"b": True}), "near-deterministic, so it pays the price of determinism (theory)", size=16,
+      bullet=True, before=6),
+], "Bayesian model notes")
+notes(s, "This is the model we actually play, built on the same formulation. It keeps the belief over the hidden "
+      "team: the prior is how often each set occurs in Random Battles, conditioned on everything revealed. It uses "
+      "that belief more carefully: instead of four independent draws, it gives each item and ability group of the "
+      "active opponent its own world, with weights that keep each group's probability. Averages over worlds stay "
+      "unbiased, every group is covered, and the part of the sampling error that comes from which group we drew "
+      "disappears; with plain draws, one test missed Choice Specs a third of the time. Then, instead of a two-turn "
+      "matrix and Hedge, it runs poke-engine's MCTS, the same DUCT search Foul Play uses, in each world for 250 "
+      "milliseconds, turns each world's root visits into shares, weights them by the worlds' probabilities and "
+      "plays the top action. Deeper search goes after the evaluation error that our bound says dominates, but it "
+      "gives up the solver guarantee, and it is nearly deterministic, so it pays the price of determinism we prove "
+      "in the theory section.")
 
 # 6. Case study: one turn of a real Showdown game
 s, S = content(2, "A turn, step by step")
@@ -777,8 +768,8 @@ S.header(LEFT, gy, WIDTH, HDR_H, [P("Goal: use the bound to characterise exploit
                                     align="ctr")], "Goal header")
 S.box(LEFT, gy + HDR_H, WIDTH, Inches(1.05), [
     P("Measure each term on real positions and see which one limits the agent", size=18, bullet=True),
-    P("Hedge across games adds its own regret on top; RL exploiters give lower bounds to check against", size=18,
-      bullet=True, before=6),
+    P("Deterministic play pays more: ", ("$", r"expl ≥ E[\sum_t{g_t}]"), ", ", ("$", "g_t"),
+      " = game value − best pure guarantee", size=18, bullet=True, before=6),
 ], "Goal box", anchor="t")
 notes(s, "Our main result in one line. On each turn, our strategy can lose at most delta against the true game: the "
       "solver error plus twice the matrix error. Exploitability is exactly the sum of per-turn losses against a best "
@@ -786,8 +777,10 @@ notes(s, "Our main result in one line. On each turn, our strategy can lose at mo
       "its games. The solver error shrinks with compute, and for no-regret self-play it is at most the summed "
       "regrets. The matrix error comes mostly from the evaluation formula, and more compute does not shrink it. Our "
       "goal is to use this to characterise exploitability: measure each term on real positions and see which one "
-      "limits the agent. Hedge across games adds its own regret on top, and RL exploiters, which are Hedge in every "
-      "state, give lower bounds to check against.")
+      "limits the agent. And a new lower bound: a deterministic policy loses at least the gap between each turn's "
+      "game value and its best pure guarantee, on every turn where no pure strategy is optimal, which is 42 percent "
+      "of our stage matrices. That is the price our Bayesian model's argmax pays. Hedge across games adds its own "
+      "regret on top, and RL exploiters, which are Hedge in every state, give lower bounds to check against.")
 
 # ===================== Section 4: Experiments =====================
 # 8. Exploitability
@@ -812,42 +805,26 @@ notes(s, "An informed best response that knows our policy gives exploitability l
       "by 7 to 155 times, and the evaluation error, not the solver, carries it. Panels b to d show the regrets under their "
       "bounds; the next slide gives the numbers.")
 
-# 9. No-regret dynamics
-s, S = content(4, "No-regret dynamics")
+# 9. No-regret dynamics and the opponent memory
+s, S = content(4, "No-regret dynamics and the opponent memory")
 S.text(LEFT, TOP, WIDTH, BOTTOM - TOP, [
-    P("Theory: if both players have average regrets ", ("$", "ϵ_R, ϵ_C"), ", their average strategies are within ",
-      ("$", "ϵ_R + ϵ_C"), " of minimax"),
+    P("Theory: if both players have average regrets ", ("$", "ε_R, ε_C"), ", their average strategies are within ",
+      ("$", "ε_R + ε_C"), " of minimax"),
     EQ_(E_MINIMAX, before=4),
-    P("Inside a turn: RM⁺ is within ", ("7×10⁻⁵", {"b": True}), " of the payoff range of minimax (bound 0.38)",
-      bullet=True, before=20),
-    P("Averages within the bound on all 120 matrices; the last iterate has a heavier tail",
-      bullet=True, before=SP),
+    P("Inside a turn: RM⁺ is within ", ("7×10⁻⁵", {"b": True}), " of the payoff range of minimax (bound 0.38); "
+      "Hedge's averages stay within the bound on all 120 matrices", bullet=True, before=20),
     P("Across games: Hedge regret ", ("≈ 0.004", {"b": True}), " per turn vs Foul Play (13–16% of the bound); "
       "carried beat reset weights by ", ("+0.15", {"b": True}), bullet=True, before=SP),
-    P("Hedge vs the equilibrium agent: ", ("0.46", {"b": True}), " [0.42, 0.50], inside the range we predicted in advance",
-      bullet=True, before=SP),
+    P("Opponent memory (Bayes = Hedge): regret ends at its bound ", ("$", r"\ln{5}"), "; per-world scoring lowers "
+      "log loss by ", ("≈ 0.3", {"b": True}), " nats per turn, but win rate does not move", bullet=True, before=SP),
 ], "Dynamics bullets")
 notes(s, "Theory says no-regret players' averages are within the sum of their regrets of minimax. Measured: RM-plus "
-      "inside a turn reaches 7 times ten to the minus five of the payoff range, against a bound of 0.38. On 120 stage "
-      "matrices, Hedge and optimistic Hedge averages stay within the bound on every one; the last iterate has a lower "
-      "median, because 58 percent have a pure saddle, but a heavier tail. Across games, Hedge's regret against Foul "
-      "Play is 13 to 16 percent of its bound, and carried weights beat reset weights, as the bounds order them. "
-      "Against the equilibrium agent Hedge scores 0.46, inside the range we predicted in advance; theory bounds only the upper side.")
-
-# 10. Opponent memory
-s, S = content(4, "Opponent memory: results")
-S.text(LEFT, TOP, WIDTH, BOTTOM - TOP, [
-    P("Per-world likelihood: log loss ", ("≈ 0.3", {"b": True}), " nats per turn lower, replicated", bullet=True),
-    P("Detection delay matches its prediction (median ratio ", ("1.06", {"b": True}), "); doubling the pre-switch phase "
-      "→ ×2.1 (predicted 1.5–2.7)", bullet=True, before=18),
-    P("Modelling sets and style jointly adds nothing measurable (+0.001 nats per turn)", bullet=True, before=18),
-    P("No win-rate gain: better prediction is not something our bounds reward", bullet=True, before=18),
-], "Opponent memory bullets")
-notes(s, "The memory does what the theory says. Scoring styles on each sampled world's legal actions lowers log loss "
-      "by about 0.3 nats per turn, confirmed in a replication on fresh seeds planned in advance. In the live detection-delay test each "
-      "match's delay matched its prediction, and doubling the pre-switch phase multiplied the delay by 2.1, inside the "
-      "predicted range. Modelling sets and style jointly adds nothing measurable. But better prediction did not move "
-      "win rate, which fits the theory: none of our bounds rewards better prediction, and the evaluation error is unchanged.")
+      "inside a turn reaches 7 times ten to the minus five of the payoff range, against a bound of 0.38, and Hedge's "
+      "averages stay within the bound on all 120 stage matrices we tried. Across games, Hedge's regret against Foul "
+      "Play is 13 to 16 percent of its bound, and carried weights beat reset weights, as the bounds order them. The "
+      "opponent memory is Bayes, which is Hedge with step one, and its regret ends exactly at its bound, log five. "
+      "Scoring styles on each sampled world's legal actions lowers log loss by about 0.3 nats per turn, but better "
+      "prediction does not move win rate, which fits the theory: none of our bounds rewards better prediction.")
 
 # 11. Win rates
 s, S = content(4, "Win rates")
@@ -878,37 +855,33 @@ S.text(LEFT, TOP, WIDTH, Inches(0.8), [
     P("Gen 9 Random Battles against human players: sequential rated batches on one account, not paired tests",
       size=18),
 ], "Ladder intro")
-stats = [("Our Hedge agent", "77–73", "150 games · Elo 1577 → 1470"),
-         ("Per-world MCTS", "33–17", "50 games · Elo 1470 → 1677"),
-         ("+ stratified worlds", "66–34", "100 games · Elo 1677 → 2090")]
+stats = [("Preliminary model", "77–73", ["150 games · Elo 1577 → 1470"]),
+         ("Bayesian model", "99–51", ["150 games · Elo 1470 → 2090", "peak 2141, top 500"])]
 sy = TOP + Inches(0.85)
-SBH = Inches(1.7)
-for k, (name, big, small) in enumerate(stats):
-    x = LEFT + k * (COL3 + GAP)
-    S.header(x, sy, COL3, HDR_H, [P(name, size=SECONDARY, b=True, align="ctr")], f"Ladder stat {k + 1} header")
-    extra = [P("peak 2141, top 500", size=SECONDARY, b=True, align="ctr", before=2)] if k == 2 else []
-    S.box(x, sy + HDR_H, COL3, SBH, [P(big, size=40, b=True, align="ctr"),
-                                     P(small, size=SECONDARY, align="ctr", before=6)] + extra,
+SBH = Inches(1.9)
+for k, (name, big, smalls) in enumerate(stats):
+    x = LEFT + k * (COL2 + GAP)
+    S.header(x, sy, COL2, HDR_H, [P(name, size=SECONDARY, b=True, align="ctr")], f"Ladder stat {k + 1} header")
+    S.box(x, sy + HDR_H, COL2, SBH, [P(big, size=44, b=True, align="ctr")] +
+          [P(t, size=18, b=(j == 1), align="ctr", before=6) for j, t in enumerate(smalls)],
           f"Ladder stat {k + 1} box")
-    if k < 2:
+    if k == 0:
         ym = sy + HDR_H + SBH // 2
-        S.line(x + COL3 + Inches(0.05), ym, x + COL3 + GAP - Inches(0.05), ym, f"Ladder arrow {k + 1}", arrow=True)
+        S.line(x + COL2 + Inches(0.05), ym, x + COL2 + GAP - Inches(0.05), ym, "Ladder arrow", arrow=True)
 by = sy + HDR_H + SBH + Inches(0.3)
 S.text(LEFT, by, WIDTH, BOTTOM - by, [
-    P("The final model keeps our tracker and worlds, with per-world MCTS in place of the matrix and Hedge layer",
-      size=18, bullet=True),
-    P("Strongest bot we built, as MCTS beat equilibrium play in-engine; it is deterministic and its "
-      "exploitability is unmeasured", size=18, bullet=True, before=10),
+    P("Strongest bot we built, as MCTS beat equilibrium play in-engine", size=18, bullet=True),
+    P("Near-deterministic, so it pays the price of determinism; its exploitability is unmeasured", size=18,
+      bullet=True, before=10),
 ], "Ladder notes")
-notes(s, "Every other test uses fixed bots, so we also put bots on the public Showdown ladder against human players, in "
+notes(s, "Every other test uses fixed bots, so we also played on the public Showdown ladder against human players, in "
       "sequential rated batches on one account; these are not paired tests, and opponents and ratings change as we "
-      "go. Our Hedge agent with the opponent memory, over two versions, went 77 and 73 and drifted from 1577 to "
-      "1470 Elo. Keeping the same tracker and four sampled worlds but replacing the matrix and Hedge layer with "
-      "poke-engine's own MCTS in each world, and playing the argmax of the weighted root-visit shares, went 33 and "
-      "17 and climbed to 1677. Sampling the worlds stratified by the opponent's possible item and ability, it went "
-      "66 and 34 over 100 games and reached 2090, peaking at 2141, which the operator saw as the top 500. That is the "
-      "strongest bot we built, in line with MCTS beating equilibrium play in-engine. But it is deterministic, and we "
-      "have not measured its exploitability: strength and guarantees pull apart.")
+      "go. The preliminary model, equilibrium play with Hedge and the opponent memory, went 77 and 73 over 150 games "
+      "and drifted from 1577 to 1470 Elo. The Bayesian model then went 99 and 51 over 150 games, climbing from 1470 "
+      "to 2090 and peaking at 2141, which the operator saw as the top 500; its stratified worlds were in place from "
+      "game 51. That is the strongest bot we built, in line with MCTS beating equilibrium play in-engine. But it is "
+      "nearly deterministic, so our lower bound says it can be exploited, and we have not measured by how much: "
+      "strength and guarantees pull apart.")
 
 # ===================== Section 5: Conclusions =====================
 # 12. Takeaways and next steps
@@ -917,8 +890,8 @@ items = ["Equilibrium play and Hedge compose into a whole-battle bound; measured
          "bounds",
          "The guarantees hold in our estimated matrices; the evaluation formula's error, which more compute does not "
          "reduce, is what our experiments point to, and better beliefs do not move win rate",
-         "On the public ladder, per-world MCTS reached the top 500 while our Hedge agent stayed near 1500: strength "
-         "and guarantees pull apart",
+         "On the public ladder, the Bayesian model reached the top 500 while the preliminary model stayed near 1500: "
+         "strength and guarantees pull apart",
          "Next: train the evaluation on exact terminal values"]
 S.text(LEFT, TOP, WIDTH, BOTTOM - TOP, [
     P(txt, number=True, before=0 if k == 0 else 22) for k, txt in enumerate(items)
@@ -928,7 +901,7 @@ notes(s, "Four takeaways. First, per-turn equilibrium play and Hedge across game
       "estimated matrices. The error of the evaluation formula that scores positions two moves ahead is not reduced "
       "by more solver iterations or more sampled teams, and our experiments point to it as the limiting error, "
       "consistent with better beliefs improving prediction but not win rate. Third, on the public ladder, "
-      "per-world MCTS climbed to the top 500 while our Hedge agent stayed near 1500, so strength and guarantees pull "
+      "the Bayesian model climbed to the top 500 while the preliminary model stayed near 1500, so strength and guarantees pull "
       "apart. Fourth, the next step is to train the evaluation on exact terminal values. Thank you.")
 
 add_sections(prs, groups)

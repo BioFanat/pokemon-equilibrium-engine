@@ -1088,3 +1088,29 @@ Dated 2026-11-17. These override the statements of the source notes where they d
 | Leaf remark | `full_game.md` Lemma 2 |
 | Bayes = Hedge equation | `experts_extensions.md` B1 |
 | Detection-delay equation | this file (T5, §11); `experts_extensions.md` |
+
+### 12.3 Second verifier pass and the Bayesian model (2026-11-17)
+
+Full re-check of final5.tex Sections 2–4 (scripts: `scratchpad/verify_final/f1_hedge_anytime.py`, `f2_rmplus_alt.py`,
+`f3_tightness.py`; earlier `verify_all/` scripts re-run and passing). Corrections applied to the paper:
+
+- (a) RM⁺ regret Δ√(|A|T) was cited to Tammelin 2014, which states no bound; now cited to BMS19 Thm 8.
+- (b) Lemma 5 convention: V*_H(s) := 0 only at live s (terminal at H keeps V* = u).
+- (c) Theorem 6 does not need a Markov policy: per-history ε_s-optimality suffices (Remark 10 still assumes Markov).
+- (d) δ̄_BR is the mean of δ over all turns of the best response's games (ratio of expectations), not "loss".
+- (e) ε_v^aff defined as the best affine-fit error; on endgames it is 0.7–1.0 with 1 the constant-fit ceiling, and
+  ε_s ≤ 0.15 (≈0 only for sampled play; top move 0.152, pure maximin 0.079).
+- (f) Remark 8: deeper search does not shrink the *bound* (no discounting); actual error can shrink.
+- (g) Theorem 9(c): R(L̄) with resets is an upper bound, not a cost.
+- (h) Theorem 11: TV = 0 needs both the opponent's play and chance to be independent of its team under the paper's
+  β_h (which omits chance likelihoods); "can be necessary", not "is necessary".
+- (i) Method: in-engine Hedge is full-information (true-state matrix); Ā is used on Showdown. Counted turns also need
+  the opponent's action to have been observed.
+
+New result, Proposition `prop:det` (price of determinism): if π puts probability ≥ 1−ρ on one action a*_t at every live
+history, the myopic opponent σ_my (worst column against a*_t) gives, via Lemma 5,
+expl(π) ≥ E_{π,σ_my}[Σ_{t<τ}(g_t − ρΔ_t)], g_t = V*_t − max_a min_b Q*_t(a,b) ≥ 0 (positive iff we have no optimal
+pure strategy; not the same as "no pure saddle point"). Checked by brute force in `scratchpad/verify_det/`.
+It applies to top move (ρ = 0) and, with ρ the chance that sampling/search noise flips its argmax, to the Bayesian
+model. Cut from the paper as intermediate: the detection-delay result (eq. delay; still correct, `c4_memory.py`),
+its live test, the LBR result, the single-style-bot test, and the joint set × style extension.
