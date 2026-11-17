@@ -381,7 +381,7 @@
   "rmplus_band": "min-max over 35 matrices",
   "memory_band": "25-75% over matches",
   "memory_matches": 9,
-  "memory_T_plotted": 1600,
+  "memory_T_plotted": null,
   "numbers": "report/figures/fig_regret_numbers.json"
  }
 }

@@ -656,7 +656,7 @@ Paper: final5.tex `sec:exp-ladder`; deck: the Hedge-model limitations and Bayesi
 | Bot | Games | W–L | Elo | Source |
 |---|---:|---|---|---|
 | Preliminary model (Hedge + Bayesian memory) | 100 | 64–36 | 1704 | operator's public-ladder run, reported 2026-11-17 (raw log not in the repo) |
-| Bayesian model (final: native MCTS + item/ability-stratified worlds) | 100 | 66–34 | 1677 → 2090, peak 2141; later 2308, reportedly top 50 | stratified_mcts_climb_100completed_results.json; 2308 operator-reported |
+| Bayesian model (final: native MCTS + item/ability-stratified worlds) | 526 | 313–213 | 2308, reportedly top 50 | operator's public-ladder run, reported 2026-11-17 (first 100 logged: stratified_mcts_climb_100completed_results.json, 66–34, 1677 → 2090) |
 
 - Final bot: `mcts_native`, `item_stratified` sampler, 4 worlds, 1000 ms total native search (250 ms per world),
   action = argmax of prior-weighted, per-world-normalised legal root-visit shares (deterministic). No Hedge, no

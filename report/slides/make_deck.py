@@ -908,7 +908,7 @@ S.text(LEFT, TOP - Inches(0.05), WIDTH, Inches(1.05), [
 ], "Exploitability explained")
 ty = TOP + Inches(1.15)
 S.text(LEFT, ty, Inches(5.6), Inches(0.75), [
-    P(("Public ladder: ", {"b": True}), "66–34, Elo 1677 → 2090 in logged games; since then 2308, reportedly top 50",
+    P(("Public ladder: ", {"b": True}), "313–213, Elo 2308, reportedly top 50",
       size=14),
 ], "Ladder line")
 rows = [("Bayesian model vs", "Score [95% CI]"),
@@ -941,8 +941,8 @@ S.text(rx, ty + fh + Inches(0.05), fw, BOTTOM - ty - fh, [
     P("Knowing our rule lifts the opponent from 0.21 to 0.70: the Bayesian model always plays its top move, so it "
       "can be predicted. The Hedge model's mix gives away only 0.19.", size=14),
 ], "Exploit text")
-notes(s, "Here are the Bayesian model's results. Strength first. On the public ladder it went 66 and 34 and climbed to "
-      "2090 Elo in the games we logged, and it has since reached 2308, reportedly in the top 50. In local paired games "
+notes(s, "Here are the Bayesian model's results. Strength first. On the public ladder it went 313 and 213 and reached "
+      "2308 Elo, reportedly in the top 50. In local paired games "
       "it is on par with Foul Play, one of the strongest public bots: 0.60 at Foul Play's default settings and 0.48 at "
       "equal search time, and it beats our preliminary model 0.83. Then exploitability: how much more an opponent "
       "wins if it knows exactly how our bot decides. We play our bot against a simple opponent that each turn picks "

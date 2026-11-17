@@ -120,7 +120,7 @@ def panel_hedge(ax, hedge_curves):
     ax.plot(tm, np.where(medc > 0, medc / tm, np.nan), color=c, lw=1.8)
     ax.plot(t, hedge_bound(t) / t, color=GRAY, lw=1.2, ls=(0, (4, 2)))
     ax.set_xscale("log"); ax.set_yscale("log")
-    ax.text(3, hedge_bound(3) / 3 * 1.9, "Hedge no-regret bound", color=INK, va="center")
+    ax.text(3, hedge_bound(3) / 3 * 1.9, "Hedge bound", color=INK, va="center")
     ax.text(1.5, 5e-4, "regret, 10 matches", color=INK, va="center")
     ax.set_xlim(1, Tmax); ax.set_ylim(3e-4, 5)
     ax.set_xticks([1, 10, 100, 1000])
@@ -151,14 +151,31 @@ def panel_memory(ax, mem_curves):
     return len(M), Tm
 
 
+def panel_delta(ax):
+    """Split of the per-turn shortfall delta = eps_s + 2 eps_v on the exactly solved endgames (final5.tex 'Exact
+    endgames'): eps_s <= 0.16 on reached states; largest eps_v (affine fit) 0.7-1.0, so 2 eps_v = 1.4-2.0 (bar at the
+    midpoint, line = range)."""
+    ax.bar([0, 1], [0.16, 1.7], color=[GRAY, INK], width=0.55)
+    ax.plot([1, 1], [1.4, 2.0], color=INK, lw=1.2)
+    ax.text(0, 0.16 + 0.08, "≤ 0.16", ha="center", va="bottom", color=INK)
+    ax.text(1, 2.0 + 0.08, "1.4–2.0", ha="center", va="bottom", color=INK)
+    ax.set_xticks([0, 1])
+    ax.set_xticklabels(["solver\n$\\varepsilon_s$", "matrix\n$2\\varepsilon_v$"])
+    ax.set_xlim(-0.6, 1.6); ax.set_ylim(0, 2.45)
+    ax.set_ylabel("Contribution to $\\delta$")
+    ax.set_title("Where δ comes from")
+    ax.tick_params(axis="x", length=0)
+
+
 def draw(eg, rm, hedge_curves, mem_curves):
     fig, axs = plt.subplots(1, 4, figsize=(7.0, 2.1), layout="constrained")
     panel_exploit(axs[0], eg)
-    s_med = panel_rm(axs[1], rm)
-    panel_hedge(axs[2], hedge_curves)
-    n_mem, T_mem = panel_memory(axs[3], mem_curves)
+    panel_delta(axs[1])
+    s_med = panel_rm(axs[2], rm)
+    panel_hedge(axs[3], hedge_curves)
     letters_and_titles(fig, axs, "abcd")
-    return fig, s_med, n_mem, T_mem
+    n_mem = len([v for k, v in mem_curves.items() if k not in MEM_EXCLUDED])
+    return fig, s_med, n_mem, None
 
 
 def draw_deck(eg, rm, hedge_curves, mem_curves):
