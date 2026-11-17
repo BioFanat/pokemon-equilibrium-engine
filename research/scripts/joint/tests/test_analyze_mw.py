@@ -6,7 +6,7 @@ import shutil
 import sys
 import tempfile
 
-sys.path.insert(0, "/Users/biofanat/Documents/classes/f26/cs535/final-integration/research/scripts/joint")
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import analyze_mw as A  # noqa: E402
 
 LN2 = math.log(2)

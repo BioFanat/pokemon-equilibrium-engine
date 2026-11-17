@@ -1,0 +1,243 @@
+{
+  "semantics": "per_world_security_action_conditional_credit_v2",
+  "games": 100,
+  "counts": {
+    "decisions_with_expert_snapshots": 2951,
+    "safest_label_changed": 496,
+    "strict_security_improvement_over_0_001": 495,
+    "frozen_mixture_security_improved_over_0_001": 311,
+    "frozen_mixture_security_worsened_over_0_001": 182,
+    "feedback_records": 2950,
+    "old_scored_feedback": 2384,
+    "exact_supported_feedback": 2384,
+    "multiple_supporting_worlds": 2299,
+    "credit_changed_over_1e_5": 1444,
+    "best_credit_expert_strictly_changed": 77,
+    "old_resolved_label_differs_from_exact": 0,
+    "old_world_zero_conditional_weight": 0,
+    "some_supported_world_expert_reward_clipped": 95,
+    "all_experts_saturated_in_all_supporting_worlds": 72,
+    "conditional_rewards_all_tied_but_raw_utilities_differ": 24,
+    "skipped_not_in_worlds": 214,
+    "skipped_no_action": 85,
+    "skipped_fainted": 201,
+    "unpaired_final_pending_decisions": 1,
+    "skipped_cant": 66
+  },
+  "assumptions": "Frozen logged expert strategies/weights/predictions; Q and qhat_k rounded to 4 decimals; not an on-policy experiment",
+  "mean_max_reward_change": 0.017224582607396146,
+  "max_reward_change": 0.9184097240704807,
+  "mean_frozen_mixture_security_change": 0.35673254936970317,
+  "source": ".local-play/work/ladder/decision_audit_hedge_bayes_mw_20261116T233404Z",
+  "policy_replays": [
+    {
+      "battle_tag": "battle-gen9randombattle-2715100711",
+      "turn": 7,
+      "played": "calmmind",
+      "old_safest": "calmmind",
+      "new_safest": "calmmind",
+      "old_probability": 0.9319,
+      "new_probability": 0.9319,
+      "reconstruction_max_error": 0.0
+    },
+    {
+      "battle_tag": "battle-gen9randombattle-2715109969",
+      "turn": 4,
+      "played": "earthquake",
+      "old_safest": "earthquake",
+      "new_safest": "stoneedge",
+      "old_probability": 0.4141,
+      "new_probability": 0.1874,
+      "reconstruction_max_error": 0.0
+    },
+    {
+      "battle_tag": "battle-gen9randombattle-2715109969",
+      "turn": 14,
+      "played": "nastyplot",
+      "old_safest": "flashcannon",
+      "new_safest": "flashcannon",
+      "old_probability": 0.2005,
+      "new_probability": 0.2005,
+      "reconstruction_max_error": 0.0
+    },
+    {
+      "battle_tag": "battle-gen9randombattle-2715113441",
+      "turn": 13,
+      "played": "calmmind",
+      "old_safest": "calmmind",
+      "new_safest": "calmmind",
+      "old_probability": 0.8539,
+      "new_probability": 0.8539,
+      "reconstruction_max_error": 9.999999999998899e-05
+    },
+    {
+      "battle_tag": "battle-gen9randombattle-2715113441",
+      "turn": 14,
+      "played": "swordsdance",
+      "old_safest": "swordsdance",
+      "new_safest": "swordsdance",
+      "old_probability": 0.9655,
+      "new_probability": 0.9655,
+      "reconstruction_max_error": 0.0
+    },
+    {
+      "battle_tag": "battle-gen9randombattle-2715127582",
+      "turn": 7,
+      "played": "swordsdance",
+      "old_safest": "stoneedge",
+      "new_safest": "flareblitz",
+      "old_probability": 0.015,
+      "new_probability": 0.015,
+      "reconstruction_max_error": 0.0
+    },
+    {
+      "battle_tag": "battle-gen9randombattle-2715129014",
+      "turn": 10,
+      "played": "nastyplot",
+      "old_safest": "fireblast",
+      "new_safest": "fireblast",
+      "old_probability": 0.0151,
+      "new_probability": 0.0151,
+      "reconstruction_max_error": 0.0
+    }
+  ],
+  "smoke": {
+    "decisions": 88,
+    "credit_updates": 75,
+    "single_world_credit": 1,
+    "multi_world_credit": 74,
+    "max_logged_prediction_probability_error": 4.97050385295239e-07,
+    "max_weight_sum_error": 2.220446049250313e-16,
+    "games": [
+      {
+        "tag": "credit-v2-s4-g2",
+        "winner_role": "A",
+        "turns": 43,
+        "sim_errors": [],
+        "error": null
+      },
+      {
+        "tag": "credit-v2-s4-g1",
+        "winner_role": "A",
+        "turns": 35,
+        "sim_errors": [],
+        "error": null
+      }
+    ]
+  },
+  "credit_examples": [
+    {
+      "battle_tag": "battle-gen9randombattle-2715117197",
+      "turn": 11,
+      "decision_index": 10,
+      "observed": "knockoff",
+      "old_resolved_label": "knockoff",
+      "old_world": 0,
+      "conditional_world_weights": [
+        0.21972423754840228,
+        0.26108832885739003,
+        0.24929882764840158,
+        0.26988860594580616
+      ],
+      "old_rewards": [
+        0.8435332174593853,
+        0.6837352103596771,
+        0.8435332174593853,
+        0.5712957925029393
+      ],
+      "new_rewards": [
+        0.8289655204210671,
+        0.9149201489344083,
+        0.8289655204210671,
+        0.9058032948739163
+      ],
+      "expected_utilities": [
+        223.5473287738956,
+        257.92918017923205,
+        223.5473287738956,
+        282.1214428176561
+      ],
+      "max_reward_change": 0.33450750237097704
+    },
+    {
+      "battle_tag": "battle-gen9randombattle-2715132589",
+      "turn": 29,
+      "decision_index": 34,
+      "observed": "gunkshot",
+      "old_resolved_label": "gunkshot",
+      "old_world": 0,
+      "conditional_world_weights": [
+        0.0683977863440065,
+        0.29372197695557783,
+        0.31657336721608403,
+        0.3213068694843317
+      ],
+      "old_rewards": [
+        0.5414372539520264,
+        0.39905812438242,
+        0.35951848997960023,
+        0.41947566608565595
+      ],
+      "new_rewards": [
+        0.2882388842340163,
+        0.2963404333616316,
+        0.2426104495795344,
+        0.2951786499059108
+      ],
+      "expected_utilities": [
+        -229.1235899831513,
+        -225.88297033210517,
+        -247.3749638449441,
+        -226.3476837143935
+      ],
+      "max_reward_change": 0.2531983697180101
+    },
+    {
+      "battle_tag": "battle-gen9randombattle-2715108446",
+      "turn": 15,
+      "decision_index": 17,
+      "observed": "sacredsword",
+      "old_resolved_label": "sacredsword",
+      "old_world": 0,
+      "conditional_world_weights": [
+        0.1967927069639803,
+        0.24701822382253677,
+        0.26919002980406254,
+        0.2869990394094204
+      ],
+      "old_rewards": [
+        0.4800090589790932,
+        0.4669322548230515,
+        0.4800090589790932,
+        0.4676955546053199
+      ],
+      "new_rewards": [
+        0.25742902880279583,
+        0.3873092286123747,
+        0.25742902880279583,
+        0.3813165256365686
+      ],
+      "expected_utilities": [
+        -140.58344504868018,
+        -88.63136512484863,
+        -140.58344504868018,
+        -91.02844631517107
+      ],
+      "max_reward_change": 0.22258003017629735
+    }
+  ],
+  "source_sha256": {
+    "engine/exp3_live.py": "2c34ef36c48293a31d21dddd7a4cc0e3fc207551bb886c2028c2f1cdc716e660",
+    "engine/showdown/world_learning.py": "40128c2668f5b53fab7cb5dd39b26c86f5df2b45f4264238df5f2ac4277e4246",
+    "engine/showdown/run_ourbot.py": "41deebc92cd6ffc2a2b1501864657f85366bfc209602bfdcb7c58a031adf965a",
+    "engine/showdown/ladder.py": "a789473d91e1f1e898f3e424a97793a866ec67df7043cf1123f569e1a678cdf3",
+    "engine/showdown/audit_world_learning.py": "2584e8b0cae94ee467f6033c34733d63536425d74f330b5152eb6b4cf810ed49",
+    "engine/showdown/replay_world_policy.py": "3dbd688b88b090d18a3d4e06ca623ab0ef903fd91cc35f86765b82392e308d0a"
+  },
+  "baseline_sha256": {
+    "engine/hidden_agents.py": "51b3e4acd1955a9254a27165cab9f9fc3f31a9bf7623e29b72354c94da6b874c",
+    "engine/exp3_live.py": "090f7145ea476a2c375a79703ab335c7e303d3a30f390704f6984e7a942054b7",
+    "engine/showdown/behavior.py": "0d023a6d48fa53a72c00fe992ecea982151796d92f6963f7bedde57aa2e53af0",
+    "engine/showdown/run_ourbot.py": "ed39d5ab9b1666ae078ff030b9535eb7312c7c42c560710a2c19a53909dedd4c"
+  }
+}

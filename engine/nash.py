@@ -141,22 +141,43 @@ def _mirror(st: pe.State) -> pe.State:
     return pe.State(side_one=st.side_two, side_two=st.side_one, **{f: getattr(st, f) for f in GF})
 
 
+def terminal_value(state: pe.State) -> float | None:
+    """Exact side-one win/loss/draw reward, or None while the battle continues."""
+    a1, a2 = pb.alive(state.side_one), pb.alive(state.side_two)
+    if a1 == 0 or a2 == 0:
+        return 0.0 if a1 == a2 else (10000.0 if a1 else -10000.0)
+    return None
+
+
 def _leaf(child: pe.State, leaf: str) -> float:
     """'mid' (default): midpoint of side one's maximin and side two's maximin (via the mirrored
     position) -- both bracket the child's matrix-game value, the midpoint is exact when the child
     has a pure saddle and makes the matrix (nearly) antisymmetric under swapping sides.
     'maximin': side one's maximin only (the engine's own pick_safest leaf; biased toward side two:
     swapping sides changes cells by a median 32% of the payoff range on test positions)."""
+    # pe.id on an already finished battle returns its material heuristic, not
+    # the search's win/loss reward. A guaranteed win must outrank healing or
+    # setup in a position that still has an opponent left.
+    terminal = terminal_value(child)
+    if terminal is not None:
+        return terminal
     lo = _child_value(child)
     return lo if leaf == "maximin" else 0.5 * (lo - _child_value(_mirror(child)))
 
 
-def full_matrix(state: pe.State, leaf: str = "mid"):
+def full_matrix(state: pe.State, leaf: str = "mid", side_one_options=None):
     """Unpruned depth-2 joint-action matrix: M[i, j] = sum_b p_b * leaf(apply(branch_b)).
     Every cell is computed (pe.id's root alpha-beta leaves 55-80% of cells NaN). Note the Python
     generate_instructions branches on damage rolls while the engine's search does not, so cells
-    differ slightly (~2% of payoff range at worst position) from the engine's own depth-2 values."""
+    differ slightly (~2% of payoff range at worst position) from the engine's own depth-2 values.
+    side_one_options optionally intersects root rows with the live server's request.
+    """
     s1, s2 = pb.options(state)
+    if side_one_options is not None:
+        allowed = set(side_one_options)
+        s1 = [a for a in s1 if a in allowed]
+        if not s1:
+            raise ValueError("No engine options match the server's legal actions")
     M = np.empty((len(s1), len(s2)))
     for i, a in enumerate(s1):
         for j, b in enumerate(s2):

@@ -1,0 +1,107 @@
+{
+  "profile": "mcts_native_4worlds_1000ms_item_stratified_v1",
+  "recorded_date": "2026-11-17",
+  "timezone": "America/New_York",
+  "branch": "feat/mechanics-belief-tracker",
+  "measured_base_commit": "5e7cb7707b4bb552299e7c55462e5abc29c54e67",
+  "rank": {
+    "description": "top 500",
+    "provenance": "user reported; rank not captured in game ledgers"
+  },
+  "config": {
+    "method": "mcts_native",
+    "sampler": "item_stratified",
+    "belief_source": "foulplay_baseline",
+    "k": 4,
+    "mcts_ms": 1000,
+    "native_threads": 1,
+    "concurrency": 5,
+    "format": "gen9randombattle",
+    "account": "bot_bonp",
+    "server": "wss://sim3.psim.us/showdown/websocket",
+    "root_selection": "weighted_root_visit_argmax_v1",
+    "cross_game_learning": false
+  },
+  "dependencies": {
+    "python": "3.12.16",
+    "packages": {
+      "poke-engine": "0.0.48",
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "websockets": "14.1",
+      "requests": "2.33.0"
+    },
+    "poke_engine_build_features": [
+      "poke-engine/terastallization"
+    ],
+    "poke_engine_default_features": false,
+    "foulplay_revision": "8f541f80f91f960603673796559f796b10ccf0fb",
+    "showdown_revision": "7e743761cd13cdb361fc0f58eb5a866284894f5b",
+    "client_revision": "1cf9b385a97ad5c77a25b91a1c799078827ec306"
+  },
+  "catalogue": {
+    "path": "research/data/gen9randombattle_20261117.json",
+    "runtime_path": ".local-play/foul-play/fp/data/pkmn_sets_cache/gen9randombattle.json",
+    "bytes": 461321,
+    "sha256": "4264b4d70fd86c7ea8ae362bc6aa2c027d2524a73b6df3f286dc0dffbabe5d3f",
+    "source_url": "https://pkmn.github.io/randbats/data/full/gen9randombattle.json"
+  },
+  "source_sha256": {
+    "engine/showdown/stratified_worlds.py": "11863e0dcfb436d77799c1f03b58d4eab4fe56ae1b96f09c47463436f984bbd5",
+    "engine/showdown/native_mcts.py": "acae4cfa3c33b429c015e2cdc3a61f37efc3422c614c9927d76d00aac50a2417",
+    "engine/showdown/run_ourbot.py": "1b21529172e330511cdc566fa820bf800d30d95b9d596a183e7f1e269b926353",
+    "engine/showdown/run_public_evaluation.py": "80c176a5fc5d8abf38469a554da6f289b928af2dc4c625ea8c321fdcb88a050a",
+    "engine/showdown/ladder_metrics.py": "01bddf6babc2f92b8f01b5ea759119116fbcde26045abafc13cf78e12705814c",
+    "engine/showdown/ladder.py": "641d493452e5f896d6b829c773e2b788ff5f9007d060c0cc2d30090d85057d39",
+    "engine/showdown/ladder_concurrency.py": "aa0c41c4674609a3ba3484c25124a55c23221fd770fa8a36b11bbbba1e6d1dd1",
+    "engine/showdown/battle_adapter.py": "969238def0567879cb61ac4aedc9b9aeb791ef359d7e56a64bf14147543af728",
+    "engine/showdown/revival_guard.py": "36e48b4204540172a3c139ee0cbe293a05973420bacb106ffc2fdccb9f06e9e3",
+    "engine/pkbattle.py": "deb6a527ba163571c83ef88cdb9de98b787388038bc0f253f2314f2e0942e475",
+    "engine/nash.py": "d87f74eb163a404c28d8c3ef7101447a8e60befe750a6287c52c5118ac0d2bca",
+    "engine/hidden.py": "8cb7865fba70566de506c02b6faef327708effce3f9750b9ef5a246a567f56d7",
+    ".local-play/foul-play/fp/search/random_battles.py": "136e5c8a06fba3860e5ef019a62bc517227064fdf37335712e49849644c8694a",
+    ".local-play/foul-play/fp/search/helpers.py": "b92906fd180cbf400593748b16a06d22d177e031560e0f6a287264db36d530e8",
+    ".local-play/foul-play/fp/data/pkmn_sets_cache/gen9randombattle.json": "4264b4d70fd86c7ea8ae362bc6aa2c027d2524a73b6df3f286dc0dffbabe5d3f",
+    "engine/showdown/local_play.py": "644f834621ebf6b71f6a7fbcf55a3f3333be1b4eb5b9db4ca836d3242c839abe",
+    "engine/showdown/headless.py": "5106324e8f1ef7fd7310bd8a24f3a3ee080cf59be5649bee357697d5a527bcdf",
+    "engine/showdown/requirements-bot.txt": "a87654eaf56f3559c4373bcb7a9121fde19d2789d24d916978547b6ff7a9f108",
+    "engine/hidden_agents.py": "51b3e4acd1955a9254a27165cab9f9fc3f31a9bf7623e29b72354c94da6b874c",
+    "engine/exp3_live.py": "2c34ef36c48293a31d21dddd7a4cc0e3fc207551bb886c2028c2f1cdc716e660",
+    ".local-play/foul-play/fp/search/poke_engine_helpers.py": "a59242ca76a5888ddecc3df8c5f708a4aba4571cb3c6d4888cac26c5d5947eb3"
+  },
+  "measured_source_manifest_matches": true,
+  "metrics": {
+    "completed_games": 100,
+    "wins": 66,
+    "losses": 34,
+    "win_rate": 0.66,
+    "elo_start": 1677,
+    "elo_end": 2090,
+    "elo_change": 413,
+    "elo_peak": 2141,
+    "interrupted_attempts": 5,
+    "unrecorded_interruption_elo_gap": -64
+  },
+  "inactive": [
+    "Hedge/style learner",
+    "S1 A1_rep planner",
+    "Reward rescaling helper",
+    "MechanicsWorldProvider and carried joint set/style posterior"
+  ],
+  "results": "research/stratified_mcts_climb_100completed_results.json",
+  "handoff": "docs/final-ladder-bot-handoff.md",
+  "notes": [
+    "Source hashes cover runtime files and the original cached catalogue, not the handoff/manifest itself.",
+    "Timed native search remains stochastic; identical code and catalogue do not guarantee identical games.",
+    "Raw replays, credentials, private room suffixes, and learner checkpoints are not published."
+  ],
+  "validation": {
+    "unit_tests": 128,
+    "unit_tests_result": "passed",
+    "exact_tera_feedback_records": 8,
+    "exact_tera_feedback_result": "passed",
+    "manifest_hashes": "verified against measured runtime",
+    "handoff_links": "verified",
+    "catalogue_sha256": "verified"
+  }
+}

@@ -33,7 +33,7 @@ import fp.modes.base as fp_base  # noqa: E402
 import fp.run_battle as fp_run  # noqa: E402
 from fp import websocket_client as fp_ws  # noqa: E402
 from fp.battle.helpers import normalize_name  # noqa: E402
-from fp.search.poke_engine_helpers import battle_to_poke_engine_state  # noqa: E402
+from battle_adapter import battle_to_poke_engine_state, request_options, raw_action  # noqa: E402
 
 import hidden_agents as ha  # noqa: E402
 import nash  # noqa: E402
@@ -41,6 +41,8 @@ import pkbattle as pb  # noqa: E402
 from exp3_live import Learner  # noqa: E402
 
 import behavior  # noqa: E402
+import world_learning as wl  # noqa: E402
+from belief_worlds import MechanicsWorldProvider  # noqa: E402
 
 RNG = random.Random()
 ROOT_METHODS = ("agentform", "pimc")
@@ -53,14 +55,16 @@ EXPLOIT_VICTIMS = ("bandit_ucb1", "bandit_ucb1_mv", "bandit_exp3_mv", "rmplus_av
 EXPLOIT_METHODS = tuple(f"exploit_{v}" for v in EXPLOIT_VICTIMS)   # model-based pure best reply to a known algorithm
 STYLE_METHODS = ("style_eq", "style_safe", "style_uniform")       # realisability: play a behavior.py style
 CONTROL_METHODS = ("top",)                                         # E5 control: argmax of the agent-form LP
+NATIVE_METHODS = ("mcts_native",)                                 # native tree search over sampled worlds
+PLANNER_METHODS = ('s1_agentform',)                               # experimental information-set matrix planner
 METHODS = ROOT_METHODS + HEDGE_METHODS + SAFEX_METHODS + BANDIT_METHODS + EXPLOIT_METHODS + STYLE_METHODS + \
-    CONTROL_METHODS
+    CONTROL_METHODS + NATIVE_METHODS + PLANNER_METHODS
 LEARN_METHODS = HEDGE_METHODS + SAFEX_METHODS              # read the opponent's realised action after each decision
 HEDGE_EXPERTS = ["top", "sampled", "safest", "safex"]
 HEDGE_CONFIG = {"hedge": dict(eta=None, alpha=0.0, scale=400.0),        # anytime FTRL, eta_t = sqrt(8 ln k / t)
                 "hedge_fs": dict(eta=0.2, alpha=0.002, scale=400.0),    # Hedge + fixed share (X6 constants)
                 "hedge_bayes": dict(eta=None, alpha=0.0, scale=400.0),  # as hedge; its safex expert uses q-hat
-                "hedge_bayes_mw": dict(eta=None, alpha=0.0, scale=400.0)}   # as hedge_bayes; per-world safex expert
+                "hedge_bayes_mw": dict(eta=None, alpha=0.0, scale=400.0)}   # per-world safest, safex and conditional credit
 SAFEX_EPS = 0.003                                          # safex expert: 0.3% of the payoff range
 BAYES_SAFEX_EPS = float(os.environ.get("OURBOT_SAFEX_EPS", SAFEX_EPS))  # eps of the q-hat safex (BAYES_METHODS)
 BANDIT_N, BANDIT_TAU, RMPLUS_ITERS = 2000, 160.0, 1000     # E4: root iterations, win-prob squash, RM+ iterations
@@ -250,6 +254,9 @@ def load_learner(method, path):
         d = json.load(open(path))
         if d["method"] != method or d["config"] != cfg or d["experts"] != HEDGE_EXPERTS:
             raise ValueError(f"hedge state {path} was written by {d['method']} {d['config']} {d['experts']}")
+        if method in MW_METHODS and d.get("semantics") != wl.SEMANTICS:
+            raise ValueError(f"hedge state {path} predates {wl.SEMANTICS}; use a fresh state path "
+                             "instead of mixing rewards from different expert/credit rules")
         L.logw, L.cum, L.t = np.array(d["logw"]), np.array(d["cum"]), int(d["t"])
         meta = d["meta"]
     meta["games"] += 1
@@ -262,6 +269,8 @@ def save_learner(method, path, L, meta):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     d = dict(method=method, config=HEDGE_CONFIG[method], experts=HEDGE_EXPERTS, logw=L.logw.tolist(),
              cum=L.cum.tolist(), t=L.t, weights=L.weights().round(6).tolist(), meta=meta)
+    if method in MW_METHODS:
+        d["semantics"] = wl.SEMANTICS
     tmp = path + ".tmp"
     json.dump(d, open(tmp, "w"))
     os.replace(tmp, path)
@@ -348,8 +357,9 @@ def make_move_fn(method: str, K: int, log=None, seed: int = 0, game: int = 0, st
     hedge_bayes_mw / bayes_safex_mw: as hedge_bayes / bayes_safex, but the style model is membership-aware per world
     (behavior.decide_worlds: each style on each world's own columns, mixed over the worlds), the safex expert / play is
     the per-world safe exploit ha.safex_strategy_worlds (max Σ_k w_k q̂_kᵀ M_kᵀ x within eps of the agent-form value),
-    and the posterior is updated with the per-world likelihood over every world containing map_column's label
-    (map_columns).
+    the pure safest expert maximises sum_k w_k min_b M_k[a,b], and Hedge credit averages the existing per-world
+    bounded rewards with P(k | b) proportional to w_k qhat_k(b), using predictions saved before observing b.
+    Both credit and style updates use EXACT action identity (no tera fallback). Unsupported observations are skipped.
     Their records also carry the averaged-matrix q-hat, so both predictors are scored on the same turns.
     bandit_ucb1 / bandit_exp3 / rmplus_avg (PA3): bandit self-play (BANDIT_N iterations) or RM+ (RMPLUS_ITERS) on
     Abar squashed to [0,1] by (1 + tanh(Abar / BANDIT_TAU)) / 2; plays from our row shares; logs their Nash gap on it.
@@ -358,6 +368,12 @@ def make_move_fn(method: str, K: int, log=None, seed: int = 0, game: int = 0, st
     roles swapped (style_strategy). OURBOT_LOG_ABAR=1 adds abar / labels / legal / pfull (+ Q, qs) to each record.
     seed/game seed the bandit RNG (with the turn and the decision index); exploit / style use the same seeding."""
     assert method in METHODS, method
+    if method in PLANNER_METHODS:
+        from s1_live import make_move_fn as s1_move_fn
+        return s1_move_fn(K,log or LOG,battle_to_poke_engine_state,request_options,raw_action,RNG)
+    if method in NATIVE_METHODS:
+        from native_mcts import make_move_fn as native_move_fn
+        return native_move_fn(K, log or LOG, battle_to_poke_engine_state, request_options, raw_action)
     other = {"agentform": "pimc", "pimc": "agentform"}.get(method)
     learner = meta = post = bmeta = None
     if method in HEDGE_METHODS:
@@ -371,6 +387,13 @@ def make_move_fn(method: str, K: int, log=None, seed: int = 0, game: int = 0, st
         post, bmeta = behavior.load_posterior(bpath)
         behavior.save_posterior(bpath, post, bmeta)
     ctx = dict(pending=None, n=0)
+    belief_source = os.environ.get("OURBOT_BELIEF_SOURCE", "foulplay_baseline")
+    if belief_source not in {"foulplay_baseline", "reveals_v2", "mechanics_v2"}:
+        raise ValueError(f"unknown OURBOT_BELIEF_SOURCE: {belief_source}")
+    mechanics = (MechanicsWorldProvider(belief_source,
+                 shadow=os.environ.get("OURBOT_BELIEF_SHADOW", "1") != "0",
+                 rng=random.Random((seed or 0) * 1009 + (game or 0)))
+                 if belief_source != "foulplay_baseline" else None)
     log_abar = os.environ.get("OURBOT_LOG_ABAR") == "1"    # open item 1: log Abar, labels, legal, full p (+ Q, qs)
     if nash.LEAF_STATS_ON:                                # OURBOT_LEAF_STATS / OURBOT_DET_LEAF: per-decision leaf counts
         ctx["leaf"] = leaf_stats_copy()
@@ -391,23 +414,40 @@ def make_move_fn(method: str, K: int, log=None, seed: int = 0, game: int = 0, st
         else:
             b, how = opp_action(lines if final else lines[pend["idx"]:], pend["opp"])
         fb = dict(for_turn=pend["turn"], b=b, how=how)
-        hit = map_column(b, pend["cols"], pend["w"]) if b is not None else None
-        if hit is None:
+        conditioning = (wl.condition_on_action(pend["cols"], pend["w"], pend["qhat_k"], b)
+                        if method in MW_METHODS and b is not None else None)
+        hit = map_column(b, pend["cols"], pend["w"]) if method not in MW_METHODS and b is not None else None
+        if hit is None and conditioning is None:
             for m in (meta, bmeta):
                 if m is not None:
                     m["skipped"] += 1
             fb.update(skipped=True, reason=how if b is None else "not_in_worlds")
         else:
-            k, j = hit
-            fb.update(skipped=False, world=k)
+            fb.update(skipped=False)
+            if conditioning is not None:
+                lab = b
+                fb["credit"] = dict(semantics=wl.SEMANTICS, label=lab,
+                                    worlds_with=list(conditioning["indices"]),
+                                    world_weights=conditioning["weights"].tolist(),
+                                    predictive_probability=conditioning["probability"],
+                                    support_weight=conditioning["support_weight"])
+            else:
+                k, j = hit
+                lab = pend["cols"][k][j]
+                fb["world"] = k
             if learner is not None:
                 before = learner.cum.copy()
-                learner.update(pend["Ms"][k], pend["Q"], j)
+                if conditioning is not None:
+                    rewards, utilities = wl.conditional_expert_credit(pend["Ms"], pend["Q"], conditioning,
+                                                                    learner.scale)
+                    learner.update_rewards(rewards)
+                    fb["credit"].update(expected_utilities=utilities.tolist(), rewards=rewards.tolist())
+                else:
+                    learner.update(pend["Ms"][k], pend["Q"], j)
                 meta["updates"] += 1
                 fb.update(r=(learner.cum - before).round(4).tolist(), weights=learner.weights().round(4).tolist())
             if post is not None and method in MW_METHODS:  # per-world scores, then the per-world Bayes step
-                lab = pend["cols"][k][j]
-                fb["bayes"] = behavior.score_and_update_worlds(post, pend, map_columns(lab, pend["cols"]), lab,
+                fb["bayes"] = behavior.score_and_update_worlds(post, pend, conditioning["indices"], lab,
                                                                how == "forced")
                 bmeta["updates"] += 1
             elif post is not None:                           # prequential score of q-hat, then the Bayes step
@@ -424,6 +464,9 @@ def make_move_fn(method: str, K: int, log=None, seed: int = 0, game: int = 0, st
         fb = feedback(lines, final=True)
         if fb is not None:
             write(dict(method=method, final=True, feedback=fb))
+        if mechanics is not None:
+            mechanics.finish(lines)
+            write(dict(method=method, final=True, mechanics=mechanics.summary()))
 
     def find_best_move(battle) -> str:
         from copy import deepcopy
@@ -436,15 +479,28 @@ def make_move_fn(method: str, K: int, log=None, seed: int = 0, game: int = 0, st
         if method in LEARN_METHODS:
             fb = feedback(lines)
             _FINISHERS[battle.battle_tag] = finish
-        worlds = battle.mode.prepare_battles(battle, K)
+        # The v2 provider owns its prior and posterior independently of Foul
+        # Play's inference. Never reweight prepare_battles with our likelihoods.
+        worlds, states = None, None
+        if mechanics is not None:
+            mechanics.update(battle, battle_to_poke_engine_state)
+            _FINISHERS[battle.battle_tag] = finish
+            states = mechanics.sample_states(battle, battle_to_poke_engine_state, K)
+        if states is None:
+            worlds = battle.mode.prepare_battles(battle, K)
+            states = ((battle_to_poke_engine_state(b), chance) for b, chance in worlds)
         Ms, ws, rows, cols, legal, raw = [], [], [], [], None, {}
-        for b, chance in worlds:
-            state = battle_to_poke_engine_state(b)
-            r = nash.pe.id(state, 0)                         # raw engine option strings for side one (us)
-            M, s1, s2 = nash.full_matrix(state)
+        allowed = request_options(battle)
+        snapshots = [] if os.environ.get("OURBOT_LOG_STATES") == "1" else None
+        search_matrices = []
+        for state, chance in states:
+            M, s1, s2 = nash.full_matrix(state, side_one_options=allowed)
             if legal is None:
                 legal = s1
-                raw = {pb._canon(o): o for o in r.s1}
+                raw = {label: raw_action(label, battle) for label in s1}
+            if snapshots is not None:
+                snapshots.append(state.to_string())
+                search_matrices.append(M.tolist())
             Ms.append(M); ws.append(chance); rows.append(s1); cols.append(s2)
             if len(legal) == 1:
                 break
@@ -465,7 +521,10 @@ def make_move_fn(method: str, K: int, log=None, seed: int = 0, game: int = 0, st
                 x = ha.agent_form_lp(Ms, w)[0]
                 sx = np.clip(nash.safex_strategy(Abar, SAFEX_EPS), 0, None)
                 eye = np.eye(len(legal))
-                Q = np.stack([eye[int(x.argmax())], x, eye[int(Abar.min(1).argmax())], sx / sx.sum()])
+                security = wl.pure_security_values(Ms, w) if method in MW_METHODS else Abar.min(1)
+                Q = np.stack([eye[int(x.argmax())], x, eye[int(security.argmax())], sx / sx.sum()])
+                if method in MW_METHODS:
+                    rec["pure_security"] = security.tolist()
                 wts = learner.weights()
                 bay = {}
                 if post is not None:                         # hedge_bayes: safex expert on q-hat; br_us sees the
@@ -554,13 +613,24 @@ def make_move_fn(method: str, K: int, log=None, seed: int = 0, game: int = 0, st
                        secs=round(time.time() - t0, 2))
         if method in LEARN_METHODS:
             rec["feedback"] = fb
-        if os.environ.get("OURBOT_LOG_WORLDS") == "1":
+        if method in MW_METHODS:
+            rec["learning_semantics"] = wl.SEMANTICS
+        rec["battle_tag"] = battle.battle_tag
+        rec["decision_index"] = ctx["n"]
+        if snapshots is not None:
+            # Matrices retain the exact payoffs even if timed native leaf
+            # searches differ on a subsequent run. No account/request data.
+            rec["search"] = dict(states=snapshots, weights=ws, rows=rows, cols=cols,
+                                 legal=legal, matrices=search_matrices)
+        if os.environ.get("OURBOT_LOG_WORLDS") == "1" and worlds is not None:
             rec["belief"] = belief_log(battle, worlds)
         if nash.LEAF_STATS_ON:
             cur = leaf_stats_copy()
             rec["leaf_stats"] = leaf_stats_delta(cur, ctx["leaf"])
             ctx["leaf"] = cur
         ctx["n"] += 1
+        if mechanics is not None:
+            rec["mechanics"] = mechanics.summary()
         write(rec)
         return move
     return find_best_move
@@ -611,7 +681,7 @@ def root_decision(method, other, Ms, ws, rows, legal, raw, t0, cols=None):
     return rec, move
 
 
-our_find_best_move = make_move_fn("agentform", K_WORLDS)
+our_find_best_move = make_move_fn(os.environ.get("OURBOT_METHOD", "agentform"), K_WORLDS)
 
 
 async def local_login(self):
@@ -671,6 +741,15 @@ fp_ws.PSWebsocketClient.receive_message = recording_receive
 
 if __name__ == "__main__":
     import asyncio
+    from local_bot_safety import validate_local_bot_identity
+
+    _create_client = fp_ws.PSWebsocketClient.create
+
+    async def create_local_client(cls, username, password, address):
+        validate_local_bot_identity(username, password, address)
+        return await _create_client(username, password, address)
+
+    fp_ws.PSWebsocketClient.create = classmethod(create_local_client)
     defaults = ["--websocket-uri", "ws://127.0.0.1:8000/showdown/websocket", "--ps-username", "eqbot",
                 "--bot-mode", "accept_challenge", "--pokemon-format", "gen9randombattle", "--run-count", "100",
                 "--log-level", "INFO"]

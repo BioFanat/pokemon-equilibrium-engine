@@ -171,6 +171,13 @@ def full_d1(state: pe.State, cache: dict | None = None):
 
 
 def own_child_matrix(child: pe.State, side: int, cache: dict | None = None):
+    # full_d1 is deliberately a faithful native-matrix extractor. Finished
+    # battles need the same exact reward as the live planner, not its material
+    # heuristic. A finished game has no continuation choice for either side.
+    terminal = nash.terminal_value(child)
+    if terminal is not None:
+        value = terminal if side == 1 else -terminal
+        return np.array([[value]]), ["none"], ["none"]
     F, r1, r2 = full_d1(child, cache)
     return (F, r1, r2) if side == 1 else (-F.T, r2, r1)
 
@@ -186,12 +193,12 @@ def value_of(M: np.ndarray):
 
 
 def full_matrix_lpleaf(state: pe.State, cache: dict | None = None):
-    """nash.full_matrix with the LP leaf: M[i, j] = sum_b p_b val(full_d1(child_b)) (side one's view)."""
+    """Depth-2 matrix with LP continuation values and exact terminal rewards (side one's view)."""
     s1, s2 = pb.options(state)
     M = np.empty((len(s1), len(s2)))
     for i, a in enumerate(s1):
         for j, b in enumerate(s2):
-            M[i, j] = sum(br.percentage / 100.0 * value_of(full_d1(state.apply_instructions(br), cache)[0])[1]
+            M[i, j] = sum(br.percentage / 100.0 * value_of(own_child_matrix(state.apply_instructions(br), 1, cache)[0])[1]
                           for br in pe.generate_instructions(state, a, b))
     return M, s1, s2
 

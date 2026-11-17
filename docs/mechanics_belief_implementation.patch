@@ -1,0 +1,1571 @@
+diff --git a/engine/showdown/run_ourbot.py b/engine/showdown/run_ourbot.py
+--- a/engine/showdown/run_ourbot.py
++++ b/engine/showdown/run_ourbot.py
+@@ -41,6 +41,7 @@
+ from exp3_live import Learner  # noqa: E402
+ 
+ import behavior  # noqa: E402
++from belief_worlds import MechanicsWorldProvider  # noqa: E402
+ 
+ RNG = random.Random()
+ ROOT_METHODS = ("agentform", "pimc")
+@@ -353,6 +354,13 @@
+         post, bmeta = behavior.load_posterior(bpath)
+         behavior.save_posterior(bpath, post, bmeta)
+     ctx = dict(pending=None, n=0)
++    belief_source = os.environ.get("OURBOT_BELIEF_SOURCE", "foulplay_baseline")
++    if belief_source not in {"foulplay_baseline", "reveals_v2", "mechanics_v2"}:
++        raise ValueError(f"unknown OURBOT_BELIEF_SOURCE: {belief_source}")
++    mechanics = (MechanicsWorldProvider(belief_source,
++                 shadow=os.environ.get("OURBOT_BELIEF_SHADOW", "1") != "0",
++                 rng=random.Random((seed or 0) * 1009 + (game or 0)))
++                 if belief_source != "foulplay_baseline" else None)
+     log_abar = os.environ.get("OURBOT_LOG_ABAR") == "1"    # open item 1: log Abar, labels, legal, full p (+ Q, qs)
+ 
+     def write(rec):
+@@ -399,6 +407,9 @@
+         fb = feedback(lines, final=True)
+         if fb is not None:
+             write(dict(method=method, final=True, feedback=fb))
++        if mechanics is not None:
++            mechanics.finish(lines)
++            write(dict(method=method, final=True, mechanics=mechanics.summary()))
+ 
+     def find_best_move(battle) -> str:
+         from copy import deepcopy
+@@ -411,10 +422,18 @@
+         if method in LEARN_METHODS:
+             fb = feedback(lines)
+             _FINISHERS[battle.battle_tag] = finish
+-        worlds = battle.mode.prepare_battles(battle, K)
++        # The v2 provider owns its prior and posterior independently of Foul
++        # Play's inference. Never reweight prepare_battles with our likelihoods.
++        worlds, states = None, None
++        if mechanics is not None:
++            mechanics.update(battle, battle_to_poke_engine_state)
++            _FINISHERS[battle.battle_tag] = finish
++            states = mechanics.sample_states(battle, battle_to_poke_engine_state, K)
++        if states is None:
++            worlds = battle.mode.prepare_battles(battle, K)
++            states = ((battle_to_poke_engine_state(b), chance) for b, chance in worlds)
+         Ms, ws, rows, cols, legal, raw = [], [], [], [], None, {}
+-        for b, chance in worlds:
+-            state = battle_to_poke_engine_state(b)
++        for state, chance in states:
+             r = nash.pe.id(state, 0)                         # raw engine option strings for side one (us)
+             M, s1, s2 = nash.full_matrix(state)
+             if legal is None:
+@@ -515,9 +534,11 @@
+                        secs=round(time.time() - t0, 2))
+         if method in LEARN_METHODS:
+             rec["feedback"] = fb
+-        if os.environ.get("OURBOT_LOG_WORLDS") == "1":
++        if os.environ.get("OURBOT_LOG_WORLDS") == "1" and worlds is not None:
+             rec["belief"] = belief_log(battle, worlds)
+         ctx["n"] += 1
++        if mechanics is not None:
++            rec["mechanics"] = mechanics.summary()
+         write(rec)
+         return move
+     return find_best_move
+diff --git a/engine/belief_catalog.py b/engine/belief_catalog.py
+new file mode 100644
+--- /dev/null
++++ b/engine/belief_catalog.py
+@@ -0,0 +1,102 @@
++"""Exact, dependency-free catalog for randbats.sample_set's approximate prior.
++
++Role names are provenance, not part of a mechanics hypothesis: duplicate paths
++are summed. Importing this module never imports poke_engine.
++"""
++from __future__ import annotations
++
++import itertools
++import json
++import math
++import re
++from collections import Counter
++from dataclasses import dataclass
++from functools import lru_cache
++from pathlib import Path
++
++DATA = Path(__file__).resolve().parent / "data"
++STATS = ("hp", "atk", "def", "spa", "spd", "spe")
++
++
++def to_id(value):
++    return re.sub(r"[^a-z0-9]", "", str(value).lower())
++
++
++@dataclass(frozen=True)
++class Candidate:
++    species: str
++    level: int
++    moves: tuple[str, ...]
++    ability: str
++    item: str
++    tera: str
++    evs: tuple[int, ...]
++    ivs: tuple[int, ...]
++
++    def as_pokeset(self):
++        # Lazy: catalog/update/replay tests need no Rust engine.
++        from randbats import PokeSet
++        return PokeSet(self.species, "catalog", self.level, self.ability,
++                       self.item, self.tera, self.moves, self.evs, self.ivs)
++
++
++@dataclass(frozen=True)
++class CatalogEntry:
++    candidate: Candidate
++    prior: float
++
++
++def enumerate_species(species, entry):
++    mass = Counter()
++    roles = entry["roles"]
++    for name in sorted(roles):
++        role = roles[name]
++        pool = role["moves"]
++        subsets = list(itertools.combinations(pool, min(4, len(pool))))
++        if not subsets:
++            raise ValueError(f"empty move pool: {species}/{name}")
++        ability = Counter(map(to_id, role.get("abilities") or entry["abilities"]))
++        item = Counter(map(to_id, role.get("items") or entry.get("items") or ["None"]))
++        tera = Counter(map(to_id, role["teraTypes"]))
++        ev = {**entry.get("evs", {}), **role.get("evs", {})}
++        iv = {**entry.get("ivs", {}), **role.get("ivs", {})}
++        denom = len(roles) * len(subsets) * sum(ability.values()) * sum(item.values()) * sum(tera.values())
++        for moves, a, i, t in itertools.product(subsets, ability, item, tera):
++            c = Candidate(species, entry["level"], tuple(sorted(map(to_id, moves))), a, i, t,
++                          tuple(ev.get(s, 84) for s in STATS), tuple(iv.get(s, 31) for s in STATS))
++            mass[c] += ability[a] * item[i] * tera[t] / denom
++    total = math.fsum(mass.values())
++    if not math.isclose(total, 1.0, abs_tol=1e-12):
++        raise ValueError(f"invalid catalog prior for {species}: {total}")
++    return tuple(CatalogEntry(c, p / total) for c, p in mass.items())
++
++
++class Catalog:
++    def __init__(self, data=None, dex=None):
++        self.data = data if data is not None else json.loads((DATA / "gen9randombattle.json").read_text())
++        self.dex = dex if dex is not None else json.loads((DATA / "dex_gen9randbats.json").read_text())
++        self.names = {to_id(k): k for k in self.data}
++        self._entries = {}
++
++    def entries(self, species):
++        name = self.names.get(to_id(species))
++        if name is None:
++            raise KeyError(f"species outside catalog: {species}")
++        if name not in self._entries:
++            self._entries[name] = enumerate_species(name, self.data[name])
++        return self._entries[name]
++
++    def stats(self, candidate):
++        base = self.dex[to_id(candidate.species)]["baseStats"]
++        out = {}
++        for s, ev, iv in zip(STATS, candidate.evs, candidate.ivs):
++            core = (2 * base[s] + iv + ev // 4) * candidate.level // 100
++            out[s] = core + (candidate.level + 10 if s == "hp" else 5)
++        if to_id(candidate.species) == "shedinja":
++            out["hp"] = 1
++        return out
++
++
++@lru_cache(maxsize=1)
++def default_catalog():
++    return Catalog()
+diff --git a/engine/belief_events.py b/engine/belief_events.py
+new file mode 100644
+--- /dev/null
++++ b/engine/belief_events.py
+@@ -0,0 +1,79 @@
++"""Observer-visible evidence only. No simulator objects or opponent commands."""
++from __future__ import annotations
++
++from dataclasses import dataclass
++
++
++@dataclass(frozen=True)
++class Reveal:
++    event_id: str
++    entity: str
++    species: str
++    attribute: str = "species"
++    value: str | None = None
++    original: bool = True
++
++
++@dataclass(frozen=True)
++class HPObservation:
++    value: int
++    denominator: int
++    exact: bool = False
++
++    def __post_init__(self):
++        if self.denominator <= 0 or not 0 <= self.value <= self.denominator:
++            raise ValueError("invalid HP observation")
++
++    def compatible(self, hp, maxhp):
++        if self.exact:
++            return maxhp == self.denominator and hp == self.value
++        # Explicit percentage-display model, validated by the observer adapter's fixtures.
++        # Keep the non-full -> 99 edge used by this project's internal observer.
++        if hp == 0:
++            return self.value == 0
++        pct = (hp * self.denominator + maxhp - 1) // maxhp
++        if pct == self.denominator and hp < maxhp:
++            pct -= 1
++        return pct == self.value
++
++
++@dataclass(frozen=True)
++class SpeedEvidence:
++    event_id: str
++    entity: str
++    own_speed: int                 # known effective Speed at action selection
++    opponent_first: bool
++    opponent_stage: int = 0
++    paralyzed: bool = False
++    tailwind: bool = False
++    trick_room: bool = False
++    # Adapter certifies equal, known priority and no ambiguous order effects.
++    supported: bool = False
++    reason: str = "uncertified_order_context"
++    attributes_at_event: bool = False
++    item_at_event: str | None = None
++    ability_at_event: str | None = None
++
++
++@dataclass(frozen=True)
++class DamageEvidence:
++    event_id: str
++    entity: str
++    move: str
++    before: HPObservation
++    after: HPObservation
++    incoming: bool = True
++    # Immutable public inputs consumed by a mechanics oracle, not a full state.
++    context: tuple = ()
++    supported: bool = False
++    reason: str = "uncertified_damage_context"
++    attributes_at_event: bool = False
++    item_at_event: str | None = None
++    ability_at_event: str | None = None
++
++
++@dataclass(frozen=True)
++class Skip:
++    event_id: str
++    entity: str
++    reason: str
+diff --git a/engine/belief_likelihoods.py b/engine/belief_likelihoods.py
+new file mode 100644
+--- /dev/null
++++ b/engine/belief_likelihoods.py
+@@ -0,0 +1,118 @@
++"""Mechanics likelihoods, deliberately separate from strategic payoff evaluation.
++
++Damage oracles return an actual PMF (or raise Unsupported). Min/max ranges and
++the engine's heuristic payoff values are never treated as probabilities.
++"""
++from __future__ import annotations
++
++import math
++from collections import Counter
++from dataclasses import dataclass
++
++from belief_catalog import to_id
++
++
++class Unsupported(Exception):
++    pass
++
++
++@dataclass(frozen=True)
++class DamagePMF:
++    outcomes: tuple[tuple[int, float], ...]
++
++    def __post_init__(self):
++        if not self.outcomes or any(d < 0 or not isinstance(d, int) or p < 0 or not math.isfinite(p)
++                                    for d, p in self.outcomes):
++            raise ValueError("invalid damage PMF")
++        if not math.isclose(math.fsum(p for _, p in self.outcomes), 1.0, abs_tol=1e-9):
++            raise ValueError("damage probabilities must sum to one")
++
++    @classmethod
++    def from_uniform_rolls(cls, rolls):
++        rolls = list(rolls)
++        if not rolls:
++            raise Unsupported("empty_damage_rolls")
++        counts = Counter(rolls)
++        return cls(tuple((d, n / len(rolls)) for d, n in sorted(counts.items())))
++
++
++# Only abilities whose speed behavior is irrelevant are allowed here. An unknown
++# ability must skip the entire factor; assigning it likelihood zero would bias
++# inference toward the subset the implementation happens to understand.
++SPEED_NEUTRAL_ABILITIES = frozenset("""
++levitate roughskin ironbarbs pressure intimidate static flamebody flashfire
++waterabsorb voltabsorb lightningrod stormdrain sturdy naturalcure regenerator
++magicguard unaware overcoat infiltrator clearbody innerfocus soundproof
++technician skilllink compoundeyes sheerforce guts moxie defiant competitive
++contrary thickfat hugepower purepower adaptability sniper solidrock filter
++multiscale shadowshield goodasgold supremeoverlord moldbreaker torrent blaze
++overgrow swarm poisonheal immun​ity limber vitalspirit insomnia own​tempo
++serenegrace superluck noguard rockhead recoilproof keeneye hypercutter
++""".replace("\u200b", "").split())
++SPEED_NEUTRAL_ITEMS = frozenset("""
++none leftovers blacksludge lifeorb choiceband choicespecs assaultvest
++heavydutyboots focussash rockyhelmet airballoon expertbelt whiteherb
++powerherb mentalherb clearamulet covertcloak lightclay scopelens leppaberry
++sitrusberry lumberry chopleberry shucaberry colburberry weaknesspolicy
++flameorb toxicorb eviolite mysticwater blackglasses charcoal magnet
++""".split())
++
++
++def effective_speed(base, ability, item, *, stage=0, paralyzed=False, tailwind=False):
++    ability, item = to_id(ability), to_id(item)
++    if ability not in SPEED_NEUTRAL_ABILITIES:
++        raise Unsupported(f"speed_ability:{ability}")
++    if item not in SPEED_NEUTRAL_ITEMS | {"choicescarf"}:
++        raise Unsupported(f"speed_item:{item}")
++    if not -6 <= stage <= 6 or base <= 0:
++        raise ValueError("invalid Speed input")
++    if sum((item == "choicescarf", tailwind, paralyzed)) > 1:
++        raise Unsupported("combined_speed_modifiers_not_validated")
++    speed = base * max(2, 2 + stage) // max(2, 2 - stage)
++    # Gen 9 modifier order for the supported ordinary case. Exclude other
++    # abilities/items rather than approximating their interaction or priority.
++    if item == "choicescarf":
++        speed = speed * 3 // 2
++    if tailwind:
++        speed *= 2
++    if paralyzed:
++        speed //= 2
++    return max(1, speed)
++
++
++def speed_likelihood(candidate, evidence, catalog, current_item=None, current_ability=None):
++    if not evidence.supported:
++        raise Unsupported(evidence.reason)
++    speed = effective_speed(catalog.stats(candidate)["spe"],
++                            current_ability or candidate.ability,
++                            candidate.item if current_item is None else current_item,
++                            stage=evidence.opponent_stage, paralyzed=evidence.paralyzed,
++                            tailwind=evidence.tailwind)
++    if speed == evidence.own_speed:
++        return 0.5
++    first = speed < evidence.own_speed if evidence.trick_room else speed > evidence.own_speed
++    return float(first == evidence.opponent_first)
++
++
++def incoming_likelihood(pmf, before, after):
++    if not before.exact or not after.exact or before.denominator != after.denominator:
++        raise Unsupported("incoming_requires_exact_own_hp")
++    # Censor overkill instead of treating the HP lost as uncapped damage.
++    return math.fsum(p for d, p in pmf.outcomes if max(0, before.value - d) == after.value)
++
++
++def filter_hp(prior, pmf, observed, maxhp):
++    """Unnormalized forward filter; returns (evidence likelihood, conditional HP)."""
++    posterior = Counter()
++    for hp, p_hp in prior.items():
++        for damage, p_damage in pmf.outcomes:
++            h = max(0, hp - damage)
++            if observed.compatible(h, maxhp):
++                posterior[h] += p_hp * p_damage
++    mass = math.fsum(posterior.values())
++    return mass, {h: p / mass for h, p in posterior.items()} if mass else {}
++
++
++class NoDamageOracle:
++    def distribution(self, candidate, evidence, current_item=None, current_ability=None):
++        raise Unsupported("damage_oracle_unavailable")
+diff --git a/engine/belief_tracker.py b/engine/belief_tracker.py
+new file mode 100644
+--- /dev/null
++++ b/engine/belief_tracker.py
+@@ -0,0 +1,192 @@
++"""Persistent mechanics-conditioned posterior. Pure Python; no private state.
++
++All-candidate updates are transactional. Any unsupported candidate skips the
++whole factor, rather than favoring candidates understood by our model.
++"""
++from __future__ import annotations
++
++import math
++from collections import Counter
++from dataclasses import dataclass, field
++
++from belief_catalog import CatalogEntry, default_catalog, to_id
++from belief_events import DamageEvidence, Reveal, Skip, SpeedEvidence
++from belief_likelihoods import NoDamageOracle, Unsupported, filter_hp, incoming_likelihood, speed_likelihood
++
++
++class PriorSupportError(ValueError):
++    """A direct reveal contradicts the configured prior; never silently ignore it."""
++
++
++@dataclass
++class EntityBelief:
++    entries: tuple[CatalogEntry, ...]
++    logweights: list[float]
++    moves: set[str] = field(default_factory=set)
++    item: str | None = None
++    ability: str | None = None
++    tera: str | None = None
++    hp: dict[int, dict[int, float]] = field(default_factory=dict)
++    degraded: bool = False
++
++    def probabilities(self):
++        m = max(self.logweights)
++        weights = [math.exp(w - m) for w in self.logweights]
++        total = math.fsum(weights)
++        return [w / total for w in weights]
++
++    def support(self):
++        return [i for i, w in enumerate(self.logweights) if math.isfinite(w)]
++
++
++class BeliefSession:
++    def __init__(self, catalog=None, damage_oracle=None, mechanics=True):
++        self.catalog = catalog or default_catalog()
++        self.damage_oracle = damage_oracle or NoDamageOracle()
++        self.mechanics = mechanics
++        self.entities = {}
++        self.applied = set()
++        self.diagnostics = Counter()
++
++    def _entity(self, entity, species=None):
++        if entity not in self.entities:
++            if species is None:
++                raise KeyError(entity)
++            entries = self.catalog.entries(species)
++            self.entities[entity] = EntityBelief(entries, [math.log(e.prior) for e in entries])
++        return self.entities[entity]
++
++    def _apply_weights(self, belief, likelihoods, hard=False):
++        out = [w + math.log(p) if p > 0 else -math.inf for w, p in zip(belief.logweights, likelihoods)]
++        if not any(math.isfinite(w) for w in out):
++            if hard:
++                belief.degraded = True
++                raise PriorSupportError("direct reveal outside remaining prior support")
++            self.diagnostics["model_mismatch"] += 1
++            return False
++        m = max(out)
++        z = m + math.log(math.fsum(math.exp(w - m) for w in out))
++        belief.logweights = [w - z for w in out]
++        return True
++
++    def observe(self, event):
++        if event.event_id in self.applied:
++            self.diagnostics["duplicate"] += 1
++            return False
++        if isinstance(event, Reveal):
++            belief = self._entity(event.entity, event.species)
++            value = to_id(event.value) if event.value is not None else None
++            if event.attribute == "species":
++                if to_id(belief.entries[0].candidate.species) != to_id(event.species):
++                    belief.degraded = True
++                    raise PriorSupportError("ambiguous/replaced species identity")
++            elif event.attribute in {"move", "item", "ability", "tera"}:
++                if value is None:
++                    raise ValueError("reveal needs a value")
++                if event.original:
++                    likelihoods = []
++                    for entry in belief.entries:
++                        c = entry.candidate
++                        likelihoods.append(float(value in c.moves if event.attribute == "move"
++                                                 else value == getattr(c, event.attribute)))
++                    self._apply_weights(belief, likelihoods, hard=True)
++                if event.attribute == "move":
++                    belief.moves.add(value)
++                else:
++                    setattr(belief, event.attribute, value)
++            else:
++                raise ValueError(f"unknown reveal attribute: {event.attribute}")
++            self.applied.add(event.event_id)
++            self.diagnostics["reveals"] += 1
++            return True
++        self.applied.add(event.event_id)
++        if isinstance(event, Skip):
++            self.diagnostics["skip:" + event.reason] += 1
++            return False
++        if not self.mechanics:
++            self.diagnostics["skip:mechanics_disabled"] += 1
++            return False
++        belief = self._entity(event.entity)
++        if belief.degraded:
++            self.diagnostics["skip:degraded_entity"] += 1
++            return False
++        likelihoods = [0.0] * len(belief.entries)
++        pending_hp = {}
++        item = event.item_at_event if event.attributes_at_event else belief.item
++        ability = event.ability_at_event if event.attributes_at_event else belief.ability
++        try:
++            if isinstance(event, DamageEvidence) and hasattr(self.damage_oracle, "prepare"):
++                self.damage_oracle.prepare([belief.entries[i].candidate for i in belief.support()], event, item, ability)
++            for i in belief.support():
++                c = belief.entries[i].candidate
++                if isinstance(event, SpeedEvidence):
++                    p = speed_likelihood(c, event, self.catalog, item, ability)
++                elif isinstance(event, DamageEvidence):
++                    if not event.supported:
++                        raise Unsupported(event.reason)
++                    pmf = self.damage_oracle.distribution(c, event, item, ability)
++                    if event.incoming:
++                        p = incoming_likelihood(pmf, event.before, event.after)
++                    else:
++                        maximum = self.catalog.stats(c)["hp"]
++                        prior = belief.hp.get(i)
++                        if prior is None:
++                            compatible = [h for h in range(maximum + 1) if event.before.compatible(h, maximum)]
++                            if not compatible:
++                                p = 0.0
++                                likelihoods[i] = p
++                                continue
++                            # First contact is an explicitly documented uniform HP assumption.
++                            prior = {h: 1 / len(compatible) for h in compatible}
++                        elif not all(event.before.compatible(h, maximum) for h in prior):
++                            raise Unsupported("hp_history_gap")
++                        p, filtered = filter_hp(prior, pmf, event.after, maximum)
++                        pending_hp[i] = filtered
++                else:
++                    raise TypeError(type(event))
++                if not math.isfinite(p) or not 0 <= p <= 1 + 1e-9:
++                    raise ValueError("invalid mechanics likelihood")
++                likelihoods[i] = min(p, 1.0)
++        except Unsupported as exc:
++            self.diagnostics["skip:" + str(exc)] += 1
++            return False
++        if not self._apply_weights(belief, likelihoods):
++            return False
++        belief.hp.update(pending_hp)
++        self.diagnostics["speed" if isinstance(event, SpeedEvidence) else "damage"] += 1
++        return True
++
++    def invalidate_hp(self, entity):
++        if entity in self.entities:
++            self.entities[entity].hp.clear()
++            self.diagnostics["hp_invalidated"] += 1
++
++    def sample(self, entity, rng):
++        b = self._entity(entity)
++        if b.degraded:
++            raise PriorSupportError("cannot sample an out-of-support entity")
++        return rng.choices([e.candidate for e in b.entries], weights=b.probabilities())[0]
++
++    def map_set(self, entity):
++        b = self._entity(entity)
++        if b.degraded:
++            raise PriorSupportError("cannot sample an out-of-support entity")
++        return b.entries[max(range(len(b.entries)), key=lambda i: b.logweights[i])].candidate
++
++    def marginal(self, entity, attribute):
++        b = self._entity(entity)
++        out = Counter()
++        for entry, p in zip(b.entries, b.probabilities()):
++            vals = entry.candidate.moves if attribute == "move" else [getattr(entry.candidate, attribute)]
++            for value in vals:
++                out[value] += p
++        return dict(out)
++
++    def summary(self):
++        out = {}
++        for name, b in self.entities.items():
++            p = b.probabilities()
++            out[name] = dict(support=len(b.support()), entropy=-math.fsum(x * math.log(x) for x in p if x),
++                             degraded=b.degraded, item=self.marginal(name, "item"),
++                             ability=self.marginal(name, "ability"))
++        return dict(entities=out, diagnostics=dict(self.diagnostics))
+diff --git a/engine/belief_engine.py b/engine/belief_engine.py
+new file mode 100644
+--- /dev/null
++++ b/engine/belief_engine.py
+@@ -0,0 +1,115 @@
++"""Conservative bridge to poke-engine's documented damage-roll CLI.
++
++POKE_ENGINE_BIN must name a Gen 9/Tera build of poke-engine 0.0.48. The CLI
++contract is checked for every result: two explicit 16-roll lists, not extrema.
++No dependency is downloaded and no approximate PMF is synthesized from maxima.
++"""
++from __future__ import annotations
++
++import json
++import os
++import re
++import subprocess
++from dataclasses import replace
++from functools import lru_cache
++
++from belief_likelihoods import DamagePMF, Unsupported
++
++# A deliberately small, fixed-power, single-hit support surface. This is also
++# the equal-priority whitelist: unsupported move effects must not be guessed.
++ORDINARY_MOVES = frozenset("""
++thunderbolt icebeam flamethrower earthquake shadowball psychic surf darkpulse
++moonblast dragonpulse energyball airslash dazzlinggleam sludgebomb sludgewave
++flashcannon bugbuzz powergem dragonclaw ironhead waterfall crunch leafblade
++playrough xscissor rockslide stoneedge hydropump fireblast focusblast
++""".split())
++HP_ABILITIES = frozenset("blaze torrent overgrow swarm defeatist multiscale shadowshield berserk emergencyexit wimpout".split())
++UNSUPPORTED_ITEMS = frozenset("lightclay scopelens leppaberry unknownitem".split())
++
++
++def parse_rolls(output, incoming):
++    lines = re.findall(r"Damage Rolls:\s*([0-9, ]+)", output)
++    if len(lines) != 2:
++        raise Unsupported("engine_damage_output_contract")
++    all_rolls = [[int(x.strip()) for x in line.split(",") if x.strip()] for line in lines]
++    rolls = all_rolls[1 if incoming else 0]
++    if len(rolls) != 16 or rolls != sorted(rolls):
++        raise Unsupported("engine_requires_16_explicit_rolls")
++    return DamagePMF.from_uniform_rolls(rolls)
++
++
++class PokeEngineDamageOracle:
++    def __init__(self, executable=None, timeout=2.0, max_groups=64):
++        if timeout <= 0 or max_groups < 1:
++            raise ValueError("invalid damage oracle budget")
++        self.executable = executable or os.environ.get("POKE_ENGINE_BIN")
++        self.timeout = timeout
++        self.max_groups = max_groups
++
++    @staticmethod
++    def signature(candidate, evidence, current_item, current_ability):
++        return replace(candidate, moves=(evidence.move,), tera="normal",
++                       item=candidate.item if current_item is None else current_item,
++                       ability=candidate.ability if current_ability is None else current_ability)
++
++    def prepare(self, candidates, evidence, current_item, current_ability):
++        if len({self.signature(c, evidence, current_item, current_ability) for c in candidates}) > self.max_groups:
++            raise Unsupported("damage_work_budget")
++
++    def distribution(self, candidate, evidence, current_item=None, current_ability=None):
++        if not self.executable:
++            raise Unsupported("set_POKE_ENGINE_BIN_for_damage")
++        if not evidence.incoming:
++            raise Unsupported("outgoing_engine_context_not_implemented")
++        if evidence.move not in ORDINARY_MOVES:
++            raise Unsupported("damage_move_not_supported")
++        item = candidate.item if current_item is None else current_item
++        ability = candidate.ability if current_ability is None else current_ability
++        if item in UNSUPPORTED_ITEMS:
++            raise Unsupported("unsupported_engine_item")
++        context = dict(evidence.context)
++        if not context.get("engine_context_supported"):
++            raise Unsupported("unsupported_damage_context")
++        if ability in HP_ABILITIES and context.get("opponent_hp") != "full":
++            raise Unsupported("unknown_hp_dependent_ability")
++        signature = self.signature(candidate, evidence, current_item, current_ability)
++        key_event = replace(evidence, event_id="", entity="", after=evidence.before)
++        try:
++            return self._cached(signature, key_event, item, ability)
++        except (ValueError, TypeError, AttributeError, KeyError, IndexError) as exc:
++            raise Unsupported("engine_state_contract:" + type(exc).__name__) from exc
++
++    @lru_cache(maxsize=2048)
++    def _cached(self, candidate, evidence, item, ability):
++        try:
++            import poke_engine as pe
++            import hidden as hd
++            import randbats as rb
++        except ImportError as exc:
++            raise Unsupported("poke_engine_unavailable") from exc
++        ctx = dict(evidence.context)
++        own = json.loads(ctx["own"])
++        opponent = rb.to_pokemon(candidate.as_pokeset())
++        opponent = hd.copy_pokemon(opponent, item=item, ability=ability, base_ability=ability,
++                                   status=ctx.get("opponent_status", "none"))
++        defender = pe.Pokemon(
++            id=own["species"], level=own["level"], hp=own["hp"], maxhp=own["maxhp"],
++            types=tuple(own["types"]), base_types=tuple(own["types"]),
++            attack=own["attack"], defense=own["defense"], special_attack=own["special_attack"],
++            special_defense=own["special_defense"], speed=own["speed"],
++            ability=own["ability"], base_ability=own["ability"], item=own["item"],
++            status=own["status"], moves=[pe.Move(id=m) for m in own["moves"]],
++            weight_kg=own["weight_kg"], tera_type=own["tera_type"],
++        )
++        # Irrelevant bench slots are fainted copies, not guesses about hidden teammates.
++        def side(p):
++            return pe.Side(pokemon=[p] + [hd.copy_pokemon(p, hp=0) for _ in range(5)])
++        state = pe.State(side_one=side(defender), side_two=side(opponent))
++        own_move = own["moves"][0]
++        try:
++            result = subprocess.run([self.executable, "calculate-damage", "--state", state.to_string(),
++                                     "-o", own_move, "-t", evidence.move],
++                                    capture_output=True, text=True, timeout=self.timeout, check=True)
++        except (OSError, subprocess.SubprocessError) as exc:
++            raise Unsupported("engine_damage_command_failed") from exc
++        return parse_rolls(result.stdout, evidence.incoming)
+diff --git a/engine/belief_worlds.py b/engine/belief_worlds.py
+new file mode 100644
+--- /dev/null
++++ b/engine/belief_worlds.py
+@@ -0,0 +1,132 @@
++"""Independent belief provider for the real-Showdown agent.
++
++Foul Play supplies only transport and our own exact side. Opponent hypotheses
++come from our catalog, not from its already-conditioned prepare_battles output.
++Unimplemented public-state reconstruction uses an explicit, logged fallback.
++"""
++from __future__ import annotations
++
++import random
++
++from belief_catalog import to_id
++from belief_engine import PokeEngineDamageOracle
++from belief_tracker import BeliefSession
++from showdown.belief_observer import ProtocolBeliefObserver, own_snapshot
++
++
++class MechanicsWorldProvider:
++    def __init__(self, source="mechanics_v2", shadow=True, rng=None, session=None):
++        if source not in {"reveals_v2", "mechanics_v2"}:
++            raise ValueError(source)
++        self.source, self.shadow = source, shadow
++        self.rng = rng or random.Random()
++        self.session = session or BeliefSession(damage_oracle=PokeEngineDamageOracle(), mechanics=source == "mechanics_v2")
++        self.observer = ProtocolBeliefObserver(self.session)
++        self.history = []
++        self.failure = None
++        self.own_side = None
++
++    def ingest(self, lines):
++        lines = list(lines)
++        if lines[:len(self.history)] != self.history:
++            self.failure = "protocol_history_changed"
++            return
++        self.observer.feed(lines[len(self.history):])
++        self.history = lines
++
++    def update(self, battle, converter):
++        # Foul Play uses p1/p2 as battler names in this pinned harness.
++        side = getattr(battle.user, "name", None)
++        if side not in {"p1", "p2"}:
++            opponent = getattr(battle.opponent, "name", None)
++            side = {"p1": "p2", "p2": "p1"}.get(opponent)
++        if side is None:
++            self.failure = "observer_seat_unknown"
++            return
++        self.own_side = self.observer.own_side = side
++        try:
++            self.ingest(getattr(battle, "_ourlines", []))
++            state = converter(battle)
++            for snapshot in own_snapshot(state):
++                self.observer.set_own(snapshot)
++        except (ValueError, AttributeError, KeyError, RuntimeError) as exc:
++            self.failure = "own_state_conversion:" + type(exc).__name__
++
++    def finish(self, lines):
++        try:
++            self.ingest(self.history + list(lines))
++            self.observer.finish()
++        except (ValueError, AttributeError, KeyError, RuntimeError) as exc:
++            self.failure = "final_observation:" + type(exc).__name__
++
++    def sample_states(self, battle, converter, K):
++        if self.shadow:
++            self.failure = "shadow_only"
++            return None
++        observer = self.observer
++        if self.failure not in {None, "shadow_only"}:
++            return None
++        if not self.own_side or observer.field_unsafe or observer.suspended:
++            self.failure = "unsupported_public_state"
++            return None
++        opp_side = "p2" if self.own_side == "p1" else "p1"
++        entities = [e for e in observer.entities if e.startswith(opp_side + ":")]
++        if not entities or len(entities) > 6:
++            self.failure = "missing_opponent_identity"
++            return None
++        if any(observer.entities[e]["unsafe"] or observer.entities[e]["boosted"] for e in entities):
++            self.failure = "unsupported_transformed_or_boosted_state"
++            return None
++        import poke_engine as pe
++        import hidden as hd
++        import randbats as rb
++        own = converter(battle).side_one       # side_two is deliberately discarded
++        if own.force_switch or any(observer.entities[e]["status"] in {"slp", "frz", "tox"} for e in entities):
++            self.failure = "unsupported_pending_or_status_state"
++            return None
++        active = observer.active.get(opp_side)
++        result = []
++        for _ in range(K):
++            mons, taken = [], set()
++            for entity in entities:
++                candidate = self.session.sample(entity, self.rng)
++                mon = rb.to_pokemon(candidate.as_pokeset())
++                b = self.session.entities[entity]
++                current = observer.entities[entity]
++                hp_obs = observer.hp[entity]
++                index = next(i for i, entry in enumerate(b.entries) if entry.candidate == candidate)
++                dist = b.hp.get(index)
++                if dist:
++                    hp = self.rng.choices(list(dist), weights=list(dist.values()))[0]
++                else:
++                    compatible = [h for h in range(mon.maxhp + 1) if hp_obs.compatible(h, mon.maxhp)]
++                    if not compatible:
++                        self.failure = "hp_display_outside_support"
++                        return None
++                    hp = self.rng.choice(compatible)
++                item = candidate.item if b.item is None else b.item
++                ability = candidate.ability if b.ability is None else b.ability
++                # Reconstruct choice-lock from the last publicly executed move,
++                # never Foul Play's inferred disabled flags.
++                last = current.get("last_move") if entity == active else None
++                moves = [pe.Move(id=m, disabled=bool(item in hd.CHOICE_ITEMS and last and m != last))
++                         for m in candidate.moves]
++                mon = hd.copy_pokemon(mon, hp=hp, item=item, ability=ability, base_ability=ability,
++                                      status=current["status"], moves=moves,
++                                      terastallized=bool(current["tera"]),
++                                      tera_type=current["tera"] or mon.tera_type)
++                mons.append(mon)
++                taken.add(hd.base_of(candidate.species))
++            if len(mons) < 6:
++                for candidate in rb.sample_team(self.rng, n=6 - len(mons), exclude=taken):
++                    mons.append(rb.to_pokemon(candidate))
++            opponent = pe.Side(pokemon=mons, active_index=entities.index(active),
++                               force_switch=observer.entities[active]["fainted"])
++            # Non-default fields currently cause fallback above; no inferred
++            # opponent timers, volatile state or hidden bench is copied.
++            result.append((pe.State(side_one=hd.copy_side(own), side_two=opponent), 1 / K))
++        self.failure = None
++        return result
++
++    def summary(self):
++        return dict(source=self.source, shadow=self.shadow, fallback=self.failure, **self.session.summary())
+diff --git a/engine/showdown/belief_observer.py b/engine/showdown/belief_observer.py
+new file mode 100644
+--- /dev/null
++++ b/engine/showdown/belief_observer.py
+@@ -0,0 +1,290 @@
++"""Streaming player-visible Showdown observations for the mechanics posterior.
++
++This adapter never accepts opponent commands, simulator states or inferred
++Foul Play attributes. Exact own snapshots are explicitly player-private input.
++Complex effects are skipped; the diagnostic coverage is part of the output.
++"""
++from __future__ import annotations
++
++import copy
++import json
++
++from belief_catalog import to_id
++from belief_engine import ORDINARY_MOVES
++from belief_events import DamageEvidence, HPObservation, Reveal, Skip, SpeedEvidence
++from belief_likelihoods import Unsupported, effective_speed
++from belief_tracker import PriorSupportError
++
++
++def hp_observation(text, exact=False):
++    token = text.split()[0]
++    if token == "0":
++        # Denominator must come from preceding own snapshot if exact.
++        return HPObservation(0, 100, False)
++    numerator, denominator = token.split("/")
++    return HPObservation(int(numerator), int(denominator), exact)
++
++
++class ProtocolBeliefObserver:
++    def __init__(self, session, own_side=None):
++        self.session = session
++        self.own_side = own_side
++        self.entities = {}        # public species identity, not true bench indices
++        self.active = {}
++        self.hp = {}
++        self.own = {}             # exact snapshots of our own Pokémon only
++        self.turn = 0
++        self.serial = 0
++        self.block = None
++        self.order = []
++        self.turn_context = None
++        self.field_unsafe = False
++        self.turn_unsafe = False
++        self.suspended = set()
++
++    def _id(self, suffix):
++        return f"protocol:{self.serial}:{suffix}"
++
++    def _observe(self, event):
++        try:
++            self.session.observe(event)
++        except (PriorSupportError, KeyError):
++            self.suspended.add(event.entity)
++            self.session.diagnostics["skip:prior_support"] += 1
++
++    def set_own(self, snapshot):
++        """Only call after ingesting the preceding history with its old snapshots."""
++        self.own[to_id(snapshot["species"])] = copy.deepcopy(snapshot)
++        if self.turn_context is not None and not self.order:
++            active, entities, _ = self.turn_context
++            self.turn_context = active, entities, copy.deepcopy(self.own)
++
++    def _entity(self, side, species):
++        return side + ":" + to_id(species)
++
++    def feed(self, lines):
++        for line in lines:
++            self.serial += 1
++            parts = line.split("|")
++            if len(parts) < 2:
++                continue
++            kind = parts[1]
++            if kind == "split":
++                raise ValueError("observer requires player-visible lines, not raw simulator splits")
++            if kind == "request":
++                request = json.loads(parts[2])
++                if "side" in request:
++                    seat = request["side"]["id"]
++                    if self.own_side is None:
++                        self.own_side = seat
++                    elif seat != self.own_side:
++                        raise ValueError("opponent-private request passed to observer")
++                continue
++            if self.own_side is None:
++                # No inference until the observing seat is explicitly established.
++                continue
++            if kind in {"move", "switch", "drag", "turn", "win", "tie"}:
++                self._flush_damage()
++            if kind in {"turn", "win", "tie"}:
++                self._flush_speed()
++                self.order = []
++                self.turn_unsafe = False
++                if kind == "turn":
++                    self.turn = int(parts[2])
++                    self.turn_context = copy.deepcopy((self.active, self.entities, self.own))
++                continue
++            if kind in {"switch", "drag"}:
++                side = parts[2][:2]
++                species = parts[3].split(",")[0]
++                entity = self._entity(side, species)
++                self.active[side] = entity
++                self.entities.setdefault(entity, dict(species=species, moves=set(), stage=0, status="none",
++                                                     item=None, ability=None, tera=None, unsafe=False,
++                                                     fainted=False, boosted=False))
++                state = self.entities[entity]
++                state.update(stage=0, boosted=False, last_move=None)
++                self.hp[entity] = hp_observation(parts[4], side == self.own_side)
++                state["status"] = to_id(parts[4].split()[1]) if len(parts[4].split()) > 1 else "none"
++                if side != self.own_side:
++                    self._observe(Reveal(self._id("species"), entity, species))
++                self.turn_unsafe = True
++                continue
++            if kind == "move":
++                side = parts[2][:2]
++                entity = self.active.get(side)
++                if entity is None:
++                    continue
++                move = to_id(parts[3])
++                called = any(p.startswith("[from]") for p in parts[4:])
++                if side == self.own_side and (called or move not in ORDINARY_MOVES):
++                    self.turn_unsafe = True
++                state = self.entities[entity]
++                if side != self.own_side and not called:
++                    self._observe(Reveal(self._id("move"), entity, state["species"], "move", move))
++                    state["moves"].add(move)
++                    state["last_move"] = move
++                own_entity = self.active.get(self.own_side)
++                own_species = to_id(self.entities.get(own_entity, {}).get("species", ""))
++                own = copy.deepcopy(self.own.get(own_species))
++                self.order.append((entity, move, called))
++                self.block = dict(entity=entity, move=move, called=called, damage=[], unsafe=False,
++                                  own=own, pre=copy.deepcopy(self.hp), state=copy.deepcopy(state))
++                continue
++            if len(parts) < 3:
++                continue
++            if kind in {"-weather", "-fieldstart", "-fieldend", "-sidestart", "-sideend"}:
++                self.field_unsafe = True
++                if self.block:
++                    self.block["unsafe"] = True
++                continue
++            side = parts[2][:2]
++            entity = self.active.get(side)
++            if entity is None:
++                continue
++            state = self.entities[entity]
++            opponent = side != self.own_side
++            if kind in {"detailschange", "-formechange", "replace", "-transform", "-endability"}:
++                state["unsafe"] = True
++                self.suspended.add(entity)
++            elif kind == "-terastallize":
++                state["tera"] = to_id(parts[3])
++                if opponent:
++                    self._observe(Reveal(self._id("tera"), entity, state["species"], "tera", parts[3]))
++            elif kind in {"-item", "-enditem", "-ability"}:
++                attribute = "ability" if kind == "-ability" else "item"
++                value = parts[3]
++                # Transfers/replacements are dynamic only. Explicit [from] item/ability
++                # activations remain ambiguous and conservatively avoid original filtering.
++                original = (not any(p.startswith("[from]") for p in parts[4:])
++                            and state.get(attribute + "_original", True))
++                if opponent:
++                    self._observe(Reveal(self._id(attribute), entity, state["species"], attribute, value, original))
++                    if kind == "-enditem":
++                        self._observe(Reveal(self._id("removed"), entity, state["species"], "item", "none", False))
++                state[attribute] = "none" if kind == "-enditem" else to_id(value)
++                if not original or kind == "-enditem":
++                    state[attribute + "_original"] = False
++                if self.block:
++                    self.block["unsafe"] = True
++            elif kind in {"-damage", "-heal", "-sethp"}:
++                before = self.hp.get(entity)
++                text = parts[3]
++                if text.split()[0] == "0" and before and before.exact:
++                    after = HPObservation(0, before.denominator, True)
++                else:
++                    after = hp_observation(text, side == self.own_side)
++                self.hp[entity] = after
++                own = self.own.get(to_id(state["species"])) if not opponent else None
++                if own:
++                    own["hp"] = after.value
++                direct = kind == "-damage" and not any(p.startswith("[from]") for p in parts[4:])
++                if self.block and direct:
++                    self.block["damage"].append((entity, before, after))
++                elif opponent:
++                    self.session.invalidate_hp(entity)
++            elif kind in {"-boost", "-unboost", "-setboost", "-clearboost", "-clearallboost"}:
++                state["boosted"] = True
++                self.turn_unsafe = True
++                if self.block:
++                    self.block["unsafe"] = True
++                if len(parts) > 4 and parts[3] == "spe":
++                    amount = int(parts[4])
++                    state["stage"] = amount if kind == "-setboost" else state["stage"] + (-amount if kind == "-unboost" else amount)
++            elif kind in {"-status", "-curestatus"}:
++                state["status"] = to_id(parts[3]) if kind == "-status" else "none"
++                if not opponent:
++                    own = self.own.get(to_id(state["species"]))
++                    if own:
++                        own["status"] = state["status"]
++            elif kind == "faint":
++                state["fainted"] = True
++            elif kind in {"cant", "-crit", "-hitcount", "-miss", "-immune", "-fail", "-activate", "-start", "-end",
++                           "-singleturn", "-singlemove", "-prepare", "-mustrecharge"}:
++                if self.block:
++                    self.block["unsafe"] = True
++                if kind in {"-start", "-end", "-activate", "-singleturn", "-singlemove", "-prepare", "-mustrecharge"}:
++                    state["unsafe"] = True
++
++    def _flush_damage(self):
++        block, self.block = self.block, None
++        if block is None or block["entity"].startswith(self.own_side + ":"):
++            return
++        entity = block["entity"]
++        if entity in self.suspended:
++            return
++        reason = None
++        if block["called"] or block["unsafe"] or block["state"]["unsafe"]:
++            reason = "complex_move_block"
++        elif self.field_unsafe or self.turn_unsafe or block["state"]["boosted"] or block["state"]["tera"]:
++            reason = "unsupported_field_boost_or_tera"
++        elif block["move"] not in ORDINARY_MOVES:
++            reason = "damage_move_not_supported"
++        elif len(block["damage"]) != 1 or not block["own"]:
++            reason = "ambiguous_damage_or_missing_own_context"
++        if reason:
++            self._observe(Skip(self._id("damage_skip"), entity, reason))
++            return
++        target, before, after = block["damage"][0]
++        own = block["own"]
++        own_public = self.entities.get(self.active.get(self.own_side), {})
++        if not target.startswith(self.own_side + ":") or not before or not before.exact:
++            self._observe(Skip(self._id("damage_skip"), entity, "incoming_only"))
++            return
++        if own_public.get("boosted") or own_public.get("tera") or own_public.get("unsafe"):
++            self._observe(Skip(self._id("damage_skip"), entity, "unsupported_own_context"))
++            return
++        own["hp"] = before.value
++        h = block["pre"].get(entity)
++        context = (("own", json.dumps(own, sort_keys=True)), ("engine_context_supported", True),
++                   ("opponent_status", block["state"]["status"]),
++                   ("opponent_hp", "full" if h and h.value == h.denominator else "unknown"))
++        self._observe(DamageEvidence(self._id("damage"), entity, block["move"], before, after,
++                                     context=context, supported=True, attributes_at_event=True,
++                                     item_at_event=block["state"]["item"], ability_at_event=block["state"]["ability"]))
++
++    def _flush_speed(self):
++        if len(self.order) != 2 or self.turn_context is None or self.turn_unsafe or self.field_unsafe:
++            return
++        active, entities, own_snapshots = self.turn_context
++        (first, move1, called1), (second, move2, called2) = self.order
++        if called1 or called2 or {first, second} != set(active.values()):
++            return
++        if move1 not in ORDINARY_MOVES or move2 not in ORDINARY_MOVES:
++            return
++        own_entity = active.get(self.own_side)
++        opponent = second if first == own_entity else first
++        if opponent in self.suspended:
++            return
++        own = own_snapshots.get(to_id(entities[own_entity]["species"]))
++        state = entities[opponent]
++        if not own or state["unsafe"] or state["boosted"] or state["tera"]:
++            return
++        try:
++            speed = effective_speed(own["speed"], own["ability"], own["item"],
++                                    stage=entities[own_entity]["stage"],
++                                    paralyzed=entities[own_entity]["status"] == "par")
++        except Unsupported as exc:
++            self._observe(Skip(self._id("speed_skip"), opponent, str(exc)))
++            return
++        self._observe(SpeedEvidence(self._id("speed"), opponent, speed, first == opponent,
++                                   opponent_stage=state["stage"], paralyzed=state["status"] == "par",
++                                   supported=True, attributes_at_event=True,
++                                   item_at_event=state["item"], ability_at_event=state["ability"]))
++
++    def finish(self):
++        self._flush_damage()
++        self._flush_speed()
++        self.order = []
++
++
++def own_snapshot(state):
++    """Allowlisted player-private projection; never reads state.side_two."""
++    side = state.side_one
++    out = []
++    for p in side.pokemon:
++        out.append(dict(species=p.id.lower(), level=p.level, hp=p.hp, maxhp=p.maxhp,
++                        types=[str(t).lower() for t in p.types], attack=p.attack, defense=p.defense,
++                        special_attack=p.special_attack, special_defense=p.special_defense, speed=p.speed,
++                        ability=p.ability.lower(), item=p.item.lower(), status=p.status.lower(),
++                        moves=[m.id.lower() for m in p.moves], weight_kg=p.weight_kg, tera_type=p.tera_type.lower()))
++    return out
+diff --git a/engine/tests/test_mechanics_belief.py b/engine/tests/test_mechanics_belief.py
+new file mode 100644
+--- /dev/null
++++ b/engine/tests/test_mechanics_belief.py
+@@ -0,0 +1,296 @@
++"""Run with python -m unittest discover -s engine/tests -v (no third-party deps)."""
++import copy
++import json
++import math
++import random
++import sys
++import types
++import unittest
++from unittest.mock import patch
++from pathlib import Path
++
++sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
++
++from belief_catalog import Catalog, Candidate, CatalogEntry, enumerate_species
++from belief_engine import parse_rolls
++from belief_events import DamageEvidence, HPObservation, Reveal, Skip, SpeedEvidence
++from belief_likelihoods import DamagePMF, Unsupported, effective_speed, filter_hp, incoming_likelihood
++from belief_tracker import BeliefSession, PriorSupportError
++from belief_worlds import MechanicsWorldProvider
++from showdown.belief_observer import ProtocolBeliefObserver, own_snapshot
++
++
++def catalog(items=None, abilities=None):
++    role = dict(moves=["Thunderbolt", "Ice Beam", "Surf", "Earthquake"],
++                abilities=abilities or ["Levitate"], items=items or ["Leftovers", "Choice Scarf"],
++                teraTypes=["Electric"])
++    data = {"Test": dict(level=50, abilities=["Levitate"], roles={"one": role})}
++    dex = {"test": {"baseStats": dict.fromkeys(("hp", "atk", "def", "spa", "spd", "spe"), 100)}}
++    return Catalog(data, dex)
++
++
++def reveal(session, entity="p2:test"):
++    session.observe(Reveal("initial", entity, "Test"))
++
++
++class Oracle:
++    def distribution(self, candidate, evidence, current_item=None, current_ability=None):
++        if candidate.item == "choicescarf":
++            return DamagePMF.from_uniform_rolls([20, 20, 21, 22])
++        return DamagePMF.from_uniform_rolls([20, 21, 22, 23])
++
++
++class CatalogTests(unittest.TestCase):
++    def test_full_checked_in_catalog(self):
++        cat = Catalog()
++        self.assertEqual(len(cat.data), 509)
++        for species in cat.data:
++            entries = cat.entries(species)
++            self.assertAlmostEqual(sum(e.prior for e in entries), 1)
++            self.assertEqual(len({e.candidate for e in entries}), len(entries))
++            self.assertTrue(all(e.prior > 0 for e in entries))
++
++    def test_duplicate_paths_and_list_frequencies(self):
++        cat = catalog(items=["Leftovers", "Leftovers", "Choice Scarf"])
++        cat.data["Test"]["roles"]["two"] = copy.deepcopy(cat.data["Test"]["roles"]["one"])
++        entries = cat.entries("test")
++        self.assertEqual(len(entries), 2)
++        self.assertAlmostEqual(next(e.prior for e in entries if e.candidate.item == "leftovers"), 2 / 3)
++
++    def test_move_pool_conditioning(self):
++        cat = catalog()
++        cat.data["Test"]["roles"]["two"] = copy.deepcopy(cat.data["Test"]["roles"]["one"])
++        cat.data["Test"]["roles"]["two"]["moves"] += ["Psychic"]
++        session = BeliefSession(cat)
++        reveal(session)
++        self.assertAlmostEqual(session.marginal("p2:test", "move")["psychic"], 0.4)
++        session.observe(Reveal("psychic", "p2:test", "Test", "move", "Psychic"))
++        self.assertAlmostEqual(session.marginal("p2:test", "move")["psychic"], 1)
++
++
++class PosteriorTests(unittest.TestCase):
++    def setUp(self):
++        self.session = BeliefSession(catalog(), Oracle())
++        reveal(self.session)
++
++    def test_damage_bayes_and_exactly_once(self):
++        event = DamageEvidence("damage", "p2:test", "thunderbolt", HPObservation(100, 100, True),
++                               HPObservation(80, 100, True), supported=True)
++        self.assertTrue(self.session.observe(event))
++        # P(20 | scarf)=1/2, P(20 | leftovers)=1/4, equal priors.
++        self.assertAlmostEqual(self.session.marginal("p2:test", "item")["choicescarf"], 2 / 3)
++        self.assertFalse(self.session.observe(event))
++        self.assertAlmostEqual(self.session.marginal("p2:test", "item")["choicescarf"], 2 / 3)
++        self.assertEqual(self.session.diagnostics["duplicate"], 1)
++
++    def test_speed_removes_slow_candidate(self):
++        self.session.observe(SpeedEvidence("order", "p2:test", 160, True, supported=True))
++        self.assertEqual(self.session.marginal("p2:test", "item")["choicescarf"], 1)
++        self.assertTrue(all(self.session.sample("p2:test", random.Random(i)).item == "choicescarf" for i in range(20)))
++
++    def test_speed_tie_is_not_a_hard_elimination(self):
++        base = self.session.catalog.stats(self.session.entities["p2:test"].entries[0].candidate)["spe"]
++        self.session.observe(SpeedEvidence("tie", "p2:test", base, False, supported=True))
++        self.assertEqual(self.session.marginal("p2:test", "item")["leftovers"], 1)
++
++    def test_persistence_across_observations(self):
++        self.session.observe(SpeedEvidence("order", "p2:test", 160, True, supported=True))
++        self.session.observe(Reveal("move", "p2:test", "Test", "move", "Surf"))
++        self.assertEqual(self.session.marginal("p2:test", "item")["choicescarf"], 1)
++
++    def test_event_time_item_not_future_removed_item(self):
++        self.session.observe(Reveal("gone", "p2:test", "Test", "item", "None", False))
++        self.session.observe(SpeedEvidence("earlier_order", "p2:test", 160, True, supported=True,
++                                           attributes_at_event=True, item_at_event=None))
++        self.assertEqual(self.session.marginal("p2:test", "item")["choicescarf"], 1)
++
++    def test_unsupported_candidate_skips_whole_factor(self):
++        session = BeliefSession(catalog(abilities=["Levitate", "Swift Swim"]))
++        reveal(session)
++        before = session.entities["p2:test"].probabilities()
++        self.assertFalse(session.observe(SpeedEvidence("order", "p2:test", 160, True, supported=True)))
++        self.assertEqual(before, session.entities["p2:test"].probabilities())
++        self.assertEqual(session.diagnostics["skip:speed_ability:swiftswim"], 1)
++
++    def test_impossible_damage_rolls_back(self):
++        before = self.session.entities["p2:test"].probabilities()
++        event = DamageEvidence("bad", "p2:test", "thunderbolt", HPObservation(100, 100, True),
++                               HPObservation(1, 100, True), supported=True)
++        self.assertFalse(self.session.observe(event))
++        self.assertEqual(before, self.session.entities["p2:test"].probabilities())
++        self.assertEqual(self.session.diagnostics["model_mismatch"], 1)
++
++    def test_explicit_reveals_and_current_item_separate(self):
++        self.session.observe(Reveal("item", "p2:test", "Test", "item", "Choice Scarf"))
++        self.session.observe(Reveal("gone", "p2:test", "Test", "item", "None", False))
++        self.assertEqual(self.session.marginal("p2:test", "item")["choicescarf"], 1)
++        self.assertEqual(self.session.entities["p2:test"].item, "none")
++
++    def test_out_of_prior_direct_reveal_never_silently_resets(self):
++        with self.assertRaises(PriorSupportError):
++            self.session.observe(Reveal("impossible", "p2:test", "Test", "item", "Life Orb"))
++        with self.assertRaises(PriorSupportError):
++            self.session.sample("p2:test", random.Random())
++
++    def test_reveal_only_control(self):
++        session = BeliefSession(catalog(), mechanics=False)
++        reveal(session)
++        session.observe(SpeedEvidence("order", "p2:test", 160, True, supported=True))
++        self.assertAlmostEqual(session.marginal("p2:test", "item")["choicescarf"], .5)
++
++    def test_numerical_stability(self):
++        for i in range(1500):
++            self.session.observe(DamageEvidence(str(i), "p2:test", "thunderbolt", HPObservation(100, 100, True),
++                                                HPObservation(80, 100, True), supported=True))
++        self.assertAlmostEqual(sum(self.session.entities["p2:test"].probabilities()), 1)
++
++
++class LikelihoodTests(unittest.TestCase):
++    def test_damage_duplicates_and_censored_ko(self):
++        pmf = DamagePMF.from_uniform_rolls([20, 20, 30, 40])
++        self.assertEqual(dict(pmf.outcomes)[20], .5)
++        self.assertEqual(incoming_likelihood(pmf, HPObservation(25, 100, True), HPObservation(0, 100, True)), .5)
++
++    def test_reject_non_pmf(self):
++        with self.assertRaises(ValueError):
++            DamagePMF(((20, .1),))
++
++    def test_cli_contract_requires_rolls_not_maxima(self):
++        text = "Damage Rolls: " + ",".join(str(i) for i in range(20, 36))
++        self.assertEqual(len(parse_rolls(text + "\n" + text, True).outcomes), 16)
++        with self.assertRaises(Unsupported):
++            parse_rolls("Damage Rolls: 100,150\nDamage Rolls: 40,60", True)
++
++    def test_speed_modifiers_are_conservative(self):
++        self.assertEqual(effective_speed(131, "levitate", "choicescarf"), 196)
++        self.assertEqual(effective_speed(131, "levitate", "leftovers", stage=1), 196)
++        with self.assertRaises(Unsupported):
++            effective_speed(131, "levitate", "quickclaw")
++        with self.assertRaises(Unsupported):
++            effective_speed(131, "levitate", "choicescarf", paralyzed=True)
++
++    def test_hidden_hp_sequential_filter_matches_enumeration(self):
++        prior = {100: .25, 101: .75}
++        pmf = DamagePMF.from_uniform_rolls([5, 6, 6])
++        obs1, obs2 = HPObservation(95, 100), HPObservation(89, 100)
++        p1, h1 = filter_hp(prior, pmf, obs1, 101)
++        p2, h2 = filter_hp(h1, pmf, obs2, 101)
++        brute = {}
++        for h, ph in prior.items():
++            for d1, pd1 in pmf.outcomes:
++                h_mid = max(0, h - d1)
++                if obs1.compatible(h_mid, 101):
++                    for d2, pd2 in pmf.outcomes:
++                        h_last = max(0, h_mid - d2)
++                        if obs2.compatible(h_last, 101):
++                            brute[h_last] = brute.get(h_last, 0) + ph * pd1 * pd2
++        self.assertAlmostEqual(p1 * p2, sum(brute.values()))
++        self.assertEqual(h2, {h: p / sum(brute.values()) for h, p in brute.items()})
++
++
++def own():
++    return dict(species="own", level=50, hp=300, maxhp=300, speed=160, attack=100, defense=100,
++                special_attack=100, special_defense=100, types=["normal", "typeless"],
++                ability="levitate", item="leftovers", status="none", moves=["surf"],
++                weight_kg=50, tera_type="normal")
++
++
++class ObserverTests(unittest.TestCase):
++    def setUp(self):
++        self.session = BeliefSession(catalog(), Oracle())
++        self.observer = ProtocolBeliefObserver(self.session, "p1")
++        self.observer.feed(["|switch|p1a: Me|Own, L50|300/300", "|switch|p2a: Them|Test, L50|100/100", "|turn|1"])
++        self.observer.set_own(own())
++
++    def test_clean_hit_and_action_order_update(self):
++        self.observer.feed(["|move|p2a: Them|Thunderbolt|p1a: Me", "|-damage|p1a: Me|280/300",
++                            "|move|p1a: Me|Surf|p2a: Them", "|-damage|p2a: Them|90/100", "|turn|2"])
++        self.assertEqual(self.session.diagnostics["damage"], 1)
++        self.assertEqual(self.session.diagnostics["speed"], 1)
++        self.assertEqual(self.session.marginal("p2:test", "item")["choicescarf"], 1)
++
++    def test_hidden_unexecuted_move_is_not_revealed(self):
++        self.observer.feed(["|cant|p2a: Them|par", "|turn|2"])
++        self.assertEqual(self.session.entities["p2:test"].moves, set())
++
++    def test_called_move_not_original_set_evidence(self):
++        self.observer.feed(["|move|p2a: Them|Psychic|p1a: Me|[from] move: Sleep Talk", "|turn|2"])
++        self.assertNotIn("psychic", self.session.entities["p2:test"].moves)
++        self.assertFalse(self.session.entities["p2:test"].degraded)
++
++    def test_critical_multihit_and_residual_are_not_clean_damage(self):
++        self.observer.feed(["|move|p2a: Them|Thunderbolt|p1a: Me", "|-crit|p1a: Me",
++                            "|-damage|p1a: Me|280/300", "|-damage|p1a: Me|270/300|[from] psn", "|turn|2"])
++        self.assertEqual(self.session.diagnostics["damage"], 0)
++        self.assertEqual(self.session.diagnostics["skip:complex_move_block"], 1)
++
++    def test_weather_is_recognized_without_an_actor(self):
++        self.observer.feed(["|-weather|RainDance"])
++        self.assertTrue(self.observer.field_unsafe)
++
++    def test_transferred_item_does_not_rewrite_original_item(self):
++        self.observer.feed(["|-item|p2a: Them|Life Orb|[from] move: Trick",
++                            "|-enditem|p2a: Them|Life Orb"])
++        self.assertFalse(self.session.entities["p2:test"].degraded)
++        self.assertEqual(self.session.entities["p2:test"].item, "none")
++        self.assertAlmostEqual(self.session.marginal("p2:test", "item")["choicescarf"], .5)
++
++    def test_no_opponent_private_requests_or_raw_split_lines(self):
++        with self.assertRaises(ValueError):
++            self.observer.feed(['|request|{"side":{"id":"p2"}}'])
++        with self.assertRaises(ValueError):
++            self.observer.feed(["|split|p2"])
++
++    def test_provider_history_idempotent(self):
++        provider = MechanicsWorldProvider(session=self.session)
++        provider.observer.own_side = "p1"
++        lines = ["|switch|p2a: Them|Test, L50|100/100"]
++        provider.ingest(lines)
++        before = self.session.summary()
++        provider.ingest(lines)
++        self.assertEqual(before, self.session.summary())
++        provider.ingest(["|turn|99"])
++        self.assertEqual(provider.failure, "protocol_history_changed")
++
++    def test_posterior_drives_world_sampling_without_reading_opponent_side(self):
++        self.session.observe(SpeedEvidence("order", "p2:test", 160, True, supported=True))
++        provider = MechanicsWorldProvider(shadow=False, session=self.session, rng=random.Random(7))
++        provider.observer = self.observer
++        provider.own_side = "p1"
++        own_side = types.SimpleNamespace(force_switch=False)
++        class PrivateState:
++            side_one = own_side
++            @property
++            def side_two(self):
++                raise AssertionError("must not import Foul Play's inferred opponent state")
++        def pokeset(*args):
++            return types.SimpleNamespace(species=args[0], ability=args[3], item=args[4], tera=args[5], moves=args[6])
++        def pokemon(s):
++            return types.SimpleNamespace(maxhp=100, hp=100, ability=s.ability, item=s.item,
++                                         tera_type=s.tera, moves=s.moves)
++        fake_rb = types.SimpleNamespace(PokeSet=pokeset, to_pokemon=pokemon,
++                                        sample_team=lambda rng, n, exclude: [pokeset("Bench", "", 50, "levitate", "none", "normal", ())] * n)
++        fake_pe = types.SimpleNamespace(Side=lambda **kw: types.SimpleNamespace(**kw),
++                                        State=lambda **kw: types.SimpleNamespace(**kw),
++                                        Move=lambda **kw: types.SimpleNamespace(**kw))
++        fake_hd = types.SimpleNamespace(base_of=lambda x: x.lower(), CHOICE_ITEMS={"choicescarf"},
++                                        copy_side=copy.deepcopy,
++                                        copy_pokemon=lambda p, **kw: types.SimpleNamespace(**{**vars(p), **kw}))
++        with patch.dict(sys.modules, {"poke_engine": fake_pe, "randbats": fake_rb, "hidden": fake_hd}):
++            worlds = provider.sample_states(None, lambda b: PrivateState(), 4)
++        self.assertEqual(len(worlds), 4)
++        self.assertTrue(all(state.side_two.pokemon[0].item == "choicescarf" for state, _ in worlds))
++        self.assertEqual([w for _, w in worlds], [.25] * 4)
++
++    def test_same_public_transcript_same_belief(self):
++        # Hidden teams/commands are deliberately absent from the adapter interface.
++        transcript = ["|move|p2a: Them|Surf|p1a: Me", "|cant|p1a: Me|slp", "|turn|2"]
++        a = BeliefSession(catalog()); b = BeliefSession(catalog())
++        for session in [a, b]:
++            obs = ProtocolBeliefObserver(session, "p1")
++            obs.feed(["|switch|p2a: Them|Test, L50|100/100"] + transcript)
++        self.assertEqual(a.summary(), b.summary())
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/docs/mechanics_belief_implementation.md b/docs/mechanics_belief_implementation.md
+new file mode 100644
+--- /dev/null
++++ b/docs/mechanics_belief_implementation.md
+@@ -0,0 +1,132 @@
++# Mechanics belief tracker: first implementation
++
++This patch implements the first useful mechanics-inference release described in
++`belief_tracker_plan.md`. It is experimental and opt-in. Historical experiments
++and the default Foul Play belief source retain their existing behavior.
++
++## Implemented
++
++| Area | Behavior |
++|---|---|
++| Prior | Exact enumeration of complete sets under the existing approximate role-based generator; duplicate generation paths retain summed mass |
++| Updates | Persistent log-weight posterior within a battle; original-set tuples remain correlated; event IDs prevent duplicate updates |
++| Reveals | Species, legitimately observed moves, Tera and explicit item/ability messages; original attributes are separate from their current values |
++| Speed | Ordinary same-priority attacks, supported neutral abilities/items, Choice Scarf and a single supported Speed modifier; ties retain likelihood 1/2 |
++| Incoming damage | Exact HP observation likelihoods, duplicate-roll probability masses and censored KO tails; requires an explicit-roll damage oracle |
++| Rounded HP | General candidate-dependent sequential HP-filter kernel and tests; outgoing-damage protocol wiring is not enabled in this release |
++| Observation | Player-visible protocol parser; no hidden commands, no inferred opponent fields; event-time snapshots guard against using an item after it was removed |
++| Sampling | Independent new world provider using this posterior, equal weights for posterior samples; no multiplication into Foul Play's already-conditioned weights |
++| Recovery | Unsupported factors skip transactionally; all-zero mechanics likelihood rolls back; direct evidence outside the prior degrades explicitly |
++| Rollout | Shadow mode by default; explicit fallback to Foul Play when public state cannot yet be faithfully reconstructed |
++
++The old internal `hidden.py` harness remains a reproduction baseline. It does
++not gain mechanics inference from this patch: its engine instruction stream
++does not expose a verified public execution trace. New inference is attached
++to the real-Showdown protocol path and is independently testable without Rust.
++
++## Run the dependency-free tests
++
++From the repository root:
++
++```bash
++python3 -m unittest discover -s engine/tests -v
++```
++
++These tests cover all 509 species in the checked-in prior, Bayesian update
++arithmetic, likelihood rejection, repeated evidence, hidden/unexecuted moves,
++item transfers, future-state leakage, KO censoring, sequential rounded-HP
++filtering, and posterior-driven world sampling. World-conversion contracts use
++test doubles; they are not live simulator validation.
++
++## Enable shadow observation
++
++Use the existing pinned Showdown/Foul Play setup and Python environment:
++
++```bash
++OURBOT_BELIEF_SOURCE=mechanics_v2 \
++OURBOT_BELIEF_SHADOW=1 \
++  "$BOT_PYTHON" engine/showdown/headless.py --seed 70001 --a agentform --b stock --tag MBshadow
++```
++
++`OURBOT_BELIEF_SOURCE` accepts `foulplay_baseline` (default), `reveals_v2`, or
++`mechanics_v2`. The last two use the same catalog and observer, while only
++`mechanics_v2` applies speed/damage likelihoods. This is separate from opponent
++style learning (`hedge_bayes` / `bayes_safex`).
++
++Decision and final logs include `mechanics`, with candidate support, item and
++ability marginals, entropy, skip reasons and fallback reasons. Inspect coverage
++and model-mismatch counts before trying move-selection integration.
++
++## Damage backend contract
++
++Set `POKE_ENGINE_BIN` to a trusted, locally built Gen 9/Tera `poke-engine`
++0.0.48 executable. The backend serializes candidate states using the matching
++Python bindings and invokes the engine's `calculate-damage` CLI. It requires
++two explicit roll lists and validates that the selected list has 16 ordered
++integer outcomes. It will not turn two extrema or normal/critical maxima into
++a purported exact distribution.
++
++```bash
++POKE_ENGINE_BIN=/absolute/path/to/poke-engine \
++OURBOT_BELIEF_SOURCE=mechanics_v2 \
++OURBOT_BELIEF_SHADOW=1 \
++  "$BOT_PYTHON" engine/showdown/headless.py --seed 70001 --a agentform --b stock --tag MBdamage
++```
++
++If the executable, Python bindings or roll contract is unavailable, damage
++inference skips with a diagnostic; reveals and supported speed updates still
++work. A bounded number of mechanics-equivalent groups is evaluated, with an
++LRU cache. Actual latency must be measured in the pinned environment before
++enabling this in normal play.
++
++The CLI/API contract and real damage values have **not** been tested against
++the pinned runtime in the implementation environment: the engine/Foul Play
++checkouts were absent, and dependency installation was blocked by network
++restrictions. Do not interpret passing pure-Python tests as verified battle
++mechanics parity. Consult the engine's [official CLI documentation](https://github.com/pmariglia/poke-engine#usage)
++for its damage-roll interface, then validate the installed build with fixtures.
++
++## Enable posterior-driven moves after simulator validation
++
++```bash
++POKE_ENGINE_BIN=/absolute/path/to/poke-engine \
++OURBOT_BELIEF_SOURCE=mechanics_v2 \
++OURBOT_BELIEF_SHADOW=0 \
++  "$BOT_PYTHON" engine/showdown/headless.py --seed 70001 --a agentform --b stock --tag MBplay
++```
++
++The payoff builder and agent-form LP are unchanged. Unsupported world states
++fall back to Foul Play's normal sampler, explicitly logged, without reweighting
++its posterior. The new sampler currently supports ordinary public states;
++weather/terrain/side conditions, transformations, volatile effects, stat
++changes, ambiguous identity, and pending switches trigger conservative
++fallback. Field/volatile support is intentionally coarse and can remain in
++fallback for the rest of a battle. Keep this in shadow mode until live coverage
++and conversion tests are satisfactory.
++
++## Remaining milestones
++
++1. Validate the pinned CLI distributions, priority/Speed cases and HP displays
++   against real Showdown fixtures; add those fixtures to regression tests.
++2. Expand supported world reconstruction, public activations and incoming
++   damage cases, measuring inference cost and model mismatches.
++3. Wire the rounded-HP filter to outgoing-damage protocol events, including
++   healing transitions rather than resetting HP uncertainty.
++4. Add an internal simulator adapter only when observable execution events can
++   be extracted without the old chosen-move leakage.
++5. Run the plan's held-out calibration and paired battle ablations. No new
++   battle-strength claim is made by this patch.
++
++## Delivery constraint
++
++The implementation was prepared in an isolated directory because the workspace
++rejected Git branch creation and the managed-worktree tool failed. It is
++delivered as an applyable patch; no tracked files on `main` were modified.
++Create the requested branch in a Git-writable terminal, then apply the patch
++from the repository root:
++
++```bash
++git switch -c feat/mechanics-belief-tracker
++git apply docs/mechanics_belief_implementation.patch
++python3 -m unittest discover -s engine/tests -v
++```

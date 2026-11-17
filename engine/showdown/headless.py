@@ -38,6 +38,8 @@ HEDGE_STATE = os.path.join(WORK, "hedge_state")      # carried Hedge weights: <t
 FORMAT = "gen9randombattle"
 SELF = "zzself"                     # FoulPlayConfig.username; must not be a substring of either player name
 NAMES = {"agentform": "OurAgentForm", "pimc": "OurPimc", "stock": "FoulPlay", "hedge": "OurHedge",
+         "mcts_native": "OurNativeMCTS",
+         "s1_agentform": "OurS1AgentForm",
          "hedge_fs": "OurHedgeFS", "bandit_ucb1": "OurBanditUCB", "bandit_exp3": "OurBanditExp",
          "rmplus_avg": "OurRMPlus", "bandit_ucb1_mv": "OurMaxVisitUCB", "bandit_exp3_mv": "OurMaxVisitExp", "hedge_bayes": "OurHedgeBayes", "bayes_safex": "OurBayesSafex",
          "hedge_bayes_mw": "OurHedgeBayesMW", "bayes_safex_mw": "OurBayesSafexMW",

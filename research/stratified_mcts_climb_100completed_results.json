@@ -1,0 +1,284 @@
+{
+  "config": {
+    "account": "bot_bonp",
+    "method": "mcts_native",
+    "target": 50,
+    "k": 4,
+    "concurrency": 5,
+    "format": "gen9randombattle",
+    "server": "wss://sim3.psim.us/showdown/websocket",
+    "mcts_ms": 1000,
+    "sampler": "item_stratified",
+    "revision": "5e7cb7707b4bb552299e7c55462e5abc29c54e67",
+    "created_utc": 1794931765.229845,
+    "primary_metric": "ladder_elo_change",
+    "policy_revision": "mcts_native_4worlds_1000ms_item_stratified_v1",
+    "continues_batch": ".local-play/work/ladder/mcts_stratified_v1_50games_20261117T151646Z",
+    "comparison_baseline_elo": 1885,
+    "change": "No policy change; 50 additional games at the prior endpoint rating"
+  },
+  "extension": {
+    "primary_metric": "ladder_elo_change",
+    "target": 50,
+    "completed": 50,
+    "complete": true,
+    "results": {
+      "win": 33,
+      "loss": 17
+    },
+    "elo_start": 1885.0,
+    "elo_end": 2090.0,
+    "elo_change": 205.0,
+    "elo_min": 1885.0,
+    "elo_max": 2141.0,
+    "rated_games": 50,
+    "win_rate": 0.66,
+    "comparison_note": "Descriptive public ladder result; different starting ratings and opponents prevent a controlled causal comparison"
+  },
+  "previous_batch": {
+    "primary_metric": "ladder_elo_change",
+    "target": 50,
+    "completed": 50,
+    "complete": true,
+    "results": {
+      "win": 33,
+      "loss": 17
+    },
+    "elo_start": 1677.0,
+    "elo_end": 1885.0,
+    "elo_change": 208.0,
+    "elo_min": 1649.0,
+    "elo_max": 1979.0,
+    "rated_games": 50,
+    "win_rate": 0.66,
+    "comparison_note": "Descriptive public ladder result; different starting ratings and opponents prevent a controlled causal comparison"
+  },
+  "combined_completed_games": {
+    "primary_metric": "ladder_elo_change",
+    "target": 100,
+    "completed": 100,
+    "complete": true,
+    "results": {
+      "win": 66,
+      "loss": 34
+    },
+    "elo_start": 1677.0,
+    "elo_end": 2090.0,
+    "elo_change": 413.0,
+    "elo_min": 1649.0,
+    "elo_max": 2141.0,
+    "rated_games": 100,
+    "win_rate": 0.66,
+    "comparison_note": "Descriptive public ladder result; different starting ratings and opponents prevent a controlled causal comparison"
+  },
+  "post_resume": {
+    "primary_metric": "ladder_elo_change",
+    "target": 36,
+    "completed": 36,
+    "complete": true,
+    "results": {
+      "loss": 13,
+      "win": 23
+    },
+    "elo_start": 1920.0,
+    "elo_end": 2090.0,
+    "elo_change": 170.0,
+    "elo_min": 1898.0,
+    "elo_max": 2141.0,
+    "rated_games": 36,
+    "win_rate": 0.6388888888888888,
+    "comparison_note": "Descriptive public ladder result; different starting ratings and opponents prevent a controlled causal comparison"
+  },
+  "completed_game_rated_delta_sum": 269.0,
+  "rating_chain_gaps": [
+    {
+      "previous_tag": "battle-gen9randombattle-2715430040",
+      "previous_elo": 1984.0,
+      "next_tag": "battle-gen9randombattle-2715439652",
+      "next_elo": 1920.0,
+      "gap": -64.0
+    }
+  ],
+  "interrupted_games": {
+    "battle-gen9randombattle-2715429616": 34,
+    "battle-gen9randombattle-2715430527": 17,
+    "battle-gen9randombattle-2715430855": 21,
+    "battle-gen9randombattle-2715431513": 3,
+    "battle-gen9randombattle-2715431196": 8
+  },
+  "completed_game_health": {
+    "counts": {
+      "completed_game_decisions": 1548,
+      "native_fallbacks": 0,
+      "illegal_selected": 0
+    },
+    "discarded_mass_records": [
+      {
+        "battle": "battle-gen9randombattle-2715454210",
+        "turn": 4,
+        "selected": "switch golem",
+        "legal": [
+          "jumpluff",
+          "perrserker",
+          "golem",
+          "rillaboom",
+          "struggle",
+          "grafaiai"
+        ],
+        "worlds": [
+          {
+            "discarded_fraction": 0.0021681415929203363,
+            "discarded_actions": [
+              "struggle-tera"
+            ]
+          },
+          {
+            "discarded_fraction": 0.002485981308411267,
+            "discarded_actions": [
+              "struggle-tera"
+            ]
+          },
+          {
+            "discarded_fraction": 0.002201754385964927,
+            "discarded_actions": [
+              "struggle-tera"
+            ]
+          },
+          {
+            "discarded_fraction": 0.0014489795918367632,
+            "discarded_actions": [
+              "struggle-tera"
+            ]
+          }
+        ]
+      },
+      {
+        "battle": "battle-gen9randombattle-2715445738",
+        "turn": 21,
+        "selected": "switch ironcrown",
+        "legal": [
+          "struggle",
+          "toxicroak",
+          "golduck",
+          "ironcrown",
+          "cinccino",
+          "weavile"
+        ],
+        "worlds": [
+          {
+            "discarded_fraction": 0.008918918918918939,
+            "discarded_actions": [
+              "struggle-tera"
+            ]
+          },
+          {
+            "discarded_fraction": 0.0096880733944954,
+            "discarded_actions": [
+              "struggle-tera"
+            ]
+          },
+          {
+            "discarded_fraction": 0.00932173913043477,
+            "discarded_actions": [
+              "struggle-tera"
+            ]
+          },
+          {
+            "discarded_fraction": 0.008480392156862693,
+            "discarded_actions": [
+              "struggle-tera"
+            ]
+          }
+        ]
+      }
+    ],
+    "mean_policy_secs": 1.0599299095607235,
+    "max_policy_secs": 1.4357
+  },
+  "all_logged_decisions_health": {
+    "counts": {
+      "decisions": 1631,
+      "native_fallbacks": 0,
+      "forced": 37,
+      "illegal_selected": 0,
+      "decisions_with_discarded_mass": 2,
+      "exact_stratum_mass": 1622,
+      "multiple_strata": 361,
+      "nonuniform_world_weights": 342,
+      "decisions_with_native_item_or_ability_alias": 23,
+      "systematic_overflow": 9
+    },
+    "issues": [],
+    "conversion_mismatches": [],
+    "source_hashes_match": true,
+    "mean_policy_secs": 1.062192213366033,
+    "max_policy_secs": 1.4357
+  },
+  "tactical_summary": {
+    "completed_games": 50,
+    "results": {
+      "win": 33,
+      "loss": 17
+    },
+    "win_rate": 0.66,
+    "win_rate_wilson95": [
+      0.5215356854148285,
+      0.7756323036493895
+    ],
+    "rating_before": 1885.0,
+    "rating_after": 2090.0,
+    "decisions": 1548,
+    "matched_actions": 1412,
+    "snapshot_decisions": 1548,
+    "analyzed_games": 50,
+    "missing_logs": [],
+    "counts": {
+      "rocks_reflected": 0,
+      "rocks_already_present": 0,
+      "toxic_into_steel": 0,
+      "ground_into_flying": 2,
+      "setup_at_cap": 0,
+      "setup_then_ko": 3,
+      "switch_into_revealed_hurricane": 0,
+      "risky_hurricane_switch": 0,
+      "punch_over_knockoff": 14,
+      "punch_into_ghost": 1
+    },
+    "opportunities": {
+      "move_actions": 1010,
+      "switch_actions": 402,
+      "setup_uses": 96,
+      "capped_setup_selectable_decisions": 3,
+      "ground_uses": 44,
+      "punch_and_knockoff_both_selectable": 41,
+      "toxic_selectable_decisions": 26,
+      "stealthrock_selectable_decisions": 47,
+      "stealthrock_uses": 6,
+      "stealthrock_selectable_with_rocks_present": 10,
+      "toxic_selectable_vs_steel_without_corrosion": 2,
+      "toxic_uses": 6
+    },
+    "latency_mean": 1.1936027131782947,
+    "latency_max": 3.325,
+    "games_per_stream": {
+      "1": 13,
+      "0": 14,
+      "2": 7,
+      "3": 8,
+      "4": 8
+    },
+    "pure_safest_expert": {
+      "checked_decisions": 0,
+      "strict_mismatches": 0,
+      "comparison_tolerance": 0.001,
+      "mismatch_fraction": null,
+      "mean_security_gap_on_mismatches": null,
+      "maximum_security_gap": 0,
+      "largest_examples": []
+    }
+  },
+  "out": ".local-play/work/ladder/mcts_stratified_v1_next50_20261117T160925Z",
+  "previous_out": ".local-play/work/ladder/mcts_stratified_v1_50games_20261117T151646Z",
+  "source_manifest": ".local-play/work/ladder/mcts_stratified_v1_next50_20261117T160925Z/source_manifest.json",
+  "note": "50 completed results plus five interrupted attempts with unknown outcomes; win rate excludes interrupted attempts. Actual endpoint Elo includes the 64-point unrecorded interruption gap. Public ladder results are descriptive, not paired causal estimates."
+}

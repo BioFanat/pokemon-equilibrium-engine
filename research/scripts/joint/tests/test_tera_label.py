@@ -1,7 +1,7 @@
 """Tera labels: the opponent terastallizes and uses a move (b = "flareblitz-tera") while some worlds list only
 "flareblitz" and others only "flareblitz-tera". Runs make_move_fn (hedge_bayes_mw and bayes_safex_mw) through the real
 run_ourbot feedback path on stubbed worlds and checks that both logged predictive probabilities refer to the same
-label (map_column's): p_qhat = q-hat(col) on the averaged matrix and p_qhat_mw = q_mw(col) of the same decision, and
+exact label: p_qhat = q-hat(col) on the averaged matrix and p_qhat_mw = q_mw(col) of the same decision, and
 that only the worlds containing exactly that label are in worlds_with.
   ~/sandbox/bot-venv/bin/python research/scripts/joint/tests/test_tera_label.py"""
 import _path  # noqa: F401
@@ -17,9 +17,9 @@ import run_ourbot as ro
 import nash
 
 ROWS = ["tackle", "growl", "switch onix"]
-CASES = {   # world column sets -> expected label and containing worlds (equal weights: map_column scans worlds 0..3)
+CASES = {   # world column sets -> exact observed label and containing worlds, independent of world order
     "plain first": ([["flareblitz", "surf"], ["flareblitz", "ember"], ["flareblitz-tera", "surf"],
-                     ["flareblitz-tera", "flareblitz", "ember"]], "flareblitz", [0, 1, 3]),
+                     ["flareblitz-tera", "flareblitz", "ember"]], "flareblitz-tera", [2, 3]),
     "tera first": ([["flareblitz-tera", "flareblitz", "surf"], ["flareblitz", "ember"], ["flareblitz-tera", "surf"],
                     ["ember", "surf"]], "flareblitz-tera", [0, 2]),
 }
@@ -35,7 +35,7 @@ class Mode:
 
 real = (nash.full_matrix, nash.pe)
 ro.battle_to_poke_engine_state = lambda b: b
-nash.full_matrix = lambda st: (st.M, st.s1, st.s2)
+nash.full_matrix = lambda st, side_one_options=None: (st.M, st.s1, st.s2)
 nash.pe = NS(id=lambda st, side: NS(s1=st.s1))
 rng = np.random.default_rng(5)
 n = 0
@@ -49,6 +49,7 @@ try:
                 for t in range(3):
                     worlds = [(NS(M=rng.normal(0, 100, (3, len(c))), s1=ROWS, s2=c), 0.25) for c in cols]
                     fn(NS(team_preview=False, turn=t + 1, _ourlines=list(lines), opponent=NS(name="p2"),
+                          request_json=None, user=NS(reserve=[]),
                           battle_tag="battle-x", mode=Mode(worlds)))
                     lines += ["|-terastallize|p2a: Foo|Fire", "|move|p2a: Foo|Flare Blitz|p1a: Bar", f"|turn|{t + 2}"]
                 recs = [json.loads(ln) for ln in open(log)]
