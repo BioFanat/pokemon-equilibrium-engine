@@ -638,44 +638,70 @@ notes(s, "A few known results we build on. Multiplicative weights shrinks each e
       "exploitability and regret, and see whether the agent can still win.")
 
 # ===================== Section 2: Method =====================
-# 4. Preliminary model: worlds, per-turn equilibrium, experts
-s, S = content(2, "Preliminary model: worlds, equilibrium, experts")
-steps = [("1. Sample 4 worlds", [P("each a full guess of the hidden team and sets, consistent with what we saw; "
-                                   "weight ", ("$", "β_k"), size=SECONDARY, align="ctr")]),
-         ("2. A matrix per world", [P("rows: our options; columns: theirs; cell: our value after a 2-turn "
-                                      "lookahead → ", ("$", "M_k"), size=SECONDARY, align="ctr")]),
-         ("3. One strategy x", [P("best on average when the opponent best-responds in each world (one LP)",
-                                  size=SECONDARY, align="ctr")]),
-         ("4. Hedge over experts", [P("top move, sampled, pure maximin, ε-safe best response; weights carried "
-                                      "across games", size=SECONDARY, align="ctr")])]
-BH = Inches(1.6)
-for k, (name, paras) in enumerate(steps):
+# 4. Preliminary model: the game as an experts problem
+s, S = content(2, "Preliminary model: an experts problem")
+S.text(LEFT, TOP, WIDTH, Inches(0.75), [
+    P("Each turn, four ", ("experts", {"b": True}), " each propose a way to play; Hedge mixes them and learns, across "
+      "the games of a match, which works against this opponent.", size=18),
+], "Experts intro")
+
+
+def world_table(x0, y0, title, cols, rows, vals, name):
+    """A small payoff table: our moves (rows) x the opponent's options (columns) in one sampled world."""
+    cw, ch, lw = Inches(1.12), Inches(0.3), Inches(1.05)
+    S.text(x0, y0, lw + 3 * cw, Inches(0.3), [P(title, size=CAPTION, b=True, align="ctr")], f"{name} title")
+    y = y0 + Inches(0.3)
+    for j, c in enumerate(cols):
+        S.header(x0 + lw + j * cw, y, cw, ch, [P(c, size=10, b=True, align="ctr")], f"{name} col {j}")
+    for i, (r, row) in enumerate(zip(rows, vals)):
+        yy = y + ch * (i + 1)
+        S.header(x0, yy, lw, ch, [P(r, size=10, b=True, align="ctr")], f"{name} row {i}")
+        for j, v in enumerate(row):
+            S.box(x0 + lw + j * cw, yy, cw, ch, [P(v, size=10, align="ctr")], f"{name} cell {i}{j}")
+    return y + ch * (len(rows) + 1)
+
+
+rows = ["Earthquake", "Stone Edge", "Slack Off"]
+ty = TOP + Inches(0.8)
+tw = Inches(1.05) + 3 * Inches(1.12)
+end1 = world_table(LEFT, ty, "World 1: Sunflora has Earth Power", ["Sludge Bomb", "Earth Power", "Switch"], rows,
+                   [["62%", "58%", "55%"], ["60%", "57%", "52%"], ["66%", "61%", "54%"]], "World 1")
+x2 = LEFT + tw + Inches(0.25)
+world_table(x2, ty, "World 2: Sunflora has Leaf Storm", ["Sludge Bomb", "Leaf Storm", "Switch"], rows,
+            [["62%", "41%", "55%"], ["60%", "40%", "52%"], ["66%", "48%", "54%"]], "World 2")
+ax = x2 + tw + Inches(0.15)
+S.line(ax, ty + Inches(0.75), ax + Inches(0.45), ty + Inches(0.75), "Worlds arrow", arrow=True)
+bx = ax + Inches(0.55)
+S.box(bx, ty + Inches(0.3), RIGHT - bx, Inches(1.2),
+      [P("one strategy ", ("$", "x"), " for all worlds: best on average when the opponent best-responds in each "
+         "(one LP)", size=12, align="ctr")], "LP box")
+S.text(LEFT, end1 + Inches(0.02), WIDTH, Inches(0.3),
+       [P("Illustrative values: our win chance after a 2-turn lookahead; 4 worlds per turn, 2 shown", size=CAPTION,
+          i=True)], "Tables caption")
+experts = [("Top move", "the most likely action of x"),
+           ("Sampled", "draw an action from x"),
+           ("Pure maximin", "the single action with the best worst case"),
+           ("ε-safe best response", "best reply to a prediction of the opponent, giving up at most ε of x's worst case")]
+gy = end1 + Inches(0.4)
+EBH = Inches(0.95)
+for k, (name, rule) in enumerate(experts):
     x = LEFT + k * (COL4 + GAP)
-    S.header(x, TOP, COL4, HDR_H, [P(name, size=SECONDARY, b=True, align="ctr")], f"Prelim step {k + 1} header")
-    S.box(x, TOP + HDR_H, COL4, BH, paras, f"Prelim step {k + 1} box")
-    if k < 3:
-        ym = TOP + HDR_H + BH // 2
-        S.line(x + COL4 + Inches(0.05), ym, x + COL4 + GAP - Inches(0.05), ym, f"Prelim arrow {k + 1}", arrow=True)
-ty = TOP + HDR_H + BH + Inches(0.2)
-S.text(LEFT, ty, WIDTH, BOTTOM - ty, [
-    EQ_(E_BLP, size=20),
-    P("One ", ("$", "x"), " for all worlds, since we cannot tell which world we are in", size=18, bullet=True,
-      before=8),
-    P("Each expert is credited with what it would have earned against the opponent's actual move", size=18,
-      bullet=True, before=6),
-    P("Opponent memory: a posterior over 5 play styles, ", ("$", r"Π_t(θ) ∝ Π_{t−1}(θ)\sum_k{β_k q_θ(b_t | M_k)}"),
-      "; it is Hedge with ", ("$", "η = 1"), " and feeds the ε-safe expert", size=18, bullet=True, before=6),
-], "Preliminary notes")
-notes(s, "Our starting point. Each turn we sample four worlds, each a full guess of the opponent's hidden team and "
-      "sets consistent with what we have seen, with a weight. For each world the engine builds a payoff matrix: "
-      "our options against theirs, each cell our value after a two-turn lookahead. We pick one mixed strategy x "
-      "that does best on average when the opponent best-responds in each world, a single linear program, because "
-      "we cannot tell which world we are in. Across games, Hedge mixes four experts, four ways of playing x: its "
-      "top move, a sample from it, the single safest action, and an epsilon-safe best response to the opponent "
-      "memory's prediction. Each expert is credited with what it would have earned against the opponent's actual "
-      "move. The opponent memory is a posterior over five play styles, updated with each observed move; with no "
-      "forgetting it is exactly Hedge with step one on log loss, which is where its regret bound comes from. This "
-      "is the model our theorems cover.")
+    S.header(x, gy, COL4, HDR_H, [P(name, size=SECONDARY, b=True, align="ctr")], f"Expert {k + 1} header")
+    S.box(x, gy + HDR_H, COL4, EBH, [P(rule, size=14, align="ctr")], f"Expert {k + 1} box")
+by = gy + HDR_H + EBH + Inches(0.12)
+S.text(LEFT, by, WIDTH, BOTTOM - by, [
+    P("Each expert is credited with what it would have earned against the opponent's actual move; weights carried "
+      "across games, so Hedge's regret bound covers the whole match", size=16, bullet=True),
+], "Experts notes")
+notes(s, "Our preliminary model treats the game as an experts problem. Each turn we sample four guesses of the "
+      "opponent's hidden team, called worlds; here are two, where Sunflora has either Earth Power or Leaf Storm. Each "
+      "world gives a small payoff table: our moves down the side, the opponent's options across the top, and our "
+      "estimated win chance in each cell; the values here are illustrative. Because we cannot tell which world we "
+      "are in, we pick one mixed strategy x for all of them: the mix that does best on average when the opponent "
+      "best-responds in each world, which is one linear program. Four experts turn x into play: its top move, a "
+      "sample from it, the single safest action, and an epsilon-safe best response to a prediction of the opponent's "
+      "move. Hedge mixes the experts; after the opponent moves, each is credited with what it would have earned, and "
+      "because the weights carry across games, Hedge's regret bound covers the whole match.")
 
 # 5. The Bayesian model: the model we play, built on the preliminary formulation
 s, S = content(2, "The Bayesian model: what we play")
@@ -815,7 +841,7 @@ S.text(LEFT, TOP, WIDTH, BOTTOM - TOP, [
       "Hedge's averages stay within the bound on all 120 matrices", bullet=True, before=20),
     P("Across games: Hedge regret ", ("≈ 0.004", {"b": True}), " per turn vs Foul Play (13–16% of the bound); "
       "carried beat reset weights by ", ("+0.15", {"b": True}), bullet=True, before=SP),
-    P("Opponent memory (Bayes = Hedge): regret ends at its bound ", ("$", r"\ln{5}"), "; per-world scoring lowers "
+    P("Opponent prediction for the ε-safe expert (Bayes = Hedge): regret ends at its bound ", ("$", r"\ln{5}"), "; per-world scoring lowers "
       "log loss by ", ("≈ 0.3", {"b": True}), " nats per turn, but win rate does not move", bullet=True, before=SP),
 ], "Dynamics bullets")
 notes(s, "Theory says no-regret players' averages are within the sum of their regrets of minimax. Measured: RM-plus "
