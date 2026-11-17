@@ -68,7 +68,7 @@ def panel_exploit(ax, eg):
     ax.scatter([r["expl"] for r in eg], [r["bound"] for r in eg], s=18, color=INK, alpha=0.55, lw=0, zorder=3)
     lo, hi = min(r["ratio"] for r in eg), max(r["ratio"] for r in eg)
     ax.text(0.3, 0.12, "bound = exploitability", color=GRAY, rotation=0, va="center")
-    ax.text(0.013, 150, f"bound {lo:.1f}–{hi:.0f}× larger", color=INK, va="center")
+    ax.text(0.013, 150, f"bound {lo:.0f}–{hi:.0f}× larger", color=INK, va="center")
     ax.set_xlim(0.01, 3); ax.set_ylim(0.05, 300)
     ax.set_xticks([0.01, 0.1, 1])
     ax.set_xticklabels(["0.01", "0.1", "1"])

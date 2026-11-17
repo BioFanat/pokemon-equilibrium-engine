@@ -1,8 +1,6 @@
 \documentclass[10pt]{article}
 \usepackage{cs535}
 \usepackage{amsmath,amssymb,amsthm,mathtools}
-\usepackage{algorithm}
-\usepackage[noend]{algpseudocode}
 \usepackage{booktabs,array,graphicx,microtype,url}
 \usepackage[hidelinks]{hyperref}
 \usepackage[capitalise,nameinlink]{cleveref}
@@ -22,7 +20,6 @@
 \theoremstyle{trem}
 \newtheorem{remark}[theorem]{Remark}
 \crefname{assumption}{Assumption}{Assumptions}
-\crefname{algorithm}{Algorithm}{Algorithms}
 
 % ---------- macros ----------
 \newcommand{\E}{\mathbb{E}}
@@ -55,33 +52,30 @@
 % =====================================================================
 \section{Introduction}
 \label{sec:intro}
-A Pok\'emon battle is a two-player zero-sum stochastic game in which both players move at once, chance enters every turn, and, in Random Battles, each side's team is drawn at random and hidden from the other. The strongest bots, whether trained by reinforcement learning or built on search, are generally designed to win rather than to be safe: Foul Play~\cite{foulplay}, the strongest public bot, samples the opponent's possible teams and runs decoupled UCT (DUCT), a Monte Carlo tree search (MCTS)~\cite{Lis13}, on each, and a policy like this can be beaten by an opponent who knows how it plays. We therefore ask whether strategies built from no-regret learning yield an agent that is hard to exploit, and what this implies both for guarantees over a whole battle and for the game strength it gives up.
+A Pok\'emon battle is a two-player zero-sum stochastic game in which both players move at once, chance enters every turn, and, in Random Battles, each side's team is drawn at random and hidden from the other. The strongest bots, whether trained by reinforcement learning or built on search, are generally designed to win rather than to be safe: Foul Play~\cite{foulplay}, the strongest public bot, samples the opponent's possible teams and runs decoupled UCT (DUCT), a Monte Carlo tree search (MCTS)~\cite{Lis13}, on each, and a policy like this can be beaten by an opponent who knows how it plays. We ask whether no-regret learning yields an agent that is hard to exploit, and at what cost in strength.
 
-We apply no-regret learning mainly across games, where the Hedge algorithm, an exponential-weights variant of multiplicative weights, chooses among several fixed ways of playing each turn (the ``experts'') while a Bayesian memory tracks the opponent's style. Within each turn, our agent plays an equilibrium of the turn's Bayesian matrix game, the formulation that PokaiTrainer~\cite{Yu26} uses for Pok\'emon VGC. Foul Play's search is itself bandit self-play, since each side runs a UCB1 bandit at every node, but UCB1's guarantee is for stochastic rewards and its visit shares need not converge to an equilibrium~\cite{ACF02,Lis13}, which is one reason we solve each turn's game directly.
+We apply no-regret learning mainly across games, where the Hedge algorithm chooses among several fixed ways of playing each turn (the ``experts'') while a Bayesian memory tracks the opponent's style. Within each turn, our agent plays an equilibrium of the turn's Bayesian matrix game, the formulation that PokaiTrainer~\cite{Yu26} uses for Pok\'emon VGC. Foul Play's search is itself bandit self-play, with a UCB1 bandit for each side at every node, but UCB1's guarantee is for stochastic rewards and its visit shares need not converge to an equilibrium~\cite{ACF02,Lis13}, one reason we solve each turn's game directly.
 
-We measure how hard a policy is to beat by its \emph{exploitability}: how much less than the game value it earns against an opponent that best-responds to it, the worst case over all opponents~\cite{Zin07}, so that an equilibrium has exploitability zero. We then bound the exploitability of our agent over a whole battle (\cref{sec:theory}): each turn's solver regret and matrix error add up over the battle, and the only term that more compute does not shrink is the error of the heuristic evaluation used to build each turn's matrix. We test this experimentally (\cref{sec:exp}), and because exact exploitability is out of reach in a game this large while any fixed opponent's advantage over the game value bounds it from below, we use best responses that know our agent's policy. Sampled equilibrium play is much harder to exploit than deterministic play, the whole-battle bound holds, though loosely, on every endgame we solved exactly, and our learners' measured regrets stay well below their bounds. Yet the agent loses to Foul Play at every search time we tried, and a better opponent model improves prediction without improving win rate, even though a pre-registered live test confirms how quickly it detects a change of style.
+We measure how hard a policy is to beat by its \emph{exploitability}: how much less than the game value it earns against an opponent that best-responds to it~\cite{Zin07}, so that an equilibrium has exploitability zero. We bound our agent's exploitability over a whole battle (\cref{sec:theory}): each turn's solver error and matrix error add up over the turns played, and the only term that more compute does not shrink is the error of the heuristic evaluation that builds each turn's matrix. Exact exploitability is out of reach in a game this large, so our experiments (\cref{sec:exp}) bound it from below with best responses that know our agent's policy. Sampled equilibrium play is much harder to exploit than deterministic play, the bound holds on every endgame we solved exactly, and our learners' regrets stay below their bounds; yet the agent loses to Foul Play, and a better opponent model improves prediction but not win rate.
 
 % =====================================================================
 \section{Background and preliminaries}
 \label{sec:prelim}
 \paragraph{Pok\'emon.} Each side has six Pok\'emon and loses when all six have fainted. Each turn both sides choose simultaneously among at most 13 options (four moves, five switches, or once per battle a move with Terastallization), and chance enters through damage rolls, critical hits and accuracy. The opponent's unrevealed Pok\'emon and every \emph{set} (moves, item, ability, Tera type) stay hidden; a \emph{world} is one full guess of them consistent with what has been revealed (the \emph{hard evidence}).
 
-\paragraph{A battle as a sequence of matrix games.} With both teams known, a battle is a two-player zero-sum stochastic game. At turn $t$ in state $s$ we (Row) choose $a\in A(s)$ and the opponent (Column) chooses $b\in B(s)$; chance draws the next state from $P(\cdot\mid s,a,b)$, and the battle ends with payoff $u\in\{-1,0,1\}$ to us, or $0$ if still live after $H$ turns (decision nodes). Each turn is a zero-sum matrix game, the \emph{stage game}, whose entries are the values of what follows:
+\paragraph{A battle as a sequence of matrix games.} With both teams known, a battle is a two-player zero-sum stochastic game. At turn $t$ in state $s$ we (Row) choose $a\in A(s)$ and the opponent (Column) chooses $b\in B(s)$; chance draws the next state from $P(\cdot\mid s,a,b)$, and the battle ends with payoff $u\in\{-1,0,1\}$ to us, or $0$ if still live after $H$ turns. $H$ is the maximum number of turns (decision nodes; $H=300$ in our runs), and $\tau\le H$ is the turn at which a battle actually ends. Each turn is a zero-sum matrix game, the \emph{stage game}, whose entries are the values of what follows:
 \[
 \Qstar_t(s)(a,b)=\textstyle\sum_{s'}P(s'\mid s,a,b)\,\Vstar_{t+1}(s'),
 \]
 with $\Vstar_t(s)=\val\Qstar_t(s)$ and $\val(M)=\max_x\min_yx^\top My$ over mixed strategies. Our agent works with an estimate $\Qhat_t(s)$ built by search (\cref{sec:method}); stage matrices are at most $13\times13$, with payoff range $\Delta$. The \emph{exploitability} of our policy $\pi$ is how much less than the game value it earns against its worst opponent, $\expl(\pi)=\Vstar_0(s_0)-\inf_\sigma W^{\pi,\sigma}_0(s_0)$, where $W^{\pi,\sigma}_0(s_0)$ is our expected payoff against $\sigma$ and $\sigma$ ranges over all history-dependent opponents. We report scores $(u+1)/2$, on which exploitability is half its value in payoff units.
 
-\paragraph{No-regret learning.} In the experts problem there are $n$ experts and $T$ rounds. In round $t$ we choose a distribution $p^t$ over the experts; Nature, an adversary that may adapt to the past and to $p^t$ but cannot see our random draw, fixes losses $l_i^t\in[0,1]$; we incur $p^t\cdot l^t$. Our regret $\Reg_T=\sum_{t\le T}p^t\cdot l^t-\min_i\sum_{t\le T}l_i^t$, and an algorithm is \emph{no-regret} if $\Reg_T=o(T)$. Multiplicative weights (MWU) starts from $w_i^1=1$, plays $p^t\propto w^t$ and updates $w_i^{t+1}=w_i^t(1-\eta l_i^t)$.
-\begin{theorem}[MWU~\cite{LW94,CBL06}]\label{thm:mwu}
-For $\eta\in(0,\frac12]$, MWU's expected total loss is $L^T_{\rm MWU}\le(1+\eta)L^*+\ln n/\eta$, with $L^*$ the best expert's total loss. With $T\ge4\ln n$ and $\eta=\sqrt{\ln n/T}$, $\Reg_T\le2\sqrt{T\ln n}$.
-\end{theorem}
-\emph{Hedge}~\cite{FS97} updates exponentially, $w_i^{t+1}=w_i^te^{-\eta l_i^t}$; with rewards $r=1-l$ this is a softmax of cumulative reward. Our Hedge learner uses the anytime step $\eta_t=\sqrt{8\ln n/t}$, playing $p_i^t\propto\exp(\eta_{t-1}\sum_{j<t}r_i^j)$ with $p^1$ uniform.
+\paragraph{No-regret learning.} In the experts problem there are $n$ experts and $T$ rounds. In round $t$ we choose a distribution $p^t$ over the experts; Nature, an adversary that may adapt to the past and to $p^t$ but cannot see our random draw, fixes losses $l_i^t\in[0,1]$; we incur $p^t\cdot l^t$. Our regret $\Reg_T=\sum_{t\le T}p^t\cdot l^t-\min_i\sum_{t\le T}l_i^t$, and an algorithm is \emph{no-regret} if $\Reg_T=o(T)$. 
+\emph{Hedge}~\cite{FS97}, the exponential form of multiplicative weights~\cite{LW94}, starts from $w_i^1=1$, plays $p^t\propto w^t$ and updates $w_i^{t+1}=w_i^te^{-\eta l_i^t}$; with rewards $r=1-l$ this is a softmax of cumulative reward. Our Hedge learner uses the anytime step $\eta_t=\sqrt{8\ln n/t}$, playing $p_i^t\propto\exp(\eta_{t-1}\sum_{j<t}r_i^j)$ with $p^1$ uniform.
 \begin{theorem}[Hedge~\cite{FS97,CBL06}]\label{fact:hedge}
-Against every adaptive adversary, Hedge with $\eta=\sqrt{8\ln n/T}$ has $\Reg_T\le\sqrt{(T/2)\ln n}$~\cite{CBL06}, and with the anytime step $\Reg_T\le\frac32\sqrt{(T/2)\ln n}+\sqrt{\ln n/8}$, by the standard FTRL argument with decreasing step sizes (\cite{CBL06} states the constant 2).
+Against every adaptive adversary, Hedge with the anytime step has $\Reg_T\le\frac32\sqrt{(T/2)\ln n}+\sqrt{\ln n/8}$, by the standard FTRL argument with decreasing step sizes (\cite{CBL06} states the constant 2).
 \end{theorem}
 
-\paragraph{No-regret dynamics.} Let $M$ be a zero-sum matrix game, Row maximising, $v_R=\max_x\min_yx^\top My$ and $v_C=\min_y\max_xx^\top My$; regrets are in $M$'s payoff units, and no bound on the entries is needed (MWU itself needs them rescaled to $[0,1]$). Both players run a no-regret algorithm for $T$ rounds in the full-information model, playing $x^t$ and $y^t$; let $\bar x,\bar y$ be the average strategies, $\bar g$ Row's average payoff, and $\varepsilon_R,\varepsilon_C$ the players' average regrets.
+\paragraph{No-regret dynamics.} Let $M$ be a zero-sum matrix game, Row maximising, $v_R=\max_x\min_yx^\top My$ and $v_C=\min_y\max_xx^\top My$; regrets are in $M$'s payoff units. Both players run a no-regret algorithm for $T$ rounds in the full-information model, playing $x^t$ and $y^t$; let $\bar x,\bar y$ be the average strategies, $\bar g$ Row's average payoff, and $\varepsilon_R,\varepsilon_C$ the players' average regrets.
 \begin{theorem}[no-regret dynamics~\cite{FS99}]\label{fact:selfplay}
 $v_C-\varepsilon_R\le\bar g\le v_R+\varepsilon_C$, so, with weak duality $v_R\le v_C$, $v_R=v_C=\val(M)$ as the regrets vanish (the min--max theorem), and
 \[
@@ -89,51 +83,32 @@ $v_C-\varepsilon_R\le\bar g\le v_R+\varepsilon_C$, so, with weak duality $v_R\le
 \]
 $(\bar x,\bar y)$ is an approximate minimax equilibrium, and $\bar x$ guarantees $\val(M)-\varepsilon_R-\varepsilon_C$ against every $y$.
 \end{theorem}
-\begin{theorem}[no-regret dynamics give a CCE~\cite{CBL06}]\label{thm:cce}
-If each player $i$ of a finite game has average external regret $\varepsilon_i^T$ after $T$ rounds, the time-average distribution of play $\sigma^T=\frac1T\sum_t\pi^t$ ($\pi^t$ the product of the round-$t$ mixed strategies) is an $\varepsilon^T$-coarse correlated equilibrium (CCE), $\varepsilon^T=\max_i\varepsilon_i^T$: no player gains more than $\varepsilon^T$ by always playing one fixed pure strategy.
-\end{theorem}
-In a two-player zero-sum game the marginals of an $\varepsilon$-CCE are $2\varepsilon$-maximin, and exactly maximin when $\varepsilon=0$~\cite{CBL06}. Our per-turn solver is Regret Matching$^+$ (RM$^+$)~\cite{Tam14}, a no-regret algorithm, run in self-play with alternating updates and linear averaging. \Cref{fact:selfplay} does not cover alternation literally (the two regrets are measured on different payoff sequences), but the extra term is non-positive for RM$^+$, whose duality gap on an $|A|\times|B|$ stage matrix is at most $2\Delta(\sqrt{|A|}+\sqrt{|B|})/\sqrt T$ after $T$ iterations~\cite{BMS19}; with sampled worlds we solve the LP~\eqref{eq:af} exactly. \Cref{thm:cce} describes our Hedge across games only loosely: the stage game changes every turn and our experts are history-dependent rules, so even if the opponent also had small regret the average play would be an approximate CCE only of the realised sequence of our estimated stage games and only against deviations to one of our $n$ experts.
+Our per-turn solver is the no-regret algorithm Regret Matching$^+$ (RM$^+$)~\cite{Tam14} in self-play with alternating updates and linear averaging, which \cref{fact:selfplay} does not cover literally but a gap bound does~\cite{BMS19} (\cref{cor:solver}); with sampled worlds we solve the LP~\eqref{eq:af} exactly.
 
 \paragraph{Sampled worlds and the Bayesian matrix game.} Under hidden information we sample $K$ opponent worlds with weights $\beta_k$ and stage matrices $M_k$. \emph{Perfect-information Monte Carlo (PIMC) averaging}~\cite{Lon10} solves each world as if known and plays the $\beta$-weighted average of the per-world equilibria, so it assumes a different strategy in each world although all worlds form one information set (strategy fusion), and it never plays an action outside every world's equilibrium support, even one that is best against the mix of worlds. The \emph{Bayesian matrix game}~\cite{Yu26} instead commits to one strategy $x$ and lets the opponent best-respond in each world:
 \begin{equation}\label{eq:af}
 \max_x\ \textstyle\sum_{k=1}^K \beta_k\min_j\,(M_k^\top x)_j ,
 \end{equation}
-a single linear program (LP) with $|A|+K$ variables and $\sum_k|B_k|+1$ constraints, $B_k$ the opponent's legal actions in world $k$.
+a single linear program (LP) with $|A|+K$ variables and $\sum_k|B_k|+1$ constraints, $B_k$ being world $k$'s opponent actions.
 
 % =====================================================================
 \section{Method}
 \label{sec:method}
-\paragraph{Inside a turn.} We sample $K=4$ worlds with Foul Play's battle tracker and set sampler (in-engine, from the exact posterior over each revealed Pok\'emon's sets). For each world the Rust engine poke-engine builds an unpruned depth-2 expectiminimax matrix whose cells average over chance the leaf value (the midpoint of the two sides' depth-1 maximin values under a heuristic evaluation), and we solve~\eqref{eq:af}. Three policies use the solution $x$: the \emph{sampled} policy plays $x$, the \emph{top-move} policy its argmax, and the \emph{pure-maximin} policy its pure maximin (security) row. This is the \emph{Bayesian-LP agent} (Bayesian LP in tables); \cref{alg:turn} shows one decision.
+\paragraph{Inside a turn.} We sample $K=4$ worlds with Foul Play's battle tracker and set sampler (in-engine, from the exact posterior over each revealed Pok\'emon's sets). For each world the Rust engine poke-engine builds an unpruned depth-2 expectiminimax matrix whose cells average over chance the leaf value (the midpoint of the two sides' depth-1 maximin values under a heuristic evaluation), and we solve~\eqref{eq:af}. Three policies use the solution $x$: the \emph{sampled} policy plays $x$, the \emph{top-move} policy its argmax, and the \emph{pure-maximin} policy its pure maximin (security) row. This is the \emph{Bayesian-LP agent}.
 
-\paragraph{Across games: an experts problem.} Hedge (\cref{fact:hedge}, anytime step) mixes $n$ per-turn experts: with expert distribution $p^t$ it plays the action mixture $\sum_ep^t_eq^t_e$. With full information, each expert is credited with the normalised stage payoff it would have earned against the opponent's action $b_t$ on the stage matrix $M_{k_t}$ of the highest-weight sampled world containing $b_t$ (in-engine, with one world, $M_{k_t}=\Abar_t$): $r^t_e=\clip\big((q^t_e\cdot M_{k_t}[:,b_t]-\min M_{k_t})/400,0,1\big)$, where 400 is a fixed normaliser in engine units. In-engine the $n=2$ experts are MCTS with Foul Play's final-move rule (\cref{sec:exp}) and the sampled equilibrium; on Showdown the $n=4$ experts are top move, sampled, pure maximin, and the \emph{$\varepsilon$-safe best response}~\cite{GS15} to the memory's prediction $\qhat_t$ (below), the best reply among strategies that guarantee the stage value minus $0.3\%$ of the payoff range. A \emph{match} is a sequence of games over which the Hedge weights and the posterior are kept; we either \emph{carry} the weights across its games, making the match one long experts problem, or \emph{reset} them each game.
+\paragraph{Across games: an experts problem.} Hedge (\cref{fact:hedge}, anytime step) mixes $n$ per-turn experts: with expert distribution $p^t$ it plays the action mixture $\sum_ep^t_eq^t_e$. With full information, each expert is credited with the normalised stage payoff it would have earned against the opponent's action $b_t$ on the stage matrix $M_{k_t}$ of the highest-weight sampled world containing $b_t$ (in-engine, with one world, $M_{k_t}=\Abar_t$): $r^t_e=\clip\big((q^t_e\cdot M_{k_t}[:,b_t]-\min M_{k_t})/400,0,1\big)$ (400: a fixed normaliser in engine units). In-engine the $n=2$ experts are MCTS with Foul Play's final-move rule (\cref{sec:exp}) and the sampled equilibrium; on Showdown the $n=4$ experts are top move, sampled, pure maximin, and the \emph{$\varepsilon$-safe best response}~\cite{GS15} to the memory's prediction $\qhat_t$ (below), the best reply among strategies that guarantee the stage value minus $0.3\%$ of the payoff range. A \emph{match} is a sequence of games over which the Hedge weights and the posterior are kept; we either \emph{carry} the weights across its games, making the match one long experts problem, or \emph{reset} them each game.
 
 \paragraph{Bayesian opponent memory.}\label{sec:memory} The memory's belief about what the opponent has is the $K$ worlds used inside a turn, sampled each turn from hard evidence alone and reset each battle; its belief about how the opponent plays is a posterior $\Pi_t$ over five \emph{styles} $\theta\in\Theta$, carried across the games of a match. A style is a behavioural type~\cite{AS18} mapping a stage matrix $M$ to a distribution $q_{\theta,t}(\cdot\mid M)$ over the opponent's actions: stage equilibrium, best response to uniform, logit best response to our mixture, cautious (maximin), and uniform, each mixed with 5\% uniform. After the opponent plays $b_t$, the \emph{per-world style likelihood} variant updates
 \begin{equation}\label{eq:bayes}
 \Pi_t(\theta)\propto\Pi_{t-1}(\theta)^\lambda\textstyle\sum_{k}\beta_k\,q_{\theta,t}(b_t\mid M_k),
 \end{equation}
-with $q_{\theta,t}(b\mid M_k)=0$ for $b\notin B_k$; the base agent uses $q_{\theta,t}(b_t\mid\Abar_t)$. With $\lambda=1$ (the default) this update is Hedge on log loss (\cref{prop:B1}), and forgetting ($\lambda<1$~\cite{KZ93}) or fixed share~\cite{HW98} lets it track a switching opponent (\cref{prop:T5}). The prediction $\qhat_t=\sum_\theta\Pi_{t-1}(\theta)q_{\theta,t}$ feeds the $\varepsilon$-safe best response, which the per-world variant applies in each world. Both learners update only on \emph{scored turns}: we had at least 2 legal actions and the opponent's action lies in a sampled world.
+with $q_{\theta,t}(b\mid M_k)=0$ for $b\notin B_k$; the base agent uses $q_{\theta,t}(b_t\mid\Abar_t)$. With $\lambda=1$ (the default) this update is Hedge on log loss (\cref{prop:B1}), and forgetting ($\lambda<1$~\cite{KZ93}) or fixed share~\cite{HW98} lets it track a switching opponent (\cref{prop:T5}). The prediction $\qhat_t=\sum_\theta\Pi_{t-1}(\theta)q_{\theta,t}$ feeds the $\varepsilon$-safe best response, which the per-world variant applies in each world. Both learners update only on \emph{scored turns}: we had at least 2 legal actions and the opponent's action is in a sampled world.
 
-\begin{algorithm}[t]
-\caption{One decision (inside a turn and across games)}\label{alg:turn}
-\begin{algorithmic}[1]
-\small
-\Require view, set belief, $K$, Hedge sums $S_e$, posterior $\Pi$
-\State draw worlds (teams) $\omega^{1..K}$, $\beta_k=1/K$ \Comment{Foul Play sampler}
-\State $M_k\gets\Qhat(\omega^k)$, depth 2, heuristic evaluation % impl: nash.full_matrix
-\State $x\gets$ solve~\eqref{eq:af} \Comment{LP; RM$^+$ if $K=1$} % impl: agentform / rmplus
-\State $\qhat\gets\sum_\theta\Pi(\theta)\,q_\theta(\Abar)$ \Comment{Bayes = Hedge, $\eta=1$} % impl: hedge_bayes
-\State experts $q_{\rm top},q_{\rm samp}{=}x,q_{\rm mm},q_{\rm safe}(\qhat)$
-\State $p_e\propto\exp(\eta_{t-1}S_e)$; $\bar p\gets\sum_ep_eq_e$ % impl: hedge
-\State play $a\sim\bar p$; observe $b$; $k\gets$ highest-weight world with $b$
-\State $S_e\mathrel{+}=\clip((q_e\cdot M_k[:,b]-\min M_k)/400,0,1)$
-\State $\Pi(\theta)\propto\Pi(\theta)\,q_\theta(b)$ \Comment{carried across games}
-\end{algorithmic}
-\end{algorithm}
 
 % =====================================================================
 \section{Theory}
 \label{sec:theory}
-A battle chains many turns, each with an estimated matrix, so two errors enter at each live turn $t$ and state $s$: the \emph{solver error} $\epss(t,s)$, our shortfall from the value of the estimated matrix ($x$ is $\epss$-optimal in $\Qhat$ if $\min_yx^\top\Qhat y\ge\val\Qhat-\epss$), and the \emph{matrix error} $\epsv(t,s)$ between $\Qhat$ and $\Qstar$. Our main result adds these up over a battle; with \cref{thm:C} it covers our RM$^+$ and Bayesian-LP agents, but not the Hedge or posterior agents, which need not play $\epss$-optimally in $\Qhat$.
+A battle chains many turns, each with an estimated matrix, so two errors enter at each live turn $t$ and state $s$: the \emph{solver error} $\epss(t,s)$, our shortfall from the value of the estimated matrix ($x$ is $\epss$-optimal in $\Qhat$ if $\min_yx^\top\Qhat y\ge\val\Qhat-\epss$), and the \emph{matrix error} $\epsv(t,s)$ between $\Qhat$ and $\Qstar$. Our main result adds these up over a battle; with \cref{thm:C} it covers our RM$^+$ and Bayesian-LP agents. The Hedge and posterior agents need not play $\epss$-optimally in $\Qhat$; \cref{thm:hedge} covers Hedge in matrix units.
 
 \begin{assumption}[simultaneous moves]\label{asm:adv} At every live history $h_t$, $a_t$ and $b_t$ are independent given $h_t$: the opponent may see the public history and our mixed strategy, but not our draw.\end{assumption}
 \begin{assumption}[finite horizon]\label{asm:hor} Turns are indexed $t<H$; a game still live at turn $H$ pays $0$.\end{assumption}
@@ -142,8 +117,20 @@ A battle chains many turns, each with an estimated matrix, so two errors enter a
 \begin{assumption}[world-only values; hidden teams]\label{asm:world} Continuation values after the lookahead depend only on the true position, not on beliefs.\end{assumption}
 \begin{assumption}[exact prior; hidden teams]\label{asm:prior} The opponent's team is drawn from the prior we sample worlds from.\end{assumption}
 
+Let $\Hbar=\E_{\pi,\sigma_{\rm BR}}[\tau]$ be the expected number of turns when the opponent plays its best response $\sigma_{\rm BR}$; it plays the role of the effective horizon $1/(1-\gamma)$ of discounted bounds (\cref{rem:rl}). Put $\Vstar_t(s):=u(s)$ at terminal $s$ and $\Vstar_H:=0$.
+\begin{lemma}[exploitability as a sum of per-turn losses]\label{lem:sum}
+Under \cref{asm:adv,asm:hor}, let $\pi,\sigma$ be history-dependent with stage strategies $x_t=\pi(h_t)$, $y_t=\sigma(h_t)$, and let $\ell_t:=\Vstar_t(s_t)-x_t^\top\Qstar_t(s_t)\,y_t$ be the per-turn loss. Then
+\[
+\Vstar_0(s_0)-W^{\pi,\sigma}_0(s_0)=\E_{\pi,\sigma}\Big[\textstyle\sum_{t<\tau}\ell_t\Big],
+\]
+so $\expl(\pi)=\sup_\sigma\E_{\pi,\sigma}[\sum_{t<\tau}\ell_t]\le\E_{\pi,\sigma_{\rm BR}}[\sum_{t<\tau}e_t]$, where $e_t:=\Vstar_t(s_t)-\min_b(x_t^\top\Qstar_t(s_t))_b\ge\ell_t$ is the stage exploitability of $x_t$ in the true matrix.
+\end{lemma}
+\emph{Proof sketch.} On every path $\Vstar_0(s_0)-\Vstar_\tau(s_\tau)=\sum_{t<\tau}(\Vstar_t(s_t)-\Vstar_{t+1}(s_{t+1}))$, where $\Vstar_\tau(s_\tau)$ is the payoff, and by \cref{asm:adv} $\E[\Vstar_{t+1}(s_{t+1})\mid h_t]=x_t^\top\Qstar_t(s_t)y_t$; take expectations. The bound uses $\ell_t\le e_t$ and that $\sigma_{\rm BR}$ attains $\expl(\pi)$.\qed
+
+\Cref{lem:sum} is the game analogue of the performance-difference lemma~\cite[Lemma~6.1]{KL02}, which it recovers against a trivial opponent with the optimal policy as reference.
+
 \begin{theorem}[whole-battle exploitability]\label{thm:A}
-Suppose that at every turn our strategy is an $\epss$-approximate minimax strategy of an estimated stage matrix $\Qhat$ (it guarantees $\val\Qhat-\epss$ against every opponent mixture, like $\bar x$ in \cref{fact:selfplay}) whose entries are within $\epsv$ of the true stage matrix $\Qstar$. Then against every opponent our expected payoff is at least the game value minus $\Hbar(\epss+2\epsv)$, where $\Hbar=\E_{\pi,\sigma_{\rm BR}}[\tau]$ is the expected battle length $\tau$ against a best response $\sigma_{\rm BR}$ (a best response is the worst opponent, so the bound covers every other opponent too).
+Suppose that at every turn our strategy is an $\epss$-approximate minimax strategy of an estimated stage matrix $\Qhat$ whose entries are within $\epsv$ of the true stage matrix $\Qstar$. Then against every opponent our expected payoff is at least the game value minus $\Hbar(\epss+2\epsv)$.
 
 Precisely, under \cref{asm:adv,asm:hor,asm:err}, let $\pi$ be Markov (depending only on $t$ and $s$) and $\epss(t,s)$-optimal in $\Qhat_t(s)$, and put $\delta=\epss+2\epsv$. Every history-dependent opponent $\sigma$ leaves us $W^{\pi,\sigma}_0(s_0)\ge\Vstar_0(s_0)-\E_{\pi,\sigma}\big[\sum_{t<\tau}\delta(t,s_t)\big]$, hence
 \begin{equation}\label{eq:A}
@@ -151,31 +138,43 @@ Precisely, under \cref{asm:adv,asm:hor,asm:err}, let $\pi$ be Markov (depending 
 \end{equation}
 $\Hbar$ cannot be replaced by the game length under an equilibrium opponent: in some game $\expl(\pi)=H\delta$ while a minimax-optimal opponent ends the game at once.
 \end{theorem}
-\emph{Proof idea.} At a live $(t,s)$, let $x$ be our $\epss$-optimal strategy of $\Qhat$; payoffs $x^\top Qy$ and values $\val Q$ change by at most $\epsv$ between $\Qhat$ and $\Qstar$, so
+The bound reads (turns played) $\times$ (largest loss per turn). \emph{Proof idea.} At a live $(t,s)$, payoffs $x^\top Qy$ and values $\val Q$ change by at most $\epsv$ between $\Qhat$ and $\Qstar$, so for every opponent mixture $y$
 \begin{align*}
-\min_yx^\top\Qstar y&\ge\min_yx^\top\Qhat y-\epsv\\
-&\ge\val\Qhat-\epss-\epsv\ge\val\Qstar-\epss-2\epsv
+x^\top\Qstar y&\ge\min_yx^\top\Qhat y-\epsv\\
+&\ge\val\Qhat-\epss-\epsv\ge\val\Qstar-\epss-2\epsv,
 \end{align*}
-against any opponent mixture, and the factor $2$ is tight. Adding these per-turn losses backward over the turns played gives the bound; the refinement from $H$ to $\Hbar$ and its tightness example are ours. The LP and RM$^+$ are invariant to $\Qhat\mapsto\alpha\Qhat+c$ ($\alpha>0$), so the theorem also holds with $\epsv^{\rm aff}:=\inf_{\alpha>0,c}\lVert\alpha\Qhat+c-\Qstar\rVert_\infty$ ($\epss$ measured on $\alpha\Qhat+c$).
+i.e.\ $\ell_t\le e_t\le\delta(t,s_t)$ (the factor $2$ is tight), and \cref{lem:sum} sums these over the turns played. The refinement from $H$ to $\Hbar$ and its tightness example are ours. The LP and RM$^+$ are invariant to $\Qhat\mapsto\alpha\Qhat+c$ ($\alpha>0$), so the theorem also holds with $\epsv^{\rm aff}:=\inf_{\alpha>0,c}\lVert\alpha\Qhat+c-\Qstar\rVert_\infty$ ($\epss$ measured on $\alpha\Qhat+c$).
 
 \begin{corollary}[no-regret solver]\label{cor:solver}
-If at every turn we play the average $\bar x$ of $T$ rounds of simultaneous no-regret self-play on $\Qhat$ with average regrets $\varepsilon_R,\varepsilon_C$ (in $\Qhat$'s payoff units), then $\epss\le\varepsilon_R+\varepsilon_C$ and $\expl(\pi)\le\Hbar\sup(\varepsilon_R+\varepsilon_C+2\epsv)$. For alternating RM$^+$ with linear averaging and $T$ iterations per turn, $\expl(\pi)\le\Hbar\sup_{t,s}\big(2\Delta(\sqrt{|A|}+\sqrt{|B|})/\sqrt T+2\epsv\big)$, with $\Delta,|A|,|B|$ the range and menu sizes of the turn's stage matrix.
+If at every turn we play the average $\bar x$ of $T$ rounds of simultaneous no-regret self-play on $\Qhat$ with average regrets $\varepsilon_R,\varepsilon_C$ (in $\Qhat$'s payoff units), then $\epss\le\varepsilon_R+\varepsilon_C$ and $\expl(\pi)\le\Hbar\sup(\varepsilon_R+\varepsilon_C+2\epsv)$. For alternating RM$^+$ with linear averaging and $T$ iterations per turn, $\expl(\pi)\le\Hbar\sup_{t,s}\big(2\Delta(\sqrt{|A|}+\sqrt{|B|})/\sqrt T+2\epsv\big)$, with $\Delta,|A|,|B|$ the turn's payoff range and menu sizes.
 \end{corollary}
-\emph{Proof.} \Cref{fact:selfplay} with $M=\Qhat$ gives $\min_y\bar x^\top\Qhat y\ge\val\Qhat-\varepsilon_R-\varepsilon_C$; for alternating RM$^+$, which \cref{fact:selfplay} does not cover, the gap bound~\cite{BMS19} gives the same conclusion. Apply \cref{thm:A}.\qed\ More compute thus drives the solver term to $0$ (the LP has $\epss=0$ to tolerance), leaving only the matrix error.
+\emph{Proof.} \Cref{fact:selfplay} with $M=\Qhat$ gives $\min_y\bar x^\top\Qhat y\ge\val\Qhat-\varepsilon_R-\varepsilon_C$; for alternating RM$^+$, which \cref{fact:selfplay} does not cover, the gap bound~\cite{BMS19} gives the same conclusion. Apply \cref{thm:A}. The LP has $\epss=0$ to tolerance.\qed
+
+Across games, let $i=1,\dots,S$ index the scored turns of a match of $G$ games, $\bar p^i=\sum_ep^i_eq^i_e$ our action mixture, $R(S)$ the anytime bound of \cref{fact:hedge}, and $C_S:=\sum_{i\le S}(\operatorname{range}\Qhat_i-400)^+$ the clipping loss ($0$ when every range is at most 400).
+\begin{theorem}[Hedge across games]\label{thm:hedge}
+Let the in-engine learner of \cref{sec:method} ($M_{k_i}=\Qhat_i$) carry its weights over a match, against any opponent that adapts within and across games but cannot see our draw; its regret is $\Reg_S\le R(S)$. On every path, (a)~for every expert $e$, $\sum_i\bar p^i\cdot\Qhat_i[:,b_i]\ge\sum_iq^i_e\cdot\Qhat_i[:,b_i]-400\Reg_S-C_S$, and (b)~if the sampled expert is $\epss(i)$-optimal in each $\Qhat_i$, $\sum_i\big(\val\Qhat_i-\epss(i)-\bar p^i\cdot\Qhat_i[:,b_i]\big)\le400\Reg_S+C_S$. (c)~With $\bar L$ expected scored turns per game, the expected regret overhead per game is at most $R(\bar LG)/G\to0$ with carried weights, but $R(\bar L)$ with weights reset every game.
+\end{theorem}
+\emph{Proof sketch.} Clipping at 1 costs at most $(\operatorname{range}\Qhat_i-400)^+/400$ per turn, so \cref{fact:hedge} gives (a); (b) is (a) for the sampled expert, which earns at least $\val\Qhat_i-\epss(i)$ against every column; (c) follows from the concavity of $R$.\qed
+
+Converting (b) into a payoff-unit exploitability bound needs one calibration of $\Qhat$ shared by all turns, which our evaluation does not admit (on the solved endgames the best shared fit is degenerate), so (b) holds in our matrices, not in true payoffs; on Showdown only (a) carries over, with $M_{k_i}$ in place of $\Qhat_i$ (\cref{fig:main}c). \Cref{thm:hedge} quantifies the no-regret choice between an equilibrium and an exploiter of~\cite[\S6.4]{GS15}; (a) compares with each expert's stage payoff along our own trajectory, not with playing one expert throughout.
+
+\begin{remark}[an RL best response is Hedge in every state]\label{rem:rl}
+Against a Markov $\pi$ (the in-engine sampled agent is one; the carried-Hedge agent is not), tabular softmax natural policy gradient is Hedge in every state~\cite{Aga21}, so after $K$ iterations an RL exploiter's average score is within $\Hbar\sqrt{2\ln m/K}$ ($m$ actions) plus a critic-error term of the best response's~\cite{EKM04,Aga21}, a lower bound on $\expl(\pi)$ with that slack. Per-state regret grows with the distinct states visited, nearly all of them in Pok\'emon, so RL exploiters must generalise. \Cref{thm:A} with $\epss=0$ gives $\expl(\pi)\le2\epsv\Hbar$, the game analogue of $2\varepsilon/(1-\gamma)$ for greedy play on a $Q$-function within $\varepsilon$~\cite[Cor.~2]{SY94}.
+\end{remark}
 
 \begin{theorem}[hidden teams]\label{thm:C}
-With hidden teams the bound of \cref{thm:A} holds with three extra per-turn terms: sampling error, belief error and non-locality. Precisely, assume \cref{asm:adv,asm:hor,asm:err,asm:prior}, that only the opponent's team is hidden (conservative: the opponent then knows ours) and that worlds are resampled every turn. An agent that plays an $\epss$-optimal solution of~\eqref{eq:af} every turn earns, against every opponent $\sigma$ that knows both teams, at least $V_0-\E_{\pi,\sigma}\big[\sum_{t<\tau}\delta_C(t,h_t)\big]$, where $V_0$ is the value of the game in which the opponent's team is drawn from the prior and known only to it; hence $\expl(\pi)\le\sup_\sigma\E_{\pi,\sigma}\big[\sum_{t<\tau}\delta_C(t,h_t)\big]$, with exploitability measured from $V_0$. Here
+With hidden teams the bound of \cref{thm:A} gains three per-turn terms: sampling error, belief error and non-locality. Precisely, assume \cref{asm:adv,asm:hor,asm:err,asm:prior}, that only the opponent's team is hidden and that worlds are resampled every turn. Measured from the value $V_0$ of the game in which the opponent's team is drawn from the prior and known only to it, and over opponents $\sigma$ that know both teams, an agent that plays an $\epss$-optimal solution of~\eqref{eq:af} every turn has $\expl(\pi)\le\sup_\sigma\E_{\pi,\sigma}\big[\sum_{t<\tau}\delta_C(t,h_t)\big]$, where
 \[
 \delta_C=\epss+2\epsv+2\E S_t+\etaNL(t)+2\Delta\TV(p_{h},\beta_{h}).
 \]
-$S_t$ is the loss from solving $K$ sampled worlds instead of the belief; $\etaNL$ (ours), the value of revealing the opponent's team to both sides, bounds non-locality~\cite{Lon10}; $\TV$ compares the true posterior $p_h$ with our hard-evidence weights $\beta_h$. $\TV=0$ under \cref{asm:nonrev} and $\etaNL=0$ under \cref{asm:world}; without \cref{asm:nonrev} the $\TV$ term is necessary (a three-team example).
+$S_t$ is the loss from solving $K$ sampled worlds instead of the belief; $\etaNL$ (ours), the value of revealing the opponent's team to both sides, bounds non-locality~\cite{Lon10}; $\TV$ compares the true posterior $p_h$ with our weights $\beta_h$. $\TV=0$ under \cref{asm:nonrev} (without it the term is necessary) and $\etaNL=0$ under \cref{asm:world}.
 \end{theorem}
 \begin{remark}[only the leaf evaluation error does not shrink]\label{rem:leaf}
-The sampling bound $\E S_t\le\Delta\sqrt{2(|A|\log K+\log2)/K}$ needs $K\ge9$ and is vacuous until $K\approx130$, including our $K=4$; $\TV$ and $\etaNL$ shrink with a better belief. The leaf evaluation error $\varepsilon_{\rm leaf}$ (the evaluation's largest error at the leaves) does not shrink with depth: exact depth-$D$ lookahead gives $\epsv\le\varepsilon_{\rm leaf}$, attained for every $D\ge1$ when the game cannot end before turn $t+D$, e.g.\ by a constant shift of the evaluation.
+$\epss$ and the sampling term shrink with compute (though the sampling bound is vacuous until $K\approx130$), and $\TV$ and $\etaNL$ with a better belief. The leaf evaluation error $\varepsilon_{\rm leaf}$ bounds $\epsv$ under exact lookahead of any depth and does not shrink with depth: a constant shift of the evaluation attains it at every depth the game cannot end within.
 \end{remark}
 
 \begin{proposition}[Bayes is Hedge; known~\cite{CBL06}]\label{prop:B1}
-Bayesian updating from a uniform prior over the styles is Hedge with $\eta=1$ on log loss, so its total log loss is at most the best style's plus $\ln|\Theta|$. Exactly, with $\Pi_0$ uniform on $\Theta$ and $\lambda=1$, for every $T$, style $\theta$ and sequence of opponent actions, the prediction $\qhat_t$ (\cref{sec:memory}) has
+Bayesian updating from a uniform prior over the styles is Hedge with $\eta=1$ on log loss. Exactly, with $\Pi_0$ uniform on $\Theta$ and $\lambda=1$, for every $T$, style $\theta$ and sequence of opponent actions, the prediction $\qhat_t$ (\cref{sec:memory}) has
 $R_T(\theta):=\sum_{t\le T}\big(-\ln\qhat_t(b_t)+\ln q_{\theta,t}(b_t)\big)=\ln|\Theta|+\ln \Pi_T(\theta)\le\ln|\Theta|$.
 \end{proposition}
 The memory therefore notices a switch of style late:
@@ -183,20 +182,18 @@ The memory therefore notices a switch of style late:
 After a switch, the expected log-odds favour the new style only after a delay proportional to how long the old style was played. Precisely, let the opponent play style $\theta_a$ for $t_0$ scored turns and then $\theta_b$, with i.i.d.\ per-turn stage matrices, and let $\mu_{x\to y}=\E\KL(q_x\Vert q_y)$ be the expected evidence per turn for $x$ over $y$. With $\lambda=1$ and $\Pi_0$ uniform, the expected log-odds $\E\ln\big(\Pi(\theta)/\Pi(\theta_b)\big)$ at turn $t_0+d$ are $t_0(\mu_{a\to b}-\mu_{a\to\theta})-d\,\mu_{b\to\theta}$, negative for every $\theta\ne\theta_b$ once
 $d>\hat d=\max_{\theta\ne\theta_b}t_0(\mu_{a\to b}-\mu_{a\to\theta})^+/\mu_{b\to\theta}$.
 \end{proposition}
-Taking $\theta=\theta_a$ gives $\hat d\ge t_0\,\mu_{a\to b}/\mu_{b\to a}$; forgetting or fixed share removes this growth by capping old evidence. Simulated delays agree with $\hat d$ (for the expected log-odds) within 6\%, and a pre-registered live test checks it (\cref{sec:exp-belief}).
-
-
+Taking $\theta=\theta_a$ gives $\hat d\ge t_0\,\mu_{a\to b}/\mu_{b\to a}$; forgetting or fixed share removes this growth by capping old evidence.
 
 % =====================================================================
 \section{Experiments}
 \label{sec:exp}
-\paragraph{Setup.} In-engine games use poke-engine 0.0.48, Showdown's Gen~9 Random Battle set data, and our approximate team sampler. A game stopped at 300 decision nodes counts as a draw. Real-Showdown games run headless on Showdown's simulator with Foul Play's tracker and sampler. Games come in seat-swapped pairs (same seed and teams). Scores are of the first-named bot, with 95\% CIs over pairs unless stated. LB denotes a one-sided 95\% lower confidence bound. Foul Play~\cite{foulplay} runs DUCT for 100\,ms per sampled battle unless stated, then sums the root visit shares over its sampled battles, keeps the actions with at least 75\% of the top share, and samples among them in proportion to their shares; in-engine, \emph{MCTS} denotes DUCT with this final-move rule. Null results rule out effects beyond their CI half-width $1.96\,$SE: $\pm0.042$ for the style posterior (397 pairs), $\pm0.049$ for the deterministic-evaluation control (\cref{sec:discussion}; 299 pairs), and $\pm0.062$ for the per-world-likelihood replication (200 pairs). Code and pre-registrations: \url{https://github.com/BioFanat/pokemon-equilibrium-engine} (branch \path{integration/joint-belief}).
+\paragraph{Setup.} In-engine games use poke-engine 0.0.48 with Showdown's Gen~9 Random Battle set data and our approximate team sampler; real-Showdown games run headless on Showdown's simulator with Foul Play's tracker and sampler. Games come in seat-swapped pairs (same seed and teams); scores are of the first-named bot, with 95\% CIs over pairs unless stated, and LB is a one-sided 95\% lower confidence bound. Foul Play~\cite{foulplay} runs DUCT for 100\,ms per sampled battle unless stated, sums the root visit shares over its sampled battles, keeps the actions with at least 75\% of the top share and samples among them in proportion to their shares; in-engine, \emph{MCTS} is DUCT with this final-move rule. Code and pre-registrations: \url{https://github.com/BioFanat/pokemon-equilibrium-engine} (branch \path{integration/joint-belief}).
 
 \subsection*{Exploitability}
 \label{sec:exp-engine}
-This part probes \cref{thm:A} in-engine: any fixed opponent's advantage over the game value bounds exploitability~\cite{Zin07} from below, up to a Hoeffding margin, while \cref{thm:A} bounds it from above. A one-turn local best response (LBR), whose gain is the target's score against a non-exploiting opponent of the same strength minus its score against LBR, gains 0.183 [0.10, 0.27] against top move and 0.160 [0.06, 0.26] against MCTS-2000 (most-visited action), but only 0.025 [$-0.07$, 0.12] against sampled play (30 pairs each). A depth-2 informed best response (informed BR) that knows the target's policy (cf.\ PokaiTrainer's informed LBR) scores 0.873 against top move and 0.713 against sampled play (100 pairs), which with Hoeffding radius $\sqrt{\ln20/200}=0.122$ gives exploitability lower bounds of 0.250 and 0.090 in score units. A PPO best response to MCTS (not our agent) reached win rate 0.125 [0.097, 0.153] after 8.01M decisions, a bound point estimate of $-0.375$, so no useful bound. Sampled play is thus exploitable, as \cref{thm:A} allows when $\Qhat$ is far from $\Qstar$.
+Any fixed opponent's advantage over the game value bounds exploitability from below~\cite{Zin07}, up to a Hoeffding margin, while \cref{thm:A} bounds it from above. A one-turn local best response (LBR), scored by its gain over a non-exploiting opponent of the same strength, gains 0.18 [0.10, 0.27] against top move but only 0.03 [$-0.07$, 0.12] against sampled play. A depth-2 informed best response (informed BR) that knows the target's policy scores 0.87 against top move and 0.71 against sampled play (100 pairs), which with Hoeffding radius 0.12 gives exploitability lower bounds of 0.25 and 0.09 in score units. A PPO best response to MCTS (not our agent) gave no useful bound. Sampled play is thus exploitable, as \cref{thm:A} allows when $\Qhat$ is far from $\Qstar$.
 
-\paragraph{Exact endgames.} Of 6 abstracted endgames solved exactly, every bot is unexploitable on 2, and on the other 4 the 22 bot--seat rows with nonzero exploitability and a finite bound satisfy the bound~\eqref{eq:A}, loose by 6.9--155$\times$ (\cref{fig:main}a). The maximum $\epsv^{\rm aff}$ is 0.8--1.0 nearly everywhere while $\epss\approx0$, so, as \cref{rem:leaf} predicts, $\epsv$, not the solver, carries the error. Exact terminal scoring cut exploitability sharply on 2 of 3 endgames but not the score against MCTS at 75\,ms per move ($-0.040$ [$-0.098$, $+0.018$], 100 pairs); a learned value net did not help (0.235 [0.185, 0.285] against time-matched MCTS), and eight worlds did not beat four (0.495 [0.414, 0.576], 100 games), so sampling is not binding.
+\paragraph{Exact endgames.} Of 6 abstracted endgames solved exactly, every bot is unexploitable on 2, and on the other 4 every bot--seat row with nonzero exploitability and a finite bound satisfies the bound~\eqref{eq:A}, loose by 7--155$\times$ (\cref{fig:main}a). The largest $\epsv^{\rm aff}$ is 0.8--1.0 nearly everywhere while $\epss\approx0$, so, as \cref{rem:leaf} predicts, $\epsv$, not the solver, carries the error. Exact terminal scoring cut exploitability sharply on 2 of 3 endgames but did not change the score against MCTS ($-0.04$ [$-0.10$, $+0.02$]), and eight worlds did not beat four (0.50 [0.41, 0.58]), so sampling is not binding.
 
 \begin{figure*}[t]
 \centering
@@ -205,67 +202,68 @@ This part probes \cref{thm:A} in-engine: any fixed opponent's advantage over the
 \label{fig:main}
 \end{figure*}
 
-\subsection*{Regret}
-This part checks the regret guarantees of \cref{fact:hedge,fact:selfplay,cor:solver,prop:B1} on in-engine stage matrices (\cref{fig:main}b) and along real Showdown games (\cref{fig:main}c,d). Inside a turn, RM$^+$ self-play on 35 in-engine stage matrices from random positions ($|A|,|B|\in[6,13]$, median $9\times9$) reaches a median duality gap of $7.0\times10^{-5}$ of the payoff range at $T=1000$, where the gap bound $2(\sqrt{|A|}+\sqrt{|B|})/\sqrt T$ is 0.38, and the median gap falls as $T^{-1.26}$ for $T\in[10,2000]$ ($T^{-1.05}$ for $T\in[100,2000]$). Across games, in 10 matches against Foul Play (1,600--1,928 scored turns each), Hedge's regret against its best fixed expert on its clipped normalised rewards ends at 6.8--8.6, or 0.13--0.16 of the anytime bound of \cref{fact:hedge}: at $t=1600$ the median is 0.0045 per scored turn against a bound of 0.0315, and pooled over all 17,305 learner updates (including 34 from one error game) it is 0.00448, with top move as the best expert. The median regret grows as $t^{0.82}$ over $t\in[200,1600]$, sublinearly but faster than the bound's $\sqrt t$. Measured on $\Abar_t$ on the same 400-point scale, the opponent falls $0.021\pm0.001$ short of our equilibrium style, as does a literal equilibrium opponent, so this gap reflects model mismatch, not Foul Play's regret. The guarantee concerns these clipped normalised stage payoffs in our estimated matrices, not win probability.
+\subsection*{Regret and no-regret dynamics}
+This part checks \cref{fact:hedge,fact:selfplay,cor:solver,prop:B1,thm:hedge} (\cref{fig:main}b--d).
 
-\paragraph{Hedge against an adaptive opponent.} Carried weights make a match one long experts problem (\cref{fact:hedge}). In-engine, on the same seeds, carried and reset weights scored 0.533 and 0.388 against the informed BR, $+0.146$ [$+0.019$, $+0.273]$ ($t_3$ CI over 4 seed means of 30 games; exploratory), and 0.533 and 0.471 against MCTS, $+0.062$ [$-0.085$, $+0.210$], with no detectable cost. Over 30 games the MCTS expert's carried weight fell from 0.45 to 0.28 against MCTS and to 0.07 against the informed BR, but the edge does not track it (coefficient $0.0002\pm0.014$); the mechanism is open.
+\paragraph{Inside a turn: average or last iterate.} RM$^+$ self-play on 35 in-engine stage matrices reaches a median duality gap of $7\times10^{-5}$ of the payoff range at $T=1000$, against the bound 0.38 of \cref{cor:solver}. On 120 further in-engine matrices, the average strategies of simultaneous Hedge and optimistic Hedge reach a median gap of about 0.03 after 1,000 iterations, within the bound of \cref{fact:selfplay} on every matrix; RM$^+$ reaches about 0. The last iterate has a lower median gap (about 0.01), because 58\% of these matrices have a pure saddle point where it settles, but a heavier tail, and on the other matrices it is worse than the average.
+
+\paragraph{Across games.} In 10 real-Showdown matches against Foul Play, Hedge's regret against its best fixed expert (top move) is $\approx0.004$ per scored turn, 13--16\% of the anytime bound of \cref{fact:hedge}, and grows sublinearly but faster than $\sqrt t$. Measured on $\Abar_t$, the opponent falls 0.02 short of our equilibrium style, as does a literal equilibrium opponent, so this gap reflects model mismatch, not Foul Play's regret. In-engine, carried weights beat reset weights by $+0.15$ [$+0.02$, $+0.27$] against the informed BR (exploratory; $t_3$ CI over 4 seeds) and by $+0.06$ [$-0.09$, $+0.21$] against MCTS; \cref{thm:hedge}(c) orders the bounds the same way, and the measured difference is consistent with it, not predicted by it. In a pre-registered test on real Showdown, carried Hedge over the four experts scored 0.46 [0.42, 0.50] against the Bayesian-LP agent with sampled play (300 pairs), inside the pre-registered band $[0.45,0.55]$; the theory bounds only the upper side, at $\frac12$ plus that agent's exploitability.
 
 \subsection*{Opponent memory}
 \label{sec:exp-belief}
 This part tests \cref{prop:B1,prop:T5} and whether better prediction, which shrinks only the belief term of \cref{thm:C}, improves play; it does not.
 
-\paragraph{Bayes as Hedge.} On the 9 fully logged matches of \cref{fig:main}(d) (the tenth lost 12 logged updates), the posterior's final regret equals $\ln5+\ln\Pi_T(\theta^*)$, which is $\ln5\approx1.609$ up to $6.6\times10^{-4}$, the precision of the logged probabilities (\cref{prop:B1}). Its log loss is 1.56--1.81 nats per scored turn, against 3.23--3.32 for a one-hot predictor (24-pair pilots), yet the style posterior's score did not change detectably relative to Hedge ($+0.024$ [$-0.018$, $+0.066$], 397 pairs). A pre-registered test against single-style bots passed its regret-identity, identifiability and ordering predictions but failed its final-style prediction and 2 of 6 identification-speed clauses.
+\paragraph{Bayes as Hedge.} On the 9 fully logged matches of \cref{fig:main}(d), the posterior's final regret is $\ln5$ up to logging precision (\cref{prop:B1}), yet the style posterior did not change the score detectably relative to Hedge ($+0.02$ [$-0.02$, $+0.07$]). A pre-registered test against single-style bots passed its regret-identity, identifiability and ordering predictions but failed its final-style prediction and 2 of 6 identification-speed clauses.
 
-\paragraph{Live test of the detection delay.} In this pre-registered test of \cref{prop:T5}, the opponent switches from the cautious (maximin) to the uniform style (30 matches, 10 per arm), and no prediction was refuted: each match's delay matches its own posterior's prediction (median ratio 1.06, inside [0.7, 1.4]; $\rho=0.86\ge0.5$), doubling the pre-switch phase multiplies the delay by 2.09 (predicted 1.5--2.7), and forgetting at $\lambda=0.98$ gives 37.5 updates against a predicted 35.
+\paragraph{Live test of the detection delay.} In this pre-registered test of \cref{prop:T5}, the opponent switches from the cautious to the uniform style (30 matches), and no prediction was refuted: each match's delay matches its posterior's prediction (median ratio 1.06, inside [0.7, 1.4]), doubling the pre-switch phase multiplies the delay by 2.1 (predicted 1.5--2.7), and forgetting at $\lambda=0.98$ gives 38 updates against a predicted 35.
 
-\paragraph{Per-world style likelihood.} It lowers next-action log loss by 0.297 [0.281, 0.314] nats per scored turn, and by 0.311 [0.291, 0.331] in a pre-registered replication (200 pairs each), but its win-rate gain did not replicate: on seeds 1--200 the gain was $+0.063$ (iid CI [0.003, 0.122]) but not robust to clustering by match ($t_9$ CI [$-0.011$, 0.136]), and seeds 201--400 gave $+0.008$ (LB $-0.045$). Offline (not pre-registered), restricting the likelihood to each world's legal actions accounts for the whole gain ($+0.324\pm0.031$ nats). Offline, a joint set$\times$style posterior adds $+0.001\pm0.001$ (18 games), and updating the posterior inside the lookahead changed 3 of 3,620 actions (32 games) and missed its pre-registered effect sizes.
+\paragraph{Per-world style likelihood.} It lowers next-action log loss by 0.30 [0.28, 0.31] nats per scored turn, and by 0.31 [0.29, 0.33] in a pre-registered replication, but its win-rate gain did not replicate: $+0.06$ on seeds 1--200, not robust to clustering by match ($t_9$ CI [$-0.01$, 0.14]), and $+0.01$ (LB $-0.05$) on seeds 201--400. Offline, restricting the likelihood to each world's legal actions accounts for the whole log-loss gain, and modelling sets and style jointly, rather than separately, adds nothing measurable ($+0.001$ nats per scored turn).
 
 \subsection*{Win rates}
 \label{sec:exp-showdown}
-This part asks whether the guarantees of \cref{fact:selfplay,thm:A,thm:C}, which hold only in $\Qhat$, translate into wins against search. At matched time (70--72 against 61--71\,ms per move), MCTS beats both equilibrium bots in-engine (\cref{fig:wins}), although at 2,000 iterations (2.8\,ms) it loses to top move. Part of the gap is implementation speed (Python matrices, Rust MCTS); the rest is consistent with the leaf evaluation error dominating~\eqref{eq:A}.
+This part asks whether guarantees that hold only in $\Qhat$ translate into wins against search. At matched time (about 70\,ms per move), MCTS beats both equilibrium bots in-engine (\cref{fig:wins}), although at 2,000 iterations (2.8\,ms) it loses to top move. Part of the gap is implementation speed (Python matrices, Rust MCTS); the rest is consistent with the leaf evaluation error dominating~\eqref{eq:A}.
 
-\paragraph{Bayesian LP vs PIMC averaging.} PokaiTrainer reports no PIMC baseline. With sampled play, the Bayesian-LP agent beats PIMC averaging at equal compute both in-engine (4 worlds, 340\,ms per move) and on real Showdown (\cref{fig:wins}), under different belief models. With top-move play the in-engine difference is not separable from zero (0.540 [0.452, 0.628]), and the 40-pair tournament replication of the sampled comparison (0.538 [0.425, 0.650]) is too small to separate it. In-engine, the two agents pick different top moves on 14.9\% of logged decisions, and these decisions carry a disproportionate share of PIMC averaging's loss: 32\% of the total, with a median of 1.33\% of the payoff range against 0.06\% elsewhere. One game over the worlds is therefore the better per-turn object for sampled play, but it does not close the gap to search.
+\paragraph{Bayesian LP vs PIMC averaging.} PokaiTrainer reports no PIMC baseline. With sampled play, the Bayesian-LP agent beats PIMC averaging at equal compute both in-engine and on real Showdown (\cref{fig:wins}), under different belief models; with top-move play the in-engine difference is not separable from zero (0.54 [0.45, 0.63]). One game over the worlds is therefore the better per-turn object for sampled play, but it does not close the gap to search.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{figures/fig_wins.pdf}
-\caption{Score of the first-named bot [95\% CI] (real Showdown: 40--399 seat-swapped pairs, 60 per Foul Play search time in the tournament; in-engine: 100--400 games).}
+\caption{Score of the first-named bot [95\% CI] (real Showdown: 40--399 pairs, 60 per search time in the tournament; in-engine: 100--400 games).}
 \label{fig:wins}
 \end{figure}
 
-\paragraph{Against Foul Play.} The Bayesian-LP agent loses to Foul Play at every search time we tried, and its score trends down from 25 to 1000\,ms per sampled battle with overlapping CIs (\cref{fig:wins}), while Foul Play's median MCTS iterations per search grow from 17,000 to 377,000; in a nine-bot round-robin tournament (1,800 games), Foul Play rates 135--192 Elo above Bayesian LP across search times. PokaiTrainer's premise therefore does not transfer here. Hedge scores like the Bayesian-LP agent alone and loses to it head to head.
-
-\paragraph{Case study.} At turn 18 of a logged 34-turn win against Foul Play, the experts disagreed: top move and sampled play favoured a switch to Shiftry, pure maximin favoured Mystical Fire, and the $\varepsilon$-safe best response favoured our Shadow Ball. With carried Hedge weights 0.52, 0.24, 0.12 and 0.12, the mixture put 65\% on Shiftry and 8.5\% on Shadow Ball. We played Shiftry; the opponent played Shadow Ball.
-
+\paragraph{Against Foul Play.} The Bayesian-LP agent loses to Foul Play at every search time we tried, and its score trends down from 25 to 1000\,ms per sampled battle with overlapping CIs (\cref{fig:wins}); in a nine-bot round-robin tournament, Foul Play rates 140--190 Elo above it across search times. PokaiTrainer's premise therefore does not transfer here.
 
 % =====================================================================
-\section{Discussion and conclusion}
+\section{Conclusion}
 \label{sec:discussion}
-\paragraph{Limitations.} Under load, the leaf evaluation occasionally searches deeper (1 in 17,000--19,000 calls), with no detectable effect in a deterministic control ($-0.008$ [$-0.057$, 0.040]). Unseeded sampling weakens seed pairing (per-seed correlation 0.02--0.08), and earlier Showdown runs excluded 33 games lost to harness bugs, not at random.
-
-\paragraph{Conclusion.} Our guarantees hold in the estimated matrix, whose leaf evaluation error does not shrink with compute (\cref{rem:leaf}) and plausibly dominates; better beliefs do not move win rate. Next: train the evaluation on exact terminal values.
+Our guarantees hold in the estimated matrix, whose leaf evaluation error does not shrink with compute (\cref{rem:leaf}) and plausibly dominates; better beliefs do not move win rate. Next: train the evaluation on exact terminal values.
 
 \paragraph{Acknowledgement.} The proofs in Section~4 were developed with the assistance of Fable~5.2.
 
-\begingroup\small
+\begingroup\footnotesize
 \begin{thebibliography}{99}
 \setlength{\itemsep}{1pt}\setlength{\parsep}{0pt}
-\bibitem{FS99} Y.~Freund, R.~E.~Schapire. Adaptive game playing using multiplicative weights. \emph{Games and Economic Behavior} 29(1--2):79--103, 1999.
-\bibitem{Zin07} M.~Zinkevich, M.~Johanson, M.~Bowling, C.~Piccione. Regret minimization in games with incomplete information. NeurIPS, pp.~1729--1736, 2007.
+\bibitem{FS99} Y.~Freund, R.~E.~Schapire. Adaptive game playing using multiplicative weights. \emph{Games and Economic Behavior} 29(1--2), 1999.
+\bibitem{Zin07} M.~Zinkevich, M.~Johanson, M.~Bowling, C.~Piccione. Regret minimization in games with incomplete information. NeurIPS, 2007.
 \bibitem{CBL06} N.~Cesa-Bianchi, G.~Lugosi. \emph{Prediction, Learning, and Games}. Cambridge University Press, 2006.
 \bibitem{Yu26} M.~Yu. PokaiTrainer: Scaling equilibrium search to competitive Pok\'emon VGC. arXiv:2608.29197v2, 2026.
-\bibitem{foulplay} P.~Mariglia. Foul Play: a competitive Pok\'emon Showdown battle bot. \url{https://github.com/pmariglia/foul-play}; engine \url{https://github.com/pmariglia/poke-engine}, 2024.
-\bibitem{LW94} N.~Littlestone, M.~K.~Warmuth. The weighted majority algorithm. Information and Computation 108(2):212--261, 1994.
-\bibitem{FS97} Y.~Freund, R.~E.~Schapire. A decision-theoretic generalization of on-line learning and an application to boosting. JCSS 55(1):119--139, 1997.
+\bibitem{foulplay} P.~Mariglia. Foul Play: a competitive Pok\'emon Showdown battle bot. \url{https://github.com/pmariglia/foul-play}, 2024.
+\bibitem{LW94} N.~Littlestone, M.~K.~Warmuth. The weighted majority algorithm. Inf.\ Comput.\ 108(2), 1994.
+\bibitem{FS97} Y.~Freund, R.~E.~Schapire. A decision-theoretic generalization of on-line learning and an application to boosting. JCSS 55(1), 1997.
 \bibitem{Tam14} O.~Tammelin. Solving large imperfect information games using CFR+. arXiv:1407.5042, 2014.
-\bibitem{BMS19} N.~Burch, M.~Morav\v{c}\'{\i}k, M.~Schmid. Revisiting CFR+ and alternating updates. JAIR 64:429--443, 2019.
-\bibitem{HW98} M.~Herbster, M.~K.~Warmuth. Tracking the best expert. Machine Learning 32(2):151--178, 1998.
-\bibitem{ACF02} P.~Auer, N.~Cesa-Bianchi, P.~Fischer. Finite-time analysis of the multiarmed bandit problem. Machine Learning 47(2--3):235--256, 2002.
-\bibitem{Lis13} V.~Lis\'y, V.~Kova\v{r}\'{\i}k, M.~Lanctot, B.~Bo\v{s}ansk\'y. Convergence of Monte Carlo tree search in simultaneous move games. NeurIPS, pp.~2112--2120, 2013.
+\bibitem{BMS19} N.~Burch, M.~Morav\v{c}\'{\i}k, M.~Schmid. Revisiting CFR+ and alternating updates. JAIR 64, 2019.
+\bibitem{HW98} M.~Herbster, M.~K.~Warmuth. Tracking the best expert. \emph{Mach.\ Learn.} 32(2), 1998.
+\bibitem{ACF02} P.~Auer, N.~Cesa-Bianchi, P.~Fischer. Finite-time analysis of the multiarmed bandit problem. \emph{Mach.\ Learn.} 47(2--3), 2002.
+\bibitem{Lis13} V.~Lis\'y, V.~Kova\v{r}\'{\i}k, M.~Lanctot, B.~Bo\v{s}ansk\'y. Convergence of Monte Carlo tree search in simultaneous move games. NeurIPS, 2013.
 \bibitem{Lon10} J.~Long, N.~R.~Sturtevant, M.~Buro, T.~Furtak. Understanding the success of perfect information Monte Carlo sampling in game tree search. AAAI, 2010.
-\bibitem{AS18} S.~V.~Albrecht, P.~Stone. Autonomous agents modelling other agents: a comprehensive survey and open problems. \emph{Artificial Intelligence} 258:66--95, 2018.
-\bibitem{KZ93} R.~Kulhav\'y, M.~B.~Zarrop. On a general concept of forgetting. \emph{Int.\ J.\ Control} 58(4):905--924, 1993.
+\bibitem{AS18} S.~V.~Albrecht, P.~Stone. Autonomous agents modelling other agents: a comprehensive survey and open problems. \emph{Artif.\ Intell.} 258, 2018.
+\bibitem{KZ93} R.~Kulhav\'y, M.~B.~Zarrop. On a general concept of forgetting. \emph{Int.\ J.\ Control} 58(4), 1993.
 \bibitem{GS15} S.~Ganzfried, T.~Sandholm. Safe opponent exploitation. \emph{ACM Trans.\ Economics and Computation} 3(2):8, 2015.
+\bibitem{KL02} S.~Kakade, J.~Langford. Approximately optimal approximate reinforcement learning. ICML, 2002.
+\bibitem{Aga21} A.~Agarwal, S.~M.~Kakade, J.~D.~Lee, G.~Mahajan. On the theory of policy gradient methods: optimality, approximation, and distribution shift. \emph{JMLR} 22(98), 2021.
+\bibitem{EKM04} E.~Even-Dar, S.~M.~Kakade, Y.~Mansour. Experts in a Markov decision process. NeurIPS, 2004.
+\bibitem{SY94} S.~P.~Singh, R.~C.~Yee. An upper bound on the loss from approximate optimal-value functions. \emph{Mach.\ Learn.} 16(3), 1994.
 \end{thebibliography}
 \endgroup
 
