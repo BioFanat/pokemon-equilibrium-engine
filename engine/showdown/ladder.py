@@ -35,7 +35,8 @@ HOME = os.path.expanduser("~")
 FP = os.environ.get("FOULPLAY_DIR", os.path.join(HOME, "sandbox", "foul-play"))
 LOCAL_HOSTS = ("127.0.0.1", "localhost")
 PASSWORD_ENV = "PS_PASSWORD"
-CONCURRENT_METHODS = ("agentform", "pimc", "top", "random", "maxpower", "hedge_bayes_mw", "bayes_safex_mw", "mcts_native", 's1_agentform')
+CONCURRENT_METHODS = ("agentform", "pimc", "top", "random", "maxpower", "hedge_bayes_mw", "bayes_safex_mw", "mcts_native", 's1_agentform',
+                      "mcts_native_sampled", "hedge_mcts", "smmcts_rm")
 MOVE_POOL = None
 RATING_RE = re.compile(r"^(?P<name>.+?)'s rating: (?P<before>\d+(?:\.\d+)?) (?:&rarr;|→|->) (?:<strong>)?"
                        r"(?P<after>\d+(?:\.\d+)?)")
@@ -216,6 +217,14 @@ def setup_runtime(cfg):
                 checkpoints.add(candidate)
         for checkpoint in sorted(checkpoints):
             run_ourbot.load_learner(cfg["method"], checkpoint)  # read/validate only; no checkpoint writes
+    if cfg["concurrency"] > 1 and cfg["method"] == "hedge_mcts":
+        import noregret_methods                             # same preflight for hedge_mcts' own checkpoint format
+        source = os.path.join(cfg["out"], "hedge_mcts_state.json")
+        for stream in range(cfg["concurrency"]):
+            target = os.path.join(cfg["out"], "learning", f"hedge_mcts-stream{stream}.json")
+            candidate = target if os.path.exists(target) else source
+            if os.path.exists(candidate):
+                noregret_methods.load_learner(candidate)    # read/validate only; no checkpoint writes
 
     def timed_move(battle):
         t0 = time.time()

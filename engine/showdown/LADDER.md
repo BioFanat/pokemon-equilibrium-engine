@@ -15,6 +15,9 @@ bash run_decision_audit.command --method mcts_native --sampler item_stratified \
   --mcts-ms 1000 --games 50 --concurrency 5
 ```
 
+No-regret variants of this bot (`mcts_native_sampled`, `hedge_mcts`, `smmcts_rm`) run with the same command; see
+[no-regret ladder tests](../../docs/noregret-ladder-tests.md).
+
 This guide runs our equilibrium bot, `agentform` (the per-turn agent-form matrix-game solver), in rated **Gen 9 Random
 Battle** games on play.pokemonshowdown.com. The goal is a rating against the live ladder.
 

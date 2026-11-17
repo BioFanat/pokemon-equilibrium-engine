@@ -56,7 +56,7 @@ class AllocationTests(unittest.TestCase):
             args.sampler='item_stratified'
             with self.assertRaisesRegex(ValueError,'different sampler'):plan(args)
             args.out=None;args.method='hedge_bayes_mw'
-            with self.assertRaisesRegex(ValueError,'requires mcts_native'):plan(args)
+            with self.assertRaisesRegex(ValueError,'requires an MCTS-family method'):plan(args)
 
 
 class RealSamplerTests(unittest.TestCase):

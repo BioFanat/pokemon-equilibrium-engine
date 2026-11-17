@@ -209,7 +209,7 @@ def main():
     ap.add_argument("--streams", type=int, default=0,
                     help="split seeds into S carried-weight streams (sequential within, parallel across); 0 = per seed")
     args = ap.parse_args()
-    if args.streams == 0 and set(spec_methods(args.a) + spec_methods(args.b)) & {"hedge", "hedge_fs"} and args.workers > 1:
+    if args.streams == 0 and set(spec_methods(args.a) + spec_methods(args.b)) & {"hedge", "hedge_fs", "hedge_mcts"} and args.workers > 1:
         sys.exit("hedge players carry weights in one file per stream: use --streams S (or --workers 1)")
     os.makedirs(OUT, exist_ok=True)
     seeds = parse_seeds(args.seeds)

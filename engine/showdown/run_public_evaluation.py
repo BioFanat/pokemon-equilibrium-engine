@@ -19,6 +19,7 @@ from ladder_metrics import summarize_games
 
 REPO = Path(__file__).resolve().parents[2]
 ACCOUNT = "bot_bonp"
+MCTS_METHODS = ("mcts_native", "mcts_native_sampled", "hedge_mcts", "smmcts_rm")   # pin mcts_ms and sampler
 
 
 def records(out):
@@ -43,7 +44,7 @@ def plan(args):
     config = dict(account=ACCOUNT, method=args.method, target=args.games, k=4,
                   concurrency=concurrency,
                   format="gen9randombattle", server="wss://sim3.psim.us/showdown/websocket")
-    if args.method == "mcts_native":
+    if args.method in MCTS_METHODS:
         budget = getattr(args, "mcts_ms", 1000)
         if not 4 <= budget <= 10000:
             raise ValueError("MCTS budget must be between 4 and 10000 milliseconds")
@@ -52,7 +53,7 @@ def plan(args):
         if config['sampler'] not in {'baseline','item_stratified'}:
             raise ValueError('Unknown sampler')
     elif getattr(args,'sampler','baseline') != 'baseline':
-        raise ValueError('The item-stratified experiment currently requires mcts_native')
+        raise ValueError('The item-stratified experiment currently requires an MCTS-family method: '+', '.join(MCTS_METHODS))
     if args.method=='s1_agentform':
         config['s1_arm']='A1_rep'
     if out and (out / "evaluation.json").exists():
@@ -68,7 +69,7 @@ def plan(args):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--method", choices=["hedge_bayes_mw", "agentform", "mcts_native",'s1_agentform'], default="hedge_bayes_mw")
+    parser.add_argument("--method", choices=["hedge_bayes_mw", "agentform", *MCTS_METHODS,'s1_agentform'], default="hedge_bayes_mw")
     parser.add_argument("--mcts-ms", type=int, default=1000, help="total native search milliseconds across four worlds")
     parser.add_argument('--sampler',choices=['baseline','item_stratified'],default='baseline')
     parser.add_argument("--games", type=int, default=100)

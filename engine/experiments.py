@@ -18,6 +18,9 @@ Agent specs (strings, so they can be shipped to worker processes):
                                  top-K own actions, default 5, target support to mass supp, default 0.95)
   wb2:safex:<eps>[:K:supp]       the same exploiter of safex:<eps> (sampled)
   mcts_ms:<ms>                   poke-engine MCTS, time budget instead of iterations
+  mcts_sample_it:<N>             poke-engine MCTS, N iterations, samples its root visit shares
+  lbr:mcts_it:<N> | lbr:mcts_sample_it:<N> | lbr:mcts_uniform   local best response predicting that MCTS
+                                 agent's argmax / visit shares, or a uniform prediction (baseline)
   vnet[:argmax|:sample]          RM+ equilibrium of nash.vnet_matrix (depth 1, value-net leaves from
                                  results/value/vnet.npz); its argmax (default) or the sampled mix
   foulplay_it:<N> / foulplay_ms:<N>  foul-play's selection rule on one MCTS run (nash.foulplay_strategy):
@@ -86,16 +89,24 @@ MATRIX = {
            ("nash:rm+:0:1000:argmax", "mcts_it:2000", 100),
            ("nash:rm+:0:1000", "mcts_it:2000", 100)],
     "SXW": [("wb2:safex:0.02:4:0.8", "safex:0.02", 100)],         # its exploitability (white-box depth 2)
+    "ADV": [("mcts_it:5000", "lbr:mcts_it:5000", 100),           # adversary for the Bayesian model's search
+            ("mcts_sample_it:5000", "lbr:mcts_sample_it:5000", 100),  # (full information: one world): local
+            ("mcts_it:5000", "lbr:mcts_uniform", 100),           # best response that predicts the argmax / the
+            ("mcts_sample_it:5000", "lbr:mcts_uniform", 100)],   # visit shares, vs a uniform-prediction baseline
+    "ADVP": [("nash:rm+:0:1000:argmax", "lbr:argmax", 100),      # the same adversary for the preliminary model's
+             ("nash:rm+:0:1000:argmax", "lbr:uniform", 100),     # per-turn equilibrium (top move, sampled):
+             ("nash:rm+:0:1000", "lbr:sample", 100),             # predicting vs uniform-prediction exploiter
+             ("nash:rm+:0:1000", "lbr:uniform", 100)],
     "LF": [("nash:rm+:0:1000:argmax", "foulplay_ms:75", 100),      # tanh-squashed leaf vs plain (paired seeds)
            ("nash:rm+:0:1000:argmax:tanh400", "foulplay_ms:75", 100)],
 }
 
 # experiment -> offset added to its seeds (default 0), so its pairs use teams no other run has seen.
 # Without it seeds depend only on (matchup index, pair index), shared by every experiment.
-SEED_BASE = {"W1": 50_000_000, "SX": 60_000_000, "SXW": 61_000_000, "LF": 62_000_000}
+SEED_BASE = {"W1": 50_000_000, "SX": 60_000_000, "SXW": 61_000_000, "LF": 62_000_000, "ADV": 63_000_000, "ADVP": 63_000_000}
 # experiments whose seed is SEED_BASE[exp] + pair index for every matchup, so all matchups play the
 # same teams at each pair index (paired comparison across matchups).
-PAIRED = {"SX", "LF", "SXW"}
+PAIRED = {"SX", "LF", "SXW", "ADV", "ADVP"}
 
 
 def make_agent(spec: str):
@@ -143,6 +154,16 @@ def make_agent(spec: str):
         return Hedge2()
     if kind == "xhedge2":
         return XHedge2()
+    if kind == "mcts_sample_it":                       # MCTS that samples its root visit shares
+        n = int(a[0])
+
+        def pol(state, opts, side, rng):
+            if len(opts) == 1:
+                return opts[0]
+            r = pe.mcts(state, 0, n, 1)
+            res = r.s1 if side == 1 else r.s2
+            return pb._canon(rng.choices(res, weights=[max(x.visits, 0) for x in res])[0].move_choice)
+        return pol
     if kind in ("mcts_it", "mcts_ms"):
         n = int(a[0])
         ms, it = (0, n) if kind == "mcts_it" else (n, 0)
