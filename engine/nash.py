@@ -372,20 +372,33 @@ def lbr_policy(target: str, iters: int = 1000):
     """Local best response (Lisý & Bowling 2017 style, one turn deep): knows the opponent is a
     full-matrix agent of type `target`, recomputes the same matrix M and the opponent's strategy q,
     and plays the best reply to q in M. A lower bound on that agent's exploitability.
-    MCTS targets: 'foulplay_it:N' / 'foulplay_ms:N' (q = foulplay_strategy from the target's side) and
-    'mcts' (q = one-hot on the most-visited move of a 2000-iteration run). MCTS is stochastic, so here q
+    MCTS targets: 'foulplay_it:N' / 'foulplay_ms:N' (q = foulplay_strategy from the target's side),
+    'mcts' (q = one-hot on the most-visited move of a 2000-iteration run), 'mcts_it:N' (the same with N
+    iterations), 'mcts_sample_it:N' (q = visit shares of an N-iteration run) and 'mcts_uniform' (q uniform:
+    the non-exploiting baseline of the same strength, for measuring the exploitation gain). MCTS is stochastic, so here q
     is the exploiter's own estimate from a fresh run, not the target's actual distribution this turn."""
-    if target.startswith("foulplay_") or target == "mcts":
+    if target.startswith(("foulplay_", "mcts_it:", "mcts_sample_it:")) or target in ("mcts", "mcts_uniform"):
         def pol(state, opts, side, rng):
             if len(opts) == 1:
                 return opts[0]
             M, s1, s2 = full_matrix(state)
             tside = 3 - side
-            if target == "mcts":
-                tops = (s1, s2)[tside - 1]
-                r = pe.mcts(state, 0, 2000, 1)
-                best = max(r.s1 if tside == 1 else r.s2, key=lambda x: x.visits)
-                q = np.zeros(len(tops)); q[tops.index(pb._canon(best.move_choice))] = 1
+            tops = (s1, s2)[tside - 1]
+            if target == "mcts_uniform":                # non-exploiting baseline of the same strength
+                q = np.ones(len(tops)) / len(tops)
+            elif target == "mcts" or target.startswith(("mcts_it:", "mcts_sample_it:")):
+                n = 2000 if target == "mcts" else int(target.split(":")[1])
+                r = pe.mcts(state, 0, n, 1)
+                res = r.s1 if tside == 1 else r.s2
+                q = np.zeros(len(tops))
+                if target.startswith("mcts_sample_it:"):    # the target samples its visit shares
+                    for x in res:
+                        lab = pb._canon(x.move_choice)
+                        if lab in tops:
+                            q[tops.index(lab)] += x.visits
+                    q = q / q.sum() if q.sum() > 0 else np.ones(len(tops)) / len(tops)
+                else:                                       # the target plays its most-visited move
+                    q[tops.index(pb._canon(max(res, key=lambda x: x.visits).move_choice))] = 1
             else:
                 kind, n = target.split(":")
                 _, q = foulplay_strategy(state, tside, *((0, int(n)) if kind == "foulplay_it" else (int(n), 0)))

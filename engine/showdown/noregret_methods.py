@@ -186,6 +186,8 @@ def make_move_fn(method, K, log, converter, request_options, raw_action, state_p
         ro = _ro()
         fb, lines = None, list(getattr(battle, "_ourlines", []))
         if method == "hedge_mcts":
+            if ctx["pending"] is not None and ctx["pending"].get("tag") != battle.battle_tag:
+                ctx["pending"] = None                        # a previous battle's decision never got its feedback
             fb = feedback(lines)
             ro._FINISHERS[battle.battle_tag] = finish
         battle, states, weights, legal, allowed, sampling = prepare(battle, K, sampler, converter, request_options)
@@ -206,7 +208,7 @@ def make_move_fn(method, K, log, converter, request_options, raw_action, state_p
                 played = shares
             else:
                 played, extra, search_extra = hedge_decision(states, weights, legal, allowed, shares, learner)
-                ctx["pending"] = dict(turn=battle.turn, idx=len(lines), opp=battle.opponent.name,
+                ctx["pending"] = dict(tag=battle.battle_tag, turn=battle.turn, idx=len(lines), opp=battle.opponent.name,
                                       Ms=extra.pop("_Ms"), cols=search_extra["cols"], w=extra.pop("_w"),
                                       Q=extra.pop("_Q"))
         chosen = 0 if forced else sample(played, ro.RNG)
