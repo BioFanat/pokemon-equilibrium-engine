@@ -72,18 +72,19 @@ def log_axis(ax, numticks=5):
 
 
 def panel_exploit(ax, eg):
-    lim = (0.01, 100)
+    lim = (0.01, 300)
     ax.loglog(lim, lim, color=GRAY, lw=1.2, ls=(0, (4, 2)))
-    ax.scatter([r["expl"] for r in eg], [r["bound"] for r in eg], s=20, color=INK, edgecolors="white", linewidths=0.6, zorder=3)
-    lo, hi = min(r["ratio"] for r in eg), max(r["ratio"] for r in eg)
-    ax.text(0.3, 0.12, "bound = actual", color=INK, rotation=0, va="center")
-    ax.text(0.013, 150, f"all above the line: bound holds", color=INK, va="center")
-    ax.set_xlim(0.01, 3); ax.set_ylim(0.05, 300)
-    ax.set_xticks([0.01, 0.1, 1])
-    ax.set_xticklabels(["0.01", "0.1", "1"])
-    log_axis(ax, 5)
-    ax.set_xlabel("Measured exploitability (exact)")
-    ax.set_ylabel("Our upper bound")
+    ax.scatter([r["bound"] for r in eg], [r["expl"] for r in eg], s=20, color=INK, edgecolors="white", linewidths=0.6,
+               zorder=3)
+    ax.text(3.6, 2.6, "actual = bound", color=INK, va="center", ha="left")
+    ax.text(250, 0.013, "all below the line", color=INK, va="bottom", ha="right")
+    ax.set_xlim(0.05, 300); ax.set_ylim(0.01, 3)
+    ax.set_yticks([0.01, 0.1, 1])
+    ax.set_yticklabels(["0.01", "0.1", "1"])
+    ax.xaxis.set_major_locator(matplotlib.ticker.LogLocator(numticks=5))
+    ax.xaxis.set_minor_locator(matplotlib.ticker.NullLocator())
+    ax.set_xlabel("Our upper bound")
+    ax.set_ylabel("Measured exploitability")
     ax.set_title("Bound holds, loosely")
 
 
@@ -185,16 +186,15 @@ def draw_deck(eg, rm, hedge_curves, mem_curves):
         fig, axs = plt.subplots(1, 2, figsize=(10.0, 4.1), layout="constrained")
         panel_exploit(axs[0], eg)
         panel_hedge(axs[1], hedge_curves)
-        spec = [("Exploitability bound", "Actual exploitability", "Our bound"),
+        spec = [("Exploitability bound", "Our bound", "Actual exploitability"),
                 ("Hedge's regret", "Turns played", "Regret per turn")]
         for ax, (t, xl, yl) in zip(axs, spec):
-            ax.set_title(t, loc="left")
+            ax.set_title(t, loc="left", fontsize=20, pad=10)
             ax.set_xlabel(xl)
             ax.set_ylabel(yl)
         for t in axs[0].texts:
-            if t.get_text().startswith("all above"):
+            if t.get_text().startswith("all below"):
                 t.remove()
-        letters_and_titles(fig, axs, "ab")
         fig.savefig(OUT / "fig_main_deck.png", dpi=200)
         plt.close(fig)
 
