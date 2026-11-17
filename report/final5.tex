@@ -74,15 +74,16 @@ Multiplicative weights (MWU)~\cite{AHK12} plays $p^t\propto w^t$ with $w_i^1=1$ 
 For $\eta\in(0,\frac12]$, MWU's expected total loss is at most $(1+\eta)L^*+\ln n/\eta$, $L^*$ the best expert's; $\eta=\sqrt{\ln n/T}$ gives $\Reg_T\le2\sqrt{T\ln n}$ if $T\ge4\ln n$.
 \end{theorem}
 \emph{Hedge}~\cite{FS97} is the exponential form, $w_i^{t+1}=w_i^te^{-\eta l_i^t}$; with rewards $r=1-l$ this is a softmax of cumulative reward. Our Hedge learner uses the anytime step $\eta_t=\sqrt{8\ln n/t}$, playing $p_i^t\propto\exp(\eta_{t-1}\sum_{j<t}r_i^j)$ with $p^1$ uniform.
-\begin{theorem}[Hedge, cf.\ {\cite[Thm.~2.3]{CBL06}}]\label{fact:hedge}
+\begin{theorem}[Hedge, anytime]\label{fact:hedge}
 Against every adaptive adversary, Hedge with the anytime step has $\Reg_T\le\frac32\sqrt{(T/2)\ln n}+\sqrt{\ln n/8}$.
 \end{theorem}
+\emph{Proof.} With nonincreasing steps $\gamma_t$, $\Reg_T\le\ln n/\gamma_T+\frac18\sum_{t\le T}\gamma_t$ on every sequence~\cite[Lemmas~1--2, eq.~(6)]{dRvEGK14}; take $\gamma_1=\eta_1$, $\gamma_t=\eta_{t-1}$ and $\sum_{t\le T}t^{-1/2}\le2\sqrt T-1$ (\cite[Thm.~2.3]{CBL06} has constant 2).\qed
 
 \paragraph{No-regret dynamics.} Let $M$ be a zero-sum matrix game, Row maximising, $v_R=\max_x\min_yx^\top My$ and $v_C=\min_y\max_xx^\top My$; regrets are in $M$'s payoff units. Both players run a no-regret algorithm for $T$ rounds in the full-information model, playing $x^t$ and $y^t$; let $\bar x,\bar y$ be the average strategies, $\bar g$ Row's average payoff, and $\varepsilon_R,\varepsilon_C$ the players' average regrets.
 \begin{theorem}[no-regret dynamics, cf.~\cite{FS99}]\label{fact:selfplay}
 $v_C-\varepsilon_R\le\bar g\le v_R+\varepsilon_C$, so, with weak duality $v_R\le v_C$, $v_R=v_C=\val(M)$ as the regrets vanish (the min--max theorem), and $\max_xx^\top M\bar y-\min_y\bar x^\top My\le\varepsilon_R+\varepsilon_C$: $\bar x$ guarantees $\val(M)-\varepsilon_R-\varepsilon_C$ against every $y$.
 \end{theorem}
-\begin{theorem}[no-regret dynamics give a CCE, cf.\ {\cite[\S7.4, the Hannan set]{CBL06}}]\label{thm:cce}
+\begin{theorem}[no-regret dynamics give a CCE, cf.\ {\cite[\S7.4, as the Hannan set]{CBL06}}]\label{thm:cce}
 If every player of a finite game has average external regret at most $\varepsilon$ after $T$ rounds, the time-average of the joint play is an $\varepsilon$-coarse correlated equilibrium (CCE): no player gains more than $\varepsilon$ by always playing one fixed pure strategy.
 \end{theorem}
 In a two-player zero-sum game, each player's average strategy in an $\varepsilon$-CCE then comes within $2\varepsilon$ of the best guarantee any strategy can secure. We use \cref{fact:selfplay} inside a turn: with both teams known, our solver is Regret Matching$^+$ (RM$^+$)~\cite{Tam14} in self-play with alternating updates and linear averaging (\cref{cor:solver}), and with sampled worlds we solve the LP~\eqref{eq:af} exactly. Across games our Hedge faces a different stage game each turn, so \cref{thm:cce} does not apply verbatim, but we characterise it the same way, by its regret.
@@ -104,7 +105,7 @@ a single linear program (LP) with $|A|+K$ variables and $\sum_k|B_k|+1$ constrai
 \begin{equation}\label{eq:bayes}
 \Pi_t(\theta)\propto\Pi_{t-1}(\theta)^\lambda\textstyle\sum_{k}\beta_k\,q_{\theta,t}(b_t\mid M_k),
 \end{equation}
-with $q_{\theta,t}(b\mid M_k)=0$ for $b\notin B_k$; the base agent instead scores styles on $\Abar_t$, the $\beta$-weighted average of the world matrices. Write $L_{\theta,t}(b)$ for the likelihood factor in~\eqref{eq:bayes} and $\qhat_t(b)=\sum_\theta\Pi_{t-1}(\theta)L_{\theta,t}(b)$ for the prediction, which feeds the $\varepsilon$-safe best response. With $\lambda=1$ (the default) and a uniform prior, \eqref{eq:bayes} is Hedge with $\eta=1$ on log loss~\cite{CBL06}: $\qhat_t(b_t)$ is the normaliser of~\eqref{eq:bayes}, so $\Pi_T(\theta)=\Pi_0(\theta)\prod_{t\le T}L_{\theta,t}(b_t)/\qhat_t(b_t)$ and, for every style and every action sequence,
+with $q_{\theta,t}(b\mid M_k)=0$ for $b\notin B_k$; the base agent instead scores styles on $\Abar_t$, the $\beta$-weighted average of the world matrices. Write $L_{\theta,t}(b)$ for the likelihood factor in~\eqref{eq:bayes} and $\qhat_t(b)=\sum_\theta\Pi_{t-1}(\theta)L_{\theta,t}(b)$ for the prediction, which feeds the $\varepsilon$-safe best response. With $\lambda=1$ (the default) and a uniform prior, \eqref{eq:bayes} is Hedge with $\eta=1$ on log loss~\cite[\S9.2]{CBL06}: $\qhat_t(b_t)$ is the normaliser of~\eqref{eq:bayes}, so $\Pi_T(\theta)=\Pi_0(\theta)\prod_{t\le T}L_{\theta,t}(b_t)/\qhat_t(b_t)$ and, for every style and every action sequence,
 \begin{equation}\label{eq:bayeshedge}
 \textstyle\sum_{t\le T}\big(\ln L_{\theta,t}(b_t)-\ln\qhat_t(b_t)\big)=\ln|\Theta|+\ln\Pi_T(\theta)\le\ln|\Theta|.
 \end{equation}
@@ -145,7 +146,7 @@ i.e.\ $\ell_t\le e_t\le\delta(t,s_t)$. \Cref{lem:sum} then gives $\Vstar_0-W^{\p
 \begin{corollary}[no-regret solver]\label{cor:solver}
 If at every turn we play the average $\bar x$ of $T$ rounds of simultaneous no-regret self-play on $\Qhat$ with average regrets $\varepsilon_R,\varepsilon_C$ (in $\Qhat$'s payoff units), then $\epss\le\varepsilon_R+\varepsilon_C$. For alternating RM$^+$ with linear averaging and $T$ iterations per turn, $\expl(\pi)\le\Hbar\sup_{t,s}\big(2\Delta(\sqrt{|A|}+\sqrt{|B|})/\sqrt T+2\epsv\big)$, with $\Delta,|A|,|B|$ the turn's payoff range and menu sizes.
 \end{corollary}
-\emph{Proof.} \Cref{fact:selfplay} with $M=\Qhat$ gives $\min_y\bar x^\top\Qhat y\ge\val\Qhat-\varepsilon_R-\varepsilon_C$; apply \cref{thm:A}. For alternating RM$^+$: RM$^+$ regret is at most $\Delta\sqrt{|A|T}$ per player, linear averaging at most doubles the average regret, and with alternation the extra cross term is $\le0$~\cite[Thms.~7--8]{BMS19}. The LP has $\epss=0$ to tolerance.\qed
+\emph{Proof.} \Cref{fact:selfplay} with $M=\Qhat$ gives $\min_y\bar x^\top\Qhat y\ge\val\Qhat-\varepsilon_R-\varepsilon_C$; apply \cref{thm:A}. For alternating RM$^+$: RM$^+$ regret is at most $\Delta\sqrt{|A|T}$ per player, linear averaging at most doubles the average regret, and with alternation the extra cross term is $\le0$~\cite[Thms.~1, 5, 8]{BMS19}. The LP has $\epss=0$ to tolerance.\qed
 
 \begin{remark}[what compute does not reduce]\label{rem:leaf}
 With full information $\delta$ has two sources. The solver error $\epss$ vanishes with more iterations (zero to tolerance for the LP). The matrix error $\epsv$ is in the matrix: the evaluation formula that scores positions two moves ahead misjudges them, whatever the iterations or sampled teams, and the leaf error bounds $\epsv$ at every depth, a bound deeper search does not shrink unless it reaches the end of the game. Hidden teams (\cref{thm:C}) add sampling error, which more samples reduce slowly, and belief and non-locality gaps ($\TV$, $\etaNL$), which compute does not reduce.
@@ -244,6 +245,7 @@ Our guarantees hold in the estimated matrix, whose evaluation error more compute
 \bibitem{Cow12} P.~I.~Cowling, E.~J.~Powley, D.~Whitehouse. Information set Monte Carlo tree search. \emph{IEEE TCIAIG} 4(2), 2012.
 \bibitem{Lon10} J.~Long, N.~R.~Sturtevant, M.~Buro, T.~Furtak. Understanding the success of perfect information Monte Carlo sampling in game tree search. AAAI, 2010.
 \bibitem{GS15} S.~Ganzfried, T.~Sandholm. Safe opponent exploitation. \emph{ACM TEAC} 3(2), 2015.
+\bibitem{dRvEGK14} S.~de Rooij, T.~van Erven, P.~D.~Gr\"unwald, W.~M.~Koolen. Follow the leader if you can, hedge if you must. JMLR 15, 2014.
 \bibitem{KL02} S.~Kakade, J.~Langford. Approximately optimal approximate reinforcement learning. ICML, 2002.
 \end{thebibliography}
 \endgroup
