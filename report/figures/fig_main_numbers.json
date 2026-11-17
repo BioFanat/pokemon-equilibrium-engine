@@ -1,0 +1,387 @@
+{
+ "exploitability": {
+  "source": "engine/results/endgame/eps.jsonl",
+  "script": "engine/endgame_eps.py",
+  "bound": "refined Theorem 3 bound: E[sum_t eps_s(s_t) + 2 eps_v(s_t)] along the (bot, best response) chain",
+  "scale": "values on the [-1, 1] scale (side-one perspective)",
+  "selection": "exploitability > 0.001 and finite refined bound",
+  "n_rows_total": 48,
+  "n_plotted": 22,
+  "n_endgames_plotted": 4,
+  "n_endgames_total": 6,
+  "all_bound_ge_expl": true,
+  "ratio_min": 6.859968816983831,
+  "ratio_max": 155.38571396696932,
+  "ratio_median": 14.32803248584166,
+  "rows": [
+   {
+    "case": "garchomp vs rotomwash @ 100% [PP*] [HP/20]",
+    "agent": "equilibrium sampled",
+    "seat": 1,
+    "expl": 0.33799551647335235,
+    "bound": 4.498098193940157,
+    "ratio": 13.308159353335055
+   },
+   {
+    "case": "garchomp vs rotomwash @ 100% [PP*] [HP/20]",
+    "agent": "equilibrium top move",
+    "seat": 1,
+    "expl": 0.35545463587809056,
+    "bound": 4.674809606222793,
+    "ratio": 13.151634932751591
+   },
+   {
+    "case": "garchomp vs rotomwash @ 100% [PP*] [HP/20]",
+    "agent": "safest",
+    "seat": 1,
+    "expl": 0.355454635348934,
+    "bound": 4.547856333856836,
+    "ratio": 12.794477498914615
+   },
+   {
+    "case": "garchomp vs rotomwash @ 100% [PP*] [HP/20]",
+    "agent": "equilibrium sampled",
+    "seat": 2,
+    "expl": 0.6019909489444398,
+    "bound": 4.570239521997411,
+    "ratio": 7.591874146963655
+   },
+   {
+    "case": "garchomp vs rotomwash @ 100% [PP*] [HP/20]",
+    "agent": "equilibrium top move",
+    "seat": 2,
+    "expl": 0.5988721625588181,
+    "bound": 4.556627534978511,
+    "ratio": 7.608681484725018
+   },
+   {
+    "case": "garchomp vs rotomwash @ 100% [PP*] [HP/20]",
+    "agent": "safest",
+    "seat": 2,
+    "expl": 0.5988721625588181,
+    "bound": 4.567750820883413,
+    "ratio": 7.6272552081343274
+   },
+   {
+    "case": "greattusk vs gholdengo @ 100% [PP*] [HP/10]",
+    "agent": "equilibrium sampled",
+    "seat": 1,
+    "expl": 0.21525062263440187,
+    "bound": 2.000000726834261,
+    "ratio": 9.291497986657234
+   },
+   {
+    "case": "greattusk vs gholdengo @ 100% [PP*] [HP/10]",
+    "agent": "equilibrium top move",
+    "seat": 1,
+    "expl": 0.21525069236755368,
+    "bound": 2.0000000363588333,
+    "ratio": 9.291491768787026
+   },
+   {
+    "case": "greattusk vs gholdengo @ 100% [PP*] [HP/10]",
+    "agent": "safest",
+    "seat": 1,
+    "expl": 0.21525069236755368,
+    "bound": 2.0000000363588333,
+    "ratio": 9.291491768787026
+   },
+   {
+    "case": "greattusk vs gholdengo @ 100% [PP*] [HP/10]",
+    "agent": "equilibrium sampled",
+    "seat": 2,
+    "expl": 0.11979226256577791,
+    "bound": 2.0000000363588333,
+    "ratio": 16.695569425952144
+   },
+   {
+    "case": "greattusk vs gholdengo @ 100% [PP*] [HP/10]",
+    "agent": "equilibrium top move",
+    "seat": 2,
+    "expl": 0.11979161262512206,
+    "bound": 2.0000000363588333,
+    "ratio": 16.695660009333608
+   },
+   {
+    "case": "greattusk vs gholdengo @ 100% [PP*] [HP/10]",
+    "agent": "safest",
+    "seat": 2,
+    "expl": 0.11979161262512206,
+    "bound": 2.0000000363588333,
+    "ratio": 16.695660009333608
+   },
+   {
+    "case": "gholdengo vs heatran @ 100% [PP*] [HP/10]",
+    "agent": "equilibrium sampled",
+    "seat": 1,
+    "expl": 0.07424822070300241,
+    "bound": 1.5830476438597358,
+    "ratio": 21.321017916268012
+   },
+   {
+    "case": "gholdengo vs heatran @ 100% [PP*] [HP/10]",
+    "agent": "equilibrium top move",
+    "seat": 1,
+    "expl": 0.07424827419766433,
+    "bound": 1.5830459374907029,
+    "ratio": 21.32097957288954
+   },
+   {
+    "case": "gholdengo vs heatran @ 100% [PP*] [HP/10]",
+    "agent": "safest",
+    "seat": 1,
+    "expl": 0.07424827419766433,
+    "bound": 1.5830459374907029,
+    "ratio": 21.32097957288954
+   },
+   {
+    "case": "gholdengo vs heatran @ 100% [PP*] [HP/10]",
+    "agent": "equilibrium sampled",
+    "seat": 2,
+    "expl": 0.42544770474093985,
+    "bound": 16.418496926117616,
+    "ratio": 38.591104719004264
+   },
+   {
+    "case": "gholdengo vs heatran @ 100% [PP*] [HP/10]",
+    "agent": "equilibrium top move",
+    "seat": 2,
+    "expl": 0.4255799498175754,
+    "bound": 37.924546983766035,
+    "ratio": 89.11262619402622
+   },
+   {
+    "case": "gholdengo vs heatran @ 100% [PP*] [HP/10]",
+    "agent": "safest",
+    "seat": 2,
+    "expl": 0.4255799498175754,
+    "bound": 37.924546983766035,
+    "ratio": 89.11262619402622
+   },
+   {
+    "case": "greattusk vs rotomwash @ 100% [PP*] [HP/10]",
+    "agent": "equilibrium sampled",
+    "seat": 1,
+    "expl": 0.18960609529319472,
+    "bound": 2.9100564552235,
+    "ratio": 15.347905618348268
+   },
+   {
+    "case": "greattusk vs rotomwash @ 100% [PP*] [HP/10]",
+    "agent": "equilibrium top move",
+    "seat": 1,
+    "expl": 0.32926681175325667,
+    "bound": 2.258760061095026,
+    "ratio": 6.859968816983831
+   },
+   {
+    "case": "greattusk vs rotomwash @ 100% [PP*] [HP/10]",
+    "agent": "safest",
+    "seat": 1,
+    "expl": 0.024987001647328144,
+    "bound": 3.8826230908639223,
+    "ratio": 155.38571396696932
+   },
+   {
+    "case": "greattusk vs rotomwash @ 100% [PP*] [HP/10]",
+    "agent": "equilibrium sampled",
+    "seat": 2,
+    "expl": 0.8588285928532982,
+    "bound": 10.822719493283495,
+    "ratio": 12.601722373176962
+   }
+  ],
+  "not_plotted": [
+   {
+    "case": "garchomp vs rotomwash @ 100% [PP*] [HP/20]",
+    "agent": "exact equilibrium",
+    "seat": 1,
+    "expl": 0.029324334069961613,
+    "bound": Infinity
+   },
+   {
+    "case": "garchomp vs rotomwash @ 100% [PP*] [HP/20]",
+    "agent": "exact equilibrium",
+    "seat": 2,
+    "expl": 2.7755575615628914e-17,
+    "bound": 7.204802389595358e-17
+   },
+   {
+    "case": "garchomp vs rotomwash @ 40% [PP*] [HP/20]",
+    "agent": "equilibrium sampled",
+    "seat": 1,
+    "expl": 7.882973466322163e-06,
+    "bound": 1.600001139393422
+   },
+   {
+    "case": "garchomp vs rotomwash @ 40% [PP*] [HP/20]",
+    "agent": "equilibrium top move",
+    "seat": 1,
+    "expl": 0.0,
+    "bound": 1.6000000190734864
+   },
+   {
+    "case": "garchomp vs rotomwash @ 40% [PP*] [HP/20]",
+    "agent": "safest",
+    "seat": 1,
+    "expl": 0.0,
+    "bound": 1.6000000190734864
+   },
+   {
+    "case": "garchomp vs rotomwash @ 40% [PP*] [HP/20]",
+    "agent": "exact equilibrium",
+    "seat": 1,
+    "expl": 0.0,
+    "bound": 0.0
+   },
+   {
+    "case": "garchomp vs rotomwash @ 40% [PP*] [HP/20]",
+    "agent": "equilibrium sampled",
+    "seat": 2,
+    "expl": 0.0,
+    "bound": 1.6000000190734864
+   },
+   {
+    "case": "garchomp vs rotomwash @ 40% [PP*] [HP/20]",
+    "agent": "equilibrium top move",
+    "seat": 2,
+    "expl": 0.0,
+    "bound": 1.6000000190734864
+   },
+   {
+    "case": "garchomp vs rotomwash @ 40% [PP*] [HP/20]",
+    "agent": "safest",
+    "seat": 2,
+    "expl": 0.0,
+    "bound": 1.6000000190734864
+   },
+   {
+    "case": "garchomp vs rotomwash @ 40% [PP*] [HP/20]",
+    "agent": "exact equilibrium",
+    "seat": 2,
+    "expl": 0.0,
+    "bound": 0.0
+   },
+   {
+    "case": "greattusk vs gholdengo @ 100% [PP*] [HP/10]",
+    "agent": "exact equilibrium",
+    "seat": 1,
+    "expl": 0.0,
+    "bound": 0.0
+   },
+   {
+    "case": "greattusk vs gholdengo @ 100% [PP*] [HP/10]",
+    "agent": "exact equilibrium",
+    "seat": 2,
+    "expl": 0.0,
+    "bound": 0.0
+   },
+   {
+    "case": "greattusk vs gholdengo @ 50% [PP*] [HP/10]",
+    "agent": "equilibrium sampled",
+    "seat": 1,
+    "expl": 0.0,
+    "bound": 2.0000000381469727
+   },
+   {
+    "case": "greattusk vs gholdengo @ 50% [PP*] [HP/10]",
+    "agent": "equilibrium top move",
+    "seat": 1,
+    "expl": 0.0,
+    "bound": 2.0000000381469727
+   },
+   {
+    "case": "greattusk vs gholdengo @ 50% [PP*] [HP/10]",
+    "agent": "safest",
+    "seat": 1,
+    "expl": 0.0,
+    "bound": 2.0000000381469727
+   },
+   {
+    "case": "greattusk vs gholdengo @ 50% [PP*] [HP/10]",
+    "agent": "exact equilibrium",
+    "seat": 1,
+    "expl": 0.0,
+    "bound": 0.0
+   },
+   {
+    "case": "greattusk vs gholdengo @ 50% [PP*] [HP/10]",
+    "agent": "equilibrium sampled",
+    "seat": 2,
+    "expl": 1.243148049490106e-05,
+    "bound": 2.0000000381469727
+   },
+   {
+    "case": "greattusk vs gholdengo @ 50% [PP*] [HP/10]",
+    "agent": "equilibrium top move",
+    "seat": 2,
+    "expl": 0.0,
+    "bound": 2.0000000381469727
+   },
+   {
+    "case": "greattusk vs gholdengo @ 50% [PP*] [HP/10]",
+    "agent": "safest",
+    "seat": 2,
+    "expl": 0.0,
+    "bound": 2.0000000381469727
+   },
+   {
+    "case": "greattusk vs gholdengo @ 50% [PP*] [HP/10]",
+    "agent": "exact equilibrium",
+    "seat": 2,
+    "expl": 0.0,
+    "bound": 0.0
+   },
+   {
+    "case": "gholdengo vs heatran @ 100% [PP*] [HP/10]",
+    "agent": "exact equilibrium",
+    "seat": 1,
+    "expl": -3.3306690738754696e-16,
+    "bound": 0.0
+   },
+   {
+    "case": "gholdengo vs heatran @ 100% [PP*] [HP/10]",
+    "agent": "exact equilibrium",
+    "seat": 2,
+    "expl": 2.4532420539458144e-10,
+    "bound": 0.0
+   },
+   {
+    "case": "greattusk vs rotomwash @ 100% [PP*] [HP/10]",
+    "agent": "exact equilibrium",
+    "seat": 1,
+    "expl": -1.1102230246251565e-16,
+    "bound": 0.0
+   },
+   {
+    "case": "greattusk vs rotomwash @ 100% [PP*] [HP/10]",
+    "agent": "equilibrium top move",
+    "seat": 2,
+    "expl": 1.2555676417692716,
+    "bound": Infinity
+   },
+   {
+    "case": "greattusk vs rotomwash @ 100% [PP*] [HP/10]",
+    "agent": "safest",
+    "seat": 2,
+    "expl": 1.5999997209962458,
+    "bound": Infinity
+   },
+   {
+    "case": "greattusk vs rotomwash @ 100% [PP*] [HP/10]",
+    "agent": "exact equilibrium",
+    "seat": 2,
+    "expl": 1.1102230246251565e-16,
+    "bound": 0.0
+   }
+  ]
+ },
+ "regret": {
+  "rmplus_slope_median_T10_2000": -1.2586175516251439,
+  "rmplus_band": "min-max over 35 matrices",
+  "memory_band": "25-75% over matches",
+  "memory_matches": 9,
+  "memory_T_plotted": 1600,
+  "numbers": "report/figures/fig_regret_numbers.json"
+ }
+}

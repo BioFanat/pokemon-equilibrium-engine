@@ -581,15 +581,15 @@ S.text(LEFT + COL2 + GAP, TOP, COL2, ch, [
 S.text(LEFT, TOP + ch + Inches(0.1), WIDTH, BOTTOM - TOP - ch - Inches(0.1), [
     P("Up- and down-weighting coincide after normalising", bullet=True),
     P("Bayes = Hedge with ", ("$", "η = 1"), " on log loss", bullet=True, before=6),
-    P(("Fact 1", {"b": True}), " (Freund & Schapire 1999): both players no-regret ⇒ time averages are an ",
+    P(("Fact 2", {"b": True}), " (Freund & Schapire 1999): both players no-regret ⇒ time averages are an ",
       ("$", "ε"), "-equilibrium", before=24),
     EQ_(E_FACT1, before=6),
     P("Averaged joint play is an ε-CCE, which in zero-sum games is minimax; "
       "CFR: regret bounds the exploitability of the average strategy", size=SECONDARY, align="ctr", before=6),
-], "Hedge and Fact 1")
+], "Hedge and Fact 2")
 notes(s, "Lecture gave us multiplicative weights, a linear update on losses. Our code uses Hedge, an exponential "
       "update on rewards, so the strategy is a softmax of cumulative reward; up- and down-weighting coincide after "
-      "normalising. Bayesian updating is Hedge with step one on log loss. Fact 1: if both players have no regret, the "
+      "normalising. Bayesian updating is Hedge with step one on log loss. Fact 2: if both players have no regret, the "
       "time averages are an epsilon-equilibrium, and CFR uses regret to bound exploitability.")
 
 # ===================== Section 2: Method =====================
@@ -597,7 +597,7 @@ notes(s, "Lecture gave us multiplicative weights, a linear update on losses. Our
 s, S = content(2, "Equilibrium Play and Hedge")
 cols = [
     ("Each turn: play an equilibrium", [
-        P("Solve the Bayesian matrix game over the sampled worlds: an LP, or RM⁺ self-play (no-regret dynamics, Fact 1)", before=8),
+        P("Solve the Bayesian matrix game over the sampled worlds: an LP, or RM⁺ self-play (no-regret dynamics, Fact 2)", before=8),
         EQ_(E_BLP, before=10),
         P("PIMC averaging instead solves each world as if known, then averages → strategy fusion",
           size=SECONDARY, before=10)]),
@@ -749,7 +749,7 @@ S.text(LEFT, TOP, WIDTH, Inches(3.0), [
     P(("$", "ε_v"), "  stage-matrix error from the heuristic evaluation: does not", before=SP),
     P(("$", r"\bar{H}"), "  expected length against a best response (tight)", before=SP),
 ], "Bound and terms")
-anchors = [("Freund & Schapire", [P("→ Fact 1 / ", ("$", "ε_s"), size=SECONDARY, align="ctr")]),
+anchors = [("Freund & Schapire", [P("→ Fact 2 / ", ("$", "ε_s"), size=SECONDARY, align="ctr")]),
            ("Zinkevich et al. (CFR)", [P("→ exploitability metric; regret ⇒ exploitability", size=SECONDARY,
                                          align="ctr")]),
            ("Cesa-Bianchi & Lugosi", [P("→ Hedge, Bayes = Hedge, tracking", size=SECONDARY, align="ctr")]),
@@ -773,7 +773,7 @@ notes(s, "The headline theorem, adapted: exploitability is at most H-bar times t
 s, S = content(4, "In the engine")
 S.text(LEFT, TOP, WIDTH, BOTTOM - TOP, [
     P("MCTS at matched time beats equilibrium play: ", ("0.760", {"b": True}), " vs sampled, ",
-      ("0.650", {"b": True}), " vs top move; Fact 1 holds only in the estimated matrix", bullet=True),
+      ("0.650", {"b": True}), " vs top move; Fact 2 holds only in the estimated matrix", bullet=True),
     P("95% lower confidence bounds on exploitability: ", ("0.250", {"b": True}), " for top move vs ",
       ("0.090", {"b": True}), " for sampled play", bullet=True, before=18),
     P("The Bayesian LP beats PIMC averaging: ", ("0.585", {"b": True}), " (sampled play, 400 games)",
@@ -802,7 +802,7 @@ rx = LEFT + fw + GAP
 S.text(rx, TOP, RIGHT - rx, BOTTOM - TOP, [
     P("Below Foul Play, even at its shortest search time", bullet=True),
     P("Level with the other one-turn solvers", bullet=True, before=SP),
-    P("Hedge regret ", ("0.0044", {"b": True}), " per scored turn vs its best expert (Fact 2)", bullet=True,
+    P("Hedge regret ", ("0.0044", {"b": True}), " per scored turn vs its best expert (Fact 1)", bullet=True,
       before=SP),
     P("Detection delay matches its prediction (Prop. 7) per match (ρ = ", ("0.86", {"b": True}),
       "); no prediction refuted",
