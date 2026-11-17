@@ -72,24 +72,24 @@ def strength():
     return fig
 
 
-def exploit():
-    """Opponent's score (1 - target score, ADV table in RESULTS.md) when it guesses blindly vs when it knows our rule."""
-    rows = [("Bayesian\nmodel", (0.213, 0.155, 0.270), (0.700, 0.641, 0.759), "+0.49", ACCENT)]
-    fig, b = plt.subplots(figsize=(6.4, 2.2))
+HEDGE_ROW = ("Hedge\nmodel", (0.370, 0.282, 0.458), (0.560, 0.475, 0.645), "+0.19", GREY)   # ADVP, sampled equilibrium
+BAYES_ROW = ("Bayesian\nmodel", (0.213, 0.155, 0.270), (0.700, 0.641, 0.759), "+0.49", ACCENT)  # ADV
+
+
+def _exploit_plot(rows, fname, height, width=6.4):
+    """Opponent's score (1 - target score; RESULTS.md ADV / ADVP) guessing blindly (open) vs knowing our rule (filled)."""
+    fig, b = plt.subplots(figsize=(width, height))
     for k, (lab, blind, known, d, col) in enumerate(rows):
         y = len(rows) - 1 - k
         for (v, lo, hi), filled in ((blind, False), (known, True)):
             b.plot([lo, hi], [y, y], color=col, lw=2.5, solid_capstyle="butt")
             b.plot([v], [y], "o", ms=11, color=col, mfc=col if filled else "white", mew=2, zorder=3)
-        if known[0] - blind[0] > 0.1:
-            b.annotate("", xy=(known[0] - 0.03, y + 0.28), xytext=(blind[0] + 0.03, y + 0.28),
-                       arrowprops=dict(arrowstyle="->", color=INK, lw=1.3))
-            b.text((blind[0] + known[0]) / 2, y + 0.36, d, ha="center", va="bottom", color=INK)
-        else:
-            b.text(known[0] - 0.03, y + 0.3, d, ha="center", va="bottom", color=INK)
+        b.annotate("", xy=(known[0] - 0.03, y + 0.28), xytext=(blind[0] + 0.03, y + 0.28),
+                   arrowprops=dict(arrowstyle="->", color=INK, lw=1.3))
+        b.text((blind[0] + known[0]) / 2, y + 0.34, d, ha="center", va="bottom", color=INK)
     b.set_yticks(range(len(rows)))
     b.set_yticklabels([r[0] for r in rows][::-1])
-    b.set_ylim(-0.5, len(rows) - 0.2)
+    b.set_ylim(-0.5, len(rows) - 0.15)
     b.axvline(0.5, color=LIGHT, lw=1.5, zorder=0)
     b.set_xlim(0, 1)
     b.set_xlabel("Opponent's score (0.5 = even)")
@@ -97,8 +97,14 @@ def exploit():
     b.plot([], [], "o", ms=9, color=INK, ls="", label="knowing our rule")
     b.legend(loc="lower center", bbox_to_anchor=(0.5, 1.0), ncol=2, frameon=False, handletextpad=0.3)
     b.tick_params(axis="y", length=0)
-    fig.savefig(os.path.join(HERE, "deck_exploit.png"), bbox_inches="tight")
+    fig.savefig(os.path.join(HERE, fname), bbox_inches="tight")
     return fig
+
+
+def exploit():
+    _exploit_plot([HEDGE_ROW, BAYES_ROW], "deck_exploit.png", 3.0)
+    with plt.rc_context({"font.size": 24, "axes.labelsize": 24, "xtick.labelsize": 22, "ytick.labelsize": 24}):
+        return _exploit_plot([HEDGE_ROW], "deck_exploit_hedge.png", 2.2, width=6.4)
 
 
 def delta_parts():

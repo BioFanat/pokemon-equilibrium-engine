@@ -792,13 +792,20 @@ for r, (a, b) in enumerate(rows):
     S.box(LEFT + c0, y, lw - c0, rh, [P(b, size=14, align="ctr")], f"Results cell {r}")
 ey = ry + len(rows) * rh + Inches(0.3)
 S.header(LEFT, ey, lw, HDR_H, [P("Exploitability", size=SECONDARY, b=True, align="ctr")], "Exploit header")
-S.box(LEFT, ey + HDR_H, lw, Inches(2.6), [
-    P("How much more an opponent wins if it knows exactly how our bot decides.", size=14),
-    P("We test it with a simple opponent that each turn plays its best answer to the move it expects from us: "
-      "once guessing blindly, once running our rule to predict it.", size=14, before=6),
-    P(("Hedge model: 0.37 → 0.56, a gain of +0.19", {"b": True}), size=14, before=8),
-    P("Hard to exploit, because it plays a mix, but too weak to win.", size=14, before=6),
+S.box(LEFT, ey + HDR_H, lw, Inches(1.05), [
+    P("How much more an opponent wins if it knows exactly how our bot decides. A simple opponent plays its best "
+      "answer to the move it expects from us: once guessing blindly, once running our rule to predict it.", size=13),
 ], "Exploit box", anchor="t")
+_hi = os.path.join(HERE, "..", "figures", "deck_exploit_hedge.png")
+_hw, _hh = _Im.open(_hi).size
+gy = ey + HDR_H + Inches(1.1)
+gh = BOTTOM - gy - Inches(0.05)
+gw = int(gh * _hw / _hh)
+gp = s.shapes.add_picture(_hi, LEFT + (lw - gw) // 2, gy, gw, gh)
+gp.name = "Hedge exploitability"
+gp._element.nvPicPr.cNvPr.set("descr", "Opponent's score against the Hedge model: 0.37 guessing blindly, 0.56 knowing "
+                                       "our rule, a gain of 0.19")
+
 rx = LEFT + lw + GAP
 S.header(rx, TOP, lw, HDR_H, [P("2. Why: the bound points at the payoffs", size=SECONDARY, b=True, align="ctr")],
          "Why header")
@@ -925,13 +932,14 @@ _w, _h = _Im.open(img_path).size
 rx = LEFT + tbl_w + GAP
 fw = RIGHT - rx
 fh = int(fw * _h / _w)
+ty = ty - Inches(0.35)
 pic = s.shapes.add_picture(img_path, rx, ty, fw, fh)
 pic.name = "Exploitability figure"
-pic._element.nvPicPr.cNvPr.set("descr", "Extra wins an opponent gets from knowing the decision rule: about half a "
-                                        "game against the Bayesian model, none against a randomised version")
+pic._element.nvPicPr.cNvPr.set("descr", "Opponent's score guessing blindly vs knowing our rule: Hedge model 0.37 to "
+                                        "0.56, Bayesian model 0.21 to 0.70")
 S.text(rx, ty + fh + Inches(0.05), fw, BOTTOM - ty - fh, [
     P("Knowing our rule lifts the opponent from 0.21 to 0.70: the Bayesian model always plays its top move, so it "
-      "can be predicted. Randomising its choice removes this gap, but it then plays much worse.", size=14),
+      "can be predicted. The Hedge model's mix gives away only 0.19.", size=14),
 ], "Exploit text")
 notes(s, "Here are the Bayesian model's results. Strength first. On the public ladder it went 66 and 34 and climbed to "
       "2090 Elo in the games we logged, and it has since reached 2308, reportedly in the top 50. In local paired games "
