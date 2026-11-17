@@ -701,8 +701,9 @@ Showdown games, seat-swapped pairs, seeds 1–50, 5 streams (`engine/showdown/ba
 - Score of `hedge_mcts`: **0.310 [0.218, 0.402]** (95% CI over 50 pairs, 100 games); lost both seats on 24 seeds.
 - Realised regret per stream 3.9–5.0 vs the anytime bound 26.9–28.7 (568–648 credited turns); best expert on every
   stream: `lp_sampled`; final weights LP 0.60–0.71, argmax 0.23–0.33, shares 0.05–0.08.
-- Off-argmax probability per decision 0.33 in lost games vs 0.28 in won games; 64% of off-argmax plays are on turns
-  where the LP strategy is mixed.
+- Off-argmax probability per decision 0.33 in lost games vs 0.28 in won games; Hedge actually played off the argmax on
+  0.35 (lost) vs 0.27 (won) of decisions, 62% of them on turns where the LP strategy is mixed (corrected 2026-11-17:
+  the first analysis missed switch moves and reported 0.18-0.21 and 64%).
 - Reading: Hedge is no-regret with respect to the depth-2 matrices, where the LP expert is optimal by construction, so
   the guarantee points it at the weakest expert in real play (the evaluation error ε_v of the whole-battle bound).
 - Source: `analysis_h2h_hedge_mcts.json`, `h2h_hedge_mcts_summary.json` (analysis by
