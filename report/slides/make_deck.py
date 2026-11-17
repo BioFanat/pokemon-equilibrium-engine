@@ -356,7 +356,7 @@ E_HEDGE = r"w_i^{t+1} = w_i^t e^{−ηl_i^t}"
 E_SOFTMAX = r"p_i^t ∝ \exp{(η\sum_{j<t}{r_i^j})}"
 E_BLP = r"\max_x{\sum_k{β_k \min_j{{(M_k^⊤x)}_j}}}"
 E_MIX = r"p_t = \sum_e{w_e q_e}"
-E_MINIMAX = r"\max_x{x^⊤A\bar{y}} − \min_y{\bar{x}^⊤Ay} ≤ ϵ_R + ϵ_C"
+E_MINIMAX = r"\max_x{x^⊤A\bar{y}} − \min_y{\bar{x}^⊤Ay} ≤ ε_R + ε_C"
 E_BOUND = r"expl(π) ≤ \bar{H} \bar{δ},   δ = ε_s + 2ε_v"
 E_LOSSES = r"expl(π) = \sup_σ{E[\sum_{t<τ}{ℓ_t}]}"
 E_MWUB = r"L_{MWU} ≤ (1 + η)L^* + \frac{\ln{n}}{η}"
@@ -608,45 +608,34 @@ notes(s, "Why not just build another strong bot? The strongest bots are built to
       "Regret is how our learners are judged: our total loss minus the best fixed choice's in hindsight, and "
       "no-regret means the average goes to zero.")
 
-# 3. No-regret learning and the plan
-s, S = content(1, "No-regret learning: MWU and Hedge")
-S.text(LEFT, TOP, WIDTH, Inches(0.5), [
-    P("Both keep a weight on each expert, shrink it after every loss, and play in proportion to the weights:",
-      size=18),
-], "MWU and Hedge intro")
-cy = TOP + Inches(0.6)
-ch = Inches(1.9)
-S.text(LEFT, cy, COL2, ch, [
-    P("MWU", b=True, align="ctr"),
-    EQ_(E_MWU, size=20, before=6),
-    EQ_(r"Regret_T ≤ 2\sqrt{T \ln{n}}", size=20, before=8),
-    P("step ", ("$", r"η = \sqrt{\ln{n}/T}"), ", horizon ", ("$", "T"), " known in advance", size=SECONDARY,
-      align="ctr", before=6),
-], "MWU column")
-S.text(LEFT + COL2 + GAP, cy, COL2, ch, [
-    P("Hedge (ours)", b=True, align="ctr"),
-    EQ_(E_HEDGE, size=20, before=6),
-    EQ_(r"Regret_T ≤ \frac{3}{2}\sqrt{\frac{T}{2}\ln{n}} + \sqrt{\frac{\ln{n}}{8}}", size=20, before=8),
-    P("anytime step ", ("$", r"η_t = \sqrt{8\ln{n}/t}"), ": no horizon needed", size=SECONDARY, align="ctr",
-      before=6),
-], "Hedge column")
-py = cy + ch + Inches(0.2)
-S.text(LEFT, py, WIDTH, BOTTOM - py, [
-    P("Average regret → 0 for both; when both players of a matrix game are no-regret, their average play "
-      "approaches an equilibrium", size=SECONDARY, align="ctr"),
-    P("Our plan", b=True, before=18),
-    P("Use these bounds to characterise how exploitable our agent is", size=18, bullet=True, before=4),
+# 3. Background theory and our goals
+s, S = content(1, "Background: no-regret theory")
+S.text(LEFT, TOP, WIDTH, Inches(3.3), [
+    P(("MWU", {"b": True}), " (Littlestone & Warmuth): shrink each expert's weight after a loss, ",
+      ("$", E_MWU), ";  ", ("$", r"Regret_T ≤ 2\sqrt{T \ln{n}}"), size=18, bullet=True),
+    P(("Hedge", {"b": True}), " (Freund & Schapire), the exponential form we use, ", ("$", E_HEDGE),
+      ";  with an anytime step, ", ("$", r"Regret_T ≤ \frac{3}{2}\sqrt{\frac{T}{2}\ln{n}} + \sqrt{\frac{\ln{n}}{8}}"),
+      size=18, bullet=True, before=12),
+    P(("No-regret dynamics ⇒ minimax", {"b": True}), " (Freund & Schapire): if both players of a matrix game ",
+      ("$", "A"), " are no-regret, ", ("$", E_MINIMAX), size=18, bullet=True, before=12),
+    P(("No-regret dynamics ⇒ CCE:", {"b": True}), " in any finite game, time-average play is an ε-coarse "
+      "correlated equilibrium", size=18, bullet=True, before=12),
+], "Background results")
+gy = TOP + Inches(3.45)
+S.text(LEFT, gy, WIDTH, BOTTOM - gy, [
+    P("Our goals", b=True),
+    P("Use these bounds to characterise how exploitable our agent is over a whole battle", size=18, bullet=True,
+      before=4),
     P("Check in practice: measure exploitability and regret", size=18, bullet=True, before=4),
     P("See whether the agent can still win", size=18, bullet=True, before=4),
-], "Plan")
-notes(s, "Our learners come from multiplicative weights. Both algorithms keep a weight on each expert, shrink it "
-      "after every loss, and play in proportion to the weights. Multiplicative weights shrinks by one minus eta "
-      "times the loss; with the step tuned to a known horizon, regret is at most two root T log n. Hedge, which we "
-      "use, shrinks by e to the minus eta times the loss, and with the anytime step it needs no horizon, which "
-      "suits matches of unknown length; its regret is also order root T log n. Either way the average regret goes "
-      "to zero, and when both players of a matrix game are no-regret their average play approaches an equilibrium. "
-      "Our plan: use these bounds to characterise how exploitable our agent is, check that in practice by "
-      "measuring exploitability and regret, and see whether the agent can still win.")
+], "Goals")
+notes(s, "A few known results we build on. Multiplicative weights shrinks each expert's weight after a loss, and "
+      "its regret grows like root T log n. Hedge is the exponential form, which we use; with an anytime step it "
+      "needs no horizon and has the same rate. When both players of a matrix game are no-regret, their average "
+      "strategies are within the sum of their average regrets of an equilibrium, which is the minimax theorem, and "
+      "in any finite game time-average play is a coarse correlated equilibrium. Our goals: use these bounds to "
+      "characterise how exploitable our agent is over a whole battle, check that in practice by measuring "
+      "exploitability and regret, and see whether the agent can still win.")
 
 # ===================== Section 2: Method =====================
 # 4. Each turn an equilibrium; across games Hedge over experts
