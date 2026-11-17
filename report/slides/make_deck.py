@@ -1,4 +1,4 @@
-"""Build deck.pptx: the 13-slide, ~4-minute CS535 final-project talk, in five sections.
+"""Build deck.pptx: the 12-slide, ~4-minute CS535 final-project talk, in five sections.
 
 Built on the user's template ("random template.pptx"): its master, theme, 16:9 size,
 title-slide style and its five-box section tracker, which lives in the template's
@@ -773,59 +773,44 @@ notes(s, "Our main result in one line. On each turn, our strategy can lose at mo
       "regret on top.")
 
 # ===================== Section 4: Experiments =====================
-# 8. Exploitability
-s, S = content(4, "Exploitability")
-img, pw, ph = crop_png(FIG_MAIN, (0, 0, 432, 418))  # panel a of fig_main
-fh = BOTTOM - TOP - Inches(0.6)
-fw = int(fh * pw / ph)
-pic = s.shapes.add_picture(img, LEFT, TOP, fw, fh)
-pic.name = "Exploitability bound figure"
-pic._element.nvPicPr.cNvPr.set(
-    "descr", "Exact exploitability of our matrix bots on solved endgames against the whole-battle bound; every point "
-             "lies above y = x")
-rx = LEFT + fw + GAP
-S.text(rx, TOP, RIGHT - rx, BOTTOM - TOP, [
-    P("Exploitability lower bounds: ", ("0.25", {"b": True}), " top move, ", ("0.09", {"b": True}),
-      " sampled play", size=18, bullet=True),
-    P("Exact endgames: the bound holds, loose by ", ("7–155×", {"b": True}), "; evaluation error ", ("$", "ε_v"),
-      " dominates", size=18, bullet=True, before=6),
-    P("In play, MCTS beats equilibrium play at matched time; the agent sits ≈135–190 Elo below Foul Play",
-      size=18, bullet=True, before=6),
-], "Exploitability bullets")
-notes(s, "An informed best response that knows our policy gives exploitability lower bounds of 0.25 for top move and "
-      "0.09 for sampled play, so randomising helps. On exact endgames the whole-battle bound holds on every row, loose "
-      "by 7 to 155 times, and the evaluation error, not the solver, carries it. Panels b to d show the regrets under their "
-      "bounds; the next slide gives the numbers.")
-
-# 9. Regret of our no-regret learners: objective box, then the three regret panels of fig_main
-s, S = content(4, "Regret: what we bound, and what we measured")
-S.header(LEFT, TOP, WIDTH, HDR_H, [P("What we bound", size=SECONDARY, b=True, align="ctr")], "Objective header")
-S.box(LEFT, TOP + HDR_H, WIDTH, Inches(1.0), [
-    P("Each learner in our agent has a proved regret bound, and we check it in play: ", ("b", {"b": True}),
-      " RM⁺ inside a turn (gap to the turn's equilibrium), ", ("c", {"b": True}), " Hedge across games (regret against "
-      "the best expert), ", ("d", {"b": True}), " the opponent memory (log-loss regret against the best style, ",
-      ("$", r"\ln{5}"), ")", size=16, align="ctr"),
-], "Objective box", anchor="ctr")
-img, pw, ph = crop_png(FIG_MAIN, (432, 0, 1395, 418))  # panels b-d of fig_main
-iy = TOP + HDR_H + Inches(1.15)
-fh = BOTTOM - iy - Inches(0.55)
-fw = min(WIDTH, int(fh * pw / ph))
-fh = int(fw * ph / pw)
-pic = s.shapes.add_picture(img, LEFT + (WIDTH - fw) // 2, iy, fw, fh)
-pic.name = "Regret figure"
-pic._element.nvPicPr.cNvPr.set(
-    "descr", "Three panels with dashed proved bounds: RM+ gap over iterations; Hedge regret per counted turn over 10 "
-             "matches against Foul Play; memory regret against the bound ln 5")
-S.text(LEFT, iy + fh + Inches(0.05), WIDTH, BOTTOM - iy - fh, [
-    P("All three stay under their bounds: RM⁺ 7×10⁻⁵ (bound 0.38); Hedge 13–16% of its bound; memory ends at ln 5",
-      size=16, align="ctr"),
-], "Regret caption")
-notes(s, "Here is what we bound and what we measured. Each no-regret learner in our agent has a proved regret bound. "
-      "Inside a turn, RM-plus self-play should approach the turn's equilibrium, and its gap is bounded; across games, "
-      "Hedge's regret against the best expert is bounded; and the opponent memory, which is Bayes and therefore Hedge "
-      "on log loss, has regret at most log five against the best style. The dashed lines are the bounds. All three "
-      "learners stay under them: RM-plus reaches 7 times ten to the minus five of the payoff range against a bound of "
-      "0.38, Hedge's regret is 13 to 16 percent of its bound, and the memory's regret ends at log five up to logging precision.")
+# 8. Exploitability and regret: theory vs measurement, one slide with plain explanations under each panel
+s, S = content(4, "Exploitability and regret: theory vs measurement")
+S.text(LEFT, TOP - Inches(0.05), WIDTH, Inches(0.45), [
+    P(("Dashed line", {"b": True}), " = what our theory guarantees;  ", ("solid line or dots", {"b": True}),
+      " = what we measured; every measurement stays on the safe side", size=14, align="ctr"),
+], "ER legend")
+from PIL import Image as _Im
+img_path = os.path.join(HERE, "..", "figures", "fig_main_deck.png")
+_w, _h = _Im.open(img_path).size
+iy = TOP + Inches(0.45)
+fw = WIDTH
+fh = int(fw * _h / _w)
+pic = s.shapes.add_picture(img_path, LEFT, iy, fw, fh)
+pic.name = "Exploitability and regret figure"
+pic._element.nvPicPr.cNvPr.set("descr", "Four panels, each with the theoretical guarantee dashed and the measurement "
+                                        "solid: exploitability bound vs actual exploitability on solved endgames; RM+ "
+                                        "distance from equilibrium; Hedge regret per turn; opponent-model regret")
+notes_txt = [
+    "Each dot: one bot in a solved endgame. All sit above the line, so the whole-battle bound always holds, but it is "
+    "7–155× loose because of the evaluation error.",
+    "Inside a turn, the strategy we play ends about 5,000× closer to equilibrium than the guarantee requires.",
+    "Across games, Hedge's regret per turn falls toward zero, far below its guarantee: it nearly matches its best expert.",
+    "The opponent model's total prediction regret climbs to the proved cap, ln 5, and stays there.",
+]
+cw = (WIDTH - 3 * Inches(0.15)) // 4
+ty = iy + fh + Inches(0.08)
+for k, t in enumerate(notes_txt):
+    S.text(LEFT + k * (cw + Inches(0.15)), ty, cw, BOTTOM - ty, [P(t, size=12)], f"ER note {k + 1}")
+notes(s, "Each panel compares what our theory guarantees, the dashed line, with what we measured. Panel a is about "
+      "exploitability. We solved a few small endgames exactly, so we know each bot's true exploitability there, on "
+      "the horizontal axis, and compare it with our whole-battle bound, on the vertical axis. Every dot sits above the "
+      "diagonal, so the bound is never violated, but it is 7 to 155 times larger than the truth, because the "
+      "evaluation error in our matrices dominates it. Panel b is the solver inside a turn: regret matching plus gets "
+      "within 7 times ten to the minus five of the turn's equilibrium after a thousand iterations, far below the "
+      "guarantee. Panel c is Hedge across games: its regret per turn falls toward zero, well under the anytime "
+      "bound, so it does nearly as well as its best expert. Panel d is the opponent model: its total prediction regret "
+      "rises to the proved cap of log five and stays there. Separately, opponents that know our policy give "
+      "exploitability lower bounds of 0.25 for top move and 0.09 for sampled play.")
 
 # 5. The Bayesian model: belief -> worlds -> weighted vote
 s, S = content(4, "What we pull from it: the Bayesian model")

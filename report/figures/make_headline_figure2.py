@@ -24,10 +24,8 @@ import matplotlib.pyplot as plt
 from make_regret_figure import (OUT, ROOT, COL, GRAY, INK, LN5, MEM_EXCLUDED, RM_FIT_LO, check_figure,
                                 load_streams, analyse, rm_data, hedge_bound, slope)
 
-# One clean style for paper and deck: black Helvetica text and marks; each learner has its own panel, so no colour
-# is needed to tell them apart (bounds stay dashed grey).
+# One clean style for paper and deck: series keep their colours; all text (labels, annotations) is black Helvetica.
 INK = "#111111"
-COL = {k: INK for k in COL}
 plt.rcParams.update({"font.sans-serif": ["Helvetica", "Arial"], "text.color": INK, "axes.labelcolor": INK,
                      "xtick.color": INK, "ytick.color": INK, "axes.edgecolor": INK})
 
@@ -74,14 +72,14 @@ def panel_exploit(ax, eg):
     ax.loglog(lim, lim, color=GRAY, lw=1.2, ls=(0, (4, 2)))
     ax.scatter([r["expl"] for r in eg], [r["bound"] for r in eg], s=18, color=INK, alpha=0.55, lw=0, zorder=3)
     lo, hi = min(r["ratio"] for r in eg), max(r["ratio"] for r in eg)
-    ax.text(0.3, 0.12, "bound = exploitability", color=GRAY, rotation=0, va="center")
-    ax.text(0.013, 150, f"bound {lo:.0f}–{hi:.0f}× larger", color=INK, va="center")
+    ax.text(0.3, 0.12, "bound = measured", color=INK, rotation=0, va="center")
+    ax.text(0.013, 150, f"all above the line: bound holds", color=INK, va="center")
     ax.set_xlim(0.01, 3); ax.set_ylim(0.05, 300)
     ax.set_xticks([0.01, 0.1, 1])
     ax.set_xticklabels(["0.01", "0.1", "1"])
     log_axis(ax, 5)
-    ax.set_xlabel("Exact exploitability")
-    ax.set_ylabel("Whole-battle bound")
+    ax.set_xlabel("Measured exploitability (exact)")
+    ax.set_ylabel("Our upper bound")
     ax.set_title("Exploitability bound")
 
 
@@ -94,8 +92,8 @@ def panel_rm(ax, rm):
     ax.loglog(T, med, color=c, lw=1.5)
     fit = T >= RM_FIT_LO
     s_med = slope(T[fit], med[fit])
-    ax.text(30, bnd[list(T).index(20)] * 3.5, "bound", color=GRAY, va="center")
-    ax.text(1.4, 2e-6, f"median, slope {s_med:.1f}".replace("-", "−"), color=c, va="center")
+    ax.text(30, bnd[list(T).index(20)] * 3.5, "bound", color=INK, va="center")
+    ax.text(1.4, 2e-6, f"median, slope {s_med:.1f}".replace("-", "−"), color=INK, va="center")
     ax.set_xlim(1, 2000); ax.set_ylim(1e-8, 20)
     ax.set_xticks([1, 10, 100, 1000])
     log_axis(ax, 5)
@@ -118,8 +116,8 @@ def panel_hedge(ax, hedge_curves):
     ax.plot(tm, np.where(medc > 0, medc / tm, np.nan), color=c, lw=1.8)
     ax.plot(t, hedge_bound(t) / t, color=GRAY, lw=1.2, ls=(0, (4, 2)))
     ax.set_xscale("log"); ax.set_yscale("log")
-    ax.text(3, hedge_bound(3) / 3 * 1.9, "anytime bound", color=GRAY, va="center")
-    ax.text(1.5, 5e-4, "regret, 10 matches", color=c, va="center")
+    ax.text(3, hedge_bound(3) / 3 * 1.9, "anytime bound", color=INK, va="center")
+    ax.text(1.5, 5e-4, "regret, 10 matches", color=INK, va="center")
     ax.set_xlim(1, Tmax); ax.set_ylim(3e-4, 5)
     ax.set_xticks([1, 10, 100, 1000])
     log_axis(ax, 5)
@@ -139,8 +137,8 @@ def panel_memory(ax, mem_curves):
     ax.plot(tc, np.median(A, 0), color=c, lw=1.5, zorder=3)
     ax.axhline(LN5, color=GRAY, lw=1.4, ls=(0, (4, 2)), zorder=4)
     ax.set_xscale("log")
-    ax.text(1.5, LN5 + 0.22, "bound ln 5", color=GRAY, va="center")
-    ax.text(Tm * 0.9, 0.3, f"median, {len(M)} matches", color=c, ha="right", va="center")
+    ax.text(1.5, LN5 + 0.22, "bound ln 5", color=INK, va="center")
+    ax.text(Tm * 0.9, 0.3, f"median, {len(M)} matches", color=INK, ha="right", va="center")
     ax.set_xlim(1, Tm); ax.set_ylim(0, 2)
     ax.set_xticks([1, 10, 100, 1000])
     ax.set_xlabel("Counted turns $t$")
@@ -159,6 +157,28 @@ def draw(eg, rm, hedge_curves, mem_curves):
     return fig, s_med, n_mem, T_mem
 
 
+def draw_deck(eg, rm, hedge_curves, mem_curves):
+    """Slide version: same data, titles that state each panel's conclusion, plain-language axes, slide-size text."""
+    with plt.rc_context({"font.size": 14, "axes.labelsize": 14, "axes.titlesize": 15, "xtick.labelsize": 12,
+                         "ytick.labelsize": 12}):
+        fig, axs = plt.subplots(1, 4, figsize=(14.0, 4.1), layout="constrained")
+        panel_exploit(axs[0], eg)
+        panel_rm(axs[1], rm)
+        panel_hedge(axs[2], hedge_curves)
+        panel_memory(axs[3], mem_curves)
+        spec = [("Bound always holds", "Actual exploitability", "Our bound"),
+                ("Solver reaches equilibrium", "Solver iterations", "Distance from equilibrium"),
+                ("Hedge's regret shrinks", "Turns played", "Regret per turn"),
+                ("Prediction error is capped", "Turns played", "Total prediction regret")]
+        for ax, (t, xl, yl) in zip(axs, spec):
+            ax.set_title(t, loc="left")
+            ax.set_xlabel(xl)
+            ax.set_ylabel(yl)
+        letters_and_titles(fig, axs, "abcd")
+        fig.savefig(OUT / "fig_main_deck.png", dpi=200)
+        plt.close(fig)
+
+
 def main():
     eg, dropped, n_rows = endgame_rows()
     streams = load_streams()
@@ -170,6 +190,7 @@ def main():
     fig.savefig(OUT / "fig_main.pdf")
     fig.savefig(OUT / "fig_main.png", dpi=200)
     plt.close(fig)
+    draw_deck(eg, rm, hedge_curves, mem_curves)
 
     ratios = [r["ratio"] for r in eg]
     out = dict(
