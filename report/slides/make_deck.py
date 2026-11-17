@@ -904,20 +904,32 @@ pic.name = "Strength figure"
 pic._element.nvPicPr.cNvPr.set("descr", "Local Elo relative to the preliminary model with 95% intervals: Bayesian "
                                         "model +203, Hedge over it +27")
 rx = LEFT + fw + GAP
-S.text(rx, TOP + Inches(0.2), RIGHT - rx, BOTTOM - TOP - Inches(0.2), [
-    P(("Public ladder", {"b": True}), size=18),
-    P("Bayesian model: 99–51, Elo 1470 → 2090 in logged batches, since 2308 (reportedly top 50)", size=16,
-      bullet=True, before=6),
-    P("Preliminary model: 77–73, Elo 1577 → 1470", size=16, bullet=True, before=6),
-    P(("Local paired games", {"b": True}), size=18, before=18),
-    P("Bayesian model +203 Elo over the preliminary model", size=16, bullet=True, before=6),
-    P(f"Hedge over it only +27, and loses {H2H_SCORE} head-to-head: credited on 2-turn matrices, it trusts the LP "
-      "expert", size=16, bullet=True, before=6),
-], "Strength text")
+tw = RIGHT - rx
+S.text(rx, TOP + Inches(0.1), tw, Inches(0.9), [
+    P(("Public ladder: ", {"b": True}), "99–51, Elo 1470 → 2090 logged, since 2308 (reportedly top 50); "
+      "preliminary model 77–73", size=14),
+], "Ladder line")
+rows = [("Bayesian model vs Foul Play (default)", "0.60 [0.48, 0.72]"),
+        ("Bayesian model vs Foul Play (equal time)", "0.48 [0.35, 0.62]"),
+        ("Bayesian model vs preliminary model", "0.83 [0.75, 0.92]"),
+        ("Hedge over it vs Bayesian model", "0.31 [0.22, 0.40]")]
+c1 = int(tw * 0.64)
+ty = TOP + Inches(1.05)
+rh = Inches(0.5)
+S.header(rx, ty, c1, Inches(0.42), [P("Local paired games", size=14, b=True, align="ctr")], "Results col 1")
+S.header(rx + c1, ty, tw - c1, Inches(0.42), [P("Score [95% CI]", size=14, b=True, align="ctr")], "Results col 2")
+for k, (m, v) in enumerate(rows):
+    y = ty + Inches(0.42) + k * rh
+    S.box(rx, y, c1, rh, [P(m, size=13, align="ctr")], f"Results row {k} name")
+    S.box(rx + c1, y, tw - c1, rh, [P(v, size=13, b=(k < 2), align="ctr")], f"Results row {k} value")
+S.text(rx, ty + Inches(0.42) + 4 * rh + Inches(0.05), tw, Inches(0.6), [
+    P("Score of the first-named bot (0.5 = even); 30–50 seat-swapped pairs", size=11, i=True, align="ctr"),
+], "Results caption")
 notes(s, "First, strength. On the public ladder, in rated batches on one account, the preliminary model went 77 and 73 "
       "and drifted down to 1470 Elo, while the Bayesian model went 99 and 51 and climbed to 2090 in the batches we "
       "logged; it has since reached 2308, reportedly in the top 50. In local paired games it rates about 200 Elo above "
-      f"the preliminary model. Wrapping it in Hedge gave almost all of that back: Hedge over it loses {H2H_SCORE} "
+      f"the preliminary model, and it is on par with Foul Play, one of the strongest public bots: 0.60 at Foul Play's "
+      f"default settings and 0.48 at equal search time. Wrapping it in Hedge gave almost all of that back: Hedge over it loses {H2H_SCORE} "
       "head-to-head and rates only 27 Elo above the preliminary model, because Hedge is credited on the two-turn "
       "matrices, where the equilibrium expert looks best, and moves most of its weight there. A no-regret guarantee "
       "is only as good as the payoffs it is measured on.")
