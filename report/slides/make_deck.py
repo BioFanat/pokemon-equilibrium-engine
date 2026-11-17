@@ -663,7 +663,7 @@ S.text(LEFT, y3, WIDTH, Inches(0.45), [
 ], "Step 3")
 experts = [("Top move", "x's most likely move"),
            ("Sampled", "a random draw from x"),
-           ("Pure maximin", "the single action with the best worst case"),
+           ("Safest move", "the move whose worst case is best"),
            ("Predictive", "best reply to our prediction; worst case within ε of x's")]
 gy = y3 + Inches(0.5)
 EBH = Inches(0.9)
@@ -683,7 +683,7 @@ notes(s, "Our preliminary model, step by step. First, worlds and matrices: a wor
       "we cannot tell which world is real, we choose probabilities for our moves, say Slack Off 60 percent and "
       "Earthquake 40 percent, that do best on average across the worlds even if the opponent answers each one "
       "perfectly; one linear program finds this mix, which we call strategy x, our safe baseline for the turn. Third, experts: each turns x into the move we actually play, by "
-      "playing its most likely move, drawing a move at random from it, playing the single safest move, or, the predictive "
+      "playing its most likely move, drawing a move at random from it, playing the safest move, the one whose worst case is best, or, the predictive "
       "expert, best replying to the move we predict for the opponent while keeping its worst case within a small "
       "epsilon of the mix's, and Hedge learns which to trust. After the opponent moves, each expert is credited with what it "
       "would have earned, and because the weights carry across games, Hedge's regret bound covers the whole match.")
