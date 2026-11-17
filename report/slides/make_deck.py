@@ -702,50 +702,51 @@ notes(s, "Our preliminary model, step by step. First, worlds and matrices: a wor
       "the opponent's move, and Hedge mixes them. After the opponent moves, each expert is credited with what it "
       "would have earned, and because the weights carry across games, Hedge's regret bound covers the whole match.")
 
-# 5. The Bayesian model: the model we play, built on the preliminary formulation
-s, S = content(2, "The Bayesian model: what we play")
-S.text(LEFT, TOP, WIDTH, Inches(0.5), [
-    P("Same belief over worlds, used more carefully; search in each world replaces the matrix and Hedge layer",
-      size=18),
-], "Bayesian model intro")
-steps = [("1. Belief", [P("prior: how often each set occurs, conditioned on everything revealed", size=SECONDARY,
-                              align="ctr")]),
-         ("2. Stratified worlds", [P("a world for each item/ability group of the active opponent; weights ",
-                                     ("$", "β_k"), " keep each group's probability", size=SECONDARY, align="ctr")]),
-         ("3. Search each world", [P("MCTS (DUCT, as in Foul Play), 250 ms → share of root visits", size=SECONDARY,
-                                     align="ctr")]),
-         ("4. Weighted choice", [P("play the largest ", ("$", "β"), "-weighted visit share", size=SECONDARY,
-                                         align="ctr")])]
-sy = TOP + Inches(0.6)
-BH = Inches(1.5)
-for k, (name, paras) in enumerate(steps):
-    x = LEFT + k * (COL4 + GAP)
-    S.header(x, sy, COL4, HDR_H, [P(name, size=SECONDARY, b=True, align="ctr")], f"Bayes step {k + 1} header")
-    S.box(x, sy + HDR_H, COL4, BH, paras, f"Bayes step {k + 1} box")
-    if k < 3:
-        ym = sy + HDR_H + BH // 2
-        S.line(x + COL4 + Inches(0.05), ym, x + COL4 + GAP - Inches(0.05), ym, f"Bayes arrow {k + 1}", arrow=True)
-ty = sy + HDR_H + BH + Inches(0.15)
-S.text(LEFT, ty, WIDTH, BOTTOM - ty, [
-    EQ_(r"a = arg\max_a{\sum_k{β_k \frac{n_k(a)}{\sum_b{n_k(b)}}}}", size=20),
-    P(("Stratified worlds: ", {"b": True}), "still unbiased, every group covered, no between-group sampling error "
-      "(Choice Specs missed 34% of the time → never)", size=16, bullet=True, before=6),
-    P(("Search: ", {"b": True}), "goes deeper, at the evaluation error our bound points to, but gives up the solver "
-      "guarantee (each world searched as if known)", size=16, bullet=True, before=6),
-    P(("Argmax: ", {"b": True}), "near-deterministic, so it pays the price of determinism (theory)", size=16,
-      bullet=True, before=6),
-], "Bayesian model notes")
-notes(s, "This is the model we actually play, built on the same formulation. It keeps the belief over the hidden "
-      "team: the prior is how often each set occurs in Random Battles, conditioned on everything revealed. It uses "
-      "that belief more carefully: instead of four independent draws, it gives each item and ability group of the "
-      "active opponent its own world, with weights that keep each group's probability. Averages over worlds stay "
-      "unbiased, every group is covered, and the part of the sampling error that comes from which group we drew "
-      "disappears; with plain draws, one test missed Choice Specs a third of the time. Then, instead of a two-turn "
-      "matrix and Hedge, it runs poke-engine's MCTS, the same DUCT search Foul Play uses, in each world for 250 "
-      "milliseconds, turns each world's root visits into shares, weights them by the worlds' probabilities and "
-      "plays the top action. Deeper search goes after the evaluation error that our bound says dominates, but it "
-      "gives up the solver guarantee, and it is nearly deterministic, so it pays the price of determinism we prove "
-      "in the theory section.")
+# 5. The Bayesian model: building on the world idea
+s, S = content(2, "The Bayesian model: building on worlds")
+lw = Inches(6.1)
+S.text(LEFT, TOP, lw, BOTTOM - TOP, [
+    P("Same worlds as before, with four changes:", size=18),
+    P(("Weigh the worlds. ", {"b": True}), "Each world gets a probability β from how often its sets occur, given "
+      "everything revealed so far", size=16, number=True, before=10),
+    P(("Cover the dangerous cases. ", {"b": True}), "Worlds are spread over the opponent's possible items and "
+      "abilities, so a rare Choice Specs is never left out by chance", size=16, number=True, before=8),
+    P(("Search each world deeper. ", {"b": True}), "MCTS for 250 ms instead of a 2-turn matrix gives each of our "
+      "moves a share of the search", size=16, number=True, before=8),
+    P(("Combine. ", {"b": True}), "Weight each world's shares by β and play the best move", size=16, number=True,
+      before=8),
+], "Bayesian steps")
+# illustrative table: our moves x worlds, then the weighted column
+tx = LEFT + lw + Inches(0.3)
+cols = [("World A", "Earth Power, β = 0.6"), ("World B", "Leaf Storm, β = 0.4"), ("Weighted", "")]
+rows = [("Earthquake", ["0.50", "0.25", "0.40"]), ("Stone Edge", ["0.20", "0.15", "0.18"]),
+        ("Slack Off", ["0.30", "0.60", "0.42"])]
+mw = Inches(1.15)
+cw = (RIGHT - tx - mw) // 3
+hy = TOP + Inches(0.3)
+hh, rh = Inches(0.55), Inches(0.4)
+for j, (c, sub) in enumerate(cols):
+    paras = [P(c, size=12, b=True, align="ctr")] + ([P(sub, size=10, align="ctr")] if sub else [])
+    S.header(tx + mw + j * cw, hy, cw, hh, paras, f"Bayes col {j}")
+for i, (r, vals) in enumerate(rows):
+    yy = hy + hh + i * rh
+    S.header(tx, yy, mw, rh, [P(r, size=12, b=True, align="ctr")], f"Bayes row {i}")
+    for j, v in enumerate(vals):
+        best = (j == 2 and r == "Slack Off")
+        S.box(tx + mw + j * cw, yy, cw, rh, [P(v + (" ✓" if best else ""), size=12, b=best, align="ctr")],
+              f"Bayes cell {i}{j}")
+S.text(tx, hy + hh + 3 * rh + Inches(0.08), RIGHT - tx, Inches(0.9), [
+    P("Illustrative: share of each world's search per move. World A alone says Earthquake; weighting both "
+      "worlds says Slack Off.", size=12, i=True, align="ctr"),
+], "Bayes table caption")
+notes(s, "The Bayesian model builds directly on the world idea. We keep sampling worlds, guesses of the opponent's "
+      "hidden team, but make four changes. First, each world gets a probability from how often its sets actually "
+      "occur in Random Battles, given everything revealed so far. Second, we spread the worlds over the opponent's "
+      "possible items and abilities, so a rare but dangerous item like Choice Specs is never left out by chance. "
+      "Third, instead of a two-turn matrix, we search each world much deeper with Monte Carlo tree search for a "
+      "quarter of a second, which gives each of our moves a share of the search. Fourth, we weight each world's "
+      "shares by its probability and play the best move. In this illustrative example, world A alone would say "
+      "Earthquake, but once world B, where Sunflora has Leaf Storm, is weighted in, Slack Off comes out ahead.")
 
 # 6. Case study: one turn of a real Showdown game
 s, S = content(2, "A turn, step by step")
