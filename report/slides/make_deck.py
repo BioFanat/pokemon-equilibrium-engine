@@ -608,44 +608,45 @@ notes(s, "Why not just build another strong bot? The strongest bots are built to
       "Regret is how our learners are judged: our total loss minus the best fixed choice's in hindsight, and "
       "no-regret means the average goes to zero.")
 
-# 3. How the bounds come into play
-s, S = content(1, "How the bounds come into play")
-flow = [("1. Low regret", [P("Hedge across games, RM⁺ inside a turn:", size=SECONDARY, align="ctr"),
-                           P("average regret → 0", size=SECONDARY, align="ctr", before=4),
-                           P("Hedge = MWU's exponential form", size=CAPTION, i=True, align="ctr", before=8)]),
-        ("2. Near-equilibrium each turn", [P("two no-regret players' averages are", size=SECONDARY, align="ctr"),
-                                           P("within ", ("$", "ε_R + ε_C"), " of equilibrium", size=SECONDARY,
-                                             align="ctr", before=4),
-                                           P("Freund & Schapire 1999", size=CAPTION, i=True, align="ctr",
-                                             before=8)]),
-        ("3. Bounded over a battle", [P("per-turn losses add up over the turns:", size=SECONDARY, align="ctr"),
-                                      EQ_(r"expl(π) ≤ \bar{H}\bar{δ}", size=20, before=4),
-                                      P("our main theorem", size=CAPTION, i=True, align="ctr", before=4)])]
-BHF = Inches(1.45)
-for k, (name, paras) in enumerate(flow):
-    x = LEFT + k * (COL3 + GAP)
-    S.header(x, TOP, COL3, HDR_H, [P(name, size=SECONDARY, b=True, align="ctr")], f"Flow {k + 1} header")
-    S.box(x, TOP + HDR_H, COL3, BHF, paras, f"Flow {k + 1} box")
-    if k < 2:
-        ym = TOP + HDR_H + BHF // 2
-        S.line(x + COL3 + Inches(0.05), ym, x + COL3 + GAP - Inches(0.05), ym, f"Flow arrow {k + 1}", arrow=True)
-gy = TOP + HDR_H + BHF + Inches(0.4)
-S.header(LEFT, gy, WIDTH, HDR_H, [P("Goals: what we use the bounds for", size=SECONDARY, b=True, align="ctr")],
-         "Goals header")
-S.box(LEFT, gy + HDR_H, WIDTH, Inches(1.75), [
-    P("Characterise how exploitable the agent is over a whole battle, term by term", size=18, bullet=True),
-    P("Find which error limits it: the solver (shrinks with compute), the evaluation formula (does not), "
-      "or our beliefs about the hidden team", size=18, bullet=True, before=8),
-    P("Check the learners in practice: measured regrets against their bounds", size=18, bullet=True, before=8),
-], "Goals box", anchor="t")
-notes(s, "Here is how the pieces fit. First, our learners are no-regret: Hedge across games, and regret matching "
-      "plus inside each turn. Second, the classical result of Freund and Schapire: when both players are no-regret, "
-      "their average strategies are within the sum of their regrets of an equilibrium, so each turn we play close "
-      "to equilibrium of the matrix we built. Third, our main theorem adds these per-turn losses up over a battle. "
-      "The point of the bounds is not the number itself. We use them to characterise how exploitable the agent is "
-      "over a whole battle, term by term; to find which error is the limiting one, the solver, which more compute "
-      "removes, the evaluation formula, which it does not, or our beliefs about the hidden team; and to check that "
-      "the learners behave as the theory says, by measuring their regrets against the bounds.")
+# 3. No-regret learning and the plan
+s, S = content(1, "No-regret learning: MWU and Hedge")
+S.text(LEFT, TOP, WIDTH, Inches(0.5), [
+    P("Both keep a weight on each expert, shrink it after every loss, and play in proportion to the weights:",
+      size=18),
+], "MWU and Hedge intro")
+cy = TOP + Inches(0.6)
+ch = Inches(1.9)
+S.text(LEFT, cy, COL2, ch, [
+    P("MWU", b=True, align="ctr"),
+    EQ_(E_MWU, size=20, before=6),
+    EQ_(r"Regret_T ≤ 2\sqrt{T \ln{n}}", size=20, before=8),
+    P("step ", ("$", r"η = \sqrt{\ln{n}/T}"), ", horizon ", ("$", "T"), " known in advance", size=SECONDARY,
+      align="ctr", before=6),
+], "MWU column")
+S.text(LEFT + COL2 + GAP, cy, COL2, ch, [
+    P("Hedge (ours)", b=True, align="ctr"),
+    EQ_(E_HEDGE, size=20, before=6),
+    EQ_(r"Regret_T ≤ \frac{3}{2}\sqrt{\frac{T}{2}\ln{n}} + \sqrt{\frac{\ln{n}}{8}}", size=20, before=8),
+    P("anytime step ", ("$", r"η_t = \sqrt{8\ln{n}/t}"), ": no horizon needed", size=SECONDARY, align="ctr",
+      before=6),
+], "Hedge column")
+py = cy + ch + Inches(0.2)
+S.text(LEFT, py, WIDTH, BOTTOM - py, [
+    P("Average regret → 0 for both; when both players of a matrix game are no-regret, their average play "
+      "approaches an equilibrium", size=SECONDARY, align="ctr"),
+    P("Our plan", b=True, before=18),
+    P("Use these bounds to characterise how exploitable our agent is", size=18, bullet=True, before=4),
+    P("Check in practice: measure exploitability and regret", size=18, bullet=True, before=4),
+    P("See whether the agent can still win", size=18, bullet=True, before=4),
+], "Plan")
+notes(s, "Our learners come from multiplicative weights. Both algorithms keep a weight on each expert, shrink it "
+      "after every loss, and play in proportion to the weights. Multiplicative weights shrinks by one minus eta "
+      "times the loss; with the step tuned to a known horizon, regret is at most two root T log n. Hedge, which we "
+      "use, shrinks by e to the minus eta times the loss, and with the anytime step it needs no horizon, which "
+      "suits matches of unknown length; its regret is also order root T log n. Either way the average regret goes "
+      "to zero, and when both players of a matrix game are no-regret their average play approaches an equilibrium. "
+      "Our plan: use these bounds to characterise how exploitable our agent is, check that in practice by "
+      "measuring exploitability and regret, and see whether the agent can still win.")
 
 # ===================== Section 2: Method =====================
 # 4. Each turn an equilibrium; across games Hedge over experts
