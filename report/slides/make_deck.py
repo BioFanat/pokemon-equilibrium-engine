@@ -638,12 +638,8 @@ notes(s, "A few known results we build on. Multiplicative weights shrinks each e
       "exploitability and regret, and see whether the agent can still win.")
 
 # ===================== Section 2: Method =====================
-# 4. Preliminary model: the game as an experts problem
+# 4. Preliminary model: worlds and matrices, one strategy x, then experts
 s, S = content(2, "Preliminary model: an experts problem")
-S.text(LEFT, TOP, WIDTH, Inches(0.75), [
-    P("Each turn, four ", ("experts", {"b": True}), " each propose a way to play; Hedge mixes them and learns, across "
-      "the games of a match, which works against this opponent.", size=18),
-], "Experts intro")
 
 
 def world_table(x0, y0, title, cols, rows, vals, name):
@@ -661,47 +657,50 @@ def world_table(x0, y0, title, cols, rows, vals, name):
     return y + ch * (len(rows) + 1)
 
 
-rows = ["Earthquake", "Stone Edge", "Slack Off"]
-ty = TOP + Inches(0.8)
 tw = Inches(1.05) + 3 * Inches(1.12)
-end1 = world_table(LEFT, ty, "World 1: Sunflora has Earth Power", ["Sludge Bomb", "Earth Power", "Switch"], rows,
-                   [["62%", "58%", "55%"], ["60%", "57%", "52%"], ["66%", "61%", "54%"]], "World 1")
-x2 = LEFT + tw + Inches(0.25)
-world_table(x2, ty, "World 2: Sunflora has Leaf Storm", ["Sludge Bomb", "Leaf Storm", "Switch"], rows,
-            [["62%", "41%", "55%"], ["60%", "40%", "52%"], ["66%", "48%", "54%"]], "World 2")
-ax = x2 + tw + Inches(0.15)
-S.line(ax, ty + Inches(0.75), ax + Inches(0.45), ty + Inches(0.75), "Worlds arrow", arrow=True)
-bx = ax + Inches(0.55)
-S.box(bx, ty + Inches(0.3), RIGHT - bx, Inches(1.2),
-      [P("one strategy ", ("$", "x"), " for all worlds: best on average when the opponent best-responds in each "
-         "(one LP)", size=12, align="ctr")], "LP box")
-S.text(LEFT, end1 + Inches(0.02), WIDTH, Inches(0.3),
-       [P("Illustrative values: our win chance after a 2-turn lookahead; 4 worlds per turn, 2 shown", size=CAPTION,
-          i=True)], "Tables caption")
+tx = RIGHT - tw
+S.text(LEFT, TOP, tx - LEFT - Inches(0.3), Inches(1.6), [
+    P(("1. Worlds and matrices. ", {"b": True}), "A world is one full guess of the opponent's hidden team and sets; "
+      "we sample 4 per turn. Each world gives a payoff matrix: our moves × their options, each cell our win chance "
+      "after a 2-turn lookahead.", size=16),
+], "Step 1")
+end = world_table(tx, TOP - Inches(0.05), "One world: Sunflora has Earth Power", ["Sludge Bomb", "Earth Power", "Switch"],
+                  ["Earthquake", "Stone Edge", "Slack Off"],
+                  [["62%", "58%", "55%"], ["60%", "57%", "52%"], ["66%", "61%", "54%"]], "World")
+S.text(tx, end, tw, Inches(0.28), [P("illustrative values", size=10, i=True, align="ctr")], "Table caption")
+y2 = end + Inches(0.2)
+S.text(LEFT, y2, WIDTH, Inches(0.75), [
+    P(("2. One strategy x. ", {"b": True}), "We cannot tell which world we are in, so we pick one mix ",
+      ("$", "x"), " that does best on average when the opponent best-responds in each world (one LP).", size=16),
+], "Step 2")
+y3 = y2 + Inches(0.75)
+S.text(LEFT, y3, WIDTH, Inches(0.45), [
+    P(("3. Experts. ", {"b": True}), "Each proposes a way to play ", ("$", "x"), "; Hedge mixes them across games.", size=16),
+], "Step 3")
 experts = [("Top move", "the most likely action of x"),
            ("Sampled", "draw an action from x"),
            ("Pure maximin", "the single action with the best worst case"),
            ("ε-safe best response", "best reply to a prediction of the opponent, giving up at most ε of x's worst case")]
-gy = end1 + Inches(0.4)
-EBH = Inches(0.95)
+gy = y3 + Inches(0.5)
+EBH = Inches(0.9)
 for k, (name, rule) in enumerate(experts):
     x = LEFT + k * (COL4 + GAP)
     S.header(x, gy, COL4, HDR_H, [P(name, size=SECONDARY, b=True, align="ctr")], f"Expert {k + 1} header")
     S.box(x, gy + HDR_H, COL4, EBH, [P(rule, size=14, align="ctr")], f"Expert {k + 1} box")
-by = gy + HDR_H + EBH + Inches(0.12)
+by = gy + HDR_H + EBH + Inches(0.1)
 S.text(LEFT, by, WIDTH, BOTTOM - by, [
-    P("Each expert is credited with what it would have earned against the opponent's actual move; weights carried "
-      "across games, so Hedge's regret bound covers the whole match", size=16, bullet=True),
+    P("Each expert is credited with what it would have earned against the opponent's actual move; weights carry "
+      "across games, so Hedge's regret bound covers the whole match", size=14, bullet=True),
 ], "Experts notes")
-notes(s, "Our preliminary model treats the game as an experts problem. Each turn we sample four guesses of the "
-      "opponent's hidden team, called worlds; here are two, where Sunflora has either Earth Power or Leaf Storm. Each "
-      "world gives a small payoff table: our moves down the side, the opponent's options across the top, and our "
-      "estimated win chance in each cell; the values here are illustrative. Because we cannot tell which world we "
-      "are in, we pick one mixed strategy x for all of them: the mix that does best on average when the opponent "
-      "best-responds in each world, which is one linear program. Four experts turn x into play: its top move, a "
-      "sample from it, the single safest action, and an epsilon-safe best response to a prediction of the opponent's "
-      "move. Hedge mixes the experts; after the opponent moves, each is credited with what it would have earned, and "
-      "because the weights carry across games, Hedge's regret bound covers the whole match.")
+notes(s, "Our preliminary model, step by step. First, worlds and matrices: a world is one full guess of the "
+      "opponent's hidden team and sets, and we sample four each turn. Each world gives a payoff matrix, like this "
+      "one where Sunflora has Earth Power: our moves down the side, the opponent's options across the top, and our "
+      "estimated win chance after a two-turn lookahead in each cell; these values are illustrative. Second, because "
+      "we cannot tell which world we are in, we pick one mixed strategy x that does best on average when the opponent "
+      "best-responds in each world, which is one linear program. Third, experts: each proposes a way to play x, its "
+      "top move, a sample from it, the single safest action, or an epsilon-safe best response to a prediction of "
+      "the opponent's move, and Hedge mixes them. After the opponent moves, each expert is credited with what it "
+      "would have earned, and because the weights carry across games, Hedge's regret bound covers the whole match.")
 
 # 5. The Bayesian model: the model we play, built on the preliminary formulation
 s, S = content(2, "The Bayesian model: what we play")
