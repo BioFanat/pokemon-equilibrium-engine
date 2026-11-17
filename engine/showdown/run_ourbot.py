@@ -56,9 +56,10 @@ EXPLOIT_METHODS = tuple(f"exploit_{v}" for v in EXPLOIT_VICTIMS)   # model-based
 STYLE_METHODS = ("style_eq", "style_safe", "style_uniform")       # realisability: play a behavior.py style
 CONTROL_METHODS = ("top",)                                         # E5 control: argmax of the agent-form LP
 NATIVE_METHODS = ("mcts_native",)                                 # native tree search over sampled worlds
+NOREGRET_METHODS = ("mcts_native_sampled", "hedge_mcts", "smmcts_rm")   # no-regret variants (noregret_methods.py)
 PLANNER_METHODS = ('s1_agentform',)                               # experimental information-set matrix planner
 METHODS = ROOT_METHODS + HEDGE_METHODS + SAFEX_METHODS + BANDIT_METHODS + EXPLOIT_METHODS + STYLE_METHODS + \
-    CONTROL_METHODS + NATIVE_METHODS + PLANNER_METHODS
+    CONTROL_METHODS + NATIVE_METHODS + NOREGRET_METHODS + PLANNER_METHODS
 LEARN_METHODS = HEDGE_METHODS + SAFEX_METHODS              # read the opponent's realised action after each decision
 HEDGE_EXPERTS = ["top", "sampled", "safest", "safex"]
 HEDGE_CONFIG = {"hedge": dict(eta=None, alpha=0.0, scale=400.0),        # anytime FTRL, eta_t = sqrt(8 ln k / t)
@@ -374,6 +375,10 @@ def make_move_fn(method: str, K: int, log=None, seed: int = 0, game: int = 0, st
     if method in NATIVE_METHODS:
         from native_mcts import make_move_fn as native_move_fn
         return native_move_fn(K, log or LOG, battle_to_poke_engine_state, request_options, raw_action)
+    if method in NOREGRET_METHODS:
+        from noregret_methods import make_move_fn as noregret_move_fn
+        return noregret_move_fn(method, K, log or LOG, battle_to_poke_engine_state, request_options, raw_action,
+                                state_path=state_path, seed=seed)
     other = {"agentform": "pimc", "pimc": "agentform"}.get(method)
     learner = meta = post = bmeta = None
     if method in HEDGE_METHODS:
