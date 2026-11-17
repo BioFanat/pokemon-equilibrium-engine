@@ -715,6 +715,13 @@ target's MCTS (5,000 iterations) to predict it.
 - Exploitability lower bound for the argmax: exploiter 0.70 − 0.5 − Hoeffding 0.12 = 0.08 (score units).
 - Sampling the visit shares removes the predictability (Proposition 9, price of determinism) but plays far worse.
 
+**Local Elo (round robin, seat-swapped pairs, local headless Showdown):** preliminary model (`hedge_bayes_mw`) vs the
+Bayesian model 0.167 [0.081, 0.252] (30 pairs, seeds 101–130); preliminary vs `hedge_mcts` 0.533 [0.419, 0.648] (30
+pairs, seeds 101–130); `hedge_mcts` vs the Bayesian model 0.310 (50 pairs, above). Bradley–Terry/Elo fit with the
+preliminary model at 0: Bayesian model **+203** [+135, +283], Hedge over it **+27** [−44, +105] (95% bootstrap over
+pairs, 400 resamples). Work dirs: scratchpad `rr_rr_prelim_bayes`, `rr_rr_prelim_hedge` (batch.py, 6 workers,
+`--streams 6`).
+
 ## Open items (2026-11)
 
 Caveat for all earlier results: 33 games dropped as error games came from harness bugs that were later fixed, and they are not a random sample (see "Harness bugs and the error-game caveat" in the next section).

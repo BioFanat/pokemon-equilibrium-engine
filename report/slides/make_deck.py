@@ -877,7 +877,8 @@ boxes = [("Public ladder vs humans", [P("99–51", size=36, b=True, align="ctr")
                                      P("Elo 1470 → 2090, top 500", size=14, align="ctr", before=4),
                                      P("(preliminary model 77–73)", size=12, i=True, align="ctr", before=4)]),
          ("Hedge over it", [P(H2H_SCORE, size=36, b=True, align="ctr"),
-                            P(f"vs the Bayesian model {H2H_CI}", size=14, align="ctr", before=4)]),
+                            P(f"vs the Bayesian model {H2H_CI}", size=14, align="ctr", before=4),
+                            P("Elo vs preliminary: +27, Bayesian +203", size=12, i=True, align="ctr", before=4)]),
          ("Adversary predicting it", [P("0.70", size=36, b=True, align="ctr"),
                                       P("vs its argmax, in-engine", size=14, align="ctr", before=4),
                                       P("+0.49 from predicting the move", size=12, i=True, align="ctr", before=4)])]
