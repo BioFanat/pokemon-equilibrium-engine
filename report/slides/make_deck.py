@@ -734,41 +734,42 @@ notes(s, "This is a real Showdown game against Foul Play; the names at the top a
 # ===================== Section 3: Theory =====================
 # 8. The whole-battle bound
 s, S = content(3, "Our two bounds: exploitability and regret")
-S.text(LEFT, TOP, WIDTH, Inches(1.6), [
-    P("Each turn our strategy can lose at most ", ("$", "δ = ε_s + 2ε_v"), " against the true game, and "
-      "exploitability is the sum of these per-turn losses over the battle, so", size=18),
-    EQ_(E_BOUND.split(",")[0], before=6),
-], "Bound statement")
-by = TOP + Inches(1.7)
-BH3 = Inches(1.3)
-terms = [([("$", "ε_s"), (": solver error", {})], [P("how far we are from our matrix's equilibrium", size=SECONDARY, align="ctr"),
-                                P("shrinks with compute (≤ ", ("$", "ε_R + ε_C"), ")", size=SECONDARY, align="ctr",
-                                  before=4)]),
-         ([("$", "ε_v"), (": matrix error", {})], [P("how wrong our matrix is, mostly the evaluation formula", size=SECONDARY,
-                                  align="ctr"),
-                                P("more compute does not shrink it", size=SECONDARY, align="ctr", before=4)]),
-         ([("$", r"\bar{H}"), (": battle length", {})], [P("expected turns an exploiter plays", size=SECONDARY, align="ctr"),
-                               P("(δ̄: average δ along its games)", size=SECONDARY, align="ctr", before=4)])]
-for k, (name, paras) in enumerate(terms):
-    x = LEFT + k * (COL3 + GAP)
-    S.header(x, by, COL3, HDR_H, [P(*name, size=SECONDARY, b=True, align="ctr")], f"Term {k + 1} header")
-    S.box(x, by + HDR_H, COL3, BH3, paras, f"Term {k + 1} box")
-gy = by + HDR_H + BH3 + Inches(0.3)
-S.header(LEFT, gy, WIDTH, HDR_H, [P("Second bound: Hedge's regret across games", size=SECONDARY, b=True,
-                                    align="ctr")], "Regret header")
-S.box(LEFT, gy + HDR_H, WIDTH, Inches(1.05), [
-    P("Over S turns of a match, Hedge earns at least its best expert's payoff minus ",
-      ("$", r"R(S) = \frac{3}{2}\sqrt{\frac{S}{2}\ln{n}} + \sqrt{\frac{\ln{n}}{8}}"), size=16, align="ctr"),
-    P("so its regret per turn shrinks to 0 as the match goes on", size=16, align="ctr", before=4),
-], "Regret box", anchor="ctr")
-notes(s, "Our main result in one line. On each turn, our strategy can lose at most delta against the true game: the "
-      "solver error plus twice the matrix error. Exploitability is exactly the sum of per-turn losses against a best "
-      "response, so it is at most H-bar, the number of turns that exploiter plays, times the average delta along "
-      "its games. The solver error shrinks with compute, and for no-regret self-play it is at most the summed "
-      "regrets. The matrix error comes mostly from the evaluation formula, and more compute does not shrink it. Our "
-      "second bound is for Hedge across games: over the turns of a match it earns at least its best expert's payoff "
-      "minus a regret term that grows like the square root of the number of turns, so per turn it shrinks to "
-      "zero.")
+S.text(LEFT, TOP, WIDTH, Inches(0.5), [
+    P("Two guarantees: how much a perfect opponent could take from us in one battle, and how close Hedge gets to "
+      "its best expert across a match.", size=16),
+], "Bounds intro")
+cw2 = (WIDTH - GAP) // 2
+by = TOP + Inches(0.75)
+bh = BOTTOM - by - HDR_H - Inches(0.15)
+cols = [
+    ("Exploitability bound (one battle)", [
+        P("What an opponent who knows our play can win", size=19, align="ctr"),
+        EQ_(r"expl ≤ \bar{H} · \bar{δ}", before=16),
+        P("Each turn we can fall short by ", ("$", "δ = ε_s + 2ε_v"), size=18, align="ctr", before=16),
+        P(("$", "ε_s"), " solver error: shrinks with more compute", size=18, align="ctr", before=10),
+        P(("$", "ε_v"), " matrix error: wrong payoffs, not fixed by compute", size=18, align="ctr", before=8),
+        P("Over a battle of ", ("$", r"\bar{H}"), " turns, these shortfalls add up", size=18, align="ctr", before=16),
+    ]),
+    ("Hedge regret bound (across a match)", [
+        P("How much better the best single expert did", size=19, align="ctr"),
+        EQ_(r"Regret(S) ≤ \frac{3}{2}\sqrt{\frac{S}{2}\ln{n}} + \sqrt{\frac{\ln{n}}{8}}", before=16),
+        P("S turns played, n experts", size=18, align="ctr", before=16),
+        P("Regret grows like ", ("$", r"\sqrt{S}"), ", so per turn it goes to 0", size=18, align="ctr",
+          before=10),
+        P("Over a long match, Hedge matches its best expert", size=18, align="ctr", before=16),
+    ]),
+]
+for c, (title, paras) in enumerate(cols):
+    x = LEFT + c * (cw2 + GAP)
+    S.header(x, by, cw2, HDR_H, [P(title, size=SECONDARY, b=True, align="ctr")], f"Bound {c + 1} header")
+    S.box(x, by + HDR_H, cw2, bh, paras, f"Bound {c + 1} box")
+notes(s, "We have two guarantees. On the left, exploitability: how much an opponent who knows our strategy could take "
+      "from us in one battle. Each turn we play the best mix for our estimated matrix, and we can fall short in two "
+      "ways: the solver did not fully finish, which more compute fixes, or the matrix numbers are wrong, which it "
+      "does not. Add those per-turn shortfalls over the battle and you get the bound: battle length times the average "
+      "shortfall. On the right, Hedge across a match: its regret, how much better its best single expert would have "
+      "done, grows only like the square root of the number of turns, so per turn it goes to zero, and over a long "
+      "match Hedge does as well as its best expert.")
 
 # ===================== Section 4: Experiments =====================
 # 8. Exploitability and regret: theory vs measurement, one slide with plain explanations under each panel
