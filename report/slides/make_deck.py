@@ -702,51 +702,52 @@ notes(s, "Our preliminary model, step by step. First, worlds and matrices: a wor
       "the opponent's move, and Hedge mixes them. After the opponent moves, each expert is credited with what it "
       "would have earned, and because the weights carry across games, Hedge's regret bound covers the whole match.")
 
-# 5. The Bayesian model: building on the world idea
-s, S = content(2, "The Bayesian model: building on worlds")
-lw = Inches(6.1)
-S.text(LEFT, TOP, lw, BOTTOM - TOP, [
-    P("Same worlds as before, with four changes:", size=18),
-    P(("Weigh the worlds. ", {"b": True}), "Each world gets a probability β from how often its sets occur, given "
-      "everything revealed so far", size=16, number=True, before=10),
-    P(("Cover the dangerous cases. ", {"b": True}), "Worlds are spread over the opponent's possible items and "
-      "abilities, so a rare Choice Specs is never left out by chance", size=16, number=True, before=8),
-    P(("Search each world deeper. ", {"b": True}), "MCTS for 250 ms instead of a 2-turn matrix gives each of our "
-      "moves a share of the search", size=16, number=True, before=8),
-    P(("Combine. ", {"b": True}), "Weight each world's shares by β and play the best move", size=16, number=True,
-      before=8),
-], "Bayesian steps")
-# illustrative table: our moves x worlds, then the weighted column
-tx = LEFT + lw + Inches(0.3)
-cols = [("World A", "Earth Power, β = 0.6"), ("World B", "Leaf Storm, β = 0.4"), ("Weighted", "")]
+# 5. The Bayesian model: what changes from the preliminary model
+s, S = content(2, "The Bayesian model: what changes")
+lab_w = Inches(1.6)
+bw = (WIDTH - lab_w - Inches(0.2) - Inches(0.7)) // 2
+x_pre = LEFT + lab_w + Inches(0.2)
+x_bay = x_pre + bw + Inches(0.7)
+S.header(x_pre, TOP, bw, Inches(0.38), [P("Preliminary model", size=14, b=True, align="ctr")], "Col pre")
+S.header(x_bay, TOP, bw, Inches(0.38), [P("Bayesian model", size=14, b=True, align="ctr")], "Col bay")
+changes = [("Worlds", "4 random draws from the belief, equal weight", "every item/ability covered, weighted by its probability β"),
+           ("Each world", "2-turn payoff matrix", "deeper search (MCTS, 250 ms)"),
+           ("Decision", "one strategy x, then experts", "weighted vote: play the top move")]
+rh = Inches(0.62)
+for i, (lab, pre, bay) in enumerate(changes):
+    y = TOP + Inches(0.45) + i * (rh + Inches(0.1))
+    S.header(LEFT, y, lab_w, rh, [P(lab, size=14, b=True, align="ctr")], f"Row {i} label")
+    S.box(x_pre, y, bw, rh, [P(pre, size=14, align="ctr")], f"Row {i} pre")
+    S.line(x_pre + bw + Inches(0.1), y + rh // 2, x_bay - Inches(0.1), y + rh // 2, f"Row {i} arrow", arrow=True)
+    S.box(x_bay, y, bw, rh, [P(bay, size=14, align="ctr")], f"Row {i} bay")
+# the weighted vote, illustrated
+ty = TOP + Inches(0.45) + 3 * (rh + Inches(0.1)) + Inches(0.25)
+cols = [("World A", "β = 0.6"), ("World B", "β = 0.4"), ("Weighted", "")]
 rows = [("Earthquake", ["0.50", "0.25", "0.40"]), ("Stone Edge", ["0.20", "0.15", "0.18"]),
         ("Slack Off", ["0.30", "0.60", "0.42"])]
-mw = Inches(1.15)
-cw = (RIGHT - tx - mw) // 3
-hy = TOP + Inches(0.3)
-hh, rh = Inches(0.55), Inches(0.4)
+mw, cw, hh, rh2 = Inches(1.3), Inches(1.4), Inches(0.5), Inches(0.36)
+tx = LEFT + (WIDTH - mw - 3 * cw) // 2
 for j, (c, sub) in enumerate(cols):
-    paras = [P(c, size=12, b=True, align="ctr")] + ([P(sub, size=10, align="ctr")] if sub else [])
-    S.header(tx + mw + j * cw, hy, cw, hh, paras, f"Bayes col {j}")
+    S.header(tx + mw + j * cw, ty, cw, hh, [P(c, size=12, b=True, align="ctr")] +
+             ([P(sub, size=10, align="ctr")] if sub else []), f"Vote col {j}")
 for i, (r, vals) in enumerate(rows):
-    yy = hy + hh + i * rh
-    S.header(tx, yy, mw, rh, [P(r, size=12, b=True, align="ctr")], f"Bayes row {i}")
+    yy = ty + hh + i * rh2
+    S.header(tx, yy, mw, rh2, [P(r, size=12, b=True, align="ctr")], f"Vote row {i}")
     for j, v in enumerate(vals):
-        best = (j == 2 and r == "Slack Off")
-        S.box(tx + mw + j * cw, yy, cw, rh, [P(v + (" ✓" if best else ""), size=12, b=best, align="ctr")],
-              f"Bayes cell {i}{j}")
-S.text(tx, hy + hh + 3 * rh + Inches(0.08), RIGHT - tx, Inches(0.9), [
-    P("Illustrative: share of each world's search per move. World A alone says Earthquake; weighting both "
-      "worlds says Slack Off.", size=12, i=True, align="ctr"),
-], "Bayes table caption")
-notes(s, "The Bayesian model builds directly on the world idea. We keep sampling worlds, guesses of the opponent's "
-      "hidden team, but make four changes. First, each world gets a probability from how often its sets actually "
-      "occur in Random Battles, given everything revealed so far. Second, we spread the worlds over the opponent's "
-      "possible items and abilities, so a rare but dangerous item like Choice Specs is never left out by chance. "
-      "Third, instead of a two-turn matrix, we search each world much deeper with Monte Carlo tree search for a "
-      "quarter of a second, which gives each of our moves a share of the search. Fourth, we weight each world's "
-      "shares by its probability and play the best move. In this illustrative example, world A alone would say "
-      "Earthquake, but once world B, where Sunflora has Leaf Storm, is weighted in, Slack Off comes out ahead.")
+        best = j == 2 and r == "Slack Off"
+        S.box(tx + mw + j * cw, yy, cw, rh2, [P(v + (" ✓" if best else ""), size=12, b=best, align="ctr")],
+              f"Vote cell {i}{j}")
+S.text(LEFT, ty + hh + 3 * rh2 + Inches(0.05), WIDTH, Inches(0.3),
+       [P("Illustrative: each world's search share per move; weighting the worlds picks Slack Off", size=11, i=True,
+          align="ctr")], "Vote caption")
+notes(s, "The Bayesian model keeps the world idea and changes three things. First, the worlds: instead of four "
+      "random guesses with equal weight, each world gets a probability from how often its sets occur given what we "
+      "have seen, and the worlds are spread so every possible item and ability of the opponent is covered. Second, "
+      "inside each world: instead of a two-turn payoff matrix, we search much deeper with Monte Carlo tree search "
+      "for a quarter of a second. Third, the decision: instead of one strategy x and experts, each world's search "
+      "votes for our moves, we weight the votes by the worlds' probabilities, and play the top move. In this "
+      "illustrative example, world A alone would pick Earthquake, but weighting in world B makes Slack Off the "
+      "choice.")
 
 # 6. Case study: one turn of a real Showdown game
 s, S = content(2, "A turn, step by step")
