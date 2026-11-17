@@ -350,7 +350,6 @@ def EQ_(src, before=0, size=EQ):
 # ---------- the equations, one line each ----------
 E_REG = r"Regret_T = \sum_t{p^t·l^t} − \min_i{\sum_t{l_i^t}}"
 E_EXPL = r"expl(x) = val(A) − \min_y{x^⊤Ay}"
-E_GAP = r"gap(x, y) = \max_i{{(Ay)}_i} − \min_j{{(x^⊤A)}_j}"
 E_MWU = r"w_i^{t+1} = w_i^t(1 − ηl_i^t)"
 E_HEDGE = r"w_i^{t+1} = w_i^t e^{−ηl_i^t}"
 E_SOFTMAX = r"p_i^t ∝ \exp{(η\sum_{j<t}{r_i^j})}"
@@ -359,7 +358,6 @@ E_MIX = r"p_t = \sum_e{w_e q_e}"
 E_MINIMAX = r"\max_x{x^⊤A\bar{y}} − \min_y{\bar{x}^⊤Ay} ≤ ϵ_R + ϵ_C"
 E_BOUND = r"expl(π) ≤ \bar{H}\sup{(ε_s + 2ε_v)} ≤ \bar{H}(ϵ_R + ϵ_C + 2ε_v)"
 E_LOSSES = r"expl(π) = \sup_σ{E[\sum_{t<τ}{ℓ_t}]}"
-E_GAP_AVG = r"gap(\bar{x}, \bar{y}) ≤ ϵ_R + ϵ_C"
 E_MWUB = r"L_{MWU} ≤ (1 + η)L^* + \frac{\ln{n}}{η}"
 
 
@@ -557,18 +555,22 @@ S.text(LEFT, TOP, WIDTH, BOTTOM - TOP, [
     P("A battle is a zero-sum stochastic game: simultaneous moves, chance, hidden teams → a stage matrix each turn"),
     P(("Regret", {"b": True}), "  our total loss minus the best expert's total loss in hindsight", before=22),
     EQ_(E_REG, before=4),
-    P(("Exploitability", {"b": True}), "  loss against a best-responding opponent, relative to the game value",
-      before=22),
+    P(("Exploitability", {"b": True}), "  how much less than the game value we earn against a best-responding "
+      "opponent", before=22),
     EQ_(E_EXPL, before=4),
-    P(("Duality gap", {"b": True}), "  the exploitability of both players together; zero exactly at equilibrium",
-      before=22),
-    EQ_(E_GAP, before=4),
+    P(("Notation", {"b": True}), before=26),
+    P(("$", "A"), ": the turn's payoff matrix (our action × their action);  ", ("$", "x, y"),
+      ": mixed strategies (probabilities over actions)", bullet=True, before=6),
+    P(("$", "val(A) = \\max_x{\\min_y{x^⊤Ay}}"), ": the payoff we can guarantee, the game value", bullet=True, before=6),
+    P(("$", "n"), " experts, ", ("$", "T"), " rounds;  ", ("$", "p^t"), ": our probabilities over experts in round ",
+      ("$", "t"), ";  ", ("$", "l_i^t ∈ [0,1]"), ": expert ", ("$", "i"), "'s loss", bullet=True, before=6),
 ], "Definitions")
 notes(s, "A battle is a zero-sum stochastic game with simultaneous moves, chance and hidden teams, so each turn "
-      "we face a stage matrix. Three yardsticks. Regret: in the experts problem, our total loss minus the total loss "
-      "of the best expert in hindsight; an algorithm is no-regret if this grows slower than the number of rounds. "
-      "Exploitability: how much less than the game value we earn against a best-responding opponent. The duality gap "
-      "is the exploitability of both players together; it is zero exactly at equilibrium.")
+      "we face a stage matrix A: rows are our actions, columns theirs. x and y are mixed strategies, and val(A), the "
+      "max over x of the min over y of x-transpose-A-y, is what we can guarantee. Regret, in the experts problem with "
+      "n experts over T rounds: we put probabilities p^t on the experts, each expert i suffers loss l_i^t, and regret is "
+      "our total loss minus the best expert's in hindsight; no-regret means it grows slower than T. Exploitability: how "
+      "much less than the game value we earn against a best-responding opponent.")
 
 # 3. MWU -> Hedge, and regret => equilibrium
 s, S = content(1, "MWU → Hedge, and regret ⇒ equilibrium")
@@ -576,7 +578,7 @@ ch = Inches(1.75)
 S.text(LEFT, TOP, COL2, ch, [
     P("MWU", b=True),
     EQ_(E_MWU, before=8),
-    P("linear in the loss", size=SECONDARY, align="ctr", before=6),
+    P("linear in the loss", align="ctr", before=6),
     EQ_(E_MWUB, before=6),
 ], "MWU column")
 S.text(LEFT + COL2 + GAP, TOP, COL2, ch, [
@@ -589,10 +591,9 @@ S.text(LEFT, TOP + ch + Inches(0.1), WIDTH, BOTTOM - TOP - ch - Inches(0.1), [
     P("Bayes = Hedge with ", ("$", "η = 1"), " on log loss", bullet=True, before=6),
     P(("No-regret dynamics ⇒ minimax", {"b": True}), ("  (Freund & Schapire 1999)", {"size": SECONDARY}),
       before=24),
-    P("both players no-regret, with average regrets ", ("$", "ϵ_R"), " and ", ("$", "ϵ_C"), ":",
-      size=SECONDARY, before=4),
+    P("both players no-regret, with average regrets ", ("$", "ϵ_R"), " and ", ("$", "ϵ_C"), ":", before=4),
     EQ_(E_MINIMAX, before=6),
-    P("and the time-average play is an ε-coarse correlated equilibrium", size=SECONDARY, align="ctr", before=6),
+    P("and the time-average play is an ε-coarse correlated equilibrium", align="ctr", before=6),
 ], "Hedge and no-regret dynamics")
 notes(s, "Multiplicative weights updates linearly in the loss. We use Hedge, the exponential form of multiplicative "
       "weights. With small steps it behaves like MWU, but it is the form the no-regret-in-games literature analyses, "
@@ -699,7 +700,7 @@ fh = int(fw * 416 / 1395)  # 1395 x 416 px figure
 pic = s.shapes.add_picture(FIG_MAIN, LEFT, TOP, fw, fh)
 pic.name = "Exploitability and regret figure"
 pic._element.nvPicPr.cNvPr.set(
-    "descr", "Four panels: exact exploitability against the whole-battle bound; RM+ duality gap over iterations; "
+    "descr", "Four panels: exact exploitability against the whole-battle bound; RM+ distance from equilibrium over iterations; "
              "Hedge regret per scored turn over 10 matches; memory regret against the bound ln 5")
 by = TOP + fh + Inches(0.1)
 S.text(LEFT, by, WIDTH, BOTTOM - by, [
@@ -717,9 +718,10 @@ notes(s, "An informed best response that knows our policy gives exploitability l
 # 9. No-regret dynamics
 s, S = content(4, "No-regret dynamics")
 S.text(LEFT, TOP, WIDTH, BOTTOM - TOP, [
-    P("Theory: no-regret averages are near minimax"),
-    EQ_(E_GAP_AVG, before=4),
-    P("Inside a turn: RM⁺ gap ", ("7×10⁻⁵", {"b": True}), " of the payoff range (bound 0.38)",
+    P("Theory: if both players have average regrets ", ("$", "ϵ_R, ϵ_C"), ", their average strategies are within ",
+      ("$", "ϵ_R + ϵ_C"), " of minimax"),
+    EQ_(E_MINIMAX, before=4),
+    P("Inside a turn: RM⁺ is within ", ("7×10⁻⁵", {"b": True}), " of the payoff range of minimax (bound 0.38)",
       bullet=True, before=20),
     P("Averages within the bound on all 120 matrices; the last iterate has a heavier tail",
       bullet=True, before=SP),
@@ -776,8 +778,8 @@ notes(s, "Do guarantees that hold only in the estimated matrix translate into wi
 # ===================== Section 5: Conclusions =====================
 # 12. Takeaways and next steps
 s, S = content(5, "Takeaways and next steps")
-items = ["Equilibrium play and Hedge compose into a whole-battle bound; measured regrets and gaps sit well under "
-         "their bounds",
+items = ["Equilibrium play and Hedge compose into a whole-battle bound; measured regrets sit well under their "
+         "bounds",
          "The guarantees hold in the estimated matrix, whose leaf error does not shrink with compute; better "
          "beliefs do not move win rate",
          "Next: train the evaluation on exact terminal values"]
@@ -785,7 +787,7 @@ S.text(LEFT, TOP, WIDTH, BOTTOM - TOP, [
     P(txt, number=True, before=0 if k == 0 else 22) for k, txt in enumerate(items)
 ], "Takeaways")
 notes(s, "Three takeaways. First, per-turn equilibrium play and Hedge across games compose into a whole-battle bound, "
-      "and the regrets and duality gaps we measured sit well under their bounds. Second, those guarantees hold in the "
+      "and the regrets we measured sit well under their bounds. Second, those guarantees hold in the "
       "estimated matrix, whose leaf evaluation error does not shrink with compute and plausibly dominates, consistent "
       "with better beliefs improving prediction but not win rate. Third, the next step is to train the evaluation on "
       "exact terminal values. Thank you.")
