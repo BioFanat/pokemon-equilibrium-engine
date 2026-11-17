@@ -1,11 +1,11 @@
-"""Build deck.pptx: the 12-slide, ~4-minute CS535 final-project talk, in five sections.
+"""Build deck.pptx: the 13-slide, ~4-minute CS535 final-project talk, in five sections.
 
 Built on the user's template ("random template.pptx"): its master, theme, 16:9 size,
 title-slide style and its five-box section tracker, which lives in the template's
 "1_Title and Content" ... "5_Title and Content" layouts. Only the tracker labels change.
 Content is plain text (Helvetica Neue, 20 pt, secondary 16 pt) with equations as native
 PowerPoint equations (OMML, Cambria Math, 22 pt), wrapped like the template's slide 6:
-mc:AlternateContent with an a14:m choice and a plain Unicode text fallback. Two slides keep
+mc:AlternateContent with an a14:m choice and a plain Unicode text fallback. One slide keeps
 one small group of the template's slide-3 boxes (accent5 header, bg2 box, tx1 outline).
 Every number is taken from ../final5.tex.
 
@@ -21,7 +21,8 @@ from pptx.util import Emu, Inches
 HERE = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE = os.path.join(HERE, "random template.pptx")
 OUT = os.path.join(HERE, "deck.pptx")
-FIG = os.path.join(HERE, "..", "figures", "fig_gauntlet_col.png")
+FIG_MAIN = os.path.join(HERE, "..", "figures", "fig_main.png")  # 1395 x 416 px, 4 panels
+FIG_WINS = os.path.join(HERE, "..", "figures", "fig_wins.png")  # 655 x 525 px
 GIF = os.path.join(HERE, "media", "showdown_combined_slide.gif")  # 800 x 542 px case-study animation
 
 SECTIONS = ["Preliminaries", "Method", "Theory", "Experiments", "Conclusions"]
@@ -71,7 +72,7 @@ def esc(s):
 # Spec syntax: x_i, x^2, x_{t,e}^{1}; \sum_{lo}^{hi}{body}; \frac{a}{b}; \sqrt{a};
 # \max_{x}{body}, \min_{y}{body} (name with the limit under it); \sup{body}, \ln{a}, \exp{a};
 # \bar{H}, \hat{q}; {...} groups. Spaces only separate tokens (OMML spaces itself).
-UPRIGHT = {"Reg", "expl", "gap", "val"}  # multi-letter names set upright
+UPRIGHT = {"Regret", "MWU", "expl", "gap", "val"}  # multi-letter names set upright
 FUNCS = {"sup", "ln", "exp"}
 _TOKEN = re.compile(r"\\[A-Za-z]+|[A-Za-z]+|\d+|\s+|.")
 
@@ -87,6 +88,8 @@ def _italic(text):
             out.append(chr(0x1D44E + o - ord("a")))
         elif "A" <= ch <= "Z":
             out.append(chr(0x1D434 + o - ord("A")))
+        elif ch == "\u03f5":  # lunate epsilon (the paper's \epsilon)
+            out.append("\U0001D716")
         elif 0x3B1 <= o <= 0x3C9:
             out.append(chr(0x1D6FC + o - 0x3B1))
         else:
@@ -345,18 +348,19 @@ def EQ_(src, before=0, size=EQ):
 
 
 # ---------- the equations, one line each ----------
-E_REG = r"Reg_T = \max_e{\sum_t{r_{t,e}}} − \sum_t{p_t·r_t}"
+E_REG = r"Regret_T = \sum_t{p^t·l^t} − \min_i{\sum_t{l_i^t}}"
 E_EXPL = r"expl(x) = val(A) − \min_y{x^⊤Ay}"
 E_GAP = r"gap(x, y) = \max_i{{(Ay)}_i} − \min_j{{(x^⊤A)}_j}"
-E_MWU = r"w_e ← w_e(1 − ηℓ_e)"
-E_HEDGE = r"w_e ← w_e e^{ηr_e}"
-E_SOFTMAX = r"p_t(e) ∝ \exp{(η\sum_{j<t}{r_{j,e}})}"
-E_FACT1 = r"ε = \frac{Reg_1 + Reg_2}{T}"
+E_MWU = r"w_i^{t+1} = w_i^t(1 − ηl_i^t)"
+E_HEDGE = r"w_i^{t+1} = w_i^t e^{−ηl_i^t}"
+E_SOFTMAX = r"p_i^t ∝ \exp{(η\sum_{j<t}{r_i^j})}"
 E_BLP = r"\max_x{\sum_k{β_k \min_j{{(M_k^⊤x)}_j}}}"
 E_MIX = r"p_t = \sum_e{w_e q_e}"
-E_BOUND = r"expl(π) ≤ \bar{H} · \sup{(ε_s + 2ε_v)}"
-E_HEDGE_BOUND = r"Reg_T ≤ \sqrt{T \ln{m_E} / 2}"
-E_ANYTIME = r"Reg_T ≤ \frac{3}{2}\sqrt{T \ln{m_E} / 2} + \sqrt{\ln{m_E} / 8}"
+E_MWU_BOUND = r"L_{MWU} ≤ (1 + η)L^* + \frac{\ln{n}}{η}"
+E_HEDGE_BOUND = r"Regret_T ≤ \sqrt{\frac{T}{2}\ln{n}}"
+E_MINIMAX = r"\max_x{x^⊤A\bar{y}} − \min_y{\bar{x}^⊤Ay} ≤ ϵ_R + ϵ_C"
+E_BOUND = r"expl(π) ≤ \bar{H}\sup{(ε_s + 2ε_v)}"
+E_COR = r"expl(π) ≤ \bar{H}(ϵ_R + ϵ_C + 2ε_v)"
 
 
 # ---------- shapes ----------
@@ -428,7 +432,7 @@ class Shapes:
         self._add(
             f'<p:sp {NS}><p:nvSpPr><p:cNvPr id="{sid}" name="Slide Number Placeholder"/><p:cNvSpPr>'
             f'<a:spLocks noGrp="1"/></p:cNvSpPr><p:nvPr><p:ph type="sldNum" sz="quarter" idx="4"/></p:nvPr></p:nvSpPr>'
-            f'<p:spPr/><p:txBody><a:bodyPr/><a:lstStyle/><a:p><a:fld id="{{7E75810F-9510-A844-820C-E3462544137D}}" '
+            f'<p:spPr/><p:txBody><a:bodyPr wrap="none"/><a:lstStyle/><a:p><a:fld id="{{7E75810F-9510-A844-820C-E3462544137D}}" '
             f'type="slidenum"><a:rPr lang="en-US"/><a:t>{n}</a:t></a:fld><a:endParaRPr lang="en-US" dirty="0"/></a:p>'
             f'</p:txBody></p:sp>')
 
@@ -551,7 +555,7 @@ notes(s, "Hi, we are [Names]. PokaiTrainer showed that per-turn equilibrium play
 s, S = content(1, "The game and the yardsticks")
 S.text(LEFT, TOP, WIDTH, BOTTOM - TOP, [
     P("A battle is a zero-sum stochastic game: simultaneous moves, chance, hidden teams → a stage matrix each turn"),
-    P(("Regret", {"b": True}), "  the best expert in hindsight minus what we earned", before=22),
+    P(("Regret", {"b": True}), "  our total loss minus the best expert's total loss in hindsight", before=22),
     EQ_(E_REG, before=4),
     P(("Exploitability", {"b": True}), "  loss against a best-responding opponent, relative to the game value",
       before=22),
@@ -561,15 +565,16 @@ S.text(LEFT, TOP, WIDTH, BOTTOM - TOP, [
     EQ_(E_GAP, before=4),
 ], "Definitions")
 notes(s, "A battle is a zero-sum stochastic game with simultaneous moves, chance and hidden teams, so each turn "
-      "we face a stage matrix. Three yardsticks. Regret: the best expert in hindsight minus what we earned. "
-      "Exploitability: how much a best-responding opponent takes from us, relative to the game value. The duality gap "
+      "we face a stage matrix. Three yardsticks. Regret: in the experts problem, our total loss minus the total loss "
+      "of the best expert in hindsight; an algorithm is no-regret if this grows slower than the number of rounds. "
+      "Exploitability: how much less than the game value we earn against a best-responding opponent. The duality gap "
       "is the exploitability of both players together; it is zero exactly at equilibrium.")
 
-# 3. From lecture: MWU -> Hedge, and regret => equilibrium
+# 3. MWU -> Hedge, and regret => equilibrium
 s, S = content(1, "MWU → Hedge, and regret ⇒ equilibrium")
 ch = Inches(1.75)
 S.text(LEFT, TOP, COL2, ch, [
-    P("MWU (lecture)", b=True),
+    P("MWU", b=True),
     EQ_(E_MWU, before=8),
     P("linear in the loss", size=SECONDARY, align="ctr", before=6),
 ], "MWU column")
@@ -579,25 +584,30 @@ S.text(LEFT + COL2 + GAP, TOP, COL2, ch, [
     EQ_(E_SOFTMAX, before=4),
 ], "Hedge column")
 S.text(LEFT, TOP + ch + Inches(0.1), WIDTH, BOTTOM - TOP - ch - Inches(0.1), [
-    P("Up- and down-weighting coincide after normalising", bullet=True),
+    P("Exponential in the loss = a softmax of cumulative reward (the common factor cancels)", bullet=True),
     P("Bayes = Hedge with ", ("$", "η = 1"), " on log loss", bullet=True, before=6),
-    P(("Fact 2", {"b": True}), " (Freund & Schapire 1999): both players no-regret ⇒ time averages are an ",
-      ("$", "ε"), "-equilibrium", before=24),
-    EQ_(E_FACT1, before=6),
-    P("Averaged joint play is an ε-CCE, which in zero-sum games is minimax; "
-      "CFR: regret bounds the exploitability of the average strategy", size=SECONDARY, align="ctr", before=6),
-], "Hedge and Fact 2")
-notes(s, "Lecture gave us multiplicative weights, a linear update on losses. Our code uses Hedge, an exponential "
-      "update on rewards, so the strategy is a softmax of cumulative reward; up- and down-weighting coincide after "
-      "normalising. Bayesian updating is Hedge with step one on log loss. Fact 2: if both players have no regret, the "
-      "time averages are an epsilon-equilibrium, and CFR uses regret to bound exploitability.")
+    P(("No-regret dynamics ⇒ minimax", {"b": True}), ("  (Freund & Schapire 1999)", {"size": SECONDARY}),
+      before=24),
+    P("both players no-regret, with average regrets ", ("$", "ϵ_R"), " and ", ("$", "ϵ_C"), ":",
+      size=SECONDARY, before=4),
+    EQ_(E_MINIMAX, before=6),
+    P("and the time-average play is an ε-coarse correlated equilibrium (CCE)", size=SECONDARY, align="ctr",
+      before=6),
+], "Hedge and no-regret dynamics")
+notes(s, "Multiplicative weights updates linearly in the loss. We use Hedge, the exponential form of multiplicative "
+      "weights. With small steps it behaves like MWU, but it is the form the no-regret-in-games literature analyses, "
+      "its anytime version suits matches of unknown length, and Bayesian updating is exactly Hedge with step one, so "
+      "our opponent memory inherits the same no-regret guarantee. Inside a turn we use regret matching (RM-plus), as "
+      "CFR and PokaiTrainer do. The key result: if both players are no-regret, the average strategies are an "
+      "approximate minimax equilibrium, off by at most the sum of their average regrets, and time-average play is an "
+      "approximate coarse correlated equilibrium.")
 
 # ===================== Section 2: Method =====================
 # 4. Where no-regret learning enters
 s, S = content(2, "Equilibrium Play and Hedge")
 cols = [
     ("Each turn: play an equilibrium", [
-        P("Solve the Bayesian matrix game over the sampled worlds: an LP, or RM⁺ self-play (no-regret dynamics, Fact 2)", before=8),
+        P("Solve the Bayesian matrix game over the sampled worlds: an LP, or RM⁺ self-play (no-regret dynamics ⇒ minimax)", before=8),
         EQ_(E_BLP, before=10),
         P("PIMC averaging instead solves each world as if known, then averages → strategy fusion",
           size=SECONDARY, before=10)]),
@@ -612,15 +622,15 @@ S.text(LEFT, BOTTOM - Inches(0.7), WIDTH, Inches(0.6),
           "converge to an equilibrium (Lisý et al. 2013), so we solve each turn's game directly",
           size=SECONDARY, i=True)], "Search note")
 notes(s, "Each turn, the agent plays an equilibrium of PokaiTrainer's Bayesian matrix game: one strategy x against "
-      "an opponent that best-responds in each sampled world. On Showdown we solve it with an LP; in the engine we run "
-      "RM-plus self-play, whose convergence is the regret-to-equilibrium fact. PIMC averaging instead solves each world "
+      "an opponent that best-responds in each sampled world. We solve it as one LP, or with "
+      "RM-plus self-play when there is a single world, whose convergence is no-regret dynamics giving minimax. PIMC averaging instead solves each world "
       "separately and suffers strategy fusion. The actual learning happens across games: Hedge over per-turn experts, "
       "and a Bayesian opponent memory whose update is Hedge with step one.")
 
 # 5. Across games: an experts problem
 s, S = content(2, "Across games: an experts problem")
 S.text(LEFT, TOP, WIDTH, Inches(0.8),
-       [P("We cast choosing how to play as the lecture's experts problem. The experts are fixed rules applied "
+       [P("We cast choosing how to play as the experts problem. The experts are fixed rules applied "
           "to each turn's solved game:")], "Intro")
 experts = [("Top move", [P("argmax of ", ("$", "x"), size=SECONDARY, align="ctr")]),
            ("Sampled", [P("play ", ("$", "x"), size=SECONDARY, align="ctr")]),
@@ -639,10 +649,10 @@ S.text(LEFT, by, WIDTH, BOTTOM - by, [
     P("Full-information feedback: each rule is credited with what it would have earned against the "
       "observed opponent action", bullet=True, before=6),
     P("Weights kept across the games of a match", bullet=True, before=6),
-    P("Hedge competes with the best rule in hindsight: the lecture's fixed actions become fixed rules",
+    P("Hedge competes with the best rule in hindsight: fixed actions become fixed rules",
       bullet=True, before=6),
 ], "Hedge bullets")
-notes(s, "Across games, we cast choosing how to play as the lecture's experts problem. Each expert is a fixed rule "
+notes(s, "Across games, we cast choosing how to play as the experts problem. Each expert is a fixed rule "
       "applied to the turn's solved game: top move, sampled, pure maximin, and an epsilon-safe best response to the "
       "predicted opponent. Hedge mixes them with full-information feedback: each rule earns what it would have earned "
       "against the opponent's observed action. Weights carry across the games of a match, so Hedge competes with the "
@@ -688,149 +698,146 @@ notes(s, "This is a real Showdown game against Foul Play; the names at the top a
       "strategy, and the outlined cell is what we and Foul Play actually played.")
 
 # ===================== Section 3: Theory =====================
-# 8. Base bounds and how we adapt them
-s, S = content(3, "Base bounds and where they come from")
-bh = Inches(1.22)
-S.text(LEFT, TOP, COL2, bh, [
-    P("Hedge regret (Freund & Schapire 1997; Cesa-Bianchi & Lugosi 2006)", size=SECONDARY, b=True),
-    EQ_(E_HEDGE_BOUND, before=6),
-], "Base: Hedge")
-S.text(LEFT + COL2 + GAP, TOP, COL2, bh, [
-    P("No-regret self-play ⇒ ε-equilibrium (Freund & Schapire 1999; lecture)", size=SECONDARY, b=True),
-    EQ_(E_FACT1, before=2),
-], "Base: self-play")
-TC = [Inches(3.0), Inches(4.6)]
-TC.append(WIDTH - TC[0] - TC[1] - 2 * Inches(0.25))
-TX = [LEFT, LEFT + TC[0] + Inches(0.25), LEFT + TC[0] + TC[1] + Inches(0.5)]
-ty = TOP + bh + Inches(0.02)
-for k, head in enumerate(["Base result (source)", "Adaptation", "Ours"]):
-    S.text(TX[k], ty, TC[k], Inches(0.4), [P(head, size=SECONDARY, b=True)], f"Table header {k + 1}")
-S.line(LEFT, ty + Inches(0.4), RIGHT, ty + Inches(0.4), "Table rule", w=12700)
-rows = [
-    (Inches(0.9),
-     [P("Self-play bound, per turn (Freund & Schapire 1999)", size=SECONDARY)],
-     [P("stage exploitability ", ("$", "ε_s"), ", composed over a battle with the stage-matrix error ",
-        ("$", "ε_v"), " by backward induction (Shapley)", size=SECONDARY)],
-     [P(("$", E_BOUND), size=SECONDARY), P("whole-battle bound; adapted", size=SECONDARY, i=True)]),
-    (Inches(0.92),
-     [P("Hedge bound (Freund & Schapire 1997; Cesa-Bianchi & Lugosi 2006)", size=SECONDARY)],
-     [P("anytime step, slightly tighter constant (FTRL); Bayes = Hedge with ", ("$", "η = 1"),
-        " (Cesa-Bianchi & Lugosi 2006)", size=SECONDARY)],
-     [P(("$", E_ANYTIME), size=SECONDARY),
-      P("FTRL constant: standard argument; ln 5: known", size=SECONDARY, i=True)]),
-    (Inches(0.9),
-     [P("Fixed-comparator regret (Cesa-Bianchi & Lugosi 2006)", size=SECONDARY)],
-     [P("a switching opponent: tracking via fixed share (Herbster & Warmuth 1998; Cesa-Bianchi & Lugosi 2006)",
-        size=SECONDARY)],
-     [P("detection-delay prediction ", ("$", r"\hat{d}"), size=SECONDARY),
-      P("adapted; tested live", size=SECONDARY, i=True)]),
-]
-ry = ty + Inches(0.45)
-for k, (h, *cells) in enumerate(rows):
-    for c, paras in enumerate(cells):
-        S.text(TX[c], ry, TC[c], h, paras, f"Row {k + 1} column {c + 1}")
-    ry += h
-notes(s, "Our theory starts from two base results. Hedge's regret is at most root T log m over 2, from Freund and "
-      "Schapire 1997 and Cesa-Bianchi and Lugosi; and no-regret self-play gives an epsilon-equilibrium with epsilon "
-      "the summed regret over T, from Freund and Schapire 1999 and the lecture. We adapt them three ways. Applied per "
-      "turn, the self-play bound gives the stage exploitability epsilon-s; composed over a battle with the stage-matrix "
-      "error by Shapley's backward induction, it gives our whole-battle bound. Across games we use Hedge's anytime version, with a slightly "
-      "tighter constant by the standard FTRL argument, and Bayes is Hedge with step one, so the memory's regret is at "
-      "most log five; that is known. Against a switching opponent, tracking by fixed share, from Herbster and Warmuth, "
-      "gives our detection-delay prediction, which we tested live.")
+# 8. The no-regret results we build on, and how we use them
+s, S = content(3, "No-regret results we build on")
+S.text(LEFT, TOP, WIDTH, BOTTOM - TOP, [
+    P(("MWU", {"b": True}), ("   Littlestone & Warmuth 1994", {"size": SECONDARY})),
+    EQ_(E_MWU_BOUND, before=2),
+    P(("Hedge", {"b": True}), ("   Freund & Schapire 1997", {"size": SECONDARY}), before=12),
+    EQ_(E_HEDGE_BOUND, before=2),
+    P(("No-regret dynamics ⇒ minimax", {"b": True}), ("   Freund & Schapire 1999", {"size": SECONDARY}),
+      before=12),
+    EQ_(E_MINIMAX, before=2),
+    P("How we use them", b=True, before=20),
+    P("Inside a turn: no-regret self-play (RM⁺) gives an approximate minimax strategy of each turn's matrix",
+      size=SECONDARY, bullet=True, before=4),
+    P("Over a battle: summing the per-turn error over turns gives the whole-battle theorem (next slide)",
+      size=SECONDARY, bullet=True, before=4),
+    P("Across games: Hedge over per-turn experts (anytime step), so its average payoff approaches the best expert's",
+      size=SECONDARY, bullet=True, before=4),
+    P("Opponent memory: Bayes over 5 styles is Hedge with η = 1 → at most ln 5 extra log loss per match; "
+      "after a style switch the delay grows with how long the old style was played (tested live)",
+      size=SECONDARY, bullet=True, before=4),
+], "Base results and uses")
+notes(s, "Three standard no-regret results carry our theory. Multiplicative weights loses at most a factor one plus "
+      "eta of the best expert, plus log n over eta. Hedge's regret grows like the square root of T log n. And if both "
+      "players of a zero-sum game are no-regret, their averages are an approximate minimax equilibrium, off by the sum "
+      "of their average regrets. We use them four ways: RM-plus self-play inside a turn; summing per-turn errors into "
+      "the whole-battle theorem; Hedge over experts across games; and the opponent memory, which is Hedge with step "
+      "one, so it loses at most log five per match but notices a style switch late.")
 
 # 9. The whole-battle bound
 s, S = content(3, "The whole-battle bound")
-S.text(LEFT, TOP, WIDTH, Inches(3.0), [
-    EQ_(E_BOUND),
-    P("Shapley's backward induction over histories, one turn at a time; the core step is Lean-checked",
-      size=SECONDARY, align="ctr", before=6),
-    P(("$", "ε_s"), "  stage exploitability: shrinks with compute (regret ⇒ equilibrium; CFR)", before=22),
-    P(("$", "ε_v"), "  stage-matrix error from the heuristic evaluation: does not", before=SP),
-    P(("$", r"\bar{H}"), "  expected length against a best response (tight)", before=SP),
+S.text(LEFT, TOP, WIDTH, BOTTOM - TOP, [
+    P("If every turn we play an approximate minimax strategy of an estimated stage matrix, our exploitability "
+      "over the battle is at most the expected length times the per-turn error:"),
+    EQ_(E_BOUND, before=6),
+    P("With no-regret self-play each turn:", before=12),
+    EQ_(E_COR, before=4),
+    P(("$", "ε_s"), "  solver error in the estimated matrix: shrinks with compute", bullet=True, before=18),
+    P(("$", "ε_v"), "  stage-matrix error from the heuristic leaf evaluation: does not", bullet=True, before=SP),
+    P(("$", r"\bar{H}"), "  expected battle length against a best response (tight)", bullet=True, before=SP),
+    P("Hidden teams: the same bound plus sampling, belief and non-locality terms", size=SECONDARY, i=True,
+      before=18),
+    P("Builds on: Freund & Schapire; Zinkevich et al. (CFR); Cesa-Bianchi & Lugosi; PokaiTrainer",
+      size=SECONDARY, before=4),
 ], "Bound and terms")
-anchors = [("Freund & Schapire", [P("→ Fact 2 / ", ("$", "ε_s"), size=SECONDARY, align="ctr")]),
-           ("Zinkevich et al. (CFR)", [P("→ exploitability metric; regret ⇒ exploitability", size=SECONDARY,
-                                         align="ctr")]),
-           ("Cesa-Bianchi & Lugosi", [P("→ Hedge, Bayes = Hedge, tracking", size=SECONDARY, align="ctr")]),
-           ("PokaiTrainer", [P("→ the Bayesian matrix game", size=SECONDARY, align="ctr")])]
-ay = TOP + Inches(3.15)
-for k, (who, what) in enumerate(anchors):
-    x = LEFT + k * (COL4 + GAP)
-    S.header(x, ay, COL4, HDR_H, [P(who, size=SECONDARY, b=True, align="ctr")], f"Anchor {k + 1} header")
-    S.box(x, ay + HDR_H, COL4, Inches(0.75), what, f"Anchor {k + 1} box")
-S.text(LEFT, ay + HDR_H + Inches(0.85), WIDTH, Inches(0.4),
-       [P("Also: a hidden-information version with sampling and belief terms", size=SECONDARY, i=True)],
-       "Theory footer")
-notes(s, "The headline theorem, adapted: exploitability is at most H-bar times the sup of epsilon-s plus two "
-      "epsilon-v, by Shapley's backward induction over histories; the core step is checked in Lean. "
-      "Epsilon-s, the stage exploitability, shrinks with compute, by Freund and Schapire's regret-to-equilibrium fact and "
-      "CFR. Epsilon-v, the stage-matrix error from the heuristic evaluation, does not. H-bar, the length against a best "
-      "response, is tight. Hedge and tracking come from Cesa-Bianchi and Lugosi, the Bayesian matrix game from PokaiTrainer.")
+notes(s, "Our main theorem: if every turn we play an approximate minimax strategy of an estimated stage matrix, "
+      "exploitability over the battle is at most H-bar, the expected battle length against a best response, times "
+      "the per-turn error, epsilon-s plus two epsilon-v. Epsilon-s is the solver error; with no-regret self-play it is "
+      "at most the two average regrets, so it shrinks with compute. Epsilon-v, the stage-matrix error from the "
+      "heuristic leaf evaluation, does not. With hidden teams the bound gains sampling, belief and non-locality terms.")
 
 # ===================== Section 4: Experiments =====================
-# 10. Engine experiments
-s, S = content(4, "In the engine")
-S.text(LEFT, TOP, WIDTH, BOTTOM - TOP, [
-    P("MCTS at matched time beats equilibrium play: ", ("0.760", {"b": True}), " vs sampled, ",
-      ("0.650", {"b": True}), " vs top move; Fact 2 holds only in the estimated matrix", bullet=True),
-    P("95% lower confidence bounds on exploitability: ", ("0.250", {"b": True}), " for top move vs ",
-      ("0.090", {"b": True}), " for sampled play", bullet=True, before=18),
-    P("The Bayesian LP beats PIMC averaging: ", ("0.585", {"b": True}), " (sampled play, 400 games)",
-      bullet=True, before=18),
-    P("Exact endgames: the bound (Thm. 3) holds, loose by ", ("6.9–155×", {"b": True}),
-      "; ", ("$", "ε_v"), " dominates (Remark 5)", bullet=True, before=18),
-], "Engine results")
-notes(s, "In-engine results. At matched time, MCTS beats equilibrium play: 0.760 against sampled and 0.650 against "
-      "top move. An informed best response gives 95 percent lower confidence bounds on exploitability of 0.250 for top "
-      "move and 0.090 for sampled play, so randomising helps. The Bayesian LP beats PIMC averaging, 0.585 over 400 games. "
-      "On exact endgames the bound holds but is loose by 6.9 to 155 times.")
-
-# 11. Real Showdown
-s, S = content(4, "Real Showdown and pre-registered tests")
-fw = Inches(6.0)
-fh = int(fw * 450 / 680)  # 680 x 450 px figure
-pic = s.shapes.add_picture(FIG, LEFT, TOP, fw, fh)
-pic.name = "Round-robin ratings figure"
+# 10. Exploitability and regret
+s, S = content(4, "Exploitability and regret")
+fw = WIDTH
+fh = int(fw * 416 / 1395)  # 1395 x 416 px figure
+pic = s.shapes.add_picture(FIG_MAIN, LEFT, TOP, fw, fh)
+pic.name = "Exploitability and regret figure"
 pic._element.nvPicPr.cNvPr.set(
-    "descr", "Round-robin Bradley-Terry ratings: Foul Play at all search times above Bayesian LP; "
-             "top move and PIMC near 0")
-S.text(LEFT, TOP + fh + Inches(0.05), fw, Inches(0.35),
-       [P("Round-robin tournament, 1,800 games; Elo-scale ratings, 95% CIs", size=CAPTION, i=True)],
-       "Figure caption")
+    "descr", "Four panels: exact exploitability against the whole-battle bound; RM+ duality gap over iterations; "
+             "Hedge regret per scored turn over 10 matches; memory regret against the bound ln 5")
+by = TOP + fh + Inches(0.1)
+S.text(LEFT, by, WIDTH, BOTTOM - by, [
+    P("Exploitability lower bounds (informed best response): ", ("0.250", {"b": True}), " top move, ",
+      ("0.090", {"b": True}), " sampled play", size=SECONDARY, bullet=True),
+    P("Exact endgames: the whole-battle bound holds on all 22 rows, loose by ", ("6.9–155×", {"b": True}),
+      "; leaf error ", ("$", "ε_v"), " dominates", size=SECONDARY, bullet=True, before=6),
+    P("RM⁺ gap ", ("7.0×10⁻⁵", {"b": True}), " of the payoff range at T = 1000 (bound 0.38), slope ≈ −1.26",
+      size=SECONDARY, bullet=True, before=6),
+    P("Hedge regret ", ("0.13–0.16", {"b": True}), " of the anytime bound (", ("0.0045", {"b": True}),
+      " per scored turn); memory regret ends at exactly ln 5", size=SECONDARY, bullet=True, before=6),
+], "Exploitability and regret bullets")
+notes(s, "Exploitability first. An informed best response that knows our policy gives 95 percent lower bounds of "
+      "0.250 for top move and 0.090 for sampled play, so randomising helps. On exact endgames the whole-battle bound "
+      "holds on all 22 rows, loose by 6.9 to 155 times, and the leaf error carries it. Regret next: RM-plus reaches a "
+      "gap of 7 times ten to the minus five at a thousand iterations, far under its bound. Hedge sits at 0.13 to 0.16 of "
+      "its anytime bound, and the memory's regret ends at exactly log five.")
+
+# 11. Opponent memory
+s, S = content(4, "Opponent memory")
+S.text(LEFT, TOP, WIDTH, BOTTOM - TOP, [
+    P("Better prediction: the per-world style likelihood lowers log loss by ≈", ("0.3", {"b": True}),
+      " nats per scored turn, replicated", bullet=True),
+    P("Detection delay matches its prediction per match (ρ = ", ("0.86", {"b": True}),
+      "); no pre-registered prediction refuted", bullet=True, before=18),
+    P("Doubling the pre-switch phase multiplies the delay by ", ("2.09", {"b": True}), " (predicted 1.5–2.7)",
+      size=SECONDARY, indent=True, before=4),
+    P("No win-rate gain: the style posterior is level with Hedge, and the per-world gain did not replicate",
+      bullet=True, before=18),
+    P("Better prediction shrinks only the belief term of the hidden-teams bound, not the leaf error",
+      size=SECONDARY, i=True, before=36),
+], "Opponent memory bullets")
+notes(s, "The opponent memory does what the theory says. Scoring styles on each sampled world's legal actions lowers "
+      "next-action log loss by about 0.3 nats per scored turn, and a pre-registered replication confirmed it. In the "
+      "live detection-delay test, each match's delay matched its own prediction, rho 0.86, and doubling the pre-switch "
+      "phase multiplied the delay by 2.09, inside the predicted range; no prediction was refuted. But better prediction "
+      "did not translate into wins: it shrinks only the belief term, not the leaf error.")
+
+# 12. Win rates
+s, S = content(4, "Win rates")
+fh = BOTTOM - TOP - Inches(0.4)
+fw = int(fh * 655 / 525)  # 655 x 525 px figure
+pic = s.shapes.add_picture(FIG_WINS, LEFT, TOP, fw, fh)
+pic.name = "Win-rate figure"
+pic._element.nvPicPr.cNvPr.set(
+    "descr", "Score of the first-named bot with 95% CIs on real Showdown, in the round-robin tournament and "
+             "in-engine: Bayesian LP below Foul Play at every search time, above PIMC averaging, below MCTS")
+S.text(LEFT, TOP + fh + Inches(0.03), fw, Inches(0.35),
+       [P("Score of the first-named bot, 95% CIs (0.5 = even)", size=CAPTION, i=True)], "Figure caption")
 rx = LEFT + fw + GAP
 S.text(rx, TOP, RIGHT - rx, BOTTOM - TOP, [
-    P("Below Foul Play, even at its shortest search time", bullet=True),
-    P("Level with the other one-turn solvers", bullet=True, before=SP),
-    P("Hedge regret ", ("0.0044", {"b": True}), " per scored turn vs its best expert (Fact 1)", bullet=True,
-      before=SP),
-    P("Detection delay matches its prediction (Prop. 7) per match (ρ = ", ("0.86", {"b": True}),
-      "); no prediction refuted",
-      bullet=True, before=SP),
-    P("Better opponent prediction (≈", ("0.3", {"b": True}), " nats per scored turn), no detectable win-rate "
-      "change (replicated)", bullet=True, before=SP),
-], "Showdown bullets")
-notes(s, "On real Showdown, a round-robin tournament of 1,800 games: Foul Play at every search time rates above "
-      "our Bayesian LP, which is level with the other one-turn solvers. Hedge's regret against its best expert is 0.0044 "
-      "per scored turn. The pre-registered detection-delay test refuted no prediction, rho 0.86. Better opponent "
-      "prediction, about 0.3 nats per scored turn, gave no detectable win-rate change, and the null replicated.")
+    P("MCTS beats equilibrium play at matched time: ", ("0.760", {"b": True}), " vs sampled, ",
+      ("0.650", {"b": True}), " vs top move", bullet=True),
+    P("The Bayesian LP beats PIMC averaging with sampled play: ", ("0.559", {"b": True}), " on Showdown",
+      bullet=True, before=18),
+    P("It loses to Foul Play at every search time; Foul Play rates ", ("135–192", {"b": True}),
+      " Elo above", bullet=True, before=18),
+], "Win-rate bullets")
+notes(s, "Do the guarantees, which hold only in the estimated matrix, translate into wins? Not against search. At "
+      "matched time, MCTS beats equilibrium play, 0.760 against sampled and 0.650 against top move. Solving one "
+      "Bayesian game over the sampled worlds does beat PIMC averaging with sampled play, 0.559 on Showdown. But the "
+      "agent loses to Foul Play at every search time we tried, and in the round-robin tournament Foul Play rates 135 "
+      "to 192 Elo above it.")
 
 # ===================== Section 5: Conclusions =====================
-# 12. Takeaways and next steps
+# 13. Takeaways and next steps
 s, S = content(5, "Takeaways and next steps")
-items = ["Per-turn equilibrium play plus Hedge across games: the guarantees compose into a whole-battle bound, and the measured regrets are small",
-         "Bound and experiments are consistent with the stage-matrix (leaf) error dominating; "
-         "better beliefs don't move win rate",
-         "Next: an evaluation function trained on exact terminal values; log the opponent's side to measure "
-         "two-sided regret more fully"]
+items = ["Per-turn equilibrium play and Hedge across games compose into a whole-battle bound, and the measured "
+         "regrets sit well under their bounds",
+         "The guarantees hold in the estimated matrix, whose leaf evaluation error does not shrink with compute "
+         "and plausibly dominates; better beliefs do not move win rate",
+         "Next: train the evaluation on exact terminal values"]
 S.text(LEFT, TOP, WIDTH, BOTTOM - TOP, [
     P(txt, number=True, before=0 if k == 0 else 22) for k, txt in enumerate(items)
-] + [P("Also in the paper: joint set×style belief and lookahead-posterior nulls; case study",
-       size=SECONDARY, i=True, before=36)], "Takeaways")
+] + [P("Also in the paper: the hidden-teams bound, carried vs reset Hedge weights, joint set×style and "
+       "lookahead-posterior nulls, a case study", size=SECONDARY, i=True, before=36)], "Takeaways")
 notes(s, "Three takeaways. First, per-turn equilibrium play and Hedge across games compose into a whole-battle "
-      "bound, and the measured regrets are small. Second, the bound and the experiments are consistent with the stage-matrix "
-      "error from the leaf evaluation dominating: better beliefs improve prediction, not win rate. Third, next steps: an "
-      "evaluation function trained on exact terminal values, and logging the opponent's side to measure two-sided regret. Thank you.")
+      "bound, and the regrets we measured sit well under their bounds. Second, those guarantees hold in the estimated "
+      "matrix, whose leaf evaluation error does not shrink with compute and plausibly dominates, which is consistent "
+      "with better beliefs improving prediction but not win rate. Third, the next step is to train the evaluation on "
+      "exact terminal values. Thank you.")
 
 add_sections(prs, groups)
 prs.core_properties.title = "No-Regret Learning and Bayesian Opponent Memory in Pokémon Random Battles"

@@ -74,7 +74,7 @@ def panel_exploit(ax, eg):
     ax.set_xticklabels(["0.01", "0.1", "1"])
     log_axis(ax, 5)
     ax.set_xlabel("Exact exploitability")
-    ax.set_ylabel("Theorem 3 bound")
+    ax.set_ylabel("Whole-battle bound")
     ax.set_title("Exploitability bound")
 
 

@@ -163,6 +163,13 @@
   \vskip 2ex
 }
 
+% \maketitlenow: typesets the title block across both columns without an abstract
+\newcommand{\maketitlenow}{%
+  \twocolumn[{\@maketitle\vskip 1ex}]%
+  \global\@titlependingfalse
+  \thispagestyle{plain}%
+}
+
 % abstract: typesets the pending title with it across both columns
 \RequirePackage{environ}
 \RenewEnviron{abstract}{%
