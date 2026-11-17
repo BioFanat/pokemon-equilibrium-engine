@@ -356,7 +356,7 @@ E_SOFTMAX = r"p_i^t ∝ \exp{(η\sum_{j<t}{r_i^j})}"
 E_BLP = r"\max_x{\sum_k{β_k \min_j{{(M_k^⊤x)}_j}}}"
 E_MIX = r"p_t = \sum_e{w_e q_e}"
 E_MINIMAX = r"\max_x{x^⊤A\bar{y}} − \min_y{\bar{x}^⊤Ay} ≤ ϵ_R + ϵ_C"
-E_BOUND = r"expl(π) ≤ \bar{H}\sup{(ε_s + 2ε_v)} ≤ \bar{H}(ϵ_R + ϵ_C + 2ε_v)"
+E_BOUND = r"expl(π) ≤ \bar{H} \bar{δ},   δ = ε_s + 2ε_v"
 E_LOSSES = r"expl(π) = \sup_σ{E[\sum_{t<τ}{ℓ_t}]}"
 E_MWUB = r"L_{MWU} ≤ (1 + η)L^* + \frac{\ln{n}}{η}"
 
@@ -717,8 +717,11 @@ S.text(LEFT, TOP, WIDTH, BOTTOM - TOP, [
     P(("Exploitability = sum of per-turn losses", {"b": True}), "   ", ("$", E_LOSSES)),
     P("each turn loses at most ", ("$", "ε_s + 2ε_v"), ", so", before=6),
     EQ_(E_BOUND, before=4),
-    P(("$", "ε_s"), " solver error, shrinks with compute  ·  ", ("$", "ε_v"), " leaf error, does not  ·  ",
-      ("$", r"\bar{H}"), " battle length", size=SECONDARY, align="ctr", before=6),
+    P(("$", r"\bar{H}"), ": expected turns against a best response;  ", ("$", r"\bar{δ}"),
+      ": average per-turn loss along its games", size=SECONDARY, align="ctr", before=6),
+    P(("$", "ε_s"), " (solver) vanishes with more iterations, ", ("$", "≤ ϵ_R + ϵ_C"), " for no-regret self-play;  ",
+      ("$", "ε_v"), " (evaluation formula) does not shrink with more compute", size=SECONDARY, align="ctr",
+      before=4),
     P(("Hedge across games", {"b": True}), " (in our estimated matrices)", before=22),
     P("Exploits: the best expert's payoff minus its regret", bullet=True, before=4),
     P("Stays safe: within its regret of the equilibrium value", bullet=True, before=4),
@@ -728,8 +731,9 @@ S.text(LEFT, TOP, WIDTH, BOTTOM - TOP, [
 ], "Bound, Hedge across games, RL")
 notes(s, "Exploitability equals the expected sum of per-turn losses against a best response, the game analogue of the "
       "performance-difference lemma. Each turn loses at most epsilon-s plus two epsilon-v, so the battle loses at most "
-      "H-bar times that, a game version of Singh and Yee's bound with H-bar as the horizon. Epsilon-s shrinks with "
-      "compute; the leaf error epsilon-v does not. Hedge across games exploits, earning the best expert's payoff minus "
+      "H-bar, the expected number of turns against a best response, times the average per-turn loss along its games. "
+      "The solver error epsilon-s vanishes with more iterations and is at most the summed regrets for no-regret "
+      "self-play; the matrix error epsilon-v comes from the evaluation formula and does not shrink with more compute. Hedge across games exploits, earning the best expert's payoff minus "
       "its regret, and stays safe, within its regret of the equilibrium value; with carried weights the per-game "
       "overhead vanishes over a match. These hold in our matrices; on Showdown only the first applies. And since "
       "natural policy gradient is Hedge in every state, an RL exploiter's score lower-bounds exploitability.")
@@ -748,13 +752,13 @@ by = TOP + fh + Inches(0.1)
 S.text(LEFT, by, WIDTH, BOTTOM - by, [
     P("Exploitability lower bounds: ", ("0.25", {"b": True}), " top move, ", ("0.09", {"b": True}),
       " sampled play", size=18, bullet=True),
-    P("Exact endgames: the bound holds, loose by ", ("7–155×", {"b": True}), "; leaf error ", ("$", "ε_v"),
+    P("Exact endgames: the bound holds, loose by ", ("7–155×", {"b": True}), "; evaluation error ", ("$", "ε_v"),
       " dominates", size=18, bullet=True, before=6),
     P("Regrets (b–d) stay under their bounds", size=18, bullet=True, before=6),
 ], "Exploitability bullets")
 notes(s, "An informed best response that knows our policy gives exploitability lower bounds of 0.25 for top move and "
       "0.09 for sampled play, so randomising helps. On exact endgames the whole-battle bound holds on every row, loose "
-      "by 7 to 155 times, and the leaf error, not the solver, carries it. Panels b to d show the regrets under their "
+      "by 7 to 155 times, and the evaluation error, not the solver, carries it. Panels b to d show the regrets under their "
       "bounds; the next slide gives the numbers.")
 
 # 9. No-regret dynamics
@@ -786,13 +790,13 @@ S.text(LEFT, TOP, WIDTH, BOTTOM - TOP, [
     P("Detection delay matches its prediction (median ratio ", ("1.06", {"b": True}), "); doubling the pre-switch phase "
       "→ ×2.1 (predicted 1.5–2.7)", bullet=True, before=18),
     P("Modelling sets and style jointly adds nothing measurable (+0.001 nats per turn)", bullet=True, before=18),
-    P("No win-rate gain: better prediction shrinks only the belief term", bullet=True, before=18),
+    P("No win-rate gain: better prediction is not something our bounds reward", bullet=True, before=18),
 ], "Opponent memory bullets")
 notes(s, "The memory does what the theory says. Scoring styles on each sampled world's legal actions lowers log loss "
       "by about 0.3 nats per turn, confirmed in a replication on fresh seeds planned in advance. In the live detection-delay test each "
       "match's delay matched its prediction, and doubling the pre-switch phase multiplied the delay by 2.1, inside the "
       "predicted range. Modelling sets and style jointly adds nothing measurable. But better prediction did not move "
-      "win rate: it shrinks only the belief term, not the leaf error.")
+      "win rate, which fits the theory: none of our bounds rewards better prediction, and the evaluation error is unchanged.")
 
 # 11. Win rates
 s, S = content(4, "Win rates")
@@ -822,16 +826,17 @@ notes(s, "Do guarantees that hold only in the estimated matrix translate into wi
 s, S = content(5, "Takeaways and next steps")
 items = ["Equilibrium play and Hedge compose into a whole-battle bound; measured regrets sit well under their "
          "bounds",
-         "The guarantees hold in the estimated matrix, whose leaf error does not shrink with compute; better "
-         "beliefs do not move win rate",
+         "The guarantees hold in our estimated matrices; the evaluation formula's error, which more compute does not "
+         "reduce, is what our experiments point to, and better beliefs do not move win rate",
          "Next: train the evaluation on exact terminal values"]
 S.text(LEFT, TOP, WIDTH, BOTTOM - TOP, [
     P(txt, number=True, before=0 if k == 0 else 22) for k, txt in enumerate(items)
 ], "Takeaways")
 notes(s, "Three takeaways. First, per-turn equilibrium play and Hedge across games compose into a whole-battle bound, "
       "and the regrets we measured sit well under their bounds. Second, those guarantees hold in the "
-      "estimated matrix, whose leaf evaluation error does not shrink with compute and plausibly dominates, consistent "
-      "with better beliefs improving prediction but not win rate. Third, the next step is to train the evaluation on "
+      "estimated matrices. The error of the evaluation formula that scores positions two moves ahead is not reduced "
+      "by more solver iterations or more sampled teams, and our experiments point to it as the limiting error, "
+      "consistent with better beliefs improving prediction but not win rate. Third, the next step is to train the evaluation on "
       "exact terminal values. Thank you.")
 
 add_sections(prs, groups)
