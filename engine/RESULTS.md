@@ -656,11 +656,11 @@ Paper: final5.tex `sec:exp-ladder`; deck: the Hedge-model limitations and Bayesi
 | Bot | Games | W–L | Elo | Source |
 |---|---:|---|---|---|
 | Preliminary model (Hedge + Bayesian memory) | 100 | 64–36 | 1704 | operator's public-ladder run, reported 2026-11-17 (raw log not in the repo) |
-| Bayesian model (final: native MCTS + item/ability-stratified worlds) | 526 | 313–213 | 2308, reportedly top 50 | operator's public-ladder run, reported 2026-11-17 (first 100 logged: stratified_mcts_climb_100completed_results.json, 66–34, 1677 → 2090) |
+| Bayesian model (final: native MCTS + item/ability-stratified worlds) | 526 | 313–213 | 2308 (GXE 81.9%, Glicko-1 1784 ± 25); top 25 among human players | operator's public-ladder run, reported 2026-11-17 (first 100 logged: stratified_mcts_climb_100completed_results.json, 66–34, 1677 → 2090) |
 
 - Final bot: `mcts_native`, `item_stratified` sampler, 4 worlds, 1000 ms total native search (250 ms per world),
   action = argmax of prior-weighted, per-world-normalised legal root-visit shares (deterministic). No Hedge, no
-  equilibrium solve, no carried opponent memory. Top 500 was reported by the operator; the rank itself was not logged.
+  equilibrium solve, no carried opponent memory. Rank: the operator's screenshots (deck, "Bayesian Model Results") show the bot_bonp profile at 2308, 313–213, and a top-500 ladder snapshot where 2308 falls between #23 (2309) and #24 (2307).
 - Final bot vs Foul Play, local headless seat-swapped pairs (seeds 201–230, branch `feat/mechanics-belief-tracker` at
   bf4355e, `batch.py --a mcts_native --b stock|stock@250 --workers 4`): vs stock Foul Play (100 ms per sampled battle)
   **0.600 [0.481, 0.719]**; vs Foul Play at 250 ms per world (equal search time) **0.483 [0.346, 0.620]**; 30 pairs
@@ -672,8 +672,8 @@ Paper: final5.tex `sec:exp-ladder`; deck: the Hedge-model limitations and Bayesi
   target = the depth-2 RM+ equilibrium, 1000 iterations). Opponent's score, uniform prediction → predicting the rule:
   top move 0.190 [0.119, 0.261] → 0.760 [0.690, 0.830], paired gain **+0.570 [+0.455, +0.685]**; sampled 0.370
   [0.282, 0.458] → 0.560 [0.475, 0.645], gain **+0.190 [+0.069, +0.311]**.
-- Later (user-reported, 2026-11-17, not in the logged batches): the final bot reached Elo 2308, reportedly top 50 on the
-  Gen 9 Random Battles ladder. Paper and deck mark this as reported.
+- Final record (operator's run, 2026-11-17, profile screenshot in the deck): 313–213 over 526 games, Elo 2308, top 25
+  among human players on the Gen 9 Random Battles ladder.
 - Five interrupted attempts with unknown outcomes (connection loss) are excluded from W–L; the server rating fell
   1984 → 1920 during that gap and the endpoint above includes it.
 - Our theory does not cover this bot: Theorem 6 needs an ε_s-optimal stage strategy, and argmax of root visits is
