@@ -871,8 +871,6 @@ notes(s, "Here is where the Bayesian part is. Start with a belief over the oppon
 
 # 12. The Bayesian model: results (exploitability explained on top; paired-games table left; exploitability plot right)
 from PIL import Image as _Im
-from pptx.util import Pt
-from pptx.dml.color import RGBColor
 s, S = content(4, "The Bayesian model: results")
 S.text(LEFT, TOP - Inches(0.05), WIDTH, Inches(1.05), [
     P(("Exploitability: ", {"b": True}), "if an opponent knew exactly how our bot decides, how much more could it win? "
@@ -889,20 +887,14 @@ rows = [("Bayesian model vs", "Score [95% CI]"),
         ("Foul Play, equal search time", "0.48 [0.35, 0.62]"),
         ("Our preliminary model", "0.83 [0.75, 0.92]")]
 tbl_w, row_h = Inches(5.6), Inches(0.48)
-gt = s.shapes.add_table(len(rows), 2, LEFT, ty + Inches(0.8), tbl_w, row_h * len(rows)).table
-gt.columns[0].width = int(tbl_w * 0.62)
-gt.columns[1].width = tbl_w - int(tbl_w * 0.62)
+c0 = int(tbl_w * 0.62)
 for r, (a, b) in enumerate(rows):
-    for c, txt in enumerate((a, b)):
-        cell = gt.cell(r, c)
-        cell.text = txt
-        para = cell.text_frame.paragraphs[0]
-        para.alignment = 1 if c == 0 else 2  # left / centre
-        for rn in para.runs:
-            rn.font.size = Pt(15)
-            rn.font.name = "Helvetica Neue"
-            rn.font.bold = r == 0
-            rn.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF) if r == 0 else RGBColor(0, 0, 0)
+    yy = ty + Inches(0.8) + r * row_h
+    S.header(LEFT, yy, c0, row_h, [P(a, size=15, b=True, align="ctr" if r == 0 else "l")], f"Games row {r} label")
+    if r == 0:
+        S.header(LEFT + c0, yy, tbl_w - c0, row_h, [P(b, size=15, b=True, align="ctr")], "Games header score")
+    else:
+        S.box(LEFT + c0, yy, tbl_w - c0, row_h, [P(b, size=15, align="ctr")], f"Games row {r} score")
 S.text(LEFT, ty + Inches(0.85) + row_h * len(rows), tbl_w, Inches(0.5), [
     P("Local paired games, 30 seat-swapped pairs each; 0.5 = even", size=12, i=True),
 ], "Table caption")
