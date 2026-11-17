@@ -82,7 +82,7 @@ Against every adaptive adversary, Hedge with the anytime step has $\Reg_T\le\fra
 \begin{theorem}[no-regret dynamics, cf.~\cite{FS99}]\label{fact:selfplay}
 $v_C-\varepsilon_R\le\bar g\le v_R+\varepsilon_C$, so, with weak duality $v_R\le v_C$, $v_R=v_C=\val(M)$ as the regrets vanish (the min--max theorem), and $\max_xx^\top M\bar y-\min_y\bar x^\top My\le\varepsilon_R+\varepsilon_C$: $\bar x$ guarantees $\val(M)-\varepsilon_R-\varepsilon_C$ against every $y$.
 \end{theorem}
-\begin{theorem}[no-regret dynamics give a CCE, cf.\ {\cite[\S7.4]{CBL06}}]\label{thm:cce}
+\begin{theorem}[no-regret dynamics give a CCE, cf.\ {\cite[\S7.4, the Hannan set]{CBL06}}]\label{thm:cce}
 If every player of a finite game has average external regret at most $\varepsilon$ after $T$ rounds, the time-average of the joint play is an $\varepsilon$-coarse correlated equilibrium (CCE): no player gains more than $\varepsilon$ by always playing one fixed pure strategy.
 \end{theorem}
 In a two-player zero-sum game, each player's average strategy in an $\varepsilon$-CCE then comes within $2\varepsilon$ of the best guarantee any strategy can secure. We use \cref{fact:selfplay} inside a turn: with both teams known, our solver is Regret Matching$^+$ (RM$^+$)~\cite{Tam14} in self-play with alternating updates and linear averaging (\cref{cor:solver}), and with sampled worlds we solve the LP~\eqref{eq:af} exactly. Across games our Hedge faces a different stage game each turn, so \cref{thm:cce} does not apply verbatim, but we characterise it the same way, by its regret.
@@ -145,7 +145,7 @@ i.e.\ $\ell_t\le e_t\le\delta(t,s_t)$. \Cref{lem:sum} then gives $\Vstar_0-W^{\p
 \begin{corollary}[no-regret solver]\label{cor:solver}
 If at every turn we play the average $\bar x$ of $T$ rounds of simultaneous no-regret self-play on $\Qhat$ with average regrets $\varepsilon_R,\varepsilon_C$ (in $\Qhat$'s payoff units), then $\epss\le\varepsilon_R+\varepsilon_C$. For alternating RM$^+$ with linear averaging and $T$ iterations per turn, $\expl(\pi)\le\Hbar\sup_{t,s}\big(2\Delta(\sqrt{|A|}+\sqrt{|B|})/\sqrt T+2\epsv\big)$, with $\Delta,|A|,|B|$ the turn's payoff range and menu sizes.
 \end{corollary}
-\emph{Proof.} \Cref{fact:selfplay} with $M=\Qhat$ gives $\min_y\bar x^\top\Qhat y\ge\val\Qhat-\varepsilon_R-\varepsilon_C$; apply \cref{thm:A}. For alternating RM$^+$: RM$^+$ regret is at most $\Delta\sqrt{|A|T}$ per player, linear averaging at most doubles the average regret, and with alternation the extra cross term is $\le0$~\cite[Thm.~8]{BMS19}. The LP has $\epss=0$ to tolerance.\qed
+\emph{Proof.} \Cref{fact:selfplay} with $M=\Qhat$ gives $\min_y\bar x^\top\Qhat y\ge\val\Qhat-\varepsilon_R-\varepsilon_C$; apply \cref{thm:A}. For alternating RM$^+$: RM$^+$ regret is at most $\Delta\sqrt{|A|T}$ per player, linear averaging at most doubles the average regret, and with alternation the extra cross term is $\le0$~\cite[Thms.~7--8]{BMS19}. The LP has $\epss=0$ to tolerance.\qed
 
 \begin{remark}[what compute does not reduce]\label{rem:leaf}
 With full information $\delta$ has two sources. The solver error $\epss$ vanishes with more iterations (zero to tolerance for the LP). The matrix error $\epsv$ is in the matrix: the evaluation formula that scores positions two moves ahead misjudges them, whatever the iterations or sampled teams, and the leaf error bounds $\epsv$ at every depth, a bound deeper search does not shrink unless it reaches the end of the game. Hidden teams (\cref{thm:C}) add sampling error, which more samples reduce slowly, and belief and non-locality gaps ($\TV$, $\etaNL$), which compute does not reduce.
@@ -200,7 +200,7 @@ On 9 matches against Foul Play, the posterior's final regret is $\ln5$, as~\eqre
 At matched time (about 70\,ms per move), MCTS beats both equilibrium bots in-engine: 0.76 [0.68, 0.84] against sampled play and 0.65 [0.57, 0.73] against the top move. Part of the gap is implementation speed (Python matrices, Rust MCTS); the rest is consistent with the evaluation error dominating~\eqref{eq:A}.
 
 
-\paragraph{Against Foul Play.} The Bayesian-LP agent loses at every search time, from 0.32 at 25\,ms to 0.23 at 1000\,ms of search per sampled battle, and the preliminary model scores 0.33 [0.23, 0.44]; in a nine-bot round robin Foul Play rates 135--192 Elo above it. PokaiTrainer~\cite{Yu26} found its equilibrium search no stronger than DUCT in play (51.7\%) but far harder to exploit; here too equilibrium play is harder to exploit, but weaker.
+\paragraph{Against Foul Play.} The Bayesian-LP agent loses at every search time, from 0.32 at 25\,ms to 0.23 at 1000\,ms of search per sampled battle, and the preliminary model scores 0.33 [0.23, 0.44]; in a nine-bot round robin Foul Play rates 135--192 Elo above it. PokaiTrainer~\cite{Yu26} found DUCT, given ten times the iterations, only at parity with its equilibrium search (51.7\%) and far easier to exploit; here too equilibrium play is harder to exploit, but weaker.
 
 % =====================================================================
 \section{The Bayesian model}
@@ -237,15 +237,15 @@ Our guarantees hold in the estimated matrix, whose evaluation error more compute
 \bibitem{CBL06} N.~Cesa-Bianchi, G.~Lugosi. \emph{Prediction, Learning, and Games}. Cambridge University Press, 2006.
 \bibitem{Yu26} M.~Yu. PokaiTrainer: Scaling equilibrium search to competitive Pok\'emon VGC. arXiv:2608.29197v2, 2026.
 \bibitem{foulplay} P.~Mariglia and contributors. Foul Play. \url{https://github.com/pmariglia/foul-play}, 2019--2026.
-\bibitem{AHK12} S.~Arora, E.~Hazan, S.~Kale. The multiplicative weights update method. \emph{Theory Comput.} 8, 2012.
+\bibitem{AHK12} S.~Arora, E.~Hazan, S.~Kale. The multiplicative weights update method: a meta-algorithm and applications. \emph{Theory Comput.} 8, 2012.
 \bibitem{FS97} Y.~Freund, R.~E.~Schapire. A decision-theoretic generalization of on-line learning and an application to boosting. JCSS 55(1), 1997.
 \bibitem{Tam14} O.~Tammelin. Solving large imperfect information games using CFR+. arXiv:1407.5042, 2014.
 \bibitem{BMS19} N.~Burch, M.~Morav\v{c}\'{\i}k, M.~Schmid. Revisiting CFR+ and alternating updates. JAIR 64, 2019.
 \bibitem{Tak14} M.~J.~W.~Tak, M.~Lanctot, M.~H.~M.~Winands. Monte Carlo tree search variants for simultaneous move games. IEEE CIG, 2014.
 \bibitem{Cow12} P.~I.~Cowling, E.~J.~Powley, D.~Whitehouse. Information set Monte Carlo tree search. \emph{IEEE TCIAIG} 4(2), 2012.
-\bibitem{Lon10} J.~Long, N.~R.~Sturtevant, M.~Buro, T.~Furtak. Understanding the success of PIMC sampling. AAAI, 2010.
+\bibitem{Lon10} J.~Long, N.~R.~Sturtevant, M.~Buro, T.~Furtak. Understanding the success of perfect information Monte Carlo sampling in game tree search. AAAI, 2010.
 \bibitem{GS15} S.~Ganzfried, T.~Sandholm. Safe opponent exploitation. \emph{ACM TEAC} 3(2), 2015.
-\bibitem{KL02} S.~Kakade, J.~Langford. Approximately optimal approximate RL. ICML, 2002.
+\bibitem{KL02} S.~Kakade, J.~Langford. Approximately optimal approximate reinforcement learning. ICML, 2002.
 \end{thebibliography}
 \endgroup
 
