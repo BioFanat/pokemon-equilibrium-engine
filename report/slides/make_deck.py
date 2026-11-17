@@ -1,4 +1,4 @@
-"""Build deck.pptx: the 14-slide, ~4-minute CS535 final-project talk, in five sections.
+"""Build deck.pptx: the 15-slide, ~4-minute CS535 final-project talk, in five sections.
 
 Built on the user's template ("random template.pptx"): its master, theme, 16:9 size,
 title-slide style and its five-box section tracker, which lives in the template's
@@ -906,6 +906,35 @@ notes(s, "Do guarantees that hold only in the estimated matrix translate into wi
       "time, about 70 milliseconds per move, MCTS beats both equilibrium bots. Solving one Bayesian game over the "
       "sampled worlds does beat PIMC averaging with sampled play. But the agent loses to Foul Play at every search "
       "time we tried, and in the round-robin tournament Foul Play rates about 140 to 190 Elo above it.")
+
+# 12. Out in the world: the public ladder (placeholders in [brackets] until the ladder results arrive)
+s, S = content(4, "Out in the world: the public ladder")
+S.text(LEFT, TOP, WIDTH, Inches(0.8), [
+    P("Our other tests use fixed bots; the public Showdown ladder pits the agent against a population of human "
+      "players.", size=18),
+], "Ladder intro")
+stats = [("Peak ladder rank", "Top 500", "[exact rank, date]"),
+         ("Elo", "[X]", "[Glicko-1 R ± RD]"),
+         ("Rated battles", "[N]", "[dates, account]")]
+sy = TOP + Inches(0.95)
+SBH = Inches(1.6)
+for k, (name, big, small) in enumerate(stats):
+    x = LEFT + k * (COL3 + GAP)
+    S.header(x, sy, COL3, HDR_H, [P(name, size=SECONDARY, b=True, align="ctr")], f"Ladder stat {k + 1} header")
+    S.box(x, sy + HDR_H, COL3, SBH, [P(big, size=40, b=True, align="ctr"),
+                                     P(small, size=SECONDARY, i=True, align="ctr", before=6)],
+          f"Ladder stat {k + 1} box")
+by = sy + HDR_H + SBH + Inches(0.3)
+S.text(LEFT, by, WIDTH, BOTTOM - by, [
+    P("Measures strength against people in the wild, not exploitability: no opponent is a best response to us",
+      size=18, bullet=True),
+    P("[Methods incoming: agent variant, search time per move, timer, how matches were run]", size=18, i=True,
+      bullet=True, before=10),
+], "Ladder notes")
+notes(s, "[Placeholder until the ladder results and methods arrive.] Every other test pits the agent against fixed "
+      "bots. To see how it does out in the world, we ran it on the public Showdown ladder for Gen 9 Random Battles, "
+      "against human players. It reached the top 500. [Fill in: Elo, number of battles, dates, agent variant.] This "
+      "measures strength against people, not exploitability: no opponent here is a best response to our policy.")
 
 # ===================== Section 5: Conclusions =====================
 # 12. Takeaways and next steps

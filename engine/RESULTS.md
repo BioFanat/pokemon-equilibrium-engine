@@ -645,6 +645,26 @@ Per experiment (Lecture 6 = one no-regret learner against an adaptive adversary;
 - **AF16 (K = 16 worlds, B10/B11).** B11(iv): no win-rate gain is derivable from the bounds (in-engine X2, 8 vs 4 worlds: 0.495, n.s.). Result 0.3278, paired +0.017 vs AF, n.s.; the K = 16 absent-fraction predictions of B10 were not scored in this run (no belief logging). Cost 2.9× AF's CPU per game (100.3 vs 34.5 CPU-s).
 - **Overall reading (ours).** Better prediction (BH) and better-calibrated worlds (AF16) give small positive, non-significant edges. This is consistent with the leaf evaluation error dominating the bound: by Theorems A and C the remaining loss is charged to ε_v, which the exact endgames put near 1, so improving the belief or the opponent model moves the estimated matrix but not the error in it.
 
+## Public ladder (live; placeholders until results and methods arrive)
+
+Real-world performance on Pokémon Showdown's public Gen 9 Random Battles ladder, against human players. This measures
+strength against people, not exploitability: no ladder opponent is a best response to our policy. Paper: final5.tex,
+"On the public ladder" (`sec:exp-ladder`, red `\tbd{}` placeholders); deck: "Out in the world: the public ladder".
+
+| Item | Value | Source |
+|---|---|---|
+| Agent variant (experts, worlds, search time per move) | [TBD] | [TBD] |
+| Account, format, timer | [TBD] | [TBD] |
+| Dates | [TBD] | [TBD] |
+| Rated battles | [TBD] | [TBD] |
+| Peak ladder rank | top 500 (exact rank [TBD]) | [ladder snapshot / replay links] |
+| Elo at peak / final | [TBD] / [TBD] | [TBD] |
+| Glicko-1 R ± RD, GXE | [TBD] | [TBD] |
+| Win rate [95% CI] | [TBD] | [TBD] |
+
+Methods: [incoming]. Before the numbers go into the paper or deck, record where each comes from (ladder page
+snapshot or battle logs) in the Source column.
+
 ## Open items (2026-11)
 
 Caveat for all earlier results: 33 games dropped as error games came from harness bugs that were later fixed, and they are not a random sample (see "Harness bugs and the error-game caveat" in the next section).
