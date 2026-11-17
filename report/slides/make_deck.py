@@ -554,9 +554,9 @@ set_text(sub_ph, [P("Can per-turn equilibrium play, built from no-regret learnin
                     "— and where does it break?", i=True, color=fg, align="ctr")])
 S = Shapes(s)
 S.line(1524000, 4777581, 1524000 + 9144000, 4777581, "Title rule", colour=fg)
-S.text(1524000, 4880000, 9144000, 460000, [P("[Names] · CS535", color=fg, align="ctr")], "Authors")
-notes(s, "Hi, we are [Names]. PokaiTrainer showed that per-turn equilibrium play over sampled opponent "
-      "worlds is competitive in Pokémon VGC. We ask whether the same idea, built entirely from no-regret learning, "
+S.text(1524000, 4880000, 9144000, 460000, [P("Nikhil Pesaladinne, Bo Chi · CS535", color=fg, align="ctr")], "Authors")
+notes(s, "Hi, we are Nikhil and Bo. PokaiTrainer showed that per-turn equilibrium play over sampled opponent "
+      "worlds is competitive in Pokémon VGC. We ask whether the same idea, built around no-regret learning, "
       "can play Gen 9 Random Battles against Foul Play, the strongest public bot. Short answer: the pieces compose "
       "cleanly, but the agent stays below Foul Play, and our theory points to where it breaks.")
 
@@ -609,7 +609,7 @@ for k, (name, paras) in enumerate(yard):
     S.header(x, by, COL2, HDR_H, [P(name, size=SECONDARY, b=True, align="ctr")], f"Yardstick {k + 1} header")
     S.box(x, by + HDR_H, COL2, BHT, paras, f"Yardstick {k + 1} box")
 notes(s, "Why not just build another strong bot? The strongest bots are built to win on average: Foul Play runs "
-      "tree search over sampled teams, and RL agents learn a policy from self-play. Neither is built to be safe. "
+      "tree search over sampled teams, and RL agents learn a policy that maximises win rate. Neither is built to be safe. "
       "Any fixed way of playing has habits, and an opponent who knows them can beat it, no matter how well it does "
       "against everyone else. So our goal is different: an agent built from no-regret learning that is hard to "
       "exploit, with a bound on how much a best-responding opponent can take from it, and then to measure what that "
@@ -624,7 +624,7 @@ S.text(LEFT, TOP, WIDTH, Inches(3.3), [
     P(("MWU", {"b": True}), " (Littlestone & Warmuth): shrink each expert's weight after a loss, ",
       ("$", E_MWU), ";  ", ("$", r"Regret_T ≤ 2\sqrt{T \ln{n}}"), size=18, bullet=True),
     P(("Hedge", {"b": True}), " (Freund & Schapire), the exponential form we use, ", ("$", E_HEDGE),
-      ";  with an anytime step, ", ("$", r"Regret_T ≤ \frac{3}{2}\sqrt{\frac{T}{2}\ln{n}} + \sqrt{\frac{\ln{n}}{8}}"),
+      ";  with our anytime step (standard FTRL argument), ", ("$", r"Regret_T ≤ \frac{3}{2}\sqrt{\frac{T}{2}\ln{n}} + \sqrt{\frac{\ln{n}}{8}}"),
       size=18, bullet=True, before=12),
     P(("No-regret dynamics ⇒ minimax", {"b": True}), " (Freund & Schapire): if both players of a matrix game ",
       ("$", "A"), " are no-regret, ", ("$", E_MINIMAX), size=18, bullet=True, before=12),
@@ -671,8 +671,8 @@ tw = Inches(1.05) + 3 * Inches(1.12)
 tx = RIGHT - tw
 S.text(LEFT, TOP, tx - LEFT - Inches(0.3), Inches(1.6), [
     P(("1. Worlds and matrices. ", {"b": True}), "A world is one full guess of the opponent's hidden team and sets; "
-      "we sample 4 per turn. Each world gives a payoff matrix: our moves × their options, each cell our win chance "
-      "after a 2-turn lookahead.", size=16),
+      "we sample 4 per turn. Each world gives a payoff matrix: our moves × their options, each cell a heuristic "
+      "score after a 2-turn lookahead.", size=16),
 ], "Step 1")
 end = world_table(tx, TOP - Inches(0.05), "One world: Sunflora has Earth Power", ["Sludge Bomb", "Earth Power", "Switch"],
                   ["Earthquake", "Stone Edge", "Slack Off"],
@@ -705,7 +705,7 @@ S.text(LEFT, by, WIDTH, BOTTOM - by, [
 notes(s, "Our preliminary model, step by step. First, worlds and matrices: a world is one full guess of the "
       "opponent's hidden team and sets, and we sample four each turn. Each world gives a payoff matrix, like this "
       "one where Sunflora has Earth Power: our moves down the side, the opponent's options across the top, and our "
-      "estimated win chance after a two-turn lookahead in each cell; these values are illustrative. Second, because "
+      "a heuristic score after a two-turn lookahead in each cell; these values are illustrative. Second, because "
       "we cannot tell which world we are in, we pick one mixed strategy x that does best on average when the opponent "
       "best-responds in each world, which is one linear program. Third, experts: each proposes a way to play x, its "
       "top move, a sample from it, the single safest action, or an epsilon-safe best response to a prediction of "
@@ -720,15 +720,15 @@ gx = LEFT + (WIDTH - gw) // 2
 pic = s.shapes.add_picture(GIF, gx, TOP, gw, gh)
 pic.name = "Case-study animation"
 pic._element.nvPicPr.cNvPr.set(
-    "descr", "Showdown replay against Foul Play above our agent's decision panel: a slice of the Bayesian "
-             "matrix game, our mixed strategy as bars, estimated win chance in each cell")
+    "descr", "Showdown replay against Foul Play above our agent's decision panel: a slice of one sampled "
+             "world's matrix, our mixed strategy as bars, estimated win chance in each cell")
 S.text(gx, TOP + gh + Inches(0.03), gw, Inches(0.47),
        [P("A real Showdown game: each turn the agent picks one mixed strategy against 4 sampled opponent teams; "
-          "bars show our mixed strategy, cells our estimated win chance.", size=CAPTION, i=True)],
+          "bars show our mixed strategy, cells one world's heuristic score, shown as a win chance.", size=CAPTION, i=True)],
        "Animation caption")
 notes(s, "This is a real Showdown game against Foul Play; the names at the top are the bots' account names. Each "
       "turn the agent samples 4 possible opponent teams and picks one mixed strategy that does best against all of them. The panel shows "
-      "a slice: rows are our options, columns the opponent's, cells our estimated win chance. The bars are our mixed "
+      "a slice of one sampled world's matrix: rows are our options, columns the opponent's, cells its heuristic score shown as a win chance. The bars are our mixed "
       "strategy, and the outlined cell is what we and Foul Play actually played.")
 
 # ===================== Section 3: Theory =====================
@@ -825,7 +825,7 @@ notes(s, "Here is what we bound and what we measured. Each no-regret learner in 
       "Hedge's regret against the best expert is bounded; and the opponent memory, which is Bayes and therefore Hedge "
       "on log loss, has regret at most log five against the best style. The dashed lines are the bounds. All three "
       "learners stay under them: RM-plus reaches 7 times ten to the minus five of the payoff range against a bound of "
-      "0.38, Hedge's regret is 13 to 16 percent of its bound, and the memory's regret ends exactly at log five.")
+      "0.38, Hedge's regret is 13 to 16 percent of its bound, and the memory's regret ends at log five up to logging precision.")
 
 # 5. The Bayesian model: belief -> worlds -> weighted vote
 s, S = content(4, "What we pull from it: the Bayesian model")
@@ -859,35 +859,35 @@ end1 = grid(LEFT, TOP + Inches(0.4),
             [Inches(2.15), Inches(1.1), Inches(1.3), Inches(1.1)], "Bayes",
             bold_cells={(0, 2), (1, 2), (2, 2)})
 S.text(LEFT, end1 + Inches(0.05), Inches(5.6), Inches(0.3),
-       [P("posterior ∝ prior × (consistent with what we saw)", size=12, i=True, align="ctr")], "Bayes caption")
+       [P("posterior ∝ prior × (consistent with what we saw); illustrative sets", size=12, i=True, align="ctr")], "Bayes caption")
 # arrow
 ax = LEFT + Inches(5.75)
 S.line(ax, TOP + Inches(1.2), ax + Inches(0.45), TOP + Inches(1.2), "Belief arrow", arrow=True)
 # 2-3. worlds from the posterior, searched, then the weighted vote
 vx = ax + Inches(0.6)
-S.text(vx, TOP, RIGHT - vx, Inches(0.35), [P("2. One world per set, searched deeper", size=16, b=True)],
+S.text(vx, TOP, RIGHT - vx, Inches(0.35), [P("2. Worlds per item/ability group, searched deeper", size=16, b=True)],
        "Step 2 title")
 end2 = grid(vx, TOP + Inches(0.4), [("World A", "β = 0.6"), ("World B", "β = 0.4"), ("Weighted", "")],
             [("Earthquake", ["0.50", "0.25", "0.40"]), ("Stone Edge", ["0.20", "0.15", "0.18"]),
              ("Slack Off", ["0.30", "0.60", "0.42 ✓"])],
             [Inches(1.2), Inches(1.0), Inches(1.0), Inches(1.05)], "Vote", bold_cells={(2, 2)})
 S.text(vx, end2 + Inches(0.05), RIGHT - vx, Inches(0.3),
-       [P("cells: each world's MCTS search share per move", size=12, i=True, align="ctr")], "Vote caption")
+       [P("cells: each world's MCTS search share per move (illustrative)", size=12, i=True, align="ctr")], "Vote caption")
 by = max(end1, end2) + Inches(0.6)
 S.text(LEFT, by, WIDTH, BOTTOM - by, [
-    P(("3. Decide: ", {"b": True}), "play the move with the highest posterior-weighted value (here Slack Off; "
+    P(("3. Decide: ", {"b": True}), "play the move with the highest posterior-weighted search share (here Slack Off; "
       "World A alone would say Earthquake)", size=16, bullet=True),
-    P("Worlds always cover every item/ability the opponent could have, so a rare Choice Specs is never dropped",
+    P("With up to 4 item/ability options (nearly every turn), each gets a world, so a Choice Specs set that plain sampling missed 34% of the time is never dropped",
       size=16, bullet=True, before=8),
-    P("Illustrative numbers", size=12, i=True, before=8),
+    P("Illustrative sets and numbers", size=12, i=True, before=8),
 ], "Bayes notes")
 notes(s, "Here is where the Bayesian part is. Start with a belief over the opponent's hidden set: the prior is how "
       "often each Sunflora set appears in Random Battles. Then we condition on what we have seen. Sunflora used "
       "Sludge Bomb, so set C, which has no Sludge Bomb, drops to zero, and renormalising the rest gives the "
-      "posterior: 0.6 on set A with Earth Power and 0.4 on set B with Leaf Storm. Each possible set becomes a world "
-      "with that posterior weight, and the worlds always cover every item or ability the opponent could have, so a "
+      "posterior: 0.6 on set A with Earth Power and 0.4 on set B with Leaf Storm. We draw four worlds, at least "
+      "one per item-and-ability group, weighted by the posterior, so whenever the opponent has at most four options, a "
       "rare but dangerous one is never dropped. We search each world deeper with Monte Carlo tree search, giving "
-      "each of our moves a share of the search, and then decide by the posterior-weighted value. Here world A alone "
+      "each of our moves a share of the search, and then decide by the posterior-weighted search share. Here world A alone "
       "would pick Earthquake, but weighting in world B makes Slack Off the Bayes choice. The numbers are "
       "illustrative.")
 
@@ -901,7 +901,7 @@ boxes = [("Public ladder vs humans", [P("99–51", size=36, b=True, align="ctr")
                             P(f"vs the Bayesian model {H2H_CI}", size=14, align="ctr", before=4),
                             P("Elo vs preliminary: +27, Bayesian +203", size=12, i=True, align="ctr", before=4)]),
          ("Adversary predicting it", [P("0.70", size=36, b=True, align="ctr"),
-                                      P("vs its argmax, in-engine", size=14, align="ctr", before=4),
+                                      P("vs 5,000-iteration MCTS argmax (in-engine)", size=14, align="ctr", before=4),
                                       P("+0.49 from predicting the move", size=12, i=True, align="ctr", before=4)])]
 BH = Inches(1.75)
 for k, (name, paras) in enumerate(boxes):
@@ -911,22 +911,22 @@ for k, (name, paras) in enumerate(boxes):
 by = TOP + HDR_H + BH + Inches(0.35)
 S.text(LEFT, by, WIDTH, BOTTOM - by, [
     P("Hedge has small regret (4–5 vs its bound ≈ 28), but it is credited on the 2-turn matrices, where the LP "
-      "expert looks best, so it moves 60–71% of its weight to the weakest expert in play", size=18, bullet=True),
-    P(("No-regret is only as good as its payoffs: ", {"b": True}), "the bound pointed to deeper search, which is "
-      "why the Bayesian model wins", size=18, bullet=True, before=10),
+      "expert looks best, so it moves 60–71% of its weight to the LP expert", size=18, bullet=True),
+    P(("No-regret is only as good as its payoffs: ", {"b": True}), "our bound points to the evaluation error, and "
+      "the Bayesian model spends its compute on deeper search instead", size=18, bullet=True, before=10),
     P("Its argmax is predictable, as the price of determinism says; sampling its visit shares hides it but plays "
       "far worse", size=18, bullet=True, before=10),
 ], "Play bullets")
-notes(s, "Here is the Bayesian model in play. On the public ladder against human players, in sequential rated "
+notes(s, "Here is the Bayesian model in play. On the public ladder, in sequential rated "
       "batches, it went 99 and 51 and climbed from 1470 to 2090 Elo, peaking at 2141, reportedly in the top 500, while the "
       "preliminary model went 77 and 73 and drifted down to 1470. We then wrapped the Bayesian model in our Hedge "
       f"layer, over its argmax, its sampled visit shares and the equilibrium, and it lost to the plain Bayesian model, "
       f"scoring {H2H_SCORE} over {H2H_N}. Hedge did not fail to learn: its regret is four to five against a bound "
       "of about twenty-eight. But it is credited on the two-turn matrices, where the equilibrium expert looks best by "
-      "construction, so it moved its weight to the expert that is weakest in real play. A no-regret guarantee is only "
-      "as good as the payoffs it is measured on; our bound pointed to deeper search, and that is why the Bayesian "
-      "model wins. Finally, an adversary that reruns the Bayesian model's search to predict its move scores 0.70 "
-      "against it in-engine, a gain of almost half a game from predicting alone, exactly the price of determinism; "
+      "construction, so it moved most of its weight to the LP expert, whose matrices carry the evaluation error. A no-regret guarantee is only "
+      "as good as the payoffs it is measured on; our bound points to the evaluation error, and the Bayesian "
+      "model spends its compute on deeper search instead. Finally, in-engine with full information, an adversary that reruns a 5,000-iteration MCTS to predict its argmax scores 0.70, "
+      "a gain of almost half a game from predicting alone, as the price of determinism predicts; "
       "sampling the visit shares hides the move but plays far worse.")
 
 # ===================== Section 5: Conclusions =====================
@@ -937,7 +937,7 @@ items = ["Per-turn equilibrium play and Hedge across games compose into a bound 
          "shows that the error of our evaluation formula, not the solver, is what limits the agent.",
          "Spending compute where the bound points, on deeper search over the same Bayesian belief about the hidden "
          "team, gave our strongest agent, which reportedly reached the top 500 of the public ladder. Its deterministic "
-         "choice is the price: an opponent who predicts it gains almost half a game.",
+         "choice is the price: in-engine, an opponent who predicts it gains almost half a game.",
          "A no-regret guarantee is only as good as the payoffs it is measured on. Wrapped around the Bayesian model, "
          "Hedge learned faithfully from shallow matrices and gave back most of the model's strength, so guarantees and "
          "strength line up only when the learner sees accurate payoffs."]
@@ -965,6 +965,6 @@ notes(s, "Three takeaways. First, per-turn equilibrium play and Hedge across gam
 
 add_sections(prs, groups)
 prs.core_properties.title = "No-Regret Learning and Bayesian Opponent Memory in Pokémon Random Battles"
-prs.core_properties.author = "[Names]"
+prs.core_properties.author = "Nikhil Pesaladinne, Bo Chi"
 prs.save(OUT)
 print("wrote", OUT)
