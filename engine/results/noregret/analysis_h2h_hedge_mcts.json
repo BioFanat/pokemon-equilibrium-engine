@@ -35,12 +35,12 @@
   ],
   "rates": {
    "off_argmax_played": {
-    "won": 0.17833333333333334,
-    "lost": 0.21275720164609052
+    "won": 0.27166666666666667,
+    "lost": 0.3448559670781893
    },
    "low_share_played": {
-    "won": 0.06833333333333333,
-    "lost": 0.05473251028806585
+    "won": 0.1225,
+    "lost": 0.10823045267489712
    },
    "mixed_lp": {
     "won": 0.5258333333333334,
@@ -51,7 +51,7 @@
    "won": 0.2842955288953274,
    "lost": 0.33378199404010483
   },
-  "mixed_lp_off_share": 0.640218878248974,
+  "mixed_lp_off_share": 0.6151202749140894,
   "turns": {
    "won": 35.58064516129032,
    "lost": 30.579710144927535
@@ -124,10 +124,10 @@
    "lost": false,
    "n": 19,
    "off_argmax_mass": 3.18623433227015,
-   "off_argmax_played": 4,
+   "off_argmax_played": 5,
    "low_share_played": 4,
    "mixed_lp": 11,
-   "mixed_lp_off": 3,
+   "mixed_lp_off": 4,
    "entropy": 11.621566586577465
   },
   {
@@ -139,10 +139,10 @@
    "lost": true,
    "n": 30,
    "off_argmax_mass": 8.207955925648601,
-   "off_argmax_played": 4,
-   "low_share_played": 1,
+   "off_argmax_played": 9,
+   "low_share_played": 3,
    "mixed_lp": 17,
-   "mixed_lp_off": 1,
+   "mixed_lp_off": 4,
    "entropy": 25.44213577290854
   },
   {
@@ -154,10 +154,10 @@
    "lost": false,
    "n": 38,
    "off_argmax_mass": 12.57466935322383,
-   "off_argmax_played": 6,
-   "low_share_played": 2,
+   "off_argmax_played": 13,
+   "low_share_played": 6,
    "mixed_lp": 21,
-   "mixed_lp_off": 5,
+   "mixed_lp_off": 7,
    "entropy": 29.98849857173403
   },
   {
@@ -169,10 +169,10 @@
    "lost": false,
    "n": 52,
    "off_argmax_mass": 15.715622941153425,
-   "off_argmax_played": 10,
-   "low_share_played": 4,
+   "off_argmax_played": 15,
+   "low_share_played": 5,
    "mixed_lp": 28,
-   "mixed_lp_off": 5,
+   "mixed_lp_off": 8,
    "entropy": 37.8419755540032
   },
   {
@@ -199,10 +199,10 @@
    "lost": true,
    "n": 25,
    "off_argmax_mass": 10.77566771592312,
-   "off_argmax_played": 9,
-   "low_share_played": 2,
+   "off_argmax_played": 13,
+   "low_share_played": 3,
    "mixed_lp": 16,
-   "mixed_lp_off": 7,
+   "mixed_lp_off": 9,
    "entropy": 19.588038560315834
   },
   {
@@ -214,10 +214,10 @@
    "lost": true,
    "n": 55,
    "off_argmax_mass": 16.528021134511594,
-   "off_argmax_played": 17,
-   "low_share_played": 4,
+   "off_argmax_played": 22,
+   "low_share_played": 6,
    "mixed_lp": 34,
-   "mixed_lp_off": 14,
+   "mixed_lp_off": 17,
    "entropy": 42.99729284867874
   },
   {
@@ -229,10 +229,10 @@
    "lost": true,
    "n": 28,
    "off_argmax_mass": 9.68388102758443,
-   "off_argmax_played": 4,
-   "low_share_played": 2,
+   "off_argmax_played": 11,
+   "low_share_played": 6,
    "mixed_lp": 21,
-   "mixed_lp_off": 4,
+   "mixed_lp_off": 8,
    "entropy": 25.40762497463959
   },
   {
@@ -244,8 +244,8 @@
    "lost": false,
    "n": 43,
    "off_argmax_mass": 13.308156041645782,
-   "off_argmax_played": 10,
-   "low_share_played": 6,
+   "off_argmax_played": 14,
+   "low_share_played": 8,
    "mixed_lp": 13,
    "mixed_lp_off": 3,
    "entropy": 29.61338043287012
@@ -259,10 +259,10 @@
    "lost": false,
    "n": 46,
    "off_argmax_mass": 11.852121468630102,
-   "off_argmax_played": 6,
-   "low_share_played": 2,
+   "off_argmax_played": 7,
+   "low_share_played": 3,
    "mixed_lp": 28,
-   "mixed_lp_off": 3,
+   "mixed_lp_off": 4,
    "entropy": 27.68472404014165
   },
   {
@@ -274,10 +274,10 @@
    "lost": true,
    "n": 25,
    "off_argmax_mass": 8.5038386701094,
-   "off_argmax_played": 10,
+   "off_argmax_played": 12,
    "low_share_played": 0,
    "mixed_lp": 12,
-   "mixed_lp_off": 5,
+   "mixed_lp_off": 6,
    "entropy": 20.226404881302937
   },
   {
@@ -289,10 +289,10 @@
    "lost": false,
    "n": 37,
    "off_argmax_mass": 11.524288611629917,
-   "off_argmax_played": 8,
-   "low_share_played": 2,
+   "off_argmax_played": 14,
+   "low_share_played": 6,
    "mixed_lp": 23,
-   "mixed_lp_off": 7,
+   "mixed_lp_off": 11,
    "entropy": 26.413625180297828
   },
   {
@@ -304,10 +304,10 @@
    "lost": true,
    "n": 28,
    "off_argmax_mass": 12.414879035832598,
-   "off_argmax_played": 6,
-   "low_share_played": 0,
+   "off_argmax_played": 13,
+   "low_share_played": 3,
    "mixed_lp": 16,
-   "mixed_lp_off": 3,
+   "mixed_lp_off": 5,
    "entropy": 27.254219627815825
   },
   {
@@ -319,10 +319,10 @@
    "lost": false,
    "n": 31,
    "off_argmax_mass": 7.502002880475206,
-   "off_argmax_played": 4,
-   "low_share_played": 1,
+   "off_argmax_played": 8,
+   "low_share_played": 2,
    "mixed_lp": 20,
-   "mixed_lp_off": 3,
+   "mixed_lp_off": 7,
    "entropy": 20.44254278526784
   },
   {
@@ -334,10 +334,10 @@
    "lost": true,
    "n": 27,
    "off_argmax_mass": 9.03613913465899,
-   "off_argmax_played": 6,
-   "low_share_played": 2,
+   "off_argmax_played": 11,
+   "low_share_played": 5,
    "mixed_lp": 19,
-   "mixed_lp_off": 6,
+   "mixed_lp_off": 10,
    "entropy": 20.4414113757602
   },
   {
@@ -349,10 +349,10 @@
    "lost": false,
    "n": 34,
    "off_argmax_mass": 11.499662366901786,
-   "off_argmax_played": 5,
-   "low_share_played": 1,
+   "off_argmax_played": 8,
+   "low_share_played": 3,
    "mixed_lp": 25,
-   "mixed_lp_off": 5,
+   "mixed_lp_off": 6,
    "entropy": 23.933819767593306
   },
   {
@@ -364,10 +364,10 @@
    "lost": true,
    "n": 34,
    "off_argmax_mass": 7.23498845339382,
-   "off_argmax_played": 5,
-   "low_share_played": 3,
+   "off_argmax_played": 8,
+   "low_share_played": 4,
    "mixed_lp": 12,
-   "mixed_lp_off": 3,
+   "mixed_lp_off": 4,
    "entropy": 19.117709340515265
   },
   {
@@ -379,8 +379,8 @@
    "lost": true,
    "n": 20,
    "off_argmax_mass": 7.104611625140886,
-   "off_argmax_played": 5,
-   "low_share_played": 0,
+   "off_argmax_played": 7,
+   "low_share_played": 2,
    "mixed_lp": 10,
    "mixed_lp_off": 4,
    "entropy": 16.982079978461613
@@ -394,10 +394,10 @@
    "lost": true,
    "n": 37,
    "off_argmax_mass": 13.98031998459121,
-   "off_argmax_played": 9,
-   "low_share_played": 2,
+   "off_argmax_played": 16,
+   "low_share_played": 8,
    "mixed_lp": 23,
-   "mixed_lp_off": 7,
+   "mixed_lp_off": 11,
    "entropy": 30.59549176754051
   },
   {
@@ -409,10 +409,10 @@
    "lost": true,
    "n": 25,
    "off_argmax_mass": 8.834698471720756,
-   "off_argmax_played": 5,
-   "low_share_played": 0,
+   "off_argmax_played": 12,
+   "low_share_played": 2,
    "mixed_lp": 14,
-   "mixed_lp_off": 4,
+   "mixed_lp_off": 7,
    "entropy": 19.317048884234165
   },
   {
@@ -424,10 +424,10 @@
    "lost": true,
    "n": 29,
    "off_argmax_mass": 10.3947565183606,
-   "off_argmax_played": 6,
-   "low_share_played": 3,
+   "off_argmax_played": 9,
+   "low_share_played": 4,
    "mixed_lp": 14,
-   "mixed_lp_off": 2,
+   "mixed_lp_off": 3,
    "entropy": 20.80863843895107
   },
   {
@@ -439,10 +439,10 @@
    "lost": true,
    "n": 43,
    "off_argmax_mass": 15.37937444443375,
-   "off_argmax_played": 10,
-   "low_share_played": 3,
+   "off_argmax_played": 16,
+   "low_share_played": 7,
    "mixed_lp": 29,
-   "mixed_lp_off": 9,
+   "mixed_lp_off": 14,
    "entropy": 33.44227561086121
   },
   {
@@ -469,10 +469,10 @@
    "lost": false,
    "n": 58,
    "off_argmax_mass": 13.129034700202501,
-   "off_argmax_played": 12,
-   "low_share_played": 7,
+   "off_argmax_played": 16,
+   "low_share_played": 10,
    "mixed_lp": 26,
-   "mixed_lp_off": 6,
+   "mixed_lp_off": 9,
    "entropy": 39.20918476279478
   },
   {
@@ -484,10 +484,10 @@
    "lost": false,
    "n": 45,
    "off_argmax_mass": 14.869827432850377,
-   "off_argmax_played": 8,
-   "low_share_played": 6,
+   "off_argmax_played": 16,
+   "low_share_played": 9,
    "mixed_lp": 24,
-   "mixed_lp_off": 6,
+   "mixed_lp_off": 12,
    "entropy": 31.05017927556846
   },
   {
@@ -499,10 +499,10 @@
    "lost": true,
    "n": 25,
    "off_argmax_mass": 9.487266781437773,
-   "off_argmax_played": 4,
-   "low_share_played": 3,
+   "off_argmax_played": 7,
+   "low_share_played": 4,
    "mixed_lp": 15,
-   "mixed_lp_off": 3,
+   "mixed_lp_off": 5,
    "entropy": 20.57421074325638
   },
   {
@@ -514,10 +514,10 @@
    "lost": true,
    "n": 70,
    "off_argmax_mass": 23.567524455307012,
-   "off_argmax_played": 17,
-   "low_share_played": 8,
+   "off_argmax_played": 25,
+   "low_share_played": 10,
    "mixed_lp": 34,
-   "mixed_lp_off": 10,
+   "mixed_lp_off": 15,
    "entropy": 46.8221909545808
   },
   {
@@ -544,10 +544,10 @@
    "lost": true,
    "n": 31,
    "off_argmax_mass": 6.486341553827755,
-   "off_argmax_played": 5,
-   "low_share_played": 2,
+   "off_argmax_played": 11,
+   "low_share_played": 4,
    "mixed_lp": 12,
-   "mixed_lp_off": 3,
+   "mixed_lp_off": 5,
    "entropy": 18.680789566991123
   },
   {
@@ -559,10 +559,10 @@
    "lost": true,
    "n": 38,
    "off_argmax_mass": 10.587479703128224,
-   "off_argmax_played": 6,
-   "low_share_played": 1,
+   "off_argmax_played": 13,
+   "low_share_played": 3,
    "mixed_lp": 24,
-   "mixed_lp_off": 3,
+   "mixed_lp_off": 7,
    "entropy": 26.037048777549064
   },
   {
@@ -574,10 +574,10 @@
    "lost": false,
    "n": 36,
    "off_argmax_mass": 9.831685008977823,
-   "off_argmax_played": 4,
-   "low_share_played": 3,
+   "off_argmax_played": 6,
+   "low_share_played": 4,
    "mixed_lp": 21,
-   "mixed_lp_off": 2,
+   "mixed_lp_off": 3,
    "entropy": 22.748399579173444
   },
   {
@@ -589,10 +589,10 @@
    "lost": true,
    "n": 35,
    "off_argmax_mass": 14.97974656247585,
-   "off_argmax_played": 6,
-   "low_share_played": 0,
+   "off_argmax_played": 11,
+   "low_share_played": 3,
    "mixed_lp": 24,
-   "mixed_lp_off": 3,
+   "mixed_lp_off": 6,
    "entropy": 28.931044383671626
   },
   {
@@ -604,10 +604,10 @@
    "lost": true,
    "n": 34,
    "off_argmax_mass": 5.621471762392346,
-   "off_argmax_played": 3,
-   "low_share_played": 0,
+   "off_argmax_played": 6,
+   "low_share_played": 1,
    "mixed_lp": 11,
-   "mixed_lp_off": 2,
+   "mixed_lp_off": 4,
    "entropy": 13.493079226917509
   },
   {
@@ -619,10 +619,10 @@
    "lost": true,
    "n": 23,
    "off_argmax_mass": 11.14115088193177,
-   "off_argmax_played": 9,
-   "low_share_played": 5,
+   "off_argmax_played": 13,
+   "low_share_played": 7,
    "mixed_lp": 10,
-   "mixed_lp_off": 4,
+   "mixed_lp_off": 7,
    "entropy": 16.799314081175076
   },
   {
@@ -634,10 +634,10 @@
    "lost": true,
    "n": 32,
    "off_argmax_mass": 12.946366094834106,
-   "off_argmax_played": 5,
-   "low_share_played": 1,
+   "off_argmax_played": 8,
+   "low_share_played": 4,
    "mixed_lp": 17,
-   "mixed_lp_off": 2,
+   "mixed_lp_off": 3,
    "entropy": 24.81107712842523
   },
   {
@@ -649,10 +649,10 @@
    "lost": true,
    "n": 28,
    "off_argmax_mass": 10.877009659321956,
-   "off_argmax_played": 6,
-   "low_share_played": 2,
+   "off_argmax_played": 11,
+   "low_share_played": 5,
    "mixed_lp": 16,
-   "mixed_lp_off": 4,
+   "mixed_lp_off": 6,
    "entropy": 22.810107392459738
   },
   {
@@ -664,10 +664,10 @@
    "lost": false,
    "n": 34,
    "off_argmax_mass": 6.636801687626006,
-   "off_argmax_played": 4,
-   "low_share_played": 1,
+   "off_argmax_played": 7,
+   "low_share_played": 3,
    "mixed_lp": 11,
-   "mixed_lp_off": 1,
+   "mixed_lp_off": 3,
    "entropy": 13.905475426668524
   },
   {
@@ -694,10 +694,10 @@
    "lost": true,
    "n": 46,
    "off_argmax_mass": 8.950099881003105,
-   "off_argmax_played": 6,
-   "low_share_played": 2,
+   "off_argmax_played": 11,
+   "low_share_played": 3,
    "mixed_lp": 16,
-   "mixed_lp_off": 4,
+   "mixed_lp_off": 7,
    "entropy": 20.7587441062826
   },
   {
@@ -709,7 +709,7 @@
    "lost": true,
    "n": 42,
    "off_argmax_mass": 12.95489158960368,
-   "off_argmax_played": 10,
+   "off_argmax_played": 12,
    "low_share_played": 1,
    "mixed_lp": 18,
    "mixed_lp_off": 5,
@@ -724,10 +724,10 @@
    "lost": false,
    "n": 62,
    "off_argmax_mass": 17.73987224441638,
-   "off_argmax_played": 18,
-   "low_share_played": 4,
+   "off_argmax_played": 24,
+   "low_share_played": 7,
    "mixed_lp": 35,
-   "mixed_lp_off": 16,
+   "mixed_lp_off": 19,
    "entropy": 34.9038625146379
   },
   {
@@ -739,10 +739,10 @@
    "lost": true,
    "n": 46,
    "off_argmax_mass": 16.676374461795874,
-   "off_argmax_played": 10,
-   "low_share_played": 3,
+   "off_argmax_played": 15,
+   "low_share_played": 4,
    "mixed_lp": 23,
-   "mixed_lp_off": 5,
+   "mixed_lp_off": 7,
    "entropy": 30.974047303110417
   },
   {
@@ -754,10 +754,10 @@
    "lost": false,
    "n": 59,
    "off_argmax_mass": 20.94535195225308,
-   "off_argmax_played": 12,
-   "low_share_played": 5,
+   "off_argmax_played": 20,
+   "low_share_played": 11,
    "mixed_lp": 28,
-   "mixed_lp_off": 6,
+   "mixed_lp_off": 11,
    "entropy": 34.72258246602805
   },
   {
@@ -769,10 +769,10 @@
    "lost": true,
    "n": 48,
    "off_argmax_mass": 17.917891828927278,
-   "off_argmax_played": 8,
-   "low_share_played": 3,
+   "off_argmax_played": 16,
+   "low_share_played": 5,
    "mixed_lp": 25,
-   "mixed_lp_off": 3,
+   "mixed_lp_off": 9,
    "entropy": 32.04653115232058
   },
   {
@@ -784,7 +784,7 @@
    "lost": false,
    "n": 18,
    "off_argmax_mass": 3.4418500598941577,
-   "off_argmax_played": 0,
+   "off_argmax_played": 1,
    "low_share_played": 0,
    "mixed_lp": 8,
    "mixed_lp_off": 0,
@@ -799,10 +799,10 @@
    "lost": true,
    "n": 31,
    "off_argmax_mass": 8.547186976891634,
-   "off_argmax_played": 3,
+   "off_argmax_played": 7,
    "low_share_played": 0,
    "mixed_lp": 18,
-   "mixed_lp_off": 2,
+   "mixed_lp_off": 5,
    "entropy": 24.593055904867636
   },
   {
@@ -814,10 +814,10 @@
    "lost": true,
    "n": 30,
    "off_argmax_mass": 8.750861293106384,
-   "off_argmax_played": 7,
-   "low_share_played": 0,
+   "off_argmax_played": 14,
+   "low_share_played": 2,
    "mixed_lp": 16,
-   "mixed_lp_off": 5,
+   "mixed_lp_off": 10,
    "entropy": 19.666921358233946
   },
   {
@@ -829,10 +829,10 @@
    "lost": false,
    "n": 64,
    "off_argmax_mass": 17.252376565429493,
-   "off_argmax_played": 17,
+   "off_argmax_played": 19,
    "low_share_played": 6,
    "mixed_lp": 16,
-   "mixed_lp_off": 3,
+   "mixed_lp_off": 4,
    "entropy": 30.251382826342024
   },
   {
@@ -844,10 +844,10 @@
    "lost": false,
    "n": 41,
    "off_argmax_mass": 14.36808767631058,
-   "off_argmax_played": 8,
-   "low_share_played": 2,
+   "off_argmax_played": 14,
+   "low_share_played": 8,
    "mixed_lp": 30,
-   "mixed_lp_off": 7,
+   "mixed_lp_off": 12,
    "entropy": 31.07073197909772
   },
   {
@@ -859,10 +859,10 @@
    "lost": true,
    "n": 43,
    "off_argmax_mass": 16.521580221969618,
-   "off_argmax_played": 12,
+   "off_argmax_played": 19,
    "low_share_played": 5,
    "mixed_lp": 29,
-   "mixed_lp_off": 12,
+   "mixed_lp_off": 15,
    "entropy": 36.199675234040605
   },
   {
@@ -889,10 +889,10 @@
    "lost": true,
    "n": 20,
    "off_argmax_mass": 7.565233135993921,
-   "off_argmax_played": 2,
-   "low_share_played": 1,
+   "off_argmax_played": 8,
+   "low_share_played": 3,
    "mixed_lp": 14,
-   "mixed_lp_off": 2,
+   "mixed_lp_off": 6,
    "entropy": 16.066667158374578
   },
   {
@@ -904,10 +904,10 @@
    "lost": true,
    "n": 54,
    "off_argmax_mass": 20.26403369183243,
-   "off_argmax_played": 16,
-   "low_share_played": 4,
+   "off_argmax_played": 24,
+   "low_share_played": 5,
    "mixed_lp": 42,
-   "mixed_lp_off": 14,
+   "mixed_lp_off": 21,
    "entropy": 41.77655970815764
   },
   {
@@ -919,10 +919,10 @@
    "lost": true,
    "n": 30,
    "off_argmax_mass": 13.06682920785397,
-   "off_argmax_played": 8,
-   "low_share_played": 3,
+   "off_argmax_played": 13,
+   "low_share_played": 6,
    "mixed_lp": 13,
-   "mixed_lp_off": 3,
+   "mixed_lp_off": 7,
    "entropy": 20.06717404094472
   },
   {
@@ -934,10 +934,10 @@
    "lost": true,
    "n": 36,
    "off_argmax_mass": 15.052244417201962,
-   "off_argmax_played": 6,
-   "low_share_played": 2,
+   "off_argmax_played": 18,
+   "low_share_played": 7,
    "mixed_lp": 26,
-   "mixed_lp_off": 2,
+   "mixed_lp_off": 11,
    "entropy": 31.369709339268663
   },
   {
@@ -949,10 +949,10 @@
    "lost": true,
    "n": 29,
    "off_argmax_mass": 10.698938564459361,
-   "off_argmax_played": 8,
-   "low_share_played": 1,
+   "off_argmax_played": 11,
+   "low_share_played": 2,
    "mixed_lp": 14,
-   "mixed_lp_off": 6,
+   "mixed_lp_off": 7,
    "entropy": 19.166706093082983
   },
   {
@@ -964,8 +964,8 @@
    "lost": true,
    "n": 26,
    "off_argmax_mass": 8.567056084572013,
-   "off_argmax_played": 2,
-   "low_share_played": 1,
+   "off_argmax_played": 4,
+   "low_share_played": 3,
    "mixed_lp": 13,
    "mixed_lp_off": 1,
    "entropy": 16.66891575475224
@@ -979,10 +979,10 @@
    "lost": false,
    "n": 29,
    "off_argmax_mass": 7.849367700596952,
-   "off_argmax_played": 7,
-   "low_share_played": 1,
+   "off_argmax_played": 9,
+   "low_share_played": 2,
    "mixed_lp": 15,
-   "mixed_lp_off": 5,
+   "mixed_lp_off": 6,
    "entropy": 14.580031026730222
   },
   {
@@ -994,10 +994,10 @@
    "lost": true,
    "n": 43,
    "off_argmax_mass": 12.5051733633833,
-   "off_argmax_played": 6,
-   "low_share_played": 1,
+   "off_argmax_played": 9,
+   "low_share_played": 2,
    "mixed_lp": 31,
-   "mixed_lp_off": 5,
+   "mixed_lp_off": 7,
    "entropy": 29.18293348786629
   },
   {
@@ -1009,10 +1009,10 @@
    "lost": true,
    "n": 33,
    "off_argmax_mass": 11.261622413924295,
-   "off_argmax_played": 8,
-   "low_share_played": 0,
+   "off_argmax_played": 14,
+   "low_share_played": 2,
    "mixed_lp": 14,
-   "mixed_lp_off": 2,
+   "mixed_lp_off": 6,
    "entropy": 22.640802565161387
   },
   {
@@ -1024,10 +1024,10 @@
    "lost": true,
    "n": 27,
    "off_argmax_mass": 7.955919249000588,
-   "off_argmax_played": 6,
-   "low_share_played": 3,
+   "off_argmax_played": 8,
+   "low_share_played": 4,
    "mixed_lp": 8,
-   "mixed_lp_off": 1,
+   "mixed_lp_off": 2,
    "entropy": 14.436391918089463
   },
   {
@@ -1039,10 +1039,10 @@
    "lost": false,
    "n": 37,
    "off_argmax_mass": 11.548284746382931,
-   "off_argmax_played": 7,
-   "low_share_played": 2,
+   "off_argmax_played": 14,
+   "low_share_played": 6,
    "mixed_lp": 19,
-   "mixed_lp_off": 3,
+   "mixed_lp_off": 9,
    "entropy": 22.311158059114458
   },
   {
@@ -1054,10 +1054,10 @@
    "lost": true,
    "n": 29,
    "off_argmax_mass": 11.294340812270324,
-   "off_argmax_played": 8,
-   "low_share_played": 2,
+   "off_argmax_played": 11,
+   "low_share_played": 4,
    "mixed_lp": 16,
-   "mixed_lp_off": 7,
+   "mixed_lp_off": 8,
    "entropy": 19.255865189455363
   },
   {
@@ -1069,10 +1069,10 @@
    "lost": true,
    "n": 33,
    "off_argmax_mass": 8.402078860096179,
-   "off_argmax_played": 4,
-   "low_share_played": 0,
+   "off_argmax_played": 7,
+   "low_share_played": 2,
    "mixed_lp": 19,
-   "mixed_lp_off": 3,
+   "mixed_lp_off": 5,
    "entropy": 15.322886451620917
   },
   {
@@ -1084,8 +1084,8 @@
    "lost": true,
    "n": 29,
    "off_argmax_mass": 11.993239740831356,
-   "off_argmax_played": 11,
-   "low_share_played": 4,
+   "off_argmax_played": 15,
+   "low_share_played": 6,
    "mixed_lp": 12,
    "mixed_lp_off": 6,
    "entropy": 20.02627798752914
@@ -1099,10 +1099,10 @@
    "lost": false,
    "n": 42,
    "off_argmax_mass": 13.396931608022525,
-   "off_argmax_played": 10,
-   "low_share_played": 4,
+   "off_argmax_played": 15,
+   "low_share_played": 8,
    "mixed_lp": 20,
-   "mixed_lp_off": 4,
+   "mixed_lp_off": 8,
    "entropy": 22.95945794529754
   },
   {
@@ -1114,10 +1114,10 @@
    "lost": true,
    "n": 28,
    "off_argmax_mass": 7.907216916583348,
-   "off_argmax_played": 4,
-   "low_share_played": 1,
+   "off_argmax_played": 5,
+   "low_share_played": 2,
    "mixed_lp": 14,
-   "mixed_lp_off": 3,
+   "mixed_lp_off": 4,
    "entropy": 21.25366060935039
   },
   {
@@ -1129,10 +1129,10 @@
    "lost": true,
    "n": 57,
    "off_argmax_mass": 24.365097097896516,
-   "off_argmax_played": 12,
-   "low_share_played": 2,
+   "off_argmax_played": 25,
+   "low_share_played": 9,
    "mixed_lp": 40,
-   "mixed_lp_off": 10,
+   "mixed_lp_off": 20,
    "entropy": 60.85533705167331
   },
   {
@@ -1159,10 +1159,10 @@
    "lost": false,
    "n": 58,
    "off_argmax_mass": 16.153927028429848,
-   "off_argmax_played": 7,
-   "low_share_played": 4,
+   "off_argmax_played": 17,
+   "low_share_played": 12,
    "mixed_lp": 33,
-   "mixed_lp_off": 5,
+   "mixed_lp_off": 11,
    "entropy": 35.64137132028753
   },
   {
@@ -1174,10 +1174,10 @@
    "lost": true,
    "n": 27,
    "off_argmax_mass": 9.94991155948598,
-   "off_argmax_played": 6,
-   "low_share_played": 0,
+   "off_argmax_played": 8,
+   "low_share_played": 2,
    "mixed_lp": 16,
-   "mixed_lp_off": 5,
+   "mixed_lp_off": 7,
    "entropy": 19.806365468242696
   },
   {
@@ -1189,10 +1189,10 @@
    "lost": false,
    "n": 44,
    "off_argmax_mass": 13.011300943427003,
-   "off_argmax_played": 7,
-   "low_share_played": 2,
+   "off_argmax_played": 11,
+   "low_share_played": 4,
    "mixed_lp": 37,
-   "mixed_lp_off": 7,
+   "mixed_lp_off": 10,
    "entropy": 31.193123803813766
   },
   {
@@ -1204,7 +1204,7 @@
    "lost": true,
    "n": 29,
    "off_argmax_mass": 8.75890076240989,
-   "off_argmax_played": 4,
+   "off_argmax_played": 5,
    "low_share_played": 2,
    "mixed_lp": 13,
    "mixed_lp_off": 3,
@@ -1219,10 +1219,10 @@
    "lost": true,
    "n": 46,
    "off_argmax_mass": 15.11940737541871,
-   "off_argmax_played": 12,
-   "low_share_played": 5,
+   "off_argmax_played": 22,
+   "low_share_played": 11,
    "mixed_lp": 23,
-   "mixed_lp_off": 8,
+   "mixed_lp_off": 16,
    "entropy": 29.55567126256426
   },
   {
@@ -1234,10 +1234,10 @@
    "lost": true,
    "n": 37,
    "off_argmax_mass": 15.333244613506366,
-   "off_argmax_played": 14,
-   "low_share_played": 4,
+   "off_argmax_played": 17,
+   "low_share_played": 5,
    "mixed_lp": 18,
-   "mixed_lp_off": 10,
+   "mixed_lp_off": 11,
    "entropy": 25.091761796226944
   },
   {
@@ -1249,7 +1249,7 @@
    "lost": true,
    "n": 28,
    "off_argmax_mass": 13.43083830298534,
-   "off_argmax_played": 9,
+   "off_argmax_played": 11,
    "low_share_played": 0,
    "mixed_lp": 12,
    "mixed_lp_off": 4,
@@ -1264,10 +1264,10 @@
    "lost": false,
    "n": 44,
    "off_argmax_mass": 14.833940123554852,
-   "off_argmax_played": 8,
-   "low_share_played": 0,
+   "off_argmax_played": 13,
+   "low_share_played": 3,
    "mixed_lp": 23,
-   "mixed_lp_off": 5,
+   "mixed_lp_off": 7,
    "entropy": 24.92908405006128
   },
   {
@@ -1279,10 +1279,10 @@
    "lost": false,
    "n": 25,
    "off_argmax_mass": 7.0049332397202795,
-   "off_argmax_played": 1,
-   "low_share_played": 1,
+   "off_argmax_played": 4,
+   "low_share_played": 3,
    "mixed_lp": 14,
-   "mixed_lp_off": 0,
+   "mixed_lp_off": 2,
    "entropy": 13.490280584175725
   },
   {
@@ -1294,10 +1294,10 @@
    "lost": true,
    "n": 24,
    "off_argmax_mass": 7.850003463375885,
-   "off_argmax_played": 5,
-   "low_share_played": 1,
+   "off_argmax_played": 9,
+   "low_share_played": 2,
    "mixed_lp": 12,
-   "mixed_lp_off": 4,
+   "mixed_lp_off": 6,
    "entropy": 15.707815813418797
   },
   {
@@ -1309,10 +1309,10 @@
    "lost": true,
    "n": 31,
    "off_argmax_mass": 10.555882976398605,
-   "off_argmax_played": 10,
-   "low_share_played": 2,
+   "off_argmax_played": 13,
+   "low_share_played": 4,
    "mixed_lp": 11,
-   "mixed_lp_off": 3,
+   "mixed_lp_off": 5,
    "entropy": 18.275877415240185
   },
   {
@@ -1324,10 +1324,10 @@
    "lost": true,
    "n": 49,
    "off_argmax_mass": 15.577209871015851,
-   "off_argmax_played": 12,
-   "low_share_played": 4,
+   "off_argmax_played": 16,
+   "low_share_played": 5,
    "mixed_lp": 31,
-   "mixed_lp_off": 10,
+   "mixed_lp_off": 11,
    "entropy": 30.81862498699606
   },
   {
@@ -1339,10 +1339,10 @@
    "lost": true,
    "n": 35,
    "off_argmax_mass": 11.334930368761821,
-   "off_argmax_played": 4,
-   "low_share_played": 0,
+   "off_argmax_played": 8,
+   "low_share_played": 2,
    "mixed_lp": 20,
-   "mixed_lp_off": 1,
+   "mixed_lp_off": 4,
    "entropy": 24.32061958086715
   },
   {
@@ -1354,10 +1354,10 @@
    "lost": true,
    "n": 28,
    "off_argmax_mass": 8.490665391516242,
-   "off_argmax_played": 6,
-   "low_share_played": 2,
+   "off_argmax_played": 9,
+   "low_share_played": 5,
    "mixed_lp": 17,
-   "mixed_lp_off": 4,
+   "mixed_lp_off": 5,
    "entropy": 18.041783510366425
   },
   {
@@ -1384,10 +1384,10 @@
    "lost": true,
    "n": 37,
    "off_argmax_mass": 10.51204851391291,
-   "off_argmax_played": 10,
-   "low_share_played": 2,
+   "off_argmax_played": 15,
+   "low_share_played": 3,
    "mixed_lp": 17,
-   "mixed_lp_off": 5,
+   "mixed_lp_off": 8,
    "entropy": 18.586305864820858
   },
   {
@@ -1399,10 +1399,10 @@
    "lost": true,
    "n": 35,
    "off_argmax_mass": 13.774702292826086,
-   "off_argmax_played": 10,
-   "low_share_played": 2,
+   "off_argmax_played": 15,
+   "low_share_played": 5,
    "mixed_lp": 22,
-   "mixed_lp_off": 7,
+   "mixed_lp_off": 10,
    "entropy": 25.090710840089333
   },
   {
@@ -1414,10 +1414,10 @@
    "lost": true,
    "n": 27,
    "off_argmax_mass": 9.095073530584289,
-   "off_argmax_played": 5,
+   "off_argmax_played": 7,
    "low_share_played": 0,
    "mixed_lp": 16,
-   "mixed_lp_off": 3,
+   "mixed_lp_off": 4,
    "entropy": 16.70851661167075
   },
   {
@@ -1429,10 +1429,10 @@
    "lost": true,
    "n": 41,
    "off_argmax_mass": 11.54036523192452,
-   "off_argmax_played": 10,
-   "low_share_played": 2,
+   "off_argmax_played": 15,
+   "low_share_played": 4,
    "mixed_lp": 13,
-   "mixed_lp_off": 6,
+   "mixed_lp_off": 9,
    "entropy": 18.69435813834945
   },
   {
@@ -1444,10 +1444,10 @@
    "lost": true,
    "n": 57,
    "off_argmax_mass": 18.96402246396756,
-   "off_argmax_played": 9,
-   "low_share_played": 2,
+   "off_argmax_played": 21,
+   "low_share_played": 5,
    "mixed_lp": 31,
-   "mixed_lp_off": 8,
+   "mixed_lp_off": 15,
    "entropy": 50.44361563121615
   },
   {
@@ -1459,10 +1459,10 @@
    "lost": true,
    "n": 29,
    "off_argmax_mass": 13.472008785202647,
-   "off_argmax_played": 7,
-   "low_share_played": 3,
+   "off_argmax_played": 11,
+   "low_share_played": 5,
    "mixed_lp": 18,
-   "mixed_lp_off": 4,
+   "mixed_lp_off": 5,
    "entropy": 32.58454223856929
   },
   {
@@ -1489,10 +1489,10 @@
    "lost": false,
    "n": 35,
    "off_argmax_mass": 10.568609594117627,
-   "off_argmax_played": 3,
-   "low_share_played": 2,
+   "off_argmax_played": 7,
+   "low_share_played": 4,
    "mixed_lp": 20,
-   "mixed_lp_off": 2,
+   "mixed_lp_off": 4,
    "entropy": 20.173832663679942
   },
   {
@@ -1504,10 +1504,10 @@
    "lost": true,
    "n": 89,
    "off_argmax_mass": 23.97030166305186,
-   "off_argmax_played": 15,
-   "low_share_played": 5,
+   "off_argmax_played": 23,
+   "low_share_played": 7,
    "mixed_lp": 36,
-   "mixed_lp_off": 8,
+   "mixed_lp_off": 12,
    "entropy": 59.06476466821471
   },
   {
@@ -1519,10 +1519,10 @@
    "lost": true,
    "n": 46,
    "off_argmax_mass": 12.987195800229964,
-   "off_argmax_played": 8,
-   "low_share_played": 2,
+   "off_argmax_played": 17,
+   "low_share_played": 6,
    "mixed_lp": 18,
-   "mixed_lp_off": 4,
+   "mixed_lp_off": 9,
    "entropy": 28.877808670628102
   },
   {
@@ -1534,10 +1534,10 @@
    "lost": true,
    "n": 27,
    "off_argmax_mass": 7.8413654161983795,
-   "off_argmax_played": 6,
+   "off_argmax_played": 8,
    "low_share_played": 4,
    "mixed_lp": 16,
-   "mixed_lp_off": 5,
+   "mixed_lp_off": 6,
    "entropy": 21.752001387349306
   },
   {
@@ -1549,7 +1549,7 @@
    "lost": false,
    "n": 33,
    "off_argmax_mass": 7.428810722924038,
-   "off_argmax_played": 6,
+   "off_argmax_played": 7,
    "low_share_played": 1,
    "mixed_lp": 14,
    "mixed_lp_off": 5,
@@ -1564,10 +1564,10 @@
    "lost": true,
    "n": 41,
    "off_argmax_mass": 12.43982263988307,
-   "off_argmax_played": 4,
-   "low_share_played": 2,
+   "off_argmax_played": 12,
+   "low_share_played": 6,
    "mixed_lp": 25,
-   "mixed_lp_off": 3,
+   "mixed_lp_off": 5,
    "entropy": 33.03032755671378
   },
   {
@@ -1579,8 +1579,8 @@
    "lost": true,
    "n": 39,
    "off_argmax_mass": 9.813557972111425,
-   "off_argmax_played": 5,
-   "low_share_played": 1,
+   "off_argmax_played": 6,
+   "low_share_played": 2,
    "mixed_lp": 19,
    "mixed_lp_off": 4,
    "entropy": 24.39998291492796
@@ -1594,10 +1594,10 @@
    "lost": true,
    "n": 37,
    "off_argmax_mass": 10.911734863555644,
-   "off_argmax_played": 9,
-   "low_share_played": 3,
+   "off_argmax_played": 12,
+   "low_share_played": 4,
    "mixed_lp": 16,
-   "mixed_lp_off": 4,
+   "mixed_lp_off": 6,
    "entropy": 27.879468544912964
   },
   {
@@ -1609,10 +1609,10 @@
    "lost": true,
    "n": 27,
    "off_argmax_mass": 11.577090770625414,
-   "off_argmax_played": 4,
-   "low_share_played": 1,
+   "off_argmax_played": 9,
+   "low_share_played": 2,
    "mixed_lp": 13,
-   "mixed_lp_off": 2,
+   "mixed_lp_off": 5,
    "entropy": 24.917712102637708
   }
  ]

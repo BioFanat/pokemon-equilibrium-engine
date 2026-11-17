@@ -54,7 +54,8 @@ def decision_stats(recs):
         shares = np.asarray(r["mcts"]["visit_policy"], float)
         Q = np.asarray(r["Q"], float)
         top = int(np.argmax(Q[0]))
-        played = legal.index(r["move"]) if r["move"] in legal else None
+        mv = r["move"][len("switch "):] if r["move"].startswith("switch ") else r["move"]   # raw switch -> label
+        played = legal.index(mv) if mv in legal else None
         d["n"] += 1
         d["off_argmax_mass"] += float(1 - p[top])
         d["entropy"] += float(-(p[p > 0] * np.log(p[p > 0])).sum())
