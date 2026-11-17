@@ -777,54 +777,55 @@ notes(s, "Here are the two bounds against measurements: the dashed line is what 
       "the right, Hedge across games: its regret per turn, how much better its best single expert would have done, "
       "falls toward zero and stays well under the guarantee.")
 
-# 4b. Limitations of the Hedge (preliminary) model: results, then where the bound puts the error
+# 4b. Limitations of the Hedge (preliminary) model: results, exploitability, then where the bound puts the error
+from PIL import Image as _Im
 s, S = content(4, "Limitations of the Hedge model")
 lw = (WIDTH - GAP) // 2
-LBH = Inches(3.0)
-S.header(LEFT, TOP, lw, HDR_H, [P("1. It loses", size=SECONDARY, b=True, align="ctr")], "Loses header")
-rows = [("", "Hedge model", "Bayesian model"),
-        ("Public ladder", "64–36, Elo 1704", "66–34, Elo 2090"),
-        ("vs Foul Play", "0.33", "0.60"),
-        ("Head to head", "0.17", "0.83"),
-        ("Exploiter's gain", "+0.19", "+0.49")]
-c0, c1 = Inches(1.75), (lw - Inches(1.75)) // 2
-ry, rh = TOP + HDR_H + Inches(0.2), Inches(0.42)
-for r, (a, b, c) in enumerate(rows):
+S.header(LEFT, TOP, lw, HDR_H, [P("1. How it does", size=SECONDARY, b=True, align="ctr")], "Results header")
+rows = [("Public ladder", "64–36, Elo 1704"),
+        ("vs Foul Play", "0.33 (0.5 = even)")]
+c0, rh = Inches(2.0), Inches(0.42)
+ry = TOP + HDR_H + Inches(0.15)
+for r, (a, b) in enumerate(rows):
     y = ry + r * rh
-    if r == 0:
-        S.header(LEFT + c0, y, c1, rh, [P(b, size=14, b=True, align="ctr")], "Loses col 1")
-        S.header(LEFT + c0 + c1, y, c1, rh, [P(c, size=14, b=True, align="ctr")], "Loses col 2")
-        continue
-    S.header(LEFT, y, c0, rh, [P(a, size=14, b=True, align="ctr")], f"Loses row {r}")
-    S.box(LEFT + c0, y, c1, rh, [P(b, size=14, align="ctr")], f"Loses cell {r}1")
-    S.box(LEFT + c0 + c1, y, c1, rh, [P(c, size=14, align="ctr")], f"Loses cell {r}2")
-S.text(LEFT, ry + len(rows) * rh + Inches(0.1), lw, Inches(0.9), [
-    P("Harder to exploit, because it plays a mix, but much weaker.", size=14),
-    P("Scores: local paired games (0.5 = even). Exploiter: extra score from knowing our rule (Hedge model: its sampled equilibrium, in-engine).", size=11, i=True,
-      before=4),
-], "Loses note")
+    S.header(LEFT, y, c0, rh, [P(a, size=14, b=True, align="ctr")], f"Results row {r}")
+    S.box(LEFT + c0, y, lw - c0, rh, [P(b, size=14, align="ctr")], f"Results cell {r}")
+ey = ry + len(rows) * rh + Inches(0.3)
+S.header(LEFT, ey, lw, HDR_H, [P("Exploitability", size=SECONDARY, b=True, align="ctr")], "Exploit header")
+S.box(LEFT, ey + HDR_H, lw, Inches(2.6), [
+    P("How much more an opponent wins if it knows exactly how our bot decides.", size=14),
+    P("We test it with a simple opponent that each turn plays its best answer to the move it expects from us: "
+      "once guessing blindly, once running our rule to predict it.", size=14, before=6),
+    P(("Hedge model: 0.37 → 0.56, a gain of +0.19", {"b": True}), size=14, before=8),
+    P("Hard to exploit, because it plays a mix, but too weak to win.", size=14, before=6),
+], "Exploit box", anchor="t")
 rx = LEFT + lw + GAP
-S.header(rx, TOP, lw, HDR_H, [P("2. Why: where the bound puts the error", size=SECONDARY, b=True, align="ctr")],
+S.header(rx, TOP, lw, HDR_H, [P("2. Why: the bound points at the payoffs", size=SECONDARY, b=True, align="ctr")],
          "Why header")
-S.box(rx, TOP + HDR_H, lw, LBH, [
-    P("Each turn we fall short of the true game by", size=14, align="ctr"),
-    EQ_(r"δ = ε_s + 2ε_v", before=6),
-    P(("$", "ε_s"), " solver error ≤ 0.16: small", size=14, align="ctr", before=8),
-    P(("$", "ε_v"), " matrix error up to 0.7–1.0: large", size=14, align="ctr", before=4),
-    P("(measured on endgames we solved exactly; 1 = no better than a constant guess)", size=11, i=True,
-      align="ctr", before=2),
-    P("In real games the 2-turn payoffs mislead: Hedge, credited on them, favours the LP expert the deep search "
-      "rates worse", size=14, align="ctr", before=10),
-    P("More worlds (8 vs 4: 0.50) or a better opponent model do not help", size=14, align="ctr", before=6),
-], "Why box", anchor="t")
-notes(s, "So why move on from the Hedge model? First, it loses. On the public ladder it went 64 and 36 and peaked at "
-      "1704, against 2090 and later 2308 for the Bayesian model. Against Foul Play it scores 0.33, where the "
-      "Bayesian model scores 0.60, and head to head the Bayesian model wins 0.83. It is harder to exploit, because "
-      "it plays a mix, but it is much weaker. Second, our bound tells us why. Each turn we fall short by the solver "
-      "error plus twice the matrix error. On endgames we could solve exactly, the solver error is at most 0.16 but "
-      "the matrix error reaches 0.7 to 1, about as bad as a constant guess. In real games we see the same thing: "
-      "Hedge, credited on the two-turn payoffs, favours the LP expert even though deeper search rates it worse. And "
-      "the things that are not the payoffs, more worlds or a better opponent model, do not help.")
+img = os.path.join(HERE, "..", "figures", "deck_delta.png")
+_w, _h = _Im.open(img).size
+fw = lw - Inches(0.2)
+fh = int(fw * _h / _w)
+pic = s.shapes.add_picture(img, rx + Inches(0.1), TOP + HDR_H + Inches(0.15), fw, fh)
+pic.name = "Delta contributions"
+pic._element.nvPicPr.cNvPr.set("descr", "Contributions to each turn's shortfall: solver error at most 0.16, matrix "
+                                        "error 1.4 to 2.0")
+ty = TOP + HDR_H + Inches(0.25) + fh
+S.text(rx, ty, lw, BOTTOM - ty, [
+    P("Each turn we fall short of the true game by ", ("$", "δ = ε_s + 2ε_v"), ". On endgames we solved exactly, "
+      "almost all of it is matrix error: the 2-turn payoffs, not the solver.", size=14),
+    P("In real games too: more worlds or a better opponent model do not help, and Hedge, credited on 2-turn "
+      "payoffs, favours an expert the deeper search rates worse.", size=14, before=8),
+], "Why text")
+notes(s, "So why move on from the Hedge model? First, how it does: 64 and 36 on the public ladder at Elo 1704, and "
+      "0.33 against Foul Play. Then exploitability: how much more an opponent wins if it knows exactly how our bot "
+      "decides. We test it with a simple opponent that each turn plays its best answer to the move it expects from "
+      "us, once guessing blindly and once running our rule to predict it. Against the Hedge model that knowledge is "
+      "worth only 0.19, from 0.37 to 0.56, because it plays a mix. So it is hard to exploit, but too weak to win. "
+      "Second, why. Each turn we fall short of the true game by the solver error plus twice the matrix error. On "
+      "endgames we could solve exactly, the solver contributes at most 0.16 and the matrix error 1.4 to 2: the "
+      "two-turn payoffs are the problem, not the solver. Real games agree: more worlds or a better opponent model "
+      "do not help, and Hedge, credited on those payoffs, favours an expert the deeper search rates worse.")
 
 # 5. The Bayesian model: from the preliminary model's weakness to deeper search per world
 s, S = content(4, "The Bayesian model: fix the payoffs")
@@ -895,10 +896,8 @@ notes(s, "So the Bayesian model keeps what worked, the belief over the opponent'
 from PIL import Image as _Im
 s, S = content(4, "The Bayesian model: results")
 S.text(LEFT, TOP - Inches(0.05), WIDTH, Inches(1.05), [
-    P(("Exploitability: ", {"b": True}), "how much more an opponent wins if it knows exactly how our bot decides. We "
-      "play our bot against a simple opponent that each turn picks its best answer to the move it expects from us, "
-      "twice: once guessing our move blindly, once running our rule to predict it. The gap between its two scores "
-      "is the exploitability.", size=15),
+    P(("Stronger, but more exploitable. ", {"b": True}), "It is on par with Foul Play and reached the top 50, but "
+      "because it always plays its top move, the same exploiter as for the Hedge model gains much more.", size=15),
 ], "Exploitability explained")
 ty = TOP + Inches(1.15)
 S.text(LEFT, ty, Inches(5.6), Inches(0.75), [

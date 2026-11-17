@@ -101,11 +101,29 @@ def exploit():
     return fig
 
 
+def delta_parts():
+    """Contributions to the per-turn shortfall delta = eps_s + 2 eps_v on the exactly solved endgames (final5.tex,
+    'Exact endgames'): eps_s <= 0.16 on reached states; largest eps_v (affine) 0.7-1.0, so 2 eps_v = 1.4-2.0."""
+    fig, ax = plt.subplots(figsize=(6.0, 2.3))
+    ax.barh([1], [0.16], color=GREY, height=0.5)
+    ax.barh([0], [1.4], color="#404040", height=0.5)
+    ax.barh([0], [0.6], left=[1.4], color=LIGHT, height=0.5)
+    ax.text(0.16 + 0.04, 1, "≤ 0.16", va="center", color=INK)
+    ax.text(2.0 + 0.04, 0, "1.4–2.0", va="center", color=INK)
+    ax.set_yticks([0, 1])
+    ax.set_yticklabels(["Matrix error\n$2\\varepsilon_v$", "Solver error\n$\\varepsilon_s$"])
+    ax.set_xlim(0, 2.45)
+    ax.set_xlabel("Contribution to each turn's shortfall δ")
+    ax.tick_params(axis="y", length=0)
+    fig.savefig(os.path.join(HERE, "deck_delta.png"), bbox_inches="tight")
+    return fig
+
+
 if __name__ == "__main__":
     import sys
     sys.path.insert(0, "/Users/biofanat/.claude/skills/figure-style")
     fig = inplay()
-    strength(); exploit()
+    strength(); exploit(); delta_parts()
     try:
         from figcheck import check_figure
         check_figure(fig, min_pt=8, max_words=12)
