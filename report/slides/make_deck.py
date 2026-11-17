@@ -663,7 +663,7 @@ S.text(LEFT, y3, WIDTH, Inches(0.45), [
 experts = [("Top move", "the mix's most likely move"),
            ("Sampled", "draw a move at random from the mix"),
            ("Pure maximin", "the single action with the best worst case"),
-           ("ε-safe best response", "best reply to our prediction, risking little")]
+           ("Predictive", "best reply to our prediction; worst case within ε of the mix")]
 gy = y3 + Inches(0.5)
 EBH = Inches(0.9)
 for k, (name, rule) in enumerate(experts):
@@ -682,8 +682,9 @@ notes(s, "Our preliminary model, step by step. First, worlds and matrices: a wor
       "we cannot tell which world is real, we choose probabilities for our moves, say Slack Off 60 percent and "
       "Earthquake 40 percent, that do best on average across the worlds even if the opponent answers each one "
       "perfectly; one linear program finds this mix. Third, experts: each turns the mix into an actual move, by "
-      "playing its most likely move, drawing a move at random from it, playing the single safest move, or best "
-      "replying to the move we predict for the opponent while risking little, and Hedge learns which to trust. After the opponent moves, each expert is credited with what it "
+      "playing its most likely move, drawing a move at random from it, playing the single safest move, or, the predictive "
+      "expert, best replying to the move we predict for the opponent while keeping its worst case within a small "
+      "epsilon of the mix's, and Hedge learns which to trust. After the opponent moves, each expert is credited with what it "
       "would have earned, and because the weights carry across games, Hedge's regret bound covers the whole match.")
 
 # 6. Case study: one turn of a real Showdown game
