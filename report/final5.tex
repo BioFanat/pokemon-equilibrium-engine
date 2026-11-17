@@ -228,7 +228,7 @@ On the public ladder (rated batches, one account), our preliminary model went 77
 % =====================================================================
 \section{Conclusion}
 \label{sec:discussion}
-Our guarantees hold in the estimated matrix, whose evaluation error more compute does not reduce (\cref{rem:leaf}); better beliefs do not move win rate. The same error makes Hedge over the Bayesian model lose: a no-regret guarantee is only as good as its payoffs. The Bayesian model, which spends compute on deeper search instead, reportedly reached the top 50 (Elo 2308), but its determinism makes it exploitable (\cref{prop:det}). Next: credit the experts with search values and train the evaluation on exact terminal values.
+Our guarantees hold in the estimated matrix, whose evaluation error more compute does not reduce (\cref{rem:leaf}); better beliefs do not move win rate. The same error makes Hedge over the Bayesian model lose. The Bayesian model, which spends compute on deeper search instead, reportedly reached the top 50 (Elo 2308), but its determinism makes it exploitable (\cref{prop:det}). With more compute, a value function learned by RL and more precise solving would shrink that error, so our guarantees would hold on real payoffs.
 
 \paragraph{Acknowledgement.} The proofs in Section~4 were developed with the assistance of Fable~5.2.
 

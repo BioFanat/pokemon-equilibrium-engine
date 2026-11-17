@@ -966,9 +966,9 @@ S.text(LEFT, TOP, WIDTH, Inches(4.0), [
 S.header(LEFT, TOP + Inches(4.05), WIDTH, Inches(0.38), [P("Next steps", size=SECONDARY, b=True, align="ctr")],
          "Next steps header")
 S.box(LEFT, TOP + Inches(4.43), WIDTH, BOTTOM - TOP - Inches(4.43), [
-    P("Feed the no-regret layer the search's own values instead of shallow matrices, merge Hedge and the Bayesian "
-      "model more carefully so the learner keeps its strength, and measure the final agent's exploitability on the "
-      "ladder itself", size=16, align="ctr"),
+    P("With more compute: learn a value function with RL and solve more precisely, so our no-regret learners see "
+      "payoffs that match real play, the guarantees carry over to live games, and Hedge can join the Bayesian model "
+      "without losing strength", size=15, align="ctr"),
 ], "Next steps box")
 notes(s, "Three takeaways. First, per-turn equilibrium play and Hedge across games compose into a bound on how "
       "exploitable the agent is over a whole battle, and the regrets we measured sit well inside it. The bound turned "
@@ -978,9 +978,11 @@ notes(s, "Three takeaways. First, per-turn equilibrium play and Hedge across gam
       "public ladder; the price is that its deterministic choice can be predicted, and an opponent who does so gains "
       "almost half a game. Third, a no-regret guarantee is only as good as the payoffs it is measured on: wrapped "
       "around the Bayesian model, Hedge learned faithfully from shallow matrices and gave back most of the model's "
-      "strength, so guarantees and strength line up only when the learner sees accurate payoffs. Next, we want to "
-      "feed the no-regret layer the search's own values, merge Hedge and the Bayesian model more carefully, and "
-      "measure the final agent's exploitability on the ladder itself. Thank you.")
+      "strength, so guarantees and strength line up only when the learner sees accurate payoffs. Next, with more "
+      "compute, we would learn a value function with reinforcement learning and solve positions more precisely, so "
+      "that the payoffs our no-regret learners and bounds are measured on match real play. Then the guarantees would "
+      "carry over to live games, Hedge could be merged into the Bayesian model without losing strength, and the agent "
+      "would get stronger. Thank you.")
 
 add_sections(prs, groups)
 prs.core_properties.title = "No-Regret Learning and Bayesian Opponent Memory in Pokémon Random Battles"
