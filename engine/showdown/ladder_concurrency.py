@@ -6,7 +6,44 @@ tested without credentials, network access, or the battle engine.
 import asyncio
 import json
 import time
+import threading
 from pathlib import Path
+
+
+class BattleMovePool:
+    """One independent learner per occupied stream, with a fresh battle context.
+
+    A stream's checkpoint is reused only after its prior battle finishes. The
+    factory must give each stream its own state path and each battle its own log.
+    """
+    def __init__(self, capacity, factory):
+        self.capacity, self.factory = capacity, factory
+        self.available = set(range(capacity))
+        self.battles = {}
+        self.lock = threading.Lock()
+
+    def move(self, battle):
+        tag = battle.battle_tag
+        with self.lock:
+            if tag not in self.battles:
+                if not self.available:
+                    raise RuntimeError("No free learning stream for another battle")
+                stream = min(self.available)
+                fn = self.factory(tag, stream)
+                self.available.remove(stream)
+                self.battles[tag] = (stream, fn)
+            _, fn = self.battles[tag]
+        return fn(battle)
+
+    def stream_for(self, tag):
+        with self.lock:
+            return self.battles[tag][0] if tag in self.battles else None
+
+    def release(self, tag):
+        with self.lock:
+            entry = self.battles.pop(tag, None)
+            if entry is not None:
+                self.available.add(entry[0])
 
 
 class RoomClient:
@@ -52,7 +89,7 @@ class ConcurrentLadder:
                  completed, failed, should_stop=lambda: False,
                  progress_path=None, search_interval=20.0, search_timeout=600.0,
                  rating_ready=None):
-        if not 1 <= concurrency <= 5 or games < 1:
+        if not 1 <= concurrency <= 5 or (games is not None and games < 1):
             raise ValueError("Use 1 to 5 concurrent battles and a positive game count")
         self.client = client
         self.games, self.concurrency, self.format = games, concurrency, format_name
@@ -93,7 +130,7 @@ class ConcurrentLadder:
         if tag not in self.rooms:
             if "|init|battle" not in message:
                 return
-            if self.started >= self.games or len(self.tasks) >= self.concurrency:
+            if (self.games is not None and self.started >= self.games) or len(self.tasks) >= self.concurrency:
                 raise RuntimeError("Server started a battle outside the reserved capacity")
             if not self.pending:
                 raise RuntimeError("Unexpected battle without an outstanding ladder search")
@@ -149,13 +186,13 @@ class ConcurrentLadder:
                 if stopping and self.pending:
                     await self.client.send_message("", ["/cancelsearch"])
                     self.pending = False
-                if not self.tasks and not self.pending and (stopping or self.started == self.games):
+                if not self.tasks and not self.pending and (stopping or (self.games is not None and self.started == self.games)):
                     break
                 now = time.monotonic()
                 if self.pending and now - self.last_search > self.search_timeout:
                     self.error = "No match found within the search timeout"
                     continue
-                if (not stopping and not self.pending and self.started < self.games
+                if (not stopping and not self.pending and (self.games is None or self.started < self.games)
                         and len(self.tasks) < self.concurrency
                         and now - self.last_search >= self.search_interval):
                     # Reserve the slot before sending. Only one search per format

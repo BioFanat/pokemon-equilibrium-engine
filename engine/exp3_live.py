@@ -28,10 +28,17 @@ EXPERTS = ["Equilibrium, top move", "Equilibrium, sampled", "Safest move"]
 OUT = Path(__file__).resolve().parent / "results" / "exp3"
 
 
+def expert_rewards(A, Q, b, scale=400.0):
+    """Existing bounded matrix-surrogate reward, shared by single/world-averaged feedback."""
+    norm = scale if scale else (np.ptp(A) or 1.0)
+    return np.clip((Q @ A[:, b] - A.min()) / norm, 0.0, 1.0)
+
+
 class Learner:
     """Hedge over the experts. Defaults follow theory/hedge_experts.md (Prop. E1(b), Thm E2):
     fixed normaliser scale = Δ̄ (rewards (q_e·A[:,b] − min A)/Δ̄, clipped to [0,1]; subtracting the per-turn
-    min A is common to all experts, so Hedge is unaffected), anytime step η_t = sqrt(8 ln k / t), no fixed share.
+    min A is common to all experts before clipping; saturation can remove reward differences),
+    anytime step η_t = sqrt(8 ln k / t), no fixed share.
     Δ̄ = 400 covers ~99% of full_matrix ranges (median 166 on the 12-species pool, 203 on randbats; p99 327/405).
     The X6 setting (per-turn normaliser, η = 0.2, α = 0.002) is Learner(eta=0.2, alpha=0.002, scale=None):
     the per-turn normaliser has a linear-regret counterexample, and constant η = 0.2 gives linear regret."""
@@ -58,9 +65,11 @@ class Learner:
         return own, A, Q, self.weights() @ Q
 
     def update(self, A, Q, b):
+        self.update_rewards(expert_rewards(A, Q, b, self.scale))
+
+    def update_rewards(self, r):
+        """Apply one full-information update from a bounded reward vector (one observation)."""
         self.t += 1
-        norm = self.scale if self.scale else (np.ptp(A) or 1.0)
-        r = np.clip((Q @ A[:, b] - A.min()) / norm, 0.0, 1.0)
         self.cum += r
         if self.eta is None and not self.alpha:
             # anytime Hedge in FTRL form: w_t ∝ exp(η_t · cumulative reward), η_t = sqrt(8 ln k / t)

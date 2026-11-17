@@ -1,5 +1,20 @@
 # Running our bot on the public Showdown ladder
 
+The measured final ladder bot is **native MCTS + item/ability stratification**:
+`mcts_native`, sampler `item_stratified`, four worlds, 1000 ms total search,
+and up to five concurrent games. It ended at **2090 Elo**, peaked at **2141**,
+and went **66–34 over 100 completed games** with this configuration. The user
+reported top 500. See the [final bot handoff](../../docs/final-ladder-bot-handoff.md)
+for all active changes, exact reproduction steps, dependencies, and limitations.
+The ordinary CLI defaults below still select older matrix methods.
+
+From the repository root, with the managed environment installed:
+
+```bash
+bash run_decision_audit.command --method mcts_native --sampler item_stratified \
+  --mcts-ms 1000 --games 50 --concurrency 5
+```
+
 This guide runs our equilibrium bot, `agentform` (the per-turn agent-form matrix-game solver), in rated **Gen 9 Random
 Battle** games on play.pokemonshowdown.com. The goal is a rating against the live ladder.
 
@@ -92,8 +107,9 @@ Everything lands in `~/sandbox/ourbot/ladder/<username>/` (change it with `--out
 | `replays/` | HTML + log replay of every game |
 
 Also send a screenshot or copy of the account's ladder row at the end: **Elo, GXE and Glicko rating ± RD**. Elo
-has a floor of 1000 on Showdown, so a weak bot sits at 1000; GXE (estimated win chance against an average ladder
-player) is the number to report.
+has a floor of 1000 on Showdown. For the current evaluation protocol, report
+starting/ending **Elo and net change** as the primary metric; GXE and RD are
+additional ladder diagnostics.
 
 ## Options
 
@@ -106,18 +122,94 @@ player) is the number to report.
 | `--concurrency` | 1 | maximum active battles, from 1 to 5 |
 | `--local` | off | local `--no-security` server, no password (testing only) |
 
-Concurrent play currently supports Gen 9 Random Battle with `agentform`, `pimc`,
-`top`, `random`, or `maxpower`. Stateful Hedge/style learning keeps the sequential
-runner until its cross-game update semantics support overlapping battles.
+Concurrent play supports Gen 9 Random Battle with `agentform`, `pimc`,
+`top`, `random`, `maxpower`, `hedge_bayes_mw`, `bayes_safex_mw`, or `mcts_native`.
+The per-world Bayesian methods use one independent persistent learner per stream,
+with a fresh pending-action context and decision log for every battle. A stream
+is reused only after its prior battle and final feedback complete. Checkpoints
+live in `learning/`; `learning_streams.jsonl` maps games to streams. When switching
+a sequential evaluation to concurrent mode, each stream starts from the last
+sequential checkpoint, then learns independently. The learners are not merged.
 The concurrent runner serializes solver calls because upstream sampling uses
 global RNG state. Network waits and battle state machines overlap. New searches
 are paced at least 20 seconds apart on public servers. Reaching five active games
 depends on matchmaking and game length. A battle error stops new searches and
 forfeits the failed battle while allowing other active battles to finish.
 
+The corrected `hedge_bayes_mw` uses the per-world pure security objective and
+action-conditional credit over all supporting worlds. Its v2 checkpoints are
+incompatible with the earlier highest-world credit rule. Use a **fresh output
+directory** when upgrading; sequential and concurrent startup reject legacy
+Hedge checkpoints before connecting. Historical non-mw methods keep their
+existing semantics. See [design and measured effects](../../docs/per-world-expert-feedback.md).
+
 `progress.json` records started/completed/failed counts, active room IDs, peak
 concurrency and a heartbeat. Concurrent decision logs live in `decisions/<battle>.jsonl`.
 `errors.jsonl` records failures. The game ledger and local replay locations are unchanged.
+
+## Detailed 100-game tactical audit
+
+For a frozen 50-game native MCTS test, with ladder Elo change as the primary
+endpoint:
+
+```bash
+bash run_decision_audit.command --method mcts_native --games 50 --concurrency 5 --mcts-ms 1000
+```
+
+This uses four sampled worlds, one native search thread, and a total 1,000 ms
+native budget split across the worlds. Root visits are filtered to server-legal
+actions, normalized per world, weighted by world priors, and the largest aggregate
+share is played. Exact states/root statistics are logged without building payoff
+matrices. `evaluation_results.json` reports starting/ending Elo and net change;
+`run_status.json` includes the current Elo delta while running. Keep the method
+and budget fixed within each 50-game test. See [implementation and evaluation](../../docs/native-mcts-evaluation.md).
+
+The secure launcher creates a fresh batch with `hedge_bayes_mw`, four worlds,
+up to five concurrent games, and exact state/payoff snapshots:
+
+```bash
+bash run_decision_audit.command
+```
+
+It prompts for the account password in Terminal and never saves it. To resume
+the same batch, pass its existing directory; the completed ledger games count
+toward the original 100 rather than starting another 100:
+
+```bash
+bash run_decision_audit.command --out <existing-batch-directory> --concurrency 5
+```
+
+Concurrency changes are recorded in `evaluation.json`. Each Bayesian stream
+carries its own Hedge weights and style posterior between games; active games
+never share pending feedback or checkpoint files. A sequential-to-concurrent
+transition seeds each stream with the last sequential checkpoint.
+
+`run_status.json`, `progress.json`, per-game decisions and replays track the run.
+When it stops, the launcher writes `tactical_audit.json` and `tactical_audit.md`.
+The auditor also runs independently on an incomplete batch:
+
+```bash
+.local-play/venv/bin/python engine/showdown/audit_decisions.py <batch-directory> --write
+```
+
+It joins executed moves to saved decisions and flags reflected/redundant rocks,
+Toxic into Steel, Ground into Flying, capped setup, setup before a KO, switches
+into revealed Hurricane, and Punch selections when Knock Off is available.
+Forced actions and opponent switch-ins are labeled separately. Flags identify
+positions to inspect; move priority, healing, switch prediction and modeled
+payoffs still matter when judging whether a choice was poor.
+
+For an explicitly authorized continuation after that cohort, use
+`continue_public_evaluation.py --out <batch-directory>` in Terminal. It prompts
+once, waits for the original run's account lock, then uses five existing learning
+streams with no game-count cap. It writes `continuous_status.json` and
+`continuous.log`. Creating `<batch-directory>/STOP_CONTINUOUS` stops new searches
+and drains active games. It never starts if that stop request already exists.
+
+Once play continues beyond 100, `audit_decisions.py --limit 100 --write` and
+`summarize_tactical_run.py --limit 100 --write` keep the original 100-game cohort
+fixed in `*_first100` artifacts. Extra games remain separately identifiable in
+the same ledger and replay logs.
 
 Local test, two terminals against a local server started as in `SETUP.md`:
 

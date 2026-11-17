@@ -1,7 +1,7 @@
 """Tera labels: the opponent terastallizes and uses a move (b = "flareblitz-tera") while some worlds list only
 "flareblitz" and others only "flareblitz-tera". Runs make_move_fn (hedge_bayes_mw and bayes_safex_mw) through the real
 run_ourbot feedback path on stubbed worlds and checks that both logged predictive probabilities refer to the same
-label (map_column's): p_qhat = q-hat(col) on the averaged matrix and p_qhat_mw = q_mw(col) of the same decision, and
+exact label: p_qhat = q-hat(col) on the averaged matrix and p_qhat_mw = q_mw(col) of the same decision, and
 that only the worlds containing exactly that label are in worlds_with.
   ~/sandbox/bot-venv/bin/python research/scripts/joint/tests/test_tera_label.py"""
 import _path  # noqa: F401
@@ -17,9 +17,9 @@ import run_ourbot as ro
 import nash
 
 ROWS = ["tackle", "growl", "switch onix"]
-CASES = {   # world column sets -> expected label and containing worlds (equal weights: map_column scans worlds 0..3)
+CASES = {   # world column sets -> exact observed label and containing worlds, independent of world order
     "plain first": ([["flareblitz", "surf"], ["flareblitz", "ember"], ["flareblitz-tera", "surf"],
-                     ["flareblitz-tera", "flareblitz", "ember"]], "flareblitz", [0, 1, 3]),
+                     ["flareblitz-tera", "flareblitz", "ember"]], "flareblitz-tera", [2, 3]),
     "tera first": ([["flareblitz-tera", "flareblitz", "surf"], ["flareblitz", "ember"], ["flareblitz-tera", "surf"],
                     ["ember", "surf"]], "flareblitz-tera", [0, 2]),
 }

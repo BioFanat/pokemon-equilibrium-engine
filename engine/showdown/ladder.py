@@ -27,6 +27,7 @@ import sys
 import time
 import traceback
 import threading
+import shutil
 from datetime import datetime, timezone
 from urllib.parse import urlparse
 
@@ -34,6 +35,8 @@ HOME = os.path.expanduser("~")
 FP = os.environ.get("FOULPLAY_DIR", os.path.join(HOME, "sandbox", "foul-play"))
 LOCAL_HOSTS = ("127.0.0.1", "localhost")
 PASSWORD_ENV = "PS_PASSWORD"
+CONCURRENT_METHODS = ("agentform", "pimc", "top", "random", "maxpower", "hedge_bayes_mw", "bayes_safex_mw", "mcts_native", 's1_agentform')
+MOVE_POOL = None
 RATING_RE = re.compile(r"^(?P<name>.+?)'s rating: (?P<before>\d+(?:\.\d+)?) (?:&rarr;|→|->) (?:<strong>)?"
                        r"(?P<after>\d+(?:\.\d+)?)")
 
@@ -50,6 +53,8 @@ def parse_args(argv):
     p.add_argument("--k", type=int, default=4, help="sampled worlds per decision")
     p.add_argument("--format", default="gen9randombattle")
     p.add_argument("--games", type=int, default=1)
+    p.add_argument("--until-stop", action="store_true", help="continue matchmaking until stopped")
+    p.add_argument("--stop-file", default=None, help="stop new matchmaking when this file exists")
     p.add_argument("--concurrency", type=int, default=1, help="Simultaneous battles, 1 to 5")
     p.add_argument("--out", default=None, help="default ~/sandbox/ourbot/ladder/<username>/")
     p.add_argument("--local", action="store_true", help="local --no-security server: no password, no assertion")
@@ -67,6 +72,7 @@ def resolve(args):
     return dict(server=args.server, scheme=u.scheme, host=host, local=args.local or host in LOCAL_HOSTS,
                 local_flag=args.local, username=args.username, method=args.method, k=args.k, format=args.format,
                 games=args.games, concurrency=args.concurrency, out=out, i_am_registered=args.i_am_registered,
+                until_stop=args.until_stop, stop_file=args.stop_file,
                 password_set=bool(os.environ.get(PASSWORD_ENV)))
 
 
@@ -81,11 +87,13 @@ def refusals(cfg):
         why.append("--games must be >= 1")
     if not 1 <= cfg["concurrency"] <= 5:
         why.append("--concurrency must be from 1 to 5")
+    if cfg.get("until_stop") and cfg["concurrency"] == 1:
+        why.append("--until-stop currently requires concurrent mode (2 to 5 games)")
     if cfg["concurrency"] > 1:
         if cfg["format"] != "gen9randombattle":
             why.append("concurrent play currently supports gen9randombattle only")
-        if cfg["method"] not in ("agentform", "pimc", "top", "random", "maxpower"):
-            why.append("concurrent play requires a stateless method: agentform, pimc, top, random or maxpower")
+        if cfg["method"] not in CONCURRENT_METHODS:
+            why.append("concurrent play requires a supported stateless method or a per-world Bayesian method")
     if not cfg["local"]:
         if not cfg["i_am_registered"]:
             why.append("public server: pass --i-am-registered to confirm the account is registered as a bot (/ht)")
@@ -98,8 +106,9 @@ def refusals(cfg):
 
 def banner(cfg):
     kind = "LOCAL" if cfg["local"] else "PUBLIC"
+    limit = "until stopped" if cfg.get("until_stop") else cfg["games"]
     print(f"=== ladder.py [{kind}] server={cfg['server']} username={cfg['username']} format={cfg['format']} "
-          f"games={cfg['games']} concurrency={cfg['concurrency']} method={cfg['method']} k={cfg['k']} ===", flush=True)
+          f"games={limit} concurrency={cfg['concurrency']} method={cfg['method']} k={cfg['k']} ===", flush=True)
 
 
 def scrub(text, secret):
@@ -170,6 +179,8 @@ def game_record(tag, cfg, replays):
 def setup_runtime(cfg):
     """Import foul-play and run_ourbot, then apply: login (local patch or foul-play's real one), our timed move fn,
     replay dir, ledger observer on top of run_ourbot's recording receive. Returns the fp modules needed by run()."""
+    global MOVE_POOL
+    MOVE_POOL = None
     os.makedirs(cfg["out"], exist_ok=True)
     os.environ.setdefault("OURBOT_WORK", cfg["out"])
     sys.path[:0] = [FP, os.path.dirname(os.path.abspath(__file__))]
@@ -184,14 +195,27 @@ def setup_runtime(cfg):
         fp_ws.PSWebsocketClient.login = real_login
     run_ourbot.LOG = os.path.join(cfg["out"], "decisions.jsonl")
     run_ourbot.REPLAYS = os.path.join(cfg["out"], "replays")
-    if cfg["method"] in run_ourbot.METHODS:
+    if cfg["method"] in run_ourbot.METHODS and cfg["concurrency"] == 1:
         inner = run_ourbot.make_move_fn(cfg["method"], cfg["k"], log=run_ourbot.LOG,
                                         state_path=os.path.join(cfg["out"], f"{cfg['method']}_state.json"))
-    elif cfg["method"] in simple_bots.METHODS:
+    elif cfg["method"] in simple_bots.METHODS and cfg["concurrency"] == 1:
         inner = simple_bots.make_move_fn(cfg["method"], seed=int(time.time()))
-    else:
+    elif cfg["method"] not in run_ourbot.METHODS + simple_bots.METHODS:
         raise SystemExit(f"unknown --method {cfg['method']!r}; choose from "
                          f"{run_ourbot.METHODS + simple_bots.METHODS}")
+
+    if cfg["concurrency"] > 1 and cfg["method"] in run_ourbot.HEDGE_METHODS:
+        # Factories load lazily at the first decision. Reject incompatible
+        # learning semantics BEFORE connecting/searching, not during a battle.
+        source = os.path.join(cfg["out"], f"{cfg['method']}_state.json")
+        checkpoints = set()
+        for stream in range(cfg["concurrency"]):
+            target = os.path.join(cfg["out"], "learning", f"{cfg['method']}-stream{stream}.json")
+            candidate = target if os.path.exists(target) else source
+            if os.path.exists(candidate):
+                checkpoints.add(candidate)
+        for checkpoint in sorted(checkpoints):
+            run_ourbot.load_learner(cfg["method"], checkpoint)  # read/validate only; no checkpoint writes
 
     def timed_move(battle):
         t0 = time.time()
@@ -203,21 +227,35 @@ def setup_runtime(cfg):
         # Foul Play and the engine sampler use global RNG state. Serialize
         # computations while keeping each battle's protocol and beliefs separate.
         solver_lock = threading.Lock()
-        per_battle = {}
+        from ladder_concurrency import BattleMovePool
         decision_dir = os.path.join(cfg["out"], "decisions")
         os.makedirs(decision_dir, exist_ok=True)
+        state_dir = os.path.join(cfg["out"], "learning")
+        os.makedirs(state_dir, exist_ok=True)
+
+        def factory(tag, stream):
+            state_path = os.path.join(state_dir, f"{cfg['method']}-stream{stream}.json")
+            # When converting an existing sequential run, warm-start each
+            # independent stream from its last completed shared checkpoint.
+            for suffix in (".json", ".bayes.json"):
+                target = state_path.removesuffix(".json") + suffix
+                source = os.path.join(cfg["out"], f"{cfg['method']}_state{suffix}")
+                if not os.path.exists(target) and os.path.exists(source):
+                    shutil.copy2(source, target)
+            with open(os.path.join(cfg["out"], "learning_streams.jsonl"), "a") as f:
+                f.write(json.dumps(dict(battle_tag=tag, stream=stream, state_path=state_path)) + "\n")
+            if cfg["method"] in simple_bots.METHODS:
+                return simple_bots.make_move_fn(cfg["method"], seed=int(time.time()))
+            return run_ourbot.make_move_fn(cfg["method"], cfg["k"],
+                                          log=os.path.join(decision_dir, tag + ".jsonl"), state_path=state_path)
+
+        MOVE_POOL = BattleMovePool(cfg["concurrency"], factory)
 
         def timed_move(battle):
             t0 = time.monotonic()
             with solver_lock:
                 tag = battle.battle_tag
-                if tag not in per_battle:
-                    if cfg["method"] in simple_bots.METHODS:
-                        per_battle[tag] = simple_bots.make_move_fn(cfg["method"], seed=int(time.time()))
-                    else:
-                        per_battle[tag] = run_ourbot.make_move_fn(
-                            cfg["method"], cfg["k"], log=os.path.join(decision_dir, tag + ".jsonl"))
-                move = per_battle[tag](battle)
+                move = MOVE_POOL.move(battle)
             DECISION_SECS.setdefault(tag, []).append(time.monotonic() - t0)
             return move
 
@@ -281,20 +319,25 @@ async def run(cfg, password):
                 rec = game_record(tag, cfg, os.path.join(cfg["out"], "replays"))
                 if rec["result"] is None:
                     raise RuntimeError("Battle returned without a result")
+                if MOVE_POOL is not None:
+                    rec["learning_stream"] = MOVE_POOL.stream_for(tag)
+                    MOVE_POOL.release(tag)
                 with open(ledger, "a") as f:
                     f.write(json.dumps(rec) + "\n")
                 print(f"[ladder] completed {tag}: {rec['result']} vs {rec['opponent']}; "
                       f"rating {rec['rating']}", flush=True)
 
             def failed(tag, exc):
+                if MOVE_POOL is not None:
+                    MOVE_POOL.release(tag)
                 with open(os.path.join(cfg["out"], "errors.jsonl"), "a") as f:
                     f.write(json.dumps(dict(battle_tag=tag, error=scrub(str(exc), password))) + "\n")
 
             runner = ConcurrentLadder(
-                client, games=cfg["games"], concurrency=cfg["concurrency"],
+                client, games=None if cfg.get("until_stop") else cfg["games"], concurrency=cfg["concurrency"],
                 format_name=cfg["format"],
                 play_battle=lambda room: fp_run.pokemon_battle(room, cfg["format"], None),
-                completed=completed, failed=failed, should_stop=lambda: STOP["flag"],
+                completed=completed, failed=failed, should_stop=lambda: STOP["flag"] or bool(cfg.get("stop_file") and os.path.exists(cfg["stop_file"])),
                 progress_path=os.path.join(cfg["out"], "progress.json"),
                 search_interval=0.05 if cfg["local"] else 20.0,
                 rating_ready=lambda tag: toid(cfg["username"]) in GAMES.get(tag, {}).get("ratings", {}),

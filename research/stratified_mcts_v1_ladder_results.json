@@ -1,0 +1,208 @@
+{
+  "config": {
+    "account": "bot_bonp",
+    "method": "mcts_native",
+    "target": 50,
+    "k": 4,
+    "concurrency": 5,
+    "format": "gen9randombattle",
+    "server": "wss://sim3.psim.us/showdown/websocket",
+    "mcts_ms": 1000,
+    "sampler": "item_stratified",
+    "revision": "5e7cb7707b4bb552299e7c55462e5abc29c54e67",
+    "created_utc": 1794928606.207873,
+    "primary_metric": "ladder_elo_change",
+    "policy_revision": "mcts_native_4worlds_1000ms_item_stratified_v1",
+    "comparison_baseline_elo": 1677,
+    "change": "Active item/ability class coverage with probability weights; MCTS search and budget unchanged"
+  },
+  "metrics": {
+    "primary_metric": "ladder_elo_change",
+    "target": 50,
+    "completed": 50,
+    "complete": true,
+    "results": {
+      "win": 33,
+      "loss": 17
+    },
+    "elo_start": 1677.0,
+    "elo_end": 1885.0,
+    "elo_change": 208.0,
+    "elo_min": 1649.0,
+    "elo_max": 1979.0,
+    "rated_games": 50,
+    "win_rate": 0.66,
+    "comparison_note": "Descriptive public ladder result; different starting ratings and opponents prevent a controlled causal comparison",
+    "method": "mcts_native"
+  },
+  "health": {
+    "counts": {
+      "decisions": 1481,
+      "native_fallbacks": 0,
+      "forced": 41,
+      "illegal_selected": 0,
+      "decisions_with_discarded_mass": 0,
+      "exact_stratum_mass": 1458,
+      "multiple_strata": 314,
+      "nonuniform_world_weights": 307,
+      "decisions_with_native_item_or_ability_alias": 10,
+      "systematic_overflow": 7,
+      "sampler_fallbacks": 16
+    },
+    "issues": [],
+    "conversion_mismatches": [
+      {
+        "battle": "battle-gen9randombattle-2715405427",
+        "turn": 23,
+        "decision_index": 25,
+        "expected_class": [
+          "choiceband",
+          "pickpocket"
+        ],
+        "expected_mass": 1.0,
+        "realized_mass": 0,
+        "realized_classes": {
+          "('none', 'pickpocket')": 1.0
+        }
+      },
+      {
+        "battle": "battle-gen9randombattle-2715405427",
+        "turn": 23,
+        "decision_index": 26,
+        "expected_class": [
+          "choiceband",
+          "pickpocket"
+        ],
+        "expected_mass": 1.0,
+        "realized_mass": 0,
+        "realized_classes": {
+          "('none', 'pickpocket')": 1.0
+        }
+      },
+      {
+        "battle": "battle-gen9randombattle-2715405427",
+        "turn": 24,
+        "decision_index": 27,
+        "expected_class": [
+          "choiceband",
+          "pickpocket"
+        ],
+        "expected_mass": 1.0,
+        "realized_mass": 0,
+        "realized_classes": {
+          "('none', 'pickpocket')": 1.0
+        }
+      },
+      {
+        "battle": "battle-gen9randombattle-2715405427",
+        "turn": 26,
+        "decision_index": 29,
+        "expected_class": [
+          "choiceband",
+          "pickpocket"
+        ],
+        "expected_mass": 1.0,
+        "realized_mass": 0,
+        "realized_classes": {
+          "('none', 'pickpocket')": 1.0
+        }
+      }
+    ],
+    "source_hashes_match": true,
+    "mean_policy_secs": 1.0599920324105334,
+    "max_policy_secs": 1.5521
+  },
+  "tactical": {
+    "completed_games": 50,
+    "results": {
+      "win": 33,
+      "loss": 17
+    },
+    "win_rate": 0.66,
+    "win_rate_wilson95": [
+      0.5215356854148285,
+      0.7756323036493895
+    ],
+    "rating_before": 1677.0,
+    "rating_after": 1885.0,
+    "decisions": 1481,
+    "matched_actions": 1359,
+    "snapshot_decisions": 1481,
+    "analyzed_games": 50,
+    "missing_logs": [],
+    "counts": {
+      "rocks_reflected": 0,
+      "rocks_already_present": 0,
+      "toxic_into_steel": 0,
+      "ground_into_flying": 4,
+      "setup_at_cap": 0,
+      "setup_then_ko": 0,
+      "switch_into_revealed_hurricane": 2,
+      "risky_hurricane_switch": 0,
+      "punch_over_knockoff": 3,
+      "punch_into_ghost": 0
+    },
+    "opportunities": {
+      "move_actions": 970,
+      "switch_actions": 389,
+      "setup_uses": 58,
+      "toxic_selectable_decisions": 47,
+      "punch_and_knockoff_both_selectable": 17,
+      "ground_uses": 63,
+      "toxic_selectable_vs_steel_without_corrosion": 10,
+      "stealthrock_selectable_decisions": 91,
+      "stealthrock_uses": 5,
+      "stealthrock_selectable_with_rocks_present": 15,
+      "toxic_uses": 5,
+      "capped_setup_selectable_decisions": 1,
+      "stealthrock_selectable_vs_sampled_magicbounce": 2
+    },
+    "latency_mean": 1.1718048615800134,
+    "latency_max": 3.297,
+    "games_per_stream": {
+      "0": 11,
+      "4": 8,
+      "2": 10,
+      "1": 10,
+      "3": 11
+    },
+    "pure_safest_expert": {
+      "checked_decisions": 0,
+      "strict_mismatches": 0,
+      "comparison_tolerance": 0.001,
+      "mismatch_fraction": null,
+      "mean_security_gap_on_mismatches": null,
+      "maximum_security_gap": 0,
+      "largest_examples": []
+    }
+  },
+  "source_manifest": {
+    "sha256": {
+      "engine/showdown/stratified_worlds.py": "11863e0dcfb436d77799c1f03b58d4eab4fe56ae1b96f09c47463436f984bbd5",
+      "engine/showdown/native_mcts.py": "acae4cfa3c33b429c015e2cdc3a61f37efc3422c614c9927d76d00aac50a2417",
+      "engine/showdown/run_ourbot.py": "752e459b678432e2a22c1ff0b6ae301843e9141b22ec06a51913870728b67374",
+      "engine/showdown/run_public_evaluation.py": "8200358414346ead36cce9acd2db8d03ec882e964ad529c31e671a8a04e2c737",
+      "engine/showdown/ladder_metrics.py": "01bddf6babc2f92b8f01b5ea759119116fbcde26045abafc13cf78e12705814c",
+      "engine/showdown/ladder.py": "5f8c498492a9a1d3ccf6aadde5e467bfac2a5ffae64a88192aff50000f6f6f8d",
+      "engine/showdown/ladder_concurrency.py": "aa0c41c4674609a3ba3484c25124a55c23221fd770fa8a36b11bbbba1e6d1dd1",
+      "engine/showdown/battle_adapter.py": "969238def0567879cb61ac4aedc9b9aeb791ef359d7e56a64bf14147543af728",
+      "engine/showdown/revival_guard.py": "36e48b4204540172a3c139ee0cbe293a05973420bacb106ffc2fdccb9f06e9e3",
+      "engine/pkbattle.py": "deb6a527ba163571c83ef88cdb9de98b787388038bc0f253f2314f2e0942e475",
+      "engine/nash.py": "d87f74eb163a404c28d8c3ef7101447a8e60befe750a6287c52c5118ac0d2bca",
+      "engine/hidden.py": "8cb7865fba70566de506c02b6faef327708effce3f9750b9ef5a246a567f56d7",
+      ".local-play/foul-play/fp/search/random_battles.py": "136e5c8a06fba3860e5ef019a62bc517227064fdf37335712e49849644c8694a",
+      ".local-play/foul-play/fp/search/helpers.py": "b92906fd180cbf400593748b16a06d22d177e031560e0f6a287264db36d530e8",
+      ".local-play/foul-play/fp/data/pkmn_sets_cache/gen9randombattle.json": "4264b4d70fd86c7ea8ae362bc6aa2c027d2524a73b6df3f286dc0dffbabe5d3f"
+    }
+  },
+  "coverage_diagnostic": {
+    "trials": 5000,
+    "catalogue_item_masses": {
+      "assaultvest": 370,
+      "choicespecs": 322,
+      "leftovers": 672
+    },
+    "baseline_missed_specs": 1691,
+    "new_missed_specs": 0
+  }
+}

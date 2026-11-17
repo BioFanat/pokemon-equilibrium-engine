@@ -1,0 +1,159 @@
+{
+  "config": {
+    "account": "bot_bonp",
+    "method": "mcts_native",
+    "target": 50,
+    "k": 4,
+    "concurrency": 5,
+    "format": "gen9randombattle",
+    "server": "wss://sim3.psim.us/showdown/websocket",
+    "mcts_ms": 1000,
+    "revision": "5e7cb7707b4bb552299e7c55462e5abc29c54e67",
+    "created_utc": 1794923799.628447,
+    "primary_metric": "ladder_elo_change",
+    "policy_revision": "native_mcts_4worlds_1000ms_visit_argmax_v1",
+    "comparison_baseline_elo": 1470,
+    "change": "Native MCTS replaces matrix/Hedge action selection; same four-world baseline sampler"
+  },
+  "metrics": {
+    "primary_metric": "ladder_elo_change",
+    "target": 50,
+    "completed": 50,
+    "complete": true,
+    "results": {
+      "win": 33,
+      "loss": 17
+    },
+    "elo_start": 1470.0,
+    "elo_end": 1677.0,
+    "elo_change": 207.0,
+    "elo_min": 1470.0,
+    "elo_max": 1741.0,
+    "rated_games": 50,
+    "win_rate": 0.66,
+    "comparison_note": "Descriptive public ladder result; different starting ratings and opponents prevent a controlled causal comparison",
+    "method": "mcts_native"
+  },
+  "health": {
+    "logged_decisions": 1359,
+    "state_snapshots": 1359,
+    "fallbacks": 0,
+    "forced": 32,
+    "illegal_selected": 0,
+    "decisions_with_discarded_mass": 0,
+    "mean_policy_secs": 1.060112582781457,
+    "max_policy_secs": 1.4911,
+    "native_world_searches": 5308,
+    "median_native_visits_per_world": 113000.0,
+    "budget_settings": [
+      1000
+    ],
+    "world_counts": [
+      4
+    ],
+    "source_hashes_match": true,
+    "run_log_errors": {
+      "Traceback": 0,
+      "[Invalid choice]": 0,
+      "ERROR": 0,
+      "REFUSED": 0
+    },
+    "progress": {
+      "target": 50,
+      "concurrency": 5,
+      "started": 50,
+      "completed": 50,
+      "failed": 0,
+      "active": [],
+      "peak_active": 5,
+      "searching": false,
+      "error": null,
+      "heartbeat_utc": 1794926230.708489
+    }
+  },
+  "summary": {
+    "completed_games": 50,
+    "results": {
+      "win": 33,
+      "loss": 17
+    },
+    "win_rate": 0.66,
+    "win_rate_wilson95": [
+      0.5215356854148285,
+      0.7756323036493895
+    ],
+    "rating_before": 1470.0,
+    "rating_after": 1677.0,
+    "decisions": 1359,
+    "matched_actions": 1221,
+    "snapshot_decisions": 1359,
+    "analyzed_games": 50,
+    "missing_logs": [],
+    "counts": {
+      "rocks_reflected": 0,
+      "rocks_already_present": 0,
+      "toxic_into_steel": 0,
+      "ground_into_flying": 7,
+      "setup_at_cap": 0,
+      "setup_then_ko": 3,
+      "switch_into_revealed_hurricane": 1,
+      "risky_hurricane_switch": 0,
+      "punch_over_knockoff": 4,
+      "punch_into_ghost": 0
+    },
+    "opportunities": {
+      "move_actions": 854,
+      "switch_actions": 367,
+      "setup_uses": 75,
+      "ground_uses": 47,
+      "punch_and_knockoff_both_selectable": 18,
+      "stealthrock_selectable_decisions": 44,
+      "stealthrock_uses": 6,
+      "stealthrock_selectable_with_rocks_present": 16,
+      "toxic_selectable_decisions": 19,
+      "toxic_selectable_vs_steel_without_corrosion": 1,
+      "toxic_uses": 2
+    },
+    "latency_mean": 1.168774834437086,
+    "latency_max": 3.524,
+    "games_per_stream": {
+      "3": 10,
+      "4": 13,
+      "2": 10,
+      "1": 9,
+      "0": 8
+    },
+    "pure_safest_expert": {
+      "checked_decisions": 0,
+      "strict_mismatches": 0,
+      "comparison_tolerance": 0.001,
+      "mismatch_fraction": null,
+      "mean_security_gap_on_mismatches": null,
+      "maximum_security_gap": 0,
+      "largest_examples": []
+    }
+  },
+  "source_manifest": {
+    "sha256": {
+      "engine/showdown/native_mcts.py": "dca54523d401df0b6f106a4416792626c321f859322246b0cc1bdf743fc0ae0e",
+      "engine/showdown/run_ourbot.py": "752e459b678432e2a22c1ff0b6ae301843e9141b22ec06a51913870728b67374",
+      "engine/showdown/ladder.py": "5f8c498492a9a1d3ccf6aadde5e467bfac2a5ffae64a88192aff50000f6f6f8d",
+      "engine/showdown/ladder_concurrency.py": "aa0c41c4674609a3ba3484c25124a55c23221fd770fa8a36b11bbbba1e6d1dd1",
+      "engine/showdown/run_public_evaluation.py": "8dee7915b6a9cc2ddcb620468a0e882d3dff4a8e7c4083f707df57664e2aa02f",
+      "engine/showdown/ladder_metrics.py": "01bddf6babc2f92b8f01b5ea759119116fbcde26045abafc13cf78e12705814c",
+      "engine/showdown/battle_adapter.py": "969238def0567879cb61ac4aedc9b9aeb791ef359d7e56a64bf14147543af728",
+      "engine/showdown/revival_guard.py": "36e48b4204540172a3c139ee0cbe293a05973420bacb106ffc2fdccb9f06e9e3",
+      "engine/showdown/audit_decisions.py": "e46087769a208d2b75debd266490d7f789c310a7d5d148c7ab3ce2f768421aa2",
+      "engine/pkbattle.py": "deb6a527ba163571c83ef88cdb9de98b787388038bc0f253f2314f2e0942e475",
+      "engine/nash.py": "d87f74eb163a404c28d8c3ef7101447a8e60befe750a6287c52c5118ac0d2bca",
+      "engine/hidden.py": "8cb7865fba70566de506c02b6faef327708effce3f9750b9ef5a246a567f56d7"
+    }
+  },
+  "local_validation": {
+    "tests_passed": 114,
+    "paired_smoke_wins": 2,
+    "paired_smoke_losses": 0,
+    "smoke_seed": 5
+  },
+  "run_directory": ".local-play/work/ladder/mcts_native_v1_50games_20261117T135639Z"
+}

@@ -226,3 +226,60 @@ class AdapterIntegrationTests(unittest.TestCase):
         self.assertEqual(move, "knockoff")
         self.assertEqual(replay(record)["mix"], {"knockoff": 1.0})
         self.assertEqual(record["battle_tag"], "offline-snapshot")
+
+    def test_concurrent_bayesian_runtime_isolates_five_checkpoint_streams(self):
+        from contextlib import ExitStack
+        from fp.battle.state import Battle, Pokemon
+        import fp.modes.base as fp_base
+        import fp.run_battle as fp_run
+        import fp.websocket_client as fp_ws
+        import ladder
+        import run_ourbot
+
+        def battle(tag):
+            b = Battle(tag)
+            b.turn, b._ourlines = 1, []
+            b.user.name, b.opponent.name = "p1", "p2"
+            for side, name, moves in ((b.user, "gurdurr", ["knockoff", "drainpunch"]),
+                                      (b.opponent, "sableye", ["splash"])):
+                side.active = Pokemon(name, 82)
+                side.active.ability = "guts" if side is b.user else "prankster"
+                side.active.item = "leftovers"
+                for move in moves:
+                    side.active.add_move(move)
+            b.mode = NS(prepare_battles=lambda value, k: [(value, 1.0)])
+            b.request_json = {"active": [dict(moves=[dict(id=m, pp=10) for m in ["knockoff", "drainpunch"]])]}
+            return b
+
+        with tempfile.TemporaryDirectory() as directory, ExitStack() as stack:
+            for obj, attr in ((fp_base, "find_best_move"), (fp_run, "battle_mode"),
+                              (fp_ws.PSWebsocketClient, "login"), (fp_ws.PSWebsocketClient, "receive_message"),
+                              (ladder, "MOVE_POOL"), (run_ourbot, "LOG"), (run_ourbot, "REPLAYS")):
+                stack.enter_context(patch.object(obj, attr, getattr(obj, attr)))
+            stack.enter_context(patch.object(ladder, "FP", str(FP)))
+            stack.enter_context(patch.dict(os.environ, OURBOT_WORK=directory, OURBOT_BELIEF_SOURCE="foulplay_baseline"))
+            source = Path(directory) / "hedge_bayes_mw_state.json"
+            run_ourbot.make_move_fn("hedge_bayes_mw", 1, state_path=str(source))
+            ladder.setup_runtime(dict(out=directory, method="hedge_bayes_mw", k=1, concurrency=5, local=True))
+            battles = [battle(f"offline-pool-{i}") for i in range(5)]
+            for i, b in enumerate(battles):
+                fp_base.find_best_move(b)
+                self.assertEqual(ladder.MOVE_POOL.stream_for(b.battle_tag), i)
+            files = [Path(directory) / "learning" / f"hedge_bayes_mw-stream{i}.bayes.json" for i in range(5)]
+            before = [p.read_text() for p in files]
+            self.assertTrue(all(json.loads(text)["meta"]["updates"] == 0 for text in before))
+            battles[0].turn = 2
+            battles[0]._ourlines = ["|move|p2a: Sableye|Splash|p1a: Gurdurr", "|turn|2"]
+            fp_base.find_best_move(battles[0])
+            self.assertEqual(json.loads(files[0].read_text())["meta"]["updates"], 1)
+            self.assertEqual([p.read_text() for p in files[1:]], before[1:])
+            run_ourbot._FINISHERS.pop(battles[0].battle_tag)(["|move|p2a: Sableye|Splash|p1a: Gurdurr", "|win|Bot"])
+            ladder.MOVE_POOL.release(battles[0].battle_tag)
+            b = battle("offline-pool-reused")
+            fp_base.find_best_move(b)
+            self.assertEqual(ladder.MOVE_POOL.stream_for(b.battle_tag), 0)
+            self.assertEqual(json.loads(files[0].read_text())["meta"]["updates"], 2)
+            self.assertEqual([p.read_text() for p in files[1:]], before[1:])
+            for tag in list(run_ourbot._FINISHERS):
+                if tag.startswith("offline-pool-"):
+                    run_ourbot._FINISHERS.pop(tag)

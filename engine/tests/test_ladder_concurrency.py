@@ -4,7 +4,7 @@ import sys
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'showdown'))
-from ladder_concurrency import ConcurrentLadder, RoomClient
+from ladder_concurrency import BattleMovePool, ConcurrentLadder, RoomClient
 import ladder
 
 
@@ -106,6 +106,20 @@ class ConcurrentLadderTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(runner.started, 1)
         self.assertEqual(runner.finished, 1)
 
+    async def test_until_stop_has_no_game_budget_and_drains_on_stop(self):
+        transport = Transport()
+        count = 0
+        async def play(room):
+            await room.receive_message()
+        def completed(tag):
+            nonlocal count
+            count += 1
+        runner = self.runner(transport, play, completed, games=None, should_stop=lambda: count >= 9)
+        async with asyncio.timeout(3):
+            await runner.run()
+        self.assertIsNone(runner.progress()["target"])
+        self.assertEqual((runner.started, runner.finished, count), (9, 9, 9))
+
     async def test_duplicate_room_init_does_not_create_a_second_worker(self):
         transport = Transport()
         gate = asyncio.Event()
@@ -147,6 +161,37 @@ class ConcurrentLadderTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn('--concurrency must be from 1 to 5', ladder.refusals(ladder.resolve(args)))
         args.concurrency, args.method = 5, 'hedge_bayes'
         self.assertTrue(any('stateless' in reason for reason in ladder.refusals(ladder.resolve(args))))
+        for method in ('hedge_bayes_mw', 'bayes_safex_mw'):
+            args.method = method
+            self.assertEqual(ladder.refusals(ladder.resolve(args)), [])
+
+
+class BattleMovePoolTests(unittest.TestCase):
+    def test_five_independent_streams_reuse_checkpoint_with_fresh_context(self):
+        from types import SimpleNamespace as NS
+        checkpoints, contexts = {}, {}
+
+        def factory(tag, stream):
+            contexts[tag] = []
+            def move(battle):
+                checkpoints[stream] = checkpoints.get(stream, 0) + 1
+                contexts[tag].append(battle.turn)
+                return stream, checkpoints[stream]
+            return move
+
+        pool = BattleMovePool(5, factory)
+        for i in range(5):
+            self.assertEqual(pool.move(NS(battle_tag=str(i), turn=1)), (i, 1))
+        with self.assertRaisesRegex(RuntimeError, 'No free'):
+            pool.move(NS(battle_tag='sixth', turn=1))
+        self.assertEqual(pool.move(NS(battle_tag='2', turn=2)), (2, 2))
+        self.assertEqual(contexts['2'], [1, 2])
+        pool.release('2')
+        self.assertEqual(pool.move(NS(battle_tag='sixth', turn=1)), (2, 3))
+        self.assertEqual(contexts['sixth'], [1])
+        self.assertEqual(checkpoints, {0: 1, 1: 1, 2: 3, 3: 1, 4: 1})
+        self.assertEqual(pool.stream_for('sixth'), 2)
+        pool.release('unknown')
 
 
 if __name__ == '__main__':

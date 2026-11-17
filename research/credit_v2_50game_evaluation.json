@@ -1,0 +1,275 @@
+{
+  "run": ".local-play/work/ladder/credit_v2_50games_20261117T051258Z",
+  "summary": {
+    "completed_games": 50,
+    "results": {
+      "win": 25,
+      "loss": 25
+    },
+    "win_rate": 0.5,
+    "win_rate_wilson95": [
+      0.36644286412332855,
+      0.6335571358766714
+    ],
+    "rating_before": 1521.0,
+    "rating_after": 1470.0,
+    "decisions": 1638,
+    "matched_actions": 1484,
+    "snapshot_decisions": 1638,
+    "analyzed_games": 50,
+    "missing_logs": [],
+    "counts": {
+      "rocks_reflected": 0,
+      "rocks_already_present": 0,
+      "toxic_into_steel": 0,
+      "ground_into_flying": 1,
+      "setup_at_cap": 0,
+      "setup_then_ko": 1,
+      "switch_into_revealed_hurricane": 0,
+      "risky_hurricane_switch": 0,
+      "punch_over_knockoff": 12,
+      "punch_into_ghost": 1
+    },
+    "opportunities": {
+      "stealthrock_selectable_decisions": 44,
+      "move_actions": 999,
+      "stealthrock_uses": 6,
+      "stealthrock_selectable_with_rocks_present": 21,
+      "switch_actions": 485,
+      "setup_uses": 71,
+      "ground_uses": 39,
+      "punch_and_knockoff_both_selectable": 56,
+      "toxic_selectable_decisions": 34,
+      "toxic_uses": 4,
+      "capped_setup_selectable_decisions": 1
+    },
+    "latency_mean": 0.4373858363858364,
+    "latency_max": 2.573,
+    "games_per_stream": {
+      "3": 9,
+      "2": 11,
+      "1": 11,
+      "4": 9,
+      "0": 10
+    },
+    "pure_safest_expert": {
+      "checked_decisions": 1598,
+      "strict_mismatches": 0,
+      "comparison_tolerance": 0.001,
+      "mismatch_fraction": 0.0,
+      "mean_security_gap_on_mismatches": null,
+      "maximum_security_gap": 0,
+      "largest_examples": []
+    }
+  },
+  "runtime": {
+    "counts": {
+      "decisions": 1638,
+      "pure_security_checks": 1598,
+      "feedback_records": 1598,
+      "credited_updates": 1330,
+      "multi_world_credit": 1293,
+      "observed_tera_updates": 27,
+      "conditional_weight_checks": 1330,
+      "all_rewards_saturated_at_one": 43,
+      "saturated_and_raw_utilities_differ": 12,
+      "all_rewards_tied_but_raw_utilities_differ": 13
+    },
+    "skipped": {
+      "not_in_worlds": 114,
+      "fainted": 86,
+      "cant": 36,
+      "no_action": 32
+    },
+    "unmatched": {
+      "game_ended_before_action": 8,
+      "fainted_before_chosen_move": 96,
+      "automatic_or_replaced_move": 5,
+      "cant_status_or_flinch": 44,
+      "switch_form_illusion_or_timing_alias": 1
+    },
+    "maxima": {
+      "world_weight_sum_error": 2.220446049250313e-16,
+      "reward_bound_roundoff": 2.220446049250313e-16,
+      "style_vs_credit_prediction_error": 4.99506929291238e-07,
+      "reward_reconstruction_error": 0.00019264273148861255
+    },
+    "issues": [],
+    "streams": [
+      {
+        "stream": "0",
+        "updates": 327,
+        "games": 10,
+        "weights": [
+          0.205583,
+          0.22556,
+          0.266804,
+          0.302053
+        ],
+        "cumulative_reward_error": 0.0
+      },
+      {
+        "stream": "1",
+        "updates": 307,
+        "games": 11,
+        "weights": [
+          0.20986,
+          0.21143,
+          0.287857,
+          0.290853
+        ],
+        "cumulative_reward_error": 0.0
+      },
+      {
+        "stream": "2",
+        "updates": 295,
+        "games": 11,
+        "weights": [
+          0.244109,
+          0.195379,
+          0.333785,
+          0.226727
+        ],
+        "cumulative_reward_error": 0.0
+      },
+      {
+        "stream": "3",
+        "updates": 215,
+        "games": 9,
+        "weights": [
+          0.263407,
+          0.17442,
+          0.233613,
+          0.32856
+        ],
+        "cumulative_reward_error": 0.0
+      },
+      {
+        "stream": "4",
+        "updates": 186,
+        "games": 9,
+        "weights": [
+          0.242583,
+          0.199855,
+          0.287697,
+          0.269865
+        ],
+        "cumulative_reward_error": 0.0
+      }
+    ]
+  },
+  "case_studies": [
+    {
+      "battle_tag": "battle-gen9randombattle-2715214922",
+      "turn": 2,
+      "decision_index": 1,
+      "categories": [
+        "punch_over_knockoff",
+        "punch_into_ghost"
+      ],
+      "opponent_switched": true,
+      "actual_switch": "misdreavus",
+      "worlds_supporting_actual_switch": [],
+      "predicted_actual_switch_probability": 0,
+      "payoffs_given_actual_switch": {}
+    },
+    {
+      "battle_tag": "battle-gen9randombattle-2715218126",
+      "turn": 1,
+      "decision_index": 0,
+      "categories": [
+        "setup_then_ko"
+      ],
+      "opponent_switched": false,
+      "sampled_active_items": [
+        "leftovers",
+        "leftovers",
+        "leftovers",
+        "leftovers"
+      ],
+      "item_only_native_ko_probabilities": {
+        "leftovers": 0.0375,
+        "assaultvest": 0.0375,
+        "choicespecs": 0.684375,
+        "lifeorb": 0.0375
+      }
+    },
+    {
+      "battle_tag": "battle-gen9randombattle-2715222661",
+      "turn": 23,
+      "decision_index": 25,
+      "categories": [
+        "ground_into_flying"
+      ],
+      "opponent_switched": true,
+      "actual_switch": "squawkabillywhite",
+      "worlds_supporting_actual_switch": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "predicted_actual_switch_probability": 0.0405,
+      "payoffs_given_actual_switch": {
+        "earthpower": [
+          -337.9438934326172,
+          -337.9438934326172,
+          -337.9438934326172,
+          -337.9438934326172
+        ],
+        "voltswitch": [
+          -186.90703543984142,
+          -186.90703543984142,
+          -186.90703543984142,
+          -186.90703543984142
+        ]
+      }
+    }
+  ],
+  "log_loss_on_supported_observations": {
+    "n": 1330,
+    "average_matrix_log_loss": 1.7817574593537384,
+    "per_world_log_loss": 1.4793121895342616
+  },
+  "largest_reward_tie_examples": [
+    {
+      "battle_tag": "battle-gen9randombattle-2715221095",
+      "turn": 18,
+      "rewards": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "utilities": [
+        -8103.566083258913,
+        -8103.566083258913,
+        -8108.477952082642,
+        -5179.505066299438
+      ],
+      "gap": 2928.972885783204
+    },
+    {
+      "battle_tag": "battle-gen9randombattle-2715214618",
+      "turn": 35,
+      "rewards": [
+        0.5872065872453472,
+        0.5872065872453472,
+        0.5872065872453472,
+        0.5872065872453472
+      ],
+      "utilities": [
+        -3756.7544153905665,
+        -4444.938222896926,
+        -5636.005463130732,
+        -4425.387650796587
+      ],
+      "gap": 1879.2510477401656
+    }
+  ],
+  "limitations": [
+    "Unpaired public ladder games; new streams start fresh; no causal win-rate comparison",
+    "Strict executed-action matching excludes 154 interrupted/automatic/aliased decisions",
+    "Native item probes use engine chance approximation and do not identify actual hidden item"
+  ]
+}
