@@ -53,7 +53,7 @@
 % =====================================================================
 \section{Introduction}
 \label{sec:intro}
-Pok\'emon Showdown is a popular online simulator of Pok\'emon battles, and Random Battles is one of its main formats. Each player gets a team of six randomly generated Pok\'emon. Every turn, both players secretly and simultaneously choose either one of four moves for their active Pok\'emon or a switch to another team member, and the turn resolves with random damage and misses. A Pok\'emon whose hit points reach zero faints, and a player wins once all six of the opponent's Pok\'emon have fainted. Neither player sees the other's team until it is revealed in play, so a battle is a two-player zero-sum stochastic game with simultaneous moves, chance and hidden information. Strong bots, trained by reinforcement learning or built on search, are generally designed to win rather than to be safe. For instance, Foul Play~\cite{foulplay}, the strongest public bot, samples the opponent's possible teams and runs decoupled UCT (DUCT), a Monte Carlo tree search (MCTS)~\cite{Lis13}, on each, and a policy like this can be beaten by an opponent who knows how it plays. We ask whether no-regret learning yields an agent that is hard to exploit, and at what cost in strength.
+Pok\'emon Showdown is a popular online simulator of Pok\'emon battles, and Random Battles is one of its main formats. Each player gets a team of six randomly generated Pok\'emon. Every turn, both players secretly and simultaneously choose either one of four moves for their active Pok\'emon or a switch to another team member, and the turn resolves with random damage and misses. A Pok\'emon whose hit points reach zero faints, and a player wins once all six of the opponent's Pok\'emon have fainted. Neither player sees the other's team until it is revealed in play, so a battle is a two-player zero-sum stochastic game with simultaneous moves, chance and hidden information. Strong bots, trained by reinforcement learning or built on search, are generally designed to win rather than to be safe. For instance, Foul Play~\cite{foulplay}, a leading open-source bot, samples the opponent's possible teams and runs decoupled UCT (DUCT)~\cite{Tak14}, a Monte Carlo tree search (MCTS) for simultaneous moves, on each, and a policy like this can be beaten by an opponent who knows how it plays. We ask whether no-regret learning yields an agent that is hard to exploit, and at what cost in strength.
 
 We apply no-regret learning mainly across games, where the Hedge algorithm chooses among several fixed ways of playing each turn (the ``experts'') while a Bayesian memory tracks the opponent's style. Within each turn, our agent plays an equilibrium of the turn's Bayesian matrix game (a setup used by PokaiTrainer~\cite{Yu26} for Pok\'emon VGC).
 
@@ -69,20 +69,20 @@ However, the agent still loses to Foul Play, and a better opponent model improve
 \paragraph{A battle as a sequence of matrix games.} With both teams known, at turn $t$ in state $s$ we (Row) choose $a\in A(s)$ and the opponent (Column) chooses $b\in B(s)$; chance draws the next state from $P(\cdot\mid s,a,b)$, and the battle ends with payoff $u\in\{-1,0,1\}$ to us, or $0$ if still live after $H$ turns. $H$ is the maximum number of turns (decision nodes; $H=300$ in our runs), and $\tau\le H$ is the turn at which a battle actually ends. Each turn is a zero-sum matrix game, the \emph{stage game}, whose entries are the values of what follows, $\Qstar_t(s)(a,b)=\sum_{s'}P(s'\mid s,a,b)\,\Vstar_{t+1}(s')$, with $\Vstar_t(s)=\val\Qstar_t(s)$ and $\val(M)=\max_x\min_yx^\top My$ over mixed strategies. Our agent works with an estimate $\Qhat_t(s)$ built by search (\cref{sec:method}); stage matrices are at most $13\times13$, with payoff range $\Delta$. If $W^{\pi,\sigma}_0(s_0)$ is our expected payoff when we play $\pi$ and the opponent plays $\sigma$, the exploitability of $\pi$ is how much worse it does against its worst opponent than an equilibrium policy would, $\expl(\pi)=\Vstar_0(s_0)-\inf_\sigma W^{\pi,\sigma}_0(s_0)$; it is $0$ exactly for an equilibrium policy. We report scores $(u+1)/2$, on which exploitability is half its value in payoff units.
 
 \paragraph{No-regret learning.} In the experts problem there are $n$ experts and $T$ rounds. In round $t$ we choose a distribution $p^t$ over the experts; Nature, an adversary that may adapt to the past and to $p^t$ but cannot see our random draw, fixes losses $l_i^t\in[0,1]$; we incur $p^t\cdot l^t$. Our regret $\Reg_T=\sum_{t\le T}p^t\cdot l^t-\min_i\sum_{t\le T}l_i^t$, and an algorithm is \emph{no-regret} if $\Reg_T=o(T)$. 
-Multiplicative weights (MWU)~\cite{LW94} plays $p^t\propto w^t$ with $w_i^1=1$ and $w_i^{t+1}=w_i^t(1-\eta l_i^t)$.
-\begin{theorem}[MWU]\label{thm:mwu}
+Multiplicative weights (MWU)~\cite{AHK12} plays $p^t\propto w^t$ with $w_i^1=1$ and $w_i^{t+1}=w_i^t(1-\eta l_i^t)$.
+\begin{theorem}[MWU, {\cite[Thm.~2.1]{AHK12}}]\label{thm:mwu}
 For $\eta\in(0,\frac12]$, MWU's expected total loss is at most $(1+\eta)L^*+\ln n/\eta$, $L^*$ the best expert's; $\eta=\sqrt{\ln n/T}$ gives $\Reg_T\le2\sqrt{T\ln n}$ if $T\ge4\ln n$.
 \end{theorem}
 \emph{Hedge}~\cite{FS97} is the exponential form, $w_i^{t+1}=w_i^te^{-\eta l_i^t}$; with rewards $r=1-l$ this is a softmax of cumulative reward. Our Hedge learner uses the anytime step $\eta_t=\sqrt{8\ln n/t}$, playing $p_i^t\propto\exp(\eta_{t-1}\sum_{j<t}r_i^j)$ with $p^1$ uniform.
-\begin{theorem}[Hedge]\label{fact:hedge}
+\begin{theorem}[Hedge, cf.\ {\cite[Thm.~2.3]{CBL06}}]\label{fact:hedge}
 Against every adaptive adversary, Hedge with the anytime step has $\Reg_T\le\frac32\sqrt{(T/2)\ln n}+\sqrt{\ln n/8}$.
 \end{theorem}
 
 \paragraph{No-regret dynamics.} Let $M$ be a zero-sum matrix game, Row maximising, $v_R=\max_x\min_yx^\top My$ and $v_C=\min_y\max_xx^\top My$; regrets are in $M$'s payoff units. Both players run a no-regret algorithm for $T$ rounds in the full-information model, playing $x^t$ and $y^t$; let $\bar x,\bar y$ be the average strategies, $\bar g$ Row's average payoff, and $\varepsilon_R,\varepsilon_C$ the players' average regrets.
-\begin{theorem}[no-regret dynamics~\cite{FS99}]\label{fact:selfplay}
+\begin{theorem}[no-regret dynamics, cf.~\cite{FS99}]\label{fact:selfplay}
 $v_C-\varepsilon_R\le\bar g\le v_R+\varepsilon_C$, so, with weak duality $v_R\le v_C$, $v_R=v_C=\val(M)$ as the regrets vanish (the min--max theorem), and $\max_xx^\top M\bar y-\min_y\bar x^\top My\le\varepsilon_R+\varepsilon_C$: $\bar x$ guarantees $\val(M)-\varepsilon_R-\varepsilon_C$ against every $y$.
 \end{theorem}
-\begin{theorem}[no-regret dynamics give a CCE~\cite{CBL06}]\label{thm:cce}
+\begin{theorem}[no-regret dynamics give a CCE, cf.\ {\cite[\S7.4]{CBL06}}]\label{thm:cce}
 If every player of a finite game has average external regret at most $\varepsilon$ after $T$ rounds, the time-average of the joint play is an $\varepsilon$-coarse correlated equilibrium (CCE): no player gains more than $\varepsilon$ by always playing one fixed pure strategy.
 \end{theorem}
 In a two-player zero-sum game the marginals of an $\varepsilon$-CCE are $2\varepsilon$-maximin. We use \cref{fact:selfplay} inside a turn: with both teams known, our solver is Regret Matching$^+$ (RM$^+$)~\cite{Tam14} in self-play with alternating updates and linear averaging (\cref{cor:solver}), and with sampled worlds we solve the LP~\eqref{eq:af} exactly. Across games our Hedge faces a different stage game each turn, so \cref{thm:cce} does not apply verbatim, but we characterise it the same way, by its regret.
@@ -140,7 +140,7 @@ where $\bar\delta_{\rm BR}$ is the mean of $\delta$ over all turns of the best r
 (x^\top\Qstar)_b&\ge(x^\top\Qhat)_b-\epsv\\
 &\ge\val\Qhat-\epss-\epsv\ge\Vstar_t(s)-\delta,
 \end{align*}
-i.e.\ $\ell_t\le e_t\le\delta(t,s_t)$. \Cref{lem:sum} then gives $\Vstar_0-W^{\pi,\sigma}_0\le\E_{\pi,\sigma}[\sum_{t<\tau}\delta]$ for every $\sigma$, and $\sigma=\sigma_{\rm BR}$ gives~\eqref{eq:A}. The factor 2 is tight, and so is $\Hbar$: in a game where the opponent may end at the current score or continue, ending at once is minimax-optimal, but continuing to $H$ costs $H\delta$. For any $\alpha>0$ and $c$ chosen per turn, $x$'s optimality gap in $\alpha\Qhat+c$ is $\alpha\epss$, so the theorem also holds with $\delta$ replaced by $\inf_{\alpha>0,c}(\alpha\epss+2\lVert\alpha\Qhat+c-\Qstar\rVert_\infty)$; for the LP this is $2\epsv^{\rm aff}$, twice the best affine-fit error.
+i.e.\ $\ell_t\le e_t\le\delta(t,s_t)$. \Cref{lem:sum} then gives $\Vstar_0-W^{\pi,\sigma}_0\le\E_{\pi,\sigma}[\sum_{t<\tau}\delta]$ for every $\sigma$, and $\sigma=\sigma_{\rm BR}$ gives~\eqref{eq:A}. Both the factor 2 and $\Hbar$ are tight. For any $\alpha>0$ and $c$ chosen per turn, $x$'s optimality gap in $\alpha\Qhat+c$ is $\alpha\epss$, so the theorem also holds with $\delta$ replaced by $\inf_{\alpha>0,c}(\alpha\epss+2\lVert\alpha\Qhat+c-\Qstar\rVert_\infty)$; for the LP this is $2\epsv^{\rm aff}$, twice the best affine-fit error.
 
 \begin{corollary}[no-regret solver]\label{cor:solver}
 If at every turn we play the average $\bar x$ of $T$ rounds of simultaneous no-regret self-play on $\Qhat$ with average regrets $\varepsilon_R,\varepsilon_C$ (in $\Qhat$'s payoff units), then $\epss\le\varepsilon_R+\varepsilon_C$. For alternating RM$^+$ with linear averaging and $T$ iterations per turn, $\expl(\pi)\le\Hbar\sup_{t,s}\big(2\Delta(\sqrt{|A|}+\sqrt{|B|})/\sqrt T+2\epsv\big)$, with $\Delta,|A|,|B|$ the turn's payoff range and menu sizes.
@@ -162,7 +162,7 @@ Let the in-engine learner of \cref{sec:method} ($M_{k_i}=\Qhat_i$) carry its wei
 \end{theorem}
 \emph{Proof sketch.} Let $g^i_e=q^i_e\cdot\Qhat_i[:,b_i]-\min\Qhat_i$. Then $\bar\Delta r^i_e=\min(g^i_e,\bar\Delta)\ge g^i_e-(\operatorname{range}\Qhat_i-\bar\Delta)^+$ and $\bar\Delta p^i\cdot r^i\le\bar p^i\cdot\Qhat_i[:,b_i]-\min\Qhat_i$; multiplying Hedge's guarantee (\cref{fact:hedge}) by $\bar\Delta$ gives (a), and (b) is (a) for the sampled expert, which earns at least $\val\Qhat_i-\epss(i)$ against every column. (c): concavity of $R$ gives $\E R(S)\le R(\bar LG)$ when carried, while with resets it gives only $R(\bar L)$ per game.\qed
 
-Part (b) holds in our matrices, not in true payoffs; on Showdown only (a) carries over, with $M_{k_i}$ for $\Qhat_i$ (\cref{fig:main}c). (a) compares with each expert's stage payoff along our own trajectory, not with playing one expert throughout.
+Part (b) holds in our matrices, not in true payoffs; on Showdown only (a) carries over, with $M_{k_i}$ for $\Qhat_i$ (\cref{fig:main}c).
 
 \begin{theorem}[hidden teams]\label{thm:C}
 Assume \cref{asm:adv,asm:hor}, that only the opponent's team is hidden and is drawn from the prior we sample worlds from (exact prior), that worlds are drawn i.i.d.\ with equal weights from $\beta_h$, the prior restricted to teams consistent with what has been revealed, fresh each turn and unseen by the opponent, and that \cref{asm:err} holds in each world against its full-information matrix. Measured from the value $V_0$ of the game in which the opponent's team is drawn from the prior and known only to it, and over opponents $\sigma$ that know both teams, an agent that plays an $\epss$-optimal solution of~\eqref{eq:af} every turn has $\expl(\pi)\le\sup_\sigma\E_{\pi,\sigma}\big[\sum_{t<\tau}\delta_C(t,h_t)\big]$, where $\delta_C=\epss+2\epsv+2\E S_t+\etaNL(t)+2\Delta\TV(p_{h},\beta_{h})$. Here $S_t:=\sup_x|f_{\beta_h}(x)-f_K(x)|$ ($f$: the objective of~\eqref{eq:af}, exact vs.\ sampled), $p_h$ is the true posterior, and $\etaNL$ (ours), the value of revealing the opponent's team to both sides, bounds non-locality~\cite{Lon10}. $\TV=0$ if, among the teams for which an action is legal, neither the opponent's probability of playing it nor chance depends on its team (otherwise the term can be necessary), and $\etaNL=0$ if continuation values depend only on the true position.
@@ -201,7 +201,7 @@ On the matches of \cref{fig:main}(d), the posterior's final regret is $\ln5$ up 
 \label{sec:exp-showdown}
 At matched time (about 70\,ms per move), MCTS beats both equilibrium bots in-engine (\cref{fig:wins}). Part of the gap is implementation speed (Python matrices, Rust MCTS); the rest is consistent with the evaluation error dominating~\eqref{eq:A}.
 
-\paragraph{Bayesian LP vs PIMC averaging.} With sampled play, the Bayesian-LP agent beats PIMC averaging at equal compute in-engine and on real Showdown (\cref{fig:wins}); with top move the in-engine difference is not separable from zero (0.54 [0.45, 0.63]).
+\paragraph{Bayesian LP vs PIMC averaging.} With sampled play, the Bayesian-LP agent beats PIMC averaging at equal compute in-engine and on real Showdown (\cref{fig:wins}).
 
 \begin{figure}[t]
 \centering
@@ -210,7 +210,7 @@ At matched time (about 70\,ms per move), MCTS beats both equilibrium bots in-eng
 \label{fig:wins}
 \end{figure}
 
-\paragraph{Against Foul Play.} The Bayesian-LP agent loses at every search time, with a downward trend from 25 to 1000\,ms per sampled battle and overlapping CIs (\cref{fig:wins}); in a nine-bot round robin Foul Play rates 135--192 Elo above it. PokaiTrainer's equilibrium search only matches tree search in VGC with a learned value net (51.7\%); ours has none.
+\paragraph{Against Foul Play.} The Bayesian-LP agent loses at every search time, with a downward trend from 25 to 1000\,ms per sampled battle and overlapping CIs (\cref{fig:wins}); in a nine-bot round robin Foul Play rates 135--192 Elo above it. PokaiTrainer~\cite{Yu26} found its equilibrium search no stronger than DUCT in play (51.7\%) but far harder to exploit; here too equilibrium play is harder to exploit, but weaker.
 
 % =====================================================================
 \section{The Bayesian model}
@@ -239,15 +239,15 @@ Our guarantees hold in the estimated matrix, whose error includes that of the ev
 \bibitem{Zin07} M.~Zinkevich, M.~Johanson, M.~Bowling, C.~Piccione. Regret minimization in games with incomplete information. NeurIPS, 2007.
 \bibitem{CBL06} N.~Cesa-Bianchi, G.~Lugosi. \emph{Prediction, Learning, and Games}. Cambridge University Press, 2006.
 \bibitem{Yu26} M.~Yu. PokaiTrainer: Scaling equilibrium search to competitive Pok\'emon VGC. arXiv:2608.29197v2, 2026.
-\bibitem{foulplay} P.~Mariglia. Foul Play: a competitive Pok\'emon Showdown battle bot. \url{https://github.com/pmariglia/foul-play}, 2024.
-\bibitem{LW94} N.~Littlestone, M.~K.~Warmuth. The weighted majority algorithm. Inf.\ Comput.\ 108(2), 1994.
+\bibitem{foulplay} P.~Mariglia and contributors. Foul Play. \url{https://github.com/pmariglia/foul-play}, 2019--2026.
+\bibitem{AHK12} S.~Arora, E.~Hazan, S.~Kale. The multiplicative weights update method. \emph{Theory Comput.} 8, 2012.
 \bibitem{FS97} Y.~Freund, R.~E.~Schapire. A decision-theoretic generalization of on-line learning and an application to boosting. JCSS 55(1), 1997.
 \bibitem{Tam14} O.~Tammelin. Solving large imperfect information games using CFR+. arXiv:1407.5042, 2014.
 \bibitem{BMS19} N.~Burch, M.~Morav\v{c}\'{\i}k, M.~Schmid. Revisiting CFR+ and alternating updates. JAIR 64, 2019.
-\bibitem{Lis13} V.~Lis\'y, V.~Kova\v{r}\'{\i}k, M.~Lanctot, B.~Bo\v{s}ansk\'y. Convergence of Monte Carlo tree search in simultaneous move games. NeurIPS, 2013.
+\bibitem{Tak14} M.~J.~W.~Tak, M.~Lanctot, M.~H.~M.~Winands. Monte Carlo tree search variants for simultaneous move games. IEEE CIG, 2014.
 \bibitem{Cow12} P.~I.~Cowling, E.~J.~Powley, D.~Whitehouse. Information set Monte Carlo tree search. \emph{IEEE Trans.\ Comput.\ Intell.\ AI Games} 4(2), 2012.
-\bibitem{Iha18} H.~Ihara, S.~Imai, S.~Oyama, M.~Kurihara. Implementation and evaluation of information set Monte Carlo tree search for Pok\'emon. IEEE SMC, 2018.
-\bibitem{Lon10} J.~Long, N.~R.~Sturtevant, M.~Buro, T.~Furtak. Understanding the success of perfect information Monte Carlo sampling in game tree search. AAAI, 2010.
+\bibitem{Iha18} H.~Ihara, S.~Imai, S.~Oyama, M.~Kurihara. Information set Monte Carlo tree search for Pok\'emon. IEEE SMC, 2018.
+\bibitem{Lon10} J.~Long, N.~R.~Sturtevant, M.~Buro, T.~Furtak. Understanding the success of perfect information Monte Carlo sampling. AAAI, 2010.
 \bibitem{GS15} S.~Ganzfried, T.~Sandholm. Safe opponent exploitation. \emph{ACM Trans.\ Economics and Computation} 3(2):8, 2015.
 \bibitem{KL02} S.~Kakade, J.~Langford. Approximately optimal approximate reinforcement learning. ICML, 2002.
 \end{thebibliography}

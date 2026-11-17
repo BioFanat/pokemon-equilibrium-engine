@@ -489,6 +489,16 @@ def add_sections(prs, groups):
     ext_lst.insert(0, ext)
 
 
+def crop_png(path, box):
+    """Crop a PNG (left, top, right, bottom in px) into an in-memory stream for add_picture."""
+    import io
+    from PIL import Image
+    buf = io.BytesIO()
+    Image.open(path).crop(box).save(buf, format="PNG")
+    buf.seek(0)
+    return buf, box[2] - box[0], box[3] - box[1]
+
+
 # ---------- slides ----------
 prs = Presentation(TEMPLATE)
 master = prs.slide_master
@@ -764,21 +774,22 @@ notes(s, "Our main result in one line. On each turn, our strategy can lose at mo
 
 # ===================== Section 4: Experiments =====================
 # 8. Exploitability
-s, S = content(4, "Exploitability and regret")
-fw = WIDTH
-fh = int(fw * 416 / 1395)  # 1395 x 416 px figure
-pic = s.shapes.add_picture(FIG_MAIN, LEFT, TOP, fw, fh)
-pic.name = "Exploitability and regret figure"
+s, S = content(4, "Exploitability")
+img, pw, ph = crop_png(FIG_MAIN, (0, 0, 430, 416))  # panel a of fig_main
+fh = BOTTOM - TOP - Inches(0.6)
+fw = int(fh * pw / ph)
+pic = s.shapes.add_picture(img, LEFT, TOP, fw, fh)
+pic.name = "Exploitability bound figure"
 pic._element.nvPicPr.cNvPr.set(
-    "descr", "Four panels: exact exploitability against the whole-battle bound; RM+ distance from equilibrium over iterations; "
-             "Hedge regret per counted turn over 10 matches; memory regret against the bound ln 5")
-by = TOP + fh + Inches(0.1)
-S.text(LEFT, by, WIDTH, BOTTOM - by, [
+    "descr", "Exact exploitability of our matrix bots on solved endgames against the whole-battle bound; every point "
+             "lies above y = x")
+rx = LEFT + fw + GAP
+S.text(rx, TOP, RIGHT - rx, BOTTOM - TOP, [
     P("Exploitability lower bounds: ", ("0.25", {"b": True}), " top move, ", ("0.09", {"b": True}),
       " sampled play", size=18, bullet=True),
     P("Exact endgames: the bound holds, loose by ", ("7–155×", {"b": True}), "; evaluation error ", ("$", "ε_v"),
       " dominates", size=18, bullet=True, before=6),
-    P("In play, MCTS beats equilibrium play at matched time; the agent sits ≈140–190 Elo below Foul Play",
+    P("In play, MCTS beats equilibrium play at matched time; the agent sits ≈135–190 Elo below Foul Play",
       size=18, bullet=True, before=6),
 ], "Exploitability bullets")
 notes(s, "An informed best response that knows our policy gives exploitability lower bounds of 0.25 for top move and "
@@ -786,25 +797,35 @@ notes(s, "An informed best response that knows our policy gives exploitability l
       "by 7 to 155 times, and the evaluation error, not the solver, carries it. Panels b to d show the regrets under their "
       "bounds; the next slide gives the numbers.")
 
-# 9. No-regret dynamics and the opponent memory
-s, S = content(4, "No-regret dynamics")
-S.text(LEFT, TOP, WIDTH, BOTTOM - TOP, [
-    P("Theory: if both players have average regrets ", ("$", "ε_R, ε_C"), ", their average strategies are within ",
-      ("$", "ε_R + ε_C"), " of minimax"),
-    EQ_(E_MINIMAX, before=4),
-    P("Inside a turn: RM⁺ within ", ("7×10⁻⁵", {"b": True}), " of minimax (bound 0.38)", bullet=True, before=20),
-    P("Across games: Hedge regret ", ("≈ 0.004", {"b": True}), " per turn, 13–16% of its bound", bullet=True,
-      before=SP),
-    P("Opponent prediction (Bayes = Hedge): regret ends at its bound ", ("$", r"\ln{5}"), "; better prediction "
-      "does not move win rate", bullet=True, before=SP),
-], "Dynamics bullets")
-notes(s, "Theory says no-regret players' averages are within the sum of their regrets of minimax. Measured: RM-plus "
-      "inside a turn reaches 7 times ten to the minus five of the payoff range, against a bound of 0.38, and Hedge's "
-      "averages stay within the bound on all 120 stage matrices we tried. Across games, Hedge's regret against Foul "
-      "Play is 13 to 16 percent of its bound, and carried weights beat reset weights, as the bounds order them. The "
-      "opponent memory is Bayes, which is Hedge with step one, and its regret ends exactly at its bound, log five. "
-      "Scoring styles on each sampled world's legal actions lowers log loss by about 0.3 nats per turn, but better "
-      "prediction does not move win rate, which fits the theory: none of our bounds rewards better prediction.")
+# 9. Regret of our no-regret learners: objective box, then the three regret panels of fig_main
+s, S = content(4, "Regret: what we bound, and what we measured")
+S.header(LEFT, TOP, WIDTH, HDR_H, [P("What we bound", size=SECONDARY, b=True, align="ctr")], "Objective header")
+S.box(LEFT, TOP + HDR_H, WIDTH, Inches(1.0), [
+    P("Each learner in our agent has a proved regret bound, and we check it in play: ", ("b", {"b": True}),
+      " RM⁺ inside a turn (gap to the turn's equilibrium), ", ("c", {"b": True}), " Hedge across games (regret against "
+      "the best expert), ", ("d", {"b": True}), " the opponent memory (log-loss regret against the best style, ",
+      ("$", r"\ln{5}"), ")", size=16, align="ctr"),
+], "Objective box", anchor="ctr")
+img, pw, ph = crop_png(FIG_MAIN, (430, 0, 1395, 416))  # panels b-d of fig_main
+iy = TOP + HDR_H + Inches(1.15)
+fh = BOTTOM - iy - Inches(0.55)
+fw = min(WIDTH, int(fh * pw / ph))
+fh = int(fw * ph / pw)
+pic = s.shapes.add_picture(img, LEFT + (WIDTH - fw) // 2, iy, fw, fh)
+pic.name = "Regret figure"
+pic._element.nvPicPr.cNvPr.set(
+    "descr", "Three panels with dashed proved bounds: RM+ gap over iterations; Hedge regret per counted turn over 10 "
+             "matches against Foul Play; memory regret against the bound ln 5")
+S.text(LEFT, iy + fh + Inches(0.05), WIDTH, BOTTOM - iy - fh, [
+    P("All three stay under their bounds: RM⁺ 7×10⁻⁵ (bound 0.38); Hedge 13–16% of its bound; memory ends at ln 5",
+      size=16, align="ctr"),
+], "Regret caption")
+notes(s, "Here is what we bound and what we measured. Each no-regret learner in our agent has a proved regret bound. "
+      "Inside a turn, RM-plus self-play should approach the turn's equilibrium, and its gap is bounded; across games, "
+      "Hedge's regret against the best expert is bounded; and the opponent memory, which is Bayes and therefore Hedge "
+      "on log loss, has regret at most log five against the best style. The dashed lines are the bounds. All three "
+      "learners stay under them: RM-plus reaches 7 times ten to the minus five of the payoff range against a bound of "
+      "0.38, Hedge's regret is 13 to 16 percent of its bound, and the memory's regret ends exactly at log five.")
 
 # 5. The Bayesian model: belief -> worlds -> weighted vote
 s, S = content(4, "What we pull from it: the Bayesian model")
@@ -874,7 +895,7 @@ notes(s, "Here is where the Bayesian part is. Start with a belief over the oppon
 H2H_SCORE, H2H_CI, H2H_N = "0.31", "[0.22, 0.40]", "50 paired seeds"
 s, S = content(4, "The Bayesian model in play")
 boxes = [("Public ladder vs humans", [P("99–51", size=36, b=True, align="ctr"),
-                                     P("Elo 1470 → 2090, top 500", size=14, align="ctr", before=4),
+                                     P("Elo 1470 → 2090, reportedly top 500", size=14, align="ctr", before=4),
                                      P("(preliminary model 77–73)", size=12, i=True, align="ctr", before=4)]),
          ("Hedge over it", [P(H2H_SCORE, size=36, b=True, align="ctr"),
                             P(f"vs the Bayesian model {H2H_CI}", size=14, align="ctr", before=4),
@@ -897,7 +918,7 @@ S.text(LEFT, by, WIDTH, BOTTOM - by, [
       "far worse", size=18, bullet=True, before=10),
 ], "Play bullets")
 notes(s, "Here is the Bayesian model in play. On the public ladder against human players, in sequential rated "
-      "batches, it went 99 and 51 and climbed from 1470 to 2090 Elo, peaking at 2141, in the top 500, while the "
+      "batches, it went 99 and 51 and climbed from 1470 to 2090 Elo, peaking at 2141, reportedly in the top 500, while the "
       "preliminary model went 77 and 73 and drifted down to 1470. We then wrapped the Bayesian model in our Hedge "
       f"layer, over its argmax, its sampled visit shares and the equilibrium, and it lost to the plain Bayesian model, "
       f"scoring {H2H_SCORE} over {H2H_N}. Hedge did not fail to learn: its regret is four to five against a bound "
@@ -911,20 +932,36 @@ notes(s, "Here is the Bayesian model in play. On the public ladder against human
 # ===================== Section 5: Conclusions =====================
 # 12. Takeaways and next steps
 s, S = content(5, "Takeaways and next steps")
-items = ["Equilibrium play and Hedge compose into a whole-battle bound, and measured regrets sit well under it; "
-         "the bound points to the evaluation formula's error, which more compute does not reduce",
-         "No-regret is only as good as its payoffs: Hedge over the Bayesian model loses because it learns on that error",
-         "The Bayesian model spends compute on deeper search instead and reached the top 500; next, credit the experts "
-         "with search values"]
-S.text(LEFT, TOP, WIDTH, BOTTOM - TOP, [
-    P(txt, number=True, before=0 if k == 0 else 22) for k, txt in enumerate(items)
+items = ["Per-turn equilibrium play and Hedge across games compose into a bound on how exploitable the agent is over "
+         "a whole battle, and the regrets we measured sit well inside it. The bound is most useful as a diagnosis: it "
+         "shows that the error of our evaluation formula, not the solver, is what limits the agent.",
+         "Spending compute where the bound points, on deeper search over the same Bayesian belief about the hidden "
+         "team, gave our strongest agent, which reportedly reached the top 500 of the public ladder. Its deterministic "
+         "choice is the price: an opponent who predicts it gains almost half a game.",
+         "A no-regret guarantee is only as good as the payoffs it is measured on. Wrapped around the Bayesian model, "
+         "Hedge learned faithfully from shallow matrices and gave back most of the model's strength, so guarantees and "
+         "strength line up only when the learner sees accurate payoffs."]
+S.text(LEFT, TOP, WIDTH, Inches(4.0), [
+    P(txt, number=True, size=18, before=0 if k == 0 else 14) for k, txt in enumerate(items)
 ], "Takeaways")
-notes(s, "Three takeaways. First, per-turn equilibrium play and Hedge across games compose into a whole-battle "
-      "bound, our measured regrets sit well under it, and the bound points to the error of the evaluation formula, "
-      "which more compute does not reduce. Second, a no-regret guarantee is only as good as its payoffs: Hedge over "
-      "the Bayesian model loses because it learns on that same error. Third, the Bayesian model spends its compute on "
-      "deeper search instead and reached the top 500 of the ladder; the next step is to credit the experts with "
-      "search values, so the no-regret guarantee measures the payoffs that matter. Thank you.")
+S.header(LEFT, TOP + Inches(4.05), WIDTH, Inches(0.38), [P("Next steps", size=SECONDARY, b=True, align="ctr")],
+         "Next steps header")
+S.box(LEFT, TOP + Inches(4.43), WIDTH, BOTTOM - TOP - Inches(4.43), [
+    P("Feed the no-regret layer the search's own values instead of shallow matrices, merge Hedge and the Bayesian "
+      "model more carefully so the learner keeps its strength, and measure the final agent's exploitability on the "
+      "ladder itself", size=16, align="ctr"),
+], "Next steps box")
+notes(s, "Three takeaways. First, per-turn equilibrium play and Hedge across games compose into a bound on how "
+      "exploitable the agent is over a whole battle, and the regrets we measured sit well inside it. The bound turned "
+      "out to be most useful as a diagnosis: it shows that the error of our evaluation formula, not the solver, is "
+      "what limits the agent. Second, spending compute where the bound points, on deeper search over the same "
+      "Bayesian belief about the hidden team, gave our strongest agent, which reportedly reached the top 500 of the "
+      "public ladder; the price is that its deterministic choice can be predicted, and an opponent who does so gains "
+      "almost half a game. Third, a no-regret guarantee is only as good as the payoffs it is measured on: wrapped "
+      "around the Bayesian model, Hedge learned faithfully from shallow matrices and gave back most of the model's "
+      "strength, so guarantees and strength line up only when the learner sees accurate payoffs. Next, we want to "
+      "feed the no-regret layer the search's own values, merge Hedge and the Bayesian model more carefully, and "
+      "measure the final agent's exploitability on the ladder itself. Thank you.")
 
 add_sections(prs, groups)
 prs.core_properties.title = "No-Regret Learning and Bayesian Opponent Memory in Pokémon Random Battles"
