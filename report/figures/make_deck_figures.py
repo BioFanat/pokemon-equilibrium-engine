@@ -14,7 +14,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-INK, GREY, LIGHT, ACCENT = "#111111", "#8C8C8C", "#D9D9D9", "#0072B2"
+INK, GREY, LIGHT, ACCENT = "#000000", "#8C8C8C", "#D9D9D9", "#0072B2"
 plt.rcParams.update({
     "font.family": "sans-serif", "font.sans-serif": ["Helvetica", "Arial"], "font.size": 16,
     "axes.labelsize": 17, "axes.titlesize": 18, "xtick.labelsize": 15, "ytick.labelsize": 16,
@@ -73,10 +73,10 @@ def strength():
 
 
 def exploit():
-    fig, b = plt.subplots(figsize=(6.6, 3.0))
-    dot_ci(b, [("argmax\n(Bayesian rule)", 0.487, 0.399, 0.576, ACCENT),
-               ("sample\nvisit shares", 0.010, -0.039, 0.059, GREY)], ref=0)
-    b.set_xlabel("Gain from predicting our move")
+    fig, b = plt.subplots(figsize=(6.4, 2.9))
+    dot_ci(b, [("Bayesian model", 0.487, 0.399, 0.576, ACCENT),
+               ("Randomised\nversion", 0.010, -0.039, 0.059, GREY)], ref=0)
+    b.set_xlabel("Extra wins from knowing the rule")
     b.set_xlim(-0.1, 0.65)
     b.tick_params(axis="y", length=0)
     fig.savefig(os.path.join(HERE, "deck_exploit.png"), bbox_inches="tight")
