@@ -702,52 +702,69 @@ notes(s, "Our preliminary model, step by step. First, worlds and matrices: a wor
       "the opponent's move, and Hedge mixes them. After the opponent moves, each expert is credited with what it "
       "would have earned, and because the weights carry across games, Hedge's regret bound covers the whole match.")
 
-# 5. The Bayesian model: what changes from the preliminary model
-s, S = content(2, "The Bayesian model: what changes")
-lab_w = Inches(1.6)
-bw = (WIDTH - lab_w - Inches(0.2) - Inches(0.7)) // 2
-x_pre = LEFT + lab_w + Inches(0.2)
-x_bay = x_pre + bw + Inches(0.7)
-S.header(x_pre, TOP, bw, Inches(0.38), [P("Preliminary model", size=14, b=True, align="ctr")], "Col pre")
-S.header(x_bay, TOP, bw, Inches(0.38), [P("Bayesian model", size=14, b=True, align="ctr")], "Col bay")
-changes = [("Worlds", "4 random draws from the belief, equal weight", "every item/ability covered, weighted by its probability β"),
-           ("Each world", "2-turn payoff matrix", "deeper search (MCTS, 250 ms)"),
-           ("Decision", "one strategy x, then experts", "weighted vote: play the top move")]
-rh = Inches(0.62)
-for i, (lab, pre, bay) in enumerate(changes):
-    y = TOP + Inches(0.45) + i * (rh + Inches(0.1))
-    S.header(LEFT, y, lab_w, rh, [P(lab, size=14, b=True, align="ctr")], f"Row {i} label")
-    S.box(x_pre, y, bw, rh, [P(pre, size=14, align="ctr")], f"Row {i} pre")
-    S.line(x_pre + bw + Inches(0.1), y + rh // 2, x_bay - Inches(0.1), y + rh // 2, f"Row {i} arrow", arrow=True)
-    S.box(x_bay, y, bw, rh, [P(bay, size=14, align="ctr")], f"Row {i} bay")
-# the weighted vote, illustrated
-ty = TOP + Inches(0.45) + 3 * (rh + Inches(0.1)) + Inches(0.25)
-cols = [("World A", "β = 0.6"), ("World B", "β = 0.4"), ("Weighted", "")]
-rows = [("Earthquake", ["0.50", "0.25", "0.40"]), ("Stone Edge", ["0.20", "0.15", "0.18"]),
-        ("Slack Off", ["0.30", "0.60", "0.42"])]
-mw, cw, hh, rh2 = Inches(1.3), Inches(1.4), Inches(0.5), Inches(0.36)
-tx = LEFT + (WIDTH - mw - 3 * cw) // 2
-for j, (c, sub) in enumerate(cols):
-    S.header(tx + mw + j * cw, ty, cw, hh, [P(c, size=12, b=True, align="ctr")] +
-             ([P(sub, size=10, align="ctr")] if sub else []), f"Vote col {j}")
-for i, (r, vals) in enumerate(rows):
-    yy = ty + hh + i * rh2
-    S.header(tx, yy, mw, rh2, [P(r, size=12, b=True, align="ctr")], f"Vote row {i}")
-    for j, v in enumerate(vals):
-        best = j == 2 and r == "Slack Off"
-        S.box(tx + mw + j * cw, yy, cw, rh2, [P(v + (" ✓" if best else ""), size=12, b=best, align="ctr")],
-              f"Vote cell {i}{j}")
-S.text(LEFT, ty + hh + 3 * rh2 + Inches(0.05), WIDTH, Inches(0.3),
-       [P("Illustrative: each world's search share per move; weighting the worlds picks Slack Off", size=11, i=True,
-          align="ctr")], "Vote caption")
-notes(s, "The Bayesian model keeps the world idea and changes three things. First, the worlds: instead of four "
-      "random guesses with equal weight, each world gets a probability from how often its sets occur given what we "
-      "have seen, and the worlds are spread so every possible item and ability of the opponent is covered. Second, "
-      "inside each world: instead of a two-turn payoff matrix, we search much deeper with Monte Carlo tree search "
-      "for a quarter of a second. Third, the decision: instead of one strategy x and experts, each world's search "
-      "votes for our moves, we weight the votes by the worlds' probabilities, and play the top move. In this "
-      "illustrative example, world A alone would pick Earthquake, but weighting in world B makes Slack Off the "
-      "choice.")
+# 5. The Bayesian model: belief -> worlds -> weighted vote
+s, S = content(2, "The Bayesian model: belief → worlds → vote")
+
+
+def grid(x0, y0, cols, rows, widths, name, hh=Inches(0.5), rh=Inches(0.36), bold_cells=()):
+    """Header row + label column table; cols = [(title, sub)], rows = [(label, [cells])]."""
+    x = x0 + widths[0]
+    for j, (c, sub) in enumerate(cols):
+        S.header(x, y0, widths[j + 1], hh, [P(c, size=12, b=True, align="ctr")] +
+                 ([P(sub, size=10, align="ctr")] if sub else []), f"{name} col {j}")
+        x += widths[j + 1]
+    for i, (r, vals) in enumerate(rows):
+        yy = y0 + hh + i * rh
+        S.header(x0, yy, widths[0], rh, [P(r, size=12, b=True, align="ctr")], f"{name} row {i}")
+        x = x0 + widths[0]
+        for j, v in enumerate(vals):
+            S.box(x, yy, widths[j + 1], rh, [P(v, size=12, b=(i, j) in bold_cells, align="ctr")],
+                  f"{name} cell {i}{j}")
+            x += widths[j + 1]
+    return y0 + hh + len(rows) * rh
+
+
+# 1. Bayes update over the opponent's hidden set
+S.text(LEFT, TOP, Inches(5.6), Inches(0.35), [P("1. Belief: Bayes over Sunflora's possible sets", size=16, b=True)],
+       "Step 1 title")
+end1 = grid(LEFT, TOP + Inches(0.4),
+            [("Prior", "how common"), ("Saw Sludge Bomb?", ""), ("Posterior β", "")],
+            [("Set A: Earth Power", ["0.45", "✓", "0.6"]), ("Set B: Leaf Storm", ["0.30", "✓", "0.4"]),
+             ("Set C: no Sludge Bomb", ["0.25", "✗", "0"])],
+            [Inches(2.15), Inches(1.1), Inches(1.3), Inches(1.1)], "Bayes",
+            bold_cells={(0, 2), (1, 2), (2, 2)})
+S.text(LEFT, end1 + Inches(0.05), Inches(5.6), Inches(0.3),
+       [P("posterior ∝ prior × (consistent with what we saw)", size=12, i=True, align="ctr")], "Bayes caption")
+# arrow
+ax = LEFT + Inches(5.75)
+S.line(ax, TOP + Inches(1.2), ax + Inches(0.45), TOP + Inches(1.2), "Belief arrow", arrow=True)
+# 2-3. worlds from the posterior, searched, then the weighted vote
+vx = ax + Inches(0.6)
+S.text(vx, TOP, RIGHT - vx, Inches(0.35), [P("2. One world per set, searched deeper", size=16, b=True)],
+       "Step 2 title")
+end2 = grid(vx, TOP + Inches(0.4), [("World A", "β = 0.6"), ("World B", "β = 0.4"), ("Weighted", "")],
+            [("Earthquake", ["0.50", "0.25", "0.40"]), ("Stone Edge", ["0.20", "0.15", "0.18"]),
+             ("Slack Off", ["0.30", "0.60", "0.42 ✓"])],
+            [Inches(1.2), Inches(1.0), Inches(1.0), Inches(1.05)], "Vote", bold_cells={(2, 2)})
+S.text(vx, end2 + Inches(0.05), RIGHT - vx, Inches(0.3),
+       [P("cells: each world's MCTS search share per move", size=12, i=True, align="ctr")], "Vote caption")
+by = max(end1, end2) + Inches(0.6)
+S.text(LEFT, by, WIDTH, BOTTOM - by, [
+    P(("3. Decide: ", {"b": True}), "play the move with the highest posterior-weighted value (here Slack Off; "
+      "World A alone would say Earthquake)", size=16, bullet=True),
+    P("Worlds always cover every item/ability the opponent could have, so a rare Choice Specs is never dropped",
+      size=16, bullet=True, before=8),
+    P("Illustrative numbers", size=12, i=True, before=8),
+], "Bayes notes")
+notes(s, "Here is where the Bayesian part is. Start with a belief over the opponent's hidden set: the prior is how "
+      "often each Sunflora set appears in Random Battles. Then we condition on what we have seen. Sunflora used "
+      "Sludge Bomb, so set C, which has no Sludge Bomb, drops to zero, and renormalising the rest gives the "
+      "posterior: 0.6 on set A with Earth Power and 0.4 on set B with Leaf Storm. Each possible set becomes a world "
+      "with that posterior weight, and the worlds always cover every item or ability the opponent could have, so a "
+      "rare but dangerous one is never dropped. We search each world deeper with Monte Carlo tree search, giving "
+      "each of our moves a share of the search, and then decide by the posterior-weighted value. Here world A alone "
+      "would pick Earthquake, but weighting in world B makes Slack Off the Bayes choice. The numbers are "
+      "illustrative.")
 
 # 6. Case study: one turn of a real Showdown game
 s, S = content(2, "A turn, step by step")
