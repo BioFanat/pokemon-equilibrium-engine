@@ -162,26 +162,22 @@ def draw(eg, rm, hedge_curves, mem_curves):
 
 
 def draw_deck(eg, rm, hedge_curves, mem_curves):
-    """Slide version: same data, titles that state each panel's conclusion, plain-language axes, slide-size text."""
+    """Slide version: the two bounds the deck introduces (exploitability, Hedge regret), plain titles, slide-size text."""
     with plt.rc_context({"font.size": 14, "axes.labelsize": 14, "axes.titlesize": 15, "xtick.labelsize": 12,
                          "ytick.labelsize": 12}):
-        fig, axs = plt.subplots(1, 4, figsize=(14.0, 4.1), layout="constrained")
+        fig, axs = plt.subplots(1, 2, figsize=(10.0, 4.1), layout="constrained")
         panel_exploit(axs[0], eg)
-        panel_rm(axs[1], rm)
-        panel_hedge(axs[2], hedge_curves)
-        panel_memory(axs[3], mem_curves)
+        panel_hedge(axs[1], hedge_curves)
         spec = [("Exploitability bound", "Actual exploitability", "Our bound"),
-                ("Solver reaches equilibrium", "Solver iterations", "Distance from equilibrium"),
-                ("Hedge's regret shrinks", "Turns played", "Regret per turn"),
-                ("Prediction error is capped", "Turns played", "Total prediction regret")]
+                ("Hedge's regret", "Turns played", "Regret per turn")]
         for ax, (t, xl, yl) in zip(axs, spec):
             ax.set_title(t, loc="left")
             ax.set_xlabel(xl)
             ax.set_ylabel(yl)
-        for t in axs[0].texts:                      # deck: keep only the diagonal's label in panel a
+        for t in axs[0].texts:
             if t.get_text().startswith("all above"):
                 t.remove()
-        letters_and_titles(fig, axs, "abcd")
+        letters_and_titles(fig, axs, "ab")
         fig.savefig(OUT / "fig_main_deck.png", dpi=200)
         plt.close(fig)
 

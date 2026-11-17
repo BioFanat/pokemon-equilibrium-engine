@@ -733,7 +733,7 @@ notes(s, "This is a real Showdown game against Foul Play; the names at the top a
 
 # ===================== Section 3: Theory =====================
 # 8. The whole-battle bound
-s, S = content(3, "The whole-battle bound")
+s, S = content(3, "Our two bounds: exploitability and regret")
 S.text(LEFT, TOP, WIDTH, Inches(1.6), [
     P("Each turn our strategy can lose at most ", ("$", "δ = ε_s + 2ε_v"), " against the true game, and "
       "exploitability is the sum of these per-turn losses over the battle, so", size=18),
@@ -754,27 +754,25 @@ for k, (name, paras) in enumerate(terms):
     S.header(x, by, COL3, HDR_H, [P(*name, size=SECONDARY, b=True, align="ctr")], f"Term {k + 1} header")
     S.box(x, by + HDR_H, COL3, BH3, paras, f"Term {k + 1} box")
 gy = by + HDR_H + BH3 + Inches(0.3)
-S.header(LEFT, gy, WIDTH, HDR_H, [P("Goal: use the bound to characterise exploitability", size=SECONDARY, b=True,
-                                    align="ctr")], "Goal header")
+S.header(LEFT, gy, WIDTH, HDR_H, [P("Second bound: Hedge's regret across games", size=SECONDARY, b=True,
+                                    align="ctr")], "Regret header")
 S.box(LEFT, gy + HDR_H, WIDTH, Inches(1.05), [
-    P("Measure each term on real positions and see which one limits the agent", size=18, bullet=True),
-    P("Deterministic play pays more: ", ("$", r"expl ≥ E[\sum_t{g_t}]"), ", ", ("$", "g_t"),
-      " = game value − best pure guarantee", size=18, bullet=True, before=6),
-], "Goal box", anchor="t")
+    P("Over S turns of a match, Hedge earns at least its best expert's payoff minus ",
+      ("$", r"R(S) = \frac{3}{2}\sqrt{\frac{S}{2}\ln{n}} + \sqrt{\frac{\ln{n}}{8}}"), size=16, align="ctr"),
+    P("so its regret per turn shrinks to 0 as the match goes on", size=16, align="ctr", before=4),
+], "Regret box", anchor="ctr")
 notes(s, "Our main result in one line. On each turn, our strategy can lose at most delta against the true game: the "
       "solver error plus twice the matrix error. Exploitability is exactly the sum of per-turn losses against a best "
       "response, so it is at most H-bar, the number of turns that exploiter plays, times the average delta along "
       "its games. The solver error shrinks with compute, and for no-regret self-play it is at most the summed "
       "regrets. The matrix error comes mostly from the evaluation formula, and more compute does not shrink it. Our "
-      "goal is to use this to characterise exploitability: measure each term on real positions and see which one "
-      "limits the agent. And a new lower bound: a deterministic policy loses at least the gap between each turn's "
-      "game value and its best pure guarantee, on every turn where no pure strategy is optimal, which is 42 percent "
-      "of our stage matrices. That is the price our Bayesian model's argmax pays. Hedge across games adds its own "
-      "regret on top.")
+      "second bound is for Hedge across games: over the turns of a match it earns at least its best expert's payoff "
+      "minus a regret term that grows like the square root of the number of turns, so per turn it shrinks to "
+      "zero.")
 
 # ===================== Section 4: Experiments =====================
 # 8. Exploitability and regret: theory vs measurement, one slide with plain explanations under each panel
-s, S = content(4, "Exploitability and regret: theory vs measurement")
+s, S = content(4, "Our two bounds: theory vs measurement")
 S.text(LEFT, TOP - Inches(0.05), WIDTH, Inches(0.45), [
     P(("Dashed line", {"b": True}), " = what our theory guarantees;  ", ("solid line or dots", {"b": True}),
       " = what we measured; every measurement stays on the safe side", size=14, align="ctr"),
@@ -783,9 +781,10 @@ from PIL import Image as _Im
 img_path = os.path.join(HERE, "..", "figures", "fig_main_deck.png")
 _w, _h = _Im.open(img_path).size
 iy = TOP + Inches(0.45)
-fw = WIDTH
-fh = int(fw * _h / _w)
-pic = s.shapes.add_picture(img_path, LEFT, iy, fw, fh)
+fh = Inches(3.7)
+fw = int(fh * _w / _h)
+fx = LEFT + (WIDTH - fw) // 2
+pic = s.shapes.add_picture(img_path, fx, iy, fw, fh)
 pic.name = "Exploitability and regret figure"
 pic._element.nvPicPr.cNvPr.set("descr", "Four panels, each with the theoretical guarantee dashed and the measurement "
                                         "solid: exploitability bound vs actual exploitability on solved endgames; RM+ "
@@ -793,27 +792,18 @@ pic._element.nvPicPr.cNvPr.set("descr", "Four panels, each with the theoretical 
 notes_txt = [
     "Each dot: one bot on an endgame we solved exactly. Our bound is never below the actual exploitability, but it "
     "is often far larger.",
-    "An equilibrium is a strategy that even an opponent who knows it cannot beat on average. Inside a turn our solver "
-    "ends within 0.01% of the turn's equilibrium.",
     "Regret: how much better the best single expert would have done, per turn. Hedge's falls toward zero, under its "
     "guarantee.",
-    "Prediction regret: how much worse our opponent model predicts moves than the best fixed style. It levels off at "
-    "the proved cap, ln 5.",
 ]
-cw = (WIDTH - 3 * Inches(0.15)) // 4
-ty = iy + fh + Inches(0.08)
+cw = fw // 2
+ty = iy + fh + Inches(0.1)
 for k, t in enumerate(notes_txt):
-    S.text(LEFT + k * (cw + Inches(0.15)), ty, cw, BOTTOM - ty, [P(t, size=12)], f"ER note {k + 1}")
-notes(s, "Each panel compares what our theory guarantees, the dashed line, with what we measured. Panel a is about "
-      "exploitability. We solved a few small endgames exactly, so we know each bot's true exploitability there, on "
-      "the horizontal axis, and compare it with our whole-battle bound, on the vertical axis. Every dot sits above the "
-      "diagonal, so the bound is never violated, but it is 7 to 155 times larger than the truth, because the "
-      "evaluation error in our matrices dominates it. Panel b is the solver inside a turn: regret matching plus gets "
-      "within 7 times ten to the minus five of the turn's equilibrium after a thousand iterations, far below the "
-      "guarantee. Panel c is Hedge across games: its regret per turn falls toward zero, well under the anytime "
-      "bound, so it does nearly as well as its best expert. Panel d is the opponent model: its total prediction regret "
-      "rises to the proved cap of log five and stays there. Separately, opponents that know our policy give "
-      "exploitability lower bounds of 0.25 for top move and 0.09 for sampled play.")
+    S.text(fx + k * cw, ty, cw - Inches(0.2), BOTTOM - ty, [P(t, size=14)], f"ER note {k + 1}")
+notes(s, "Here are the two bounds against measurements: the dashed line is what the theory guarantees, the solid "
+      "line or dots what we measured. On the left, exploitability: we solved a few small endgames exactly, so we know "
+      "each bot's actual exploitability there, and our bound is never below it, though it is often much larger. On "
+      "the right, Hedge across games: its regret per turn, how much better its best single expert would have done, "
+      "falls toward zero and stays well under the guarantee.")
 
 # 5. The Bayesian model: belief -> worlds -> weighted vote
 s, S = content(4, "What we pull from it: the Bayesian model")
@@ -946,7 +936,7 @@ pic._element.nvPicPr.cNvPr.set("descr", "Gain from predicting our move, in-engin
                                         "against sampling the visit shares")
 S.text(rx, TOP + Inches(0.15) + fh, fw, BOTTOM - TOP - fh, [
     P("In-engine, full information, against a 5,000-iteration MCTS:", size=14, i=True),
-    P("argmax: the adversary scores 0.70 (exploitability ≥ 0.07), as the price of determinism predicts", size=14,
+    P("argmax: the adversary scores 0.70 (exploitability ≥ 0.07), as theory predicts for deterministic play", size=14,
       bullet=True, before=4),
     P("sampling the visit shares: no gain, but it plays far worse", size=14, bullet=True, before=4),
 ], "Exploit text")
