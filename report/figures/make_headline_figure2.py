@@ -24,6 +24,13 @@ import matplotlib.pyplot as plt
 from make_regret_figure import (OUT, ROOT, COL, GRAY, INK, LN5, MEM_EXCLUDED, RM_FIT_LO, check_figure,
                                 load_streams, analyse, rm_data, hedge_bound, slope)
 
+# One clean style for paper and deck: black Helvetica text and marks; each learner has its own panel, so no colour
+# is needed to tell them apart (bounds stay dashed grey).
+INK = "#111111"
+COL = {k: INK for k in COL}
+plt.rcParams.update({"font.sans-serif": ["Helvetica", "Arial"], "text.color": INK, "axes.labelcolor": INK,
+                     "xtick.color": INK, "ytick.color": INK, "axes.edgecolor": INK})
+
 EPS = ROOT / "engine/results/endgame/eps.jsonl"
 EXPL_MIN = 1e-3                                        # rows with exploitability <= 1e-3 have no defined ratio
 

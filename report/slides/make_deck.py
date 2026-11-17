@@ -775,7 +775,7 @@ notes(s, "Our main result in one line. On each turn, our strategy can lose at mo
 # ===================== Section 4: Experiments =====================
 # 8. Exploitability
 s, S = content(4, "Exploitability")
-img, pw, ph = crop_png(FIG_MAIN, (0, 0, 430, 416))  # panel a of fig_main
+img, pw, ph = crop_png(FIG_MAIN, (0, 0, 432, 418))  # panel a of fig_main
 fh = BOTTOM - TOP - Inches(0.6)
 fw = int(fh * pw / ph)
 pic = s.shapes.add_picture(img, LEFT, TOP, fw, fh)
@@ -806,7 +806,7 @@ S.box(LEFT, TOP + HDR_H, WIDTH, Inches(1.0), [
       "the best expert), ", ("d", {"b": True}), " the opponent memory (log-loss regret against the best style, ",
       ("$", r"\ln{5}"), ")", size=16, align="ctr"),
 ], "Objective box", anchor="ctr")
-img, pw, ph = crop_png(FIG_MAIN, (430, 0, 1395, 416))  # panels b-d of fig_main
+img, pw, ph = crop_png(FIG_MAIN, (432, 0, 1395, 418))  # panels b-d of fig_main
 iy = TOP + HDR_H + Inches(1.15)
 fh = BOTTOM - iy - Inches(0.55)
 fw = min(WIDTH, int(fh * pw / ph))
@@ -894,28 +894,28 @@ notes(s, "Here is where the Bayesian part is. Start with a belief over the oppon
 # 12. The Bayesian model in play: the ladder, and Hedge over it (H2H numbers from analyze_noregret_h2h.py)
 H2H_SCORE, H2H_CI, H2H_N = "0.31", "[0.22, 0.40]", "50 paired seeds"
 s, S = content(4, "The Bayesian model in play")
-boxes = [("Public ladder vs humans", [P("99–51", size=36, b=True, align="ctr"),
-                                     P("Elo 1470 → 2090, reportedly top 500", size=14, align="ctr", before=4),
-                                     P("(preliminary model 77–73)", size=12, i=True, align="ctr", before=4)]),
-         ("Hedge over it", [P(H2H_SCORE, size=36, b=True, align="ctr"),
-                            P(f"vs the Bayesian model {H2H_CI}", size=14, align="ctr", before=4),
-                            P("Elo vs preliminary: +27, Bayesian +203", size=12, i=True, align="ctr", before=4)]),
-         ("Adversary predicting it", [P("0.70", size=36, b=True, align="ctr"),
-                                      P("vs 5,000-iteration MCTS argmax (in-engine)", size=14, align="ctr", before=4),
-                                      P("+0.49 from predicting the move", size=12, i=True, align="ctr", before=4)])]
-BH = Inches(1.75)
-for k, (name, paras) in enumerate(boxes):
-    x = LEFT + k * (COL3 + GAP)
-    S.header(x, TOP, COL3, HDR_H, [P(name, size=SECONDARY, b=True, align="ctr")], f"Play {k + 1} header")
-    S.box(x, TOP + HDR_H, COL3, BH, paras, f"Play {k + 1} box")
-by = TOP + HDR_H + BH + Inches(0.35)
+S.text(LEFT, TOP, WIDTH, Inches(0.45), [
+    P(("Public ladder: ", {"b": True}), "the Bayesian model went 99–51 (Elo 1470 → 2090, reportedly top 500); the "
+      "preliminary model went 77–73", size=16),
+], "Ladder line")
+img_path = os.path.join(HERE, "..", "figures", "deck_inplay.png")
+iy = TOP + Inches(0.55)
+from PIL import Image as _Im
+_w, _h = _Im.open(img_path).size
+fw = int(WIDTH * 0.8)
+fh = int(fw * _h / _w)
+pic = s.shapes.add_picture(img_path, LEFT + (WIDTH - fw) // 2, iy, fw, fh)
+pic.name = "In-play figure"
+pic._element.nvPicPr.cNvPr.set(
+    "descr", "Left: local Elo relative to the preliminary model with 95% intervals: Bayesian model +203, Hedge over "
+             "it +27. Right: an adversary's gain from predicting the move, in-engine: +0.49 against the argmax, +0.01 "
+             "against sampling the visit shares")
+by = iy + fh + Inches(0.15)
 S.text(LEFT, by, WIDTH, BOTTOM - by, [
-    P("Hedge has small regret (4–5 vs its bound ≈ 28), but it is credited on the 2-turn matrices, where the LP "
-      "expert looks best, so it moves 60–71% of its weight to the LP expert", size=18, bullet=True),
-    P(("No-regret is only as good as its payoffs: ", {"b": True}), "our bound points to the evaluation error, and "
-      "the Bayesian model spends its compute on deeper search instead", size=18, bullet=True, before=10),
-    P("Its argmax is predictable, as the price of determinism says; sampling its visit shares hides it but plays "
-      "far worse", size=18, bullet=True, before=10),
+    P("Hedge over it loses 0.31 head-to-head: credited on 2-turn matrices, it moves most weight to the LP expert",
+      size=16, bullet=True),
+    P("The argmax is predictable (price of determinism); sampling hides it but plays far worse", size=16,
+      bullet=True, before=4),
 ], "Play bullets")
 notes(s, "Here is the Bayesian model in play. On the public ladder, in sequential rated "
       "batches, it went 99 and 51 and climbed from 1470 to 2090 Elo, peaking at 2141, reportedly in the top 500, while the "
