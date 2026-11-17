@@ -645,25 +645,35 @@ Per experiment (Lecture 6 = one no-regret learner against an adaptive adversary;
 - **AF16 (K = 16 worlds, B10/B11).** B11(iv): no win-rate gain is derivable from the bounds (in-engine X2, 8 vs 4 worlds: 0.495, n.s.). Result 0.3278, paired +0.017 vs AF, n.s.; the K = 16 absent-fraction predictions of B10 were not scored in this run (no belief logging). Cost 2.9× AF's CPU per game (100.3 vs 34.5 CPU-s).
 - **Overall reading (ours).** Better prediction (BH) and better-calibrated worlds (AF16) give small positive, non-significant edges. This is consistent with the leaf evaluation error dominating the bound: by Theorems A and C the remaining loss is charged to ε_v, which the exact endgames put near 1, so improving the belief or the opponent model moves the estimated matrix but not the error in it.
 
-## Public ladder (live; placeholders until results and methods arrive)
+## Public ladder (from `feat/mechanics-belief-tracker`, the final model)
 
-Real-world performance on Pokémon Showdown's public Gen 9 Random Battles ladder, against human players. This measures
-strength against people, not exploitability: no ladder opponent is a best response to our policy. Paper: final5.tex,
-"On the public ladder" (`sec:exp-ladder`, red `\tbd{}` placeholders); deck: "Out in the world: the public ladder".
+Gen 9 Random Battles on the public Showdown ladder, account `bot_bonp`, against human players. Batches are sequential
+and rated (not paired), so opponents and ratings differ between rows; Elo changes are not causal per-change estimates.
+Sources are on branch `feat/mechanics-belief-tracker` (commit `bf4355e`): `docs/final-ladder-bot-handoff.md`,
+`docs/100-game-tactical-evaluation.md`, `research/credit_v2_50game_evaluation.json`,
+`research/native_mcts_v1_ladder_results.json`, `research/stratified_mcts_climb_100completed_results.json`.
+Paper: final5.tex "On the public ladder" (`sec:exp-ladder`); deck: "Out in the world: the public ladder".
 
-| Item | Value | Source |
-|---|---|---|
-| Agent variant (experts, worlds, search time per move) | [TBD] | [TBD] |
-| Account, format, timer | [TBD] | [TBD] |
-| Dates | [TBD] | [TBD] |
-| Rated battles | [TBD] | [TBD] |
-| Peak ladder rank | top 500 (exact rank [TBD]) | [ladder snapshot / replay links] |
-| Elo at peak / final | [TBD] / [TBD] | [TBD] |
-| Glicko-1 R ± RD, GXE | [TBD] | [TBD] |
-| Win rate [95% CI] | [TBD] | [TBD] |
+| Bot | Games | W–L | Elo start → end | Peak | Source |
+|---|---:|---|---|---:|---|
+| Hedge + Bayesian memory (`hedge_bayes_mw`, merged joint-belief) | 100 | 52–48 | 1577 → 1521 | – | 100-game-tactical-evaluation.md (raw JSON local only) |
+| Corrected per-world Hedge | 50 | 25–25 | 1521 → 1470 | – | credit_v2_50game_evaluation.json |
+| Per-world native MCTS, baseline sampler | 50 | 33–17 | 1470 → 1677 | 1741 | native_mcts_v1_ladder_results.json |
+| Final bot: native MCTS + item/ability-stratified worlds | 100 | 66–34 | 1677 → 2090 | 2141 | stratified_mcts_climb_100completed_results.json |
 
-Methods: [incoming]. Before the numbers go into the paper or deck, record where each comes from (ladder page
-snapshot or battle logs) in the Source column.
+- Final bot: `mcts_native`, `item_stratified` sampler, 4 worlds, 1000 ms total native search (250 ms per world),
+  action = argmax of prior-weighted, per-world-normalised legal root-visit shares (deterministic). No Hedge, no
+  equilibrium solve, no carried opponent memory. Top 500 was reported by the operator; the rank itself was not logged.
+- Five interrupted attempts with unknown outcomes (connection loss) are excluded from W–L; the server rating fell
+  1984 → 1920 during that gap and the endpoint above includes it.
+- Our theory does not cover this bot: Theorem 6 needs an ε_s-optimal stage strategy, and argmax of root visits is
+  neither a stage equilibrium nor randomised. Its exploitability is unmeasured.
+- Stratified sampling (worlds grouped by the active opponent's effective item and ability) changes finite-sample
+  coverage, not the prior: in a 5000-draw Dragalge diagnostic, plain 4-world sampling omitted Choice Specs 33.8% of the
+  time, stratified sampling never.
+- Ladder audit of the Hedge agent: its pure-maximin expert minimised columns of the averaged matrix Ā and picked a
+  strictly worse per-world security action in 495 of 2,951 decisions (16.8%); the corrected per-world version
+  (`argmax_a Σ_k w_k min_b M_k[a,b]`) still went 25–25.
 
 ## Open items (2026-11)
 

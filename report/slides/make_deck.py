@@ -1,4 +1,4 @@
-"""Build deck.pptx: the 15-slide, ~4-minute CS535 final-project talk, in five sections.
+"""Build deck.pptx: the 16-slide, ~4-minute CS535 final-project talk, in five sections.
 
 Built on the user's template ("random template.pptx"): its master, theme, 16:9 size,
 title-slide style and its five-box section tracker, which lives in the template's
@@ -716,6 +716,46 @@ notes(s, "Across games we use Hedge. Each turn it holds weights over four expert
       "push our losses onto the high-stakes turns, and the weights carry across the games of a match, so Hedge "
       "learns which expert works against this particular opponent.")
 
+# 5b. The final ladder model: stratified worlds + per-world MCTS
+s, S = content(2, "The final ladder model")
+S.text(LEFT, TOP, WIDTH, Inches(0.5), [
+    P("Same tracker and four worlds; the matrix and Hedge layer is replaced by search in each world", size=18),
+], "Final model intro")
+steps = [("1. What we know", [P("revealed Pokémon, moves, items", size=SECONDARY, align="ctr")]),
+         ("2. Stratified worlds", [P("group the active opponent's possible sets by item and ability; give each "
+                                     "group slots by probability", size=SECONDARY, align="ctr")]),
+         ("3. MCTS per world", [P("poke-engine's MCTS, 250 ms in each world", size=SECONDARY, align="ctr"),
+                                P("→ share of root visits per action", size=SECONDARY, align="ctr", before=6)]),
+         ("4. Pick the action", [P("argmax of the β-weighted visit shares", size=SECONDARY, align="ctr"),
+                                 P("(deterministic)", size=SECONDARY, i=True, align="ctr", before=6)])]
+sy = TOP + Inches(0.6)
+BH = Inches(1.55)
+for k, (name, paras) in enumerate(steps):
+    x = LEFT + k * (COL4 + GAP)
+    S.header(x, sy, COL4, HDR_H, [P(name, size=SECONDARY, b=True, align="ctr")], f"Final step {k + 1} header")
+    S.box(x, sy + HDR_H, COL4, BH, paras, f"Final step {k + 1} box")
+    if k < 3:
+        ym = sy + HDR_H + BH // 2
+        S.line(x + COL4 + Inches(0.05), ym, x + COL4 + GAP - Inches(0.05), ym, f"Final arrow {k + 1}", arrow=True)
+ty = sy + HDR_H + BH + Inches(0.3)
+S.text(LEFT, ty, WIDTH, BOTTOM - ty, [
+    P("Why stratify: with 4 plain draws, a rare but dangerous item can be missed by chance. In a test on one "
+      "Pokémon, plain sampling left out Choice Specs 34% of the time; stratified sampling never did, with the same "
+      "probabilities", size=18, bullet=True),
+    P("Why per-world visit shares: normalising inside each world keeps a fast world from outvoting the others",
+      size=18, bullet=True, before=10),
+    P("Not covered by our bounds: no equilibrium solve, no randomisation", size=18, bullet=True, before=10),
+], "Final model notes")
+notes(s, "This is the final model, the one we put on the public ladder. It keeps the same tracker and four sampled "
+      "worlds, but replaces the matrix and Hedge layer with search. First, the worlds are stratified: we group the "
+      "active opponent's possible sets by their item and ability and give each group slots in proportion to its "
+      "probability, with weights that keep each group's total probability. With four plain draws a rare but "
+      "dangerous item can be missed by chance; in a test on one Pokemon, plain sampling left out Choice Specs a "
+      "third of the time, stratified sampling never did. Then poke-engine's own MCTS searches each world for 250 "
+      "milliseconds. We turn each world's root visits into shares, so a world that searches faster cannot outvote "
+      "the others, weight them by the worlds' probabilities, and play the top action. It does not solve an "
+      "equilibrium and does not randomise, so our bounds do not cover it.")
+
 # 5. The Bayesian opponent memory
 s, S = content(2, "The Bayesian opponent memory")
 steps = [("1. Observe", [P("the opponent plays ", ("$", "b_t"), size=SECONDARY, align="ctr")]),
@@ -907,34 +947,43 @@ notes(s, "Do guarantees that hold only in the estimated matrix translate into wi
       "sampled worlds does beat PIMC averaging with sampled play. But the agent loses to Foul Play at every search "
       "time we tried, and in the round-robin tournament Foul Play rates about 140 to 190 Elo above it.")
 
-# 12. Out in the world: the public ladder (placeholders in [brackets] until the ladder results arrive)
+# 12. Out in the world: the public ladder
 s, S = content(4, "Out in the world: the public ladder")
 S.text(LEFT, TOP, WIDTH, Inches(0.8), [
-    P("Our other tests use fixed bots; the public Showdown ladder pits the agent against a population of human "
-      "players.", size=18),
+    P("Gen 9 Random Battles against human players: sequential rated batches on one account, not paired tests",
+      size=18),
 ], "Ladder intro")
-stats = [("Peak ladder rank", "Top 500", "[exact rank, date]"),
-         ("Elo", "[X]", "[Glicko-1 R ± RD]"),
-         ("Rated battles", "[N]", "[dates, account]")]
-sy = TOP + Inches(0.95)
-SBH = Inches(1.6)
+stats = [("Our Hedge agent", "77–73", "150 games · Elo 1577 → 1470"),
+         ("Per-world MCTS", "33–17", "50 games · Elo 1470 → 1677"),
+         ("+ stratified worlds", "66–34", "100 games · Elo 1677 → 2090")]
+sy = TOP + Inches(0.85)
+SBH = Inches(1.7)
 for k, (name, big, small) in enumerate(stats):
     x = LEFT + k * (COL3 + GAP)
     S.header(x, sy, COL3, HDR_H, [P(name, size=SECONDARY, b=True, align="ctr")], f"Ladder stat {k + 1} header")
+    extra = [P("peak 2141, top 500", size=SECONDARY, b=True, align="ctr", before=2)] if k == 2 else []
     S.box(x, sy + HDR_H, COL3, SBH, [P(big, size=40, b=True, align="ctr"),
-                                     P(small, size=SECONDARY, i=True, align="ctr", before=6)],
+                                     P(small, size=SECONDARY, align="ctr", before=6)] + extra,
           f"Ladder stat {k + 1} box")
+    if k < 2:
+        ym = sy + HDR_H + SBH // 2
+        S.line(x + COL3 + Inches(0.05), ym, x + COL3 + GAP - Inches(0.05), ym, f"Ladder arrow {k + 1}", arrow=True)
 by = sy + HDR_H + SBH + Inches(0.3)
 S.text(LEFT, by, WIDTH, BOTTOM - by, [
-    P("Measures strength against people in the wild, not exploitability: no opponent is a best response to us",
+    P("The final model keeps our tracker and worlds, with per-world MCTS in place of the matrix and Hedge layer",
       size=18, bullet=True),
-    P("[Methods incoming: agent variant, search time per move, timer, how matches were run]", size=18, i=True,
-      bullet=True, before=10),
+    P("Strongest bot we built, as MCTS beat equilibrium play in-engine; it is deterministic and its "
+      "exploitability is unmeasured", size=18, bullet=True, before=10),
 ], "Ladder notes")
-notes(s, "[Placeholder until the ladder results and methods arrive.] Every other test pits the agent against fixed "
-      "bots. To see how it does out in the world, we ran it on the public Showdown ladder for Gen 9 Random Battles, "
-      "against human players. It reached the top 500. [Fill in: Elo, number of battles, dates, agent variant.] This "
-      "measures strength against people, not exploitability: no opponent here is a best response to our policy.")
+notes(s, "Every other test uses fixed bots, so we also put bots on the public Showdown ladder against human players, in "
+      "sequential rated batches on one account; these are not paired tests, and opponents and ratings change as we "
+      "go. Our Hedge agent with the opponent memory, over two versions, went 77 and 73 and drifted from 1577 to "
+      "1470 Elo. Keeping the same tracker and four sampled worlds but replacing the matrix and Hedge layer with "
+      "poke-engine's own MCTS in each world, and playing the argmax of the weighted root-visit shares, went 33 and "
+      "17 and climbed to 1677. Sampling the worlds stratified by the opponent's possible item and ability, it went "
+      "66 and 34 over 100 games and reached 2090, peaking at 2141, which the operator saw as the top 500. That is the "
+      "strongest bot we built, in line with MCTS beating equilibrium play in-engine. But it is deterministic, and we "
+      "have not measured its exploitability: strength and guarantees pull apart.")
 
 # ===================== Section 5: Conclusions =====================
 # 12. Takeaways and next steps
@@ -943,16 +992,19 @@ items = ["Equilibrium play and Hedge compose into a whole-battle bound; measured
          "bounds",
          "The guarantees hold in our estimated matrices; the evaluation formula's error, which more compute does not "
          "reduce, is what our experiments point to, and better beliefs do not move win rate",
+         "On the public ladder, per-world MCTS reached the top 500 while our Hedge agent stayed near 1500: strength "
+         "and guarantees pull apart",
          "Next: train the evaluation on exact terminal values"]
 S.text(LEFT, TOP, WIDTH, BOTTOM - TOP, [
     P(txt, number=True, before=0 if k == 0 else 22) for k, txt in enumerate(items)
 ], "Takeaways")
-notes(s, "Three takeaways. First, per-turn equilibrium play and Hedge across games compose into a whole-battle bound, "
+notes(s, "Four takeaways. First, per-turn equilibrium play and Hedge across games compose into a whole-battle bound, "
       "and the regrets we measured sit well under their bounds. Second, those guarantees hold in the "
       "estimated matrices. The error of the evaluation formula that scores positions two moves ahead is not reduced "
       "by more solver iterations or more sampled teams, and our experiments point to it as the limiting error, "
-      "consistent with better beliefs improving prediction but not win rate. Third, the next step is to train the evaluation on "
-      "exact terminal values. Thank you.")
+      "consistent with better beliefs improving prediction but not win rate. Third, on the public ladder, "
+      "per-world MCTS climbed to the top 500 while our Hedge agent stayed near 1500, so strength and guarantees pull "
+      "apart. Fourth, the next step is to train the evaluation on exact terminal values. Thank you.")
 
 add_sections(prs, groups)
 prs.core_properties.title = "No-Regret Learning and Bayesian Opponent Memory in Pokémon Random Battles"

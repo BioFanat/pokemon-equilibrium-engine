@@ -107,6 +107,8 @@ with $q_{\theta,t}(b\mid M_k)=0$ for $b\notin B_k$; the base agent uses $q_{\the
 \textstyle\sum_{t\le T}\big(\ln L_{\theta,t}(b_t)-\ln\qhat_t(b_t)\big)=\ln|\Theta|+\ln\Pi_T(\theta)\le\ln|\Theta|.
 \end{equation}
 
+\paragraph{The final ladder model.} Our strongest bot keeps the tracker and $K=4$ worlds but replaces the matrix and Hedge layer by poke-engine's MCTS in each world (250\,ms each), playing the argmax of the $\beta$-weighted shares of legal root visits. Its worlds are \emph{stratified}: the active opponent's possible sets are grouped by item and ability, with slots allotted by probability and weights that keep each group's mass, so a rare but dangerous item is not dropped by chance.
+
 
 % =====================================================================
 \section{Theory}
@@ -176,13 +178,13 @@ which is negative for every $\theta\ne\theta_b$ once $d>\hat d=\max_{\theta\ne\t
 % =====================================================================
 \section{Experiments}
 \label{sec:exp}
-\paragraph{Setup.} In-engine games use poke-engine 0.0.48 with Showdown's Gen~9 Random Battle set data and our approximate team sampler; real-Showdown games run headless on Showdown's simulator with Foul Play's tracker and sampler. Games come in seat-swapped pairs (same seed and teams); scores are of the first-named bot, with 95\% CIs over pairs unless stated, and LB is a one-sided 95\% lower confidence bound. Foul Play~\cite{foulplay} runs DUCT for 100\,ms per sampled battle and samples among its near-top root actions; in-engine, \emph{MCTS} is DUCT with this rule. Code and predictions written in advance: \url{https://github.com/BioFanat/pokemon-equilibrium-engine} (branch \path{integration/joint-belief}).
+\paragraph{Setup.} In-engine games use poke-engine 0.0.48 with Showdown's Gen~9 Random Battle set data and our approximate team sampler; real-Showdown games run headless on Showdown's simulator with Foul Play's tracker and sampler. Games come in seat-swapped pairs (same seed and teams); scores are of the first-named bot, with 95\% CIs over pairs unless stated, and LB is a one-sided 95\% lower confidence bound. Foul Play~\cite{foulplay} runs DUCT for 100\,ms per sampled battle and samples among its near-top root actions; in-engine, \emph{MCTS} is DUCT with this rule. Code and predictions written in advance: \url{https://github.com/BioFanat/pokemon-equilibrium-engine} (branches \path{integration/joint-belief}; final ladder model \path{feat/mechanics-belief-tracker}).
 
 \paragraph{Exploitability.}
 \label{sec:exp-engine}
 Any fixed opponent's advantage over the game value bounds exploitability from below~\cite{Zin07}, up to a Hoeffding margin. A one-turn local best response (LBR), scored by its gain over a non-exploiting opponent of the same strength, gains 0.18 [0.10, 0.27] against top move but only 0.03 [$-0.07$, 0.12] against sampled play. A depth-2 informed best response (informed BR) that knows the target's policy scores 0.87 against top move and 0.71 against sampled play (100 pairs), which with Hoeffding radius 0.12 gives exploitability lower bounds of 0.25 and 0.09 in score units.
 
-\paragraph{Exact endgames.} Of 6 endgames solved exactly (one Pok\'emon per side, move PP ignored, HP grouped into tenths or twentieths), every bot is unexploitable on 2, and on the other 4 every bot--seat row with exploitability above $10^{-3}$ and a finite bound satisfies the bound~\eqref{eq:A}, loose by 7--155$\times$ (\cref{fig:main}a). The largest $\epsv^{\rm aff}$ is 0.8--1.0 nearly everywhere while $\epss\approx0$, consistent with \cref{rem:leaf}: $\epsv$, not the solver, carries the error. Exact terminal scoring cut exploitability sharply on 2 of 3 endgames but did not change the score against MCTS ($-0.04$ [$-0.10$, $+0.02$]), and eight worlds did not beat four (0.50 [0.41, 0.58]), so sampling is not binding.
+\paragraph{Exact endgames.} Of 6 endgames solved exactly (one Pok\'emon per side, move PP ignored, HP grouped into tenths or twentieths), every bot is unexploitable on 2, and on the other 4 every bot--seat row with exploitability above $10^{-3}$ and a finite bound satisfies the bound~\eqref{eq:A}, loose by 7--155$\times$ (\cref{fig:main}a). The largest $\epsv^{\rm aff}$ is 0.8--1.0 nearly everywhere while $\epss\approx0$, consistent with \cref{rem:leaf}: $\epsv$, not the solver, carries the error. Eight worlds did not beat four (0.50 [0.41, 0.58]), so sampling is not binding.
 
 \begin{figure*}[t]
 \centering
@@ -194,19 +196,19 @@ Any fixed opponent's advantage over the game value bounds exploitability from be
 \paragraph{Regret and no-regret dynamics.}
 This part checks \cref{fact:hedge,fact:selfplay,cor:solver,thm:hedge} and the regret bound~\eqref{eq:bayeshedge} (\cref{fig:main}b--d).
 
-\paragraph{Inside a turn: average or last iterate.} RM$^+$ self-play on 35 in-engine stage matrices reaches a median duality gap of $7\times10^{-5}$ of the payoff range at $T=1000$, against the bound 0.38 of \cref{cor:solver}. On 120 further in-engine matrices, the average strategies of simultaneous Hedge and optimistic Hedge reach a median gap of about 0.03 after 1,000 iterations, within the fixed-step Hedge regret bound on every matrix (the gap equals $\varepsilon_R+\varepsilon_C$, \cref{fact:selfplay}; at most 0.67 of the bound); RM$^+$ reaches about 0. The last iterate has a lower median gap (about 0.01; it settles on the 58\% of matrices with a pure saddle point) but a heavier tail, and is worse than the average elsewhere.
+\paragraph{Inside a turn: average or last iterate.} RM$^+$ self-play on 35 in-engine stage matrices reaches a median duality gap of $7\times10^{-5}$ of the payoff range at $T=1000$, against the bound 0.38 of \cref{cor:solver}. On 120 further matrices, the averages of simultaneous Hedge and optimistic Hedge reach a median gap of about 0.03 after 1,000 iterations, within the Hedge regret bound on every matrix (the gap equals $\varepsilon_R+\varepsilon_C$, \cref{fact:selfplay}), and RM$^+$ about 0. The last iterate has a lower median gap (about 0.01, settling on the 58\% of matrices with a pure saddle point) but a heavier tail.
 
-\paragraph{Across games.} In 10 real-Showdown matches against Foul Play, Hedge's regret against its best fixed expert (top move) is $\approx0.004$ per counted turn, 13--16\% of the anytime bound of \cref{fact:hedge}, and grows sublinearly but faster than $\sqrt t$. In-engine, carried weights beat reset weights by $+0.15$ [$+0.02$, $+0.27$] against the informed BR (exploratory; $t$-interval over 4 seeds) and by $+0.06$ [$-0.09$, $+0.21$] against MCTS, consistent with, though not predicted by, \cref{thm:hedge}(c). In a real-Showdown test with its prediction written in advance, carried Hedge over the four experts scored 0.46 [0.42, 0.50] against the Bayesian-LP agent with sampled play (300 pairs), inside the predicted range $[0.45,0.55]$; the theory bounds only the upper side, at $\frac12$ plus that agent's exploitability.
+\paragraph{Across games.} In 10 real-Showdown matches against Foul Play, Hedge's regret against its best fixed expert (top move) is $\approx0.004$ per counted turn, 13--16\% of the anytime bound of \cref{fact:hedge}, and grows sublinearly but faster than $\sqrt t$. In-engine, carried weights beat reset weights by $+0.15$ [$+0.02$, $+0.27$] against the informed BR (exploratory; 4 seeds), consistent with \cref{thm:hedge}(c). In a real-Showdown test with its prediction written in advance, carried Hedge over the four experts scored 0.46 [0.42, 0.50] against the Bayesian-LP agent with sampled play (300 pairs), inside the predicted range $[0.45,0.55]$; the theory bounds only the upper side, at $\frac12$ plus that agent's exploitability.
 
 \paragraph{Opponent memory.}
 \label{sec:exp-belief}
 This part tests the regret bound~\eqref{eq:bayeshedge}, the delay~\eqref{eq:delay}, and whether better prediction, which none of our bounds rewards, improves play; it does not.
 
-\paragraph{Bayes as Hedge.} On the matches of \cref{fig:main}(d), the posterior's final regret is $\ln5$ up to logging precision, as~\eqref{eq:bayeshedge} gives once the posterior concentrates on the best style ($\ln\Pi_T\to0$); one of the ten matches is excluded because 12 of its updates were not logged. Yet the style posterior did not change the score detectably relative to Hedge ($+0.02$ [$-0.02$, $+0.07$]). Against single-style bots, three of five advance predictions held; the final-style and identification-speed predictions failed.
+\paragraph{Bayes as Hedge.} On the matches of \cref{fig:main}(d), the posterior's final regret is $\ln5$ up to logging precision, as~\eqref{eq:bayeshedge} gives once the posterior concentrates ($\ln\Pi_T\to0$; one match lacks 12 logged updates). Yet the style posterior did not change the score detectably relative to Hedge ($+0.02$ [$-0.02$, $+0.07$]). Against single-style bots, three of five advance predictions held; the final-style and identification-speed predictions failed.
 
 \paragraph{Live test of the detection delay.} In this test of~\eqref{eq:delay} (predictions written in advance; 30 matches; cautious to uniform style), no prediction was refuted: each match's delay matches its posterior's prediction (median ratio 1.06, inside [0.7, 1.4]), and doubling the pre-switch phase multiplies the delay by 2.1 (predicted 1.5--2.7).
 
-\paragraph{Per-world style likelihood.} It lowers next-action log loss by 0.30 [0.28, 0.31] nats per counted turn, and by 0.31 [0.29, 0.33] in a replication on fresh seeds planned in advance, but its win-rate gain did not replicate: $+0.06$ on seeds 1--200, not robust to clustering by match ($t$-interval over 10 matches [$-0.01$, 0.14]), and $+0.01$ (LB $-0.05$) on seeds 201--400. Offline, restricting the likelihood to each world's legal actions accounts for the whole log-loss gain, and modelling sets and style jointly adds nothing measurable ($+0.001$ nats per counted turn).
+\paragraph{Per-world style likelihood.} It lowers next-action log loss by 0.30 [0.28, 0.31] nats per counted turn (0.31 [0.29, 0.33] in a replication on fresh seeds), but its win-rate gain did not replicate ($+0.06$, then $+0.01$, LB $-0.05$). Restricting the likelihood to each world's legal actions accounts for the whole gain, and modelling sets and style jointly adds nothing measurable ($+0.001$ nats per counted turn).
 
 \paragraph{Win rates.}
 \label{sec:exp-showdown}
@@ -225,12 +227,12 @@ At matched time (about 70\,ms per move), MCTS beats both equilibrium bots in-eng
 
 \paragraph{On the public ladder.}
 \label{sec:exp-ladder}
-Our other tests pit the agent against fixed bots; the public ladder measures it against a population of human players. \tbd{Methods incoming: agent variant, search time, timer, account, dates.} Over \tbd{N} rated Gen~9 Random Battles the agent reached the top 500 of the ladder \tbd{peak rank, date}, with Elo \tbd{X} and Glicko-1 rating \tbd{R $\pm$ RD}.
+Against human players, in sequential rated batches on one account, two versions of our Hedge agent went 77--73 over 150 games (Elo 1577 to 1470). The final ladder model went 33--17 without stratified worlds (to 1677) and 66--34 with them, reaching 2090 (peak 2141, reported top 500). It is our strongest bot, as MCTS beat equilibrium play in-engine, but it is deterministic, outside our bounds, and its exploitability is unmeasured.
 
 % =====================================================================
 \section{Conclusion}
 \label{sec:discussion}
-Our guarantees hold in the estimated matrix, whose error includes that of the evaluation formula, which more compute does not reduce (\cref{rem:leaf}) and which plausibly dominates; better beliefs do not move win rate. Next: train the evaluation on exact terminal values.
+Our guarantees hold in the estimated matrix, whose error includes that of the evaluation formula, which more compute does not reduce (\cref{rem:leaf}) and which plausibly dominates; better beliefs do not move win rate. On the ladder, MCTS reached the top 500 while our Hedge agent stayed near 1500. Next: train the evaluation on exact terminal values.
 
 \paragraph{Acknowledgement.} The proofs in Section~4 were developed with the assistance of Fable~5.2.
 
