@@ -812,20 +812,20 @@ pic._element.nvPicPr.cNvPr.set("descr", "Contributions to each turn's shortfall:
                                         "error 1.4 to 2.0")
 ty = TOP + HDR_H + Inches(0.25) + fh
 S.text(rx, ty, lw, BOTTOM - ty, [
-    P("Each turn we fall short of the true game by ", ("$", "δ = ε_s + 2ε_v"), ". On endgames we solved exactly, "
-      "almost all of it is matrix error: the 2-turn payoffs, not the solver.", size=14),
-    P("In real games too: more worlds or a better opponent model do not help, and Hedge, credited on 2-turn "
-      "payoffs, favours an expert the deeper search rates worse.", size=14, before=8),
+    P("The true game: what each pair of moves is really worth if the battle is played out perfectly from there. "
+      "Our matrix only estimates it with a 2-turn lookahead score.", size=14),
+    P("The bound shows the main source of error is the matrix: how far those estimates are from the true game, "
+      "not how well we solve them.", size=14, before=8),
 ], "Why text")
 notes(s, "So why move on from the Hedge model? First, how it does: 64 and 36 on the public ladder at Elo 1704, and "
       "0.33 against Foul Play. Then exploitability: how much more an opponent wins if it knows exactly how our bot "
       "decides. We test it with a simple opponent that each turn plays its best answer to the move it expects from "
       "us, once guessing blindly and once running our rule to predict it. Against the Hedge model that knowledge is "
       "worth only 0.19, from 0.37 to 0.56, because it plays a mix. So it is hard to exploit, but too weak to win. "
-      "Second, why. Each turn we fall short of the true game by the solver error plus twice the matrix error. On "
-      "endgames we could solve exactly, the solver contributes at most 0.16 and the matrix error 1.4 to 2: the "
-      "two-turn payoffs are the problem, not the solver. Real games agree: more worlds or a better opponent model "
-      "do not help, and Hedge, credited on those payoffs, favours an expert the deeper search rates worse.")
+      "Second, why. The true game is what each pair of moves is really worth if the battle is played out "
+      "perfectly from there; our matrix only estimates it with a two-turn lookahead score. The bound splits each "
+      "turn's shortfall into solver error and matrix error, and the matrix error, how far our estimates are from "
+      "the true game, is by far the larger part.")
 
 # 5. The Bayesian model: from the preliminary model's weakness to deeper search per world
 s, S = content(4, "The Bayesian model: fix the payoffs")
