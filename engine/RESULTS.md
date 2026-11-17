@@ -647,19 +647,16 @@ Per experiment (Lecture 6 = one no-regret learner against an adaptive adversary;
 
 ## Public ladder: preliminary model vs the Bayesian model (merged from `feat/mechanics-belief-tracker`)
 
-Gen 9 Random Battles on the public Showdown ladder, account `bot_bonp`, against human players. Batches are sequential
-and rated (not paired), so opponents and ratings differ between rows; Elo changes are not causal per-change estimates.
-Sources are on branch `feat/mechanics-belief-tracker` (commit `bf4355e`): `docs/final-ladder-bot-handoff.md`,
-`docs/100-game-tactical-evaluation.md`, `research/credit_v2_50game_evaluation.json`,
-`research/native_mcts_v1_ladder_results.json`, `research/stratified_mcts_climb_100completed_results.json`.
-Paper: final5.tex "On the public ladder" (`sec:exp-ladder`); deck: "Out in the world: the public ladder".
+Gen 9 Random Battles on the public Showdown ladder, account `bot_bonp`, against human players. One row per model, each its own
+rated run (not paired), so opponents and ratings differ between rows.
+Bayesian-model source on branch `feat/mechanics-belief-tracker` (commit `bf4355e`):
+`research/stratified_mcts_climb_100completed_results.json`, `docs/final-ladder-bot-handoff.md`.
+Paper: final5.tex `sec:exp-ladder`; deck: the Hedge-model limitations and Bayesian results slides.
 
-| Bot | Games | W–L | Elo start → end | Peak | Source |
-|---|---:|---|---|---:|---|
-| Hedge + Bayesian memory (`hedge_bayes_mw`, merged joint-belief) | 100 | 52–48 | 1577 → 1521 | – | 100-game-tactical-evaluation.md (raw JSON local only) |
-| Corrected per-world Hedge | 50 | 25–25 | 1521 → 1470 | – | credit_v2_50game_evaluation.json |
-| Bayesian model without stratification | 50 | 33–17 | 1470 → 1677 | 1741 | native_mcts_v1_ladder_results.json |
-| Bayesian model (final): native MCTS + item/ability-stratified worlds | 100 | 66–34 | 1677 → 2090 | 2141 | stratified_mcts_climb_100completed_results.json |
+| Bot | Games | W–L | Elo | Source |
+|---|---:|---|---|---|
+| Preliminary model (Hedge + Bayesian memory) | 100 | 64–36 | 1704 | operator's public-ladder run, reported 2026-11-17 (raw log not in the repo) |
+| Bayesian model (final: native MCTS + item/ability-stratified worlds) | 100 | 66–34 | 1677 → 2090, peak 2141; later 2308, reportedly top 50 | stratified_mcts_climb_100completed_results.json; 2308 operator-reported |
 
 - Final bot: `mcts_native`, `item_stratified` sampler, 4 worlds, 1000 ms total native search (250 ms per world),
   action = argmax of prior-weighted, per-world-normalised legal root-visit shares (deterministic). No Hedge, no
@@ -668,6 +665,13 @@ Paper: final5.tex "On the public ladder" (`sec:exp-ladder`); deck: "Out in the w
   bf4355e, `batch.py --a mcts_native --b stock|stock@250 --workers 4`): vs stock Foul Play (100 ms per sampled battle)
   **0.600 [0.481, 0.719]**; vs Foul Play at 250 ms per world (equal search time) **0.483 [0.346, 0.620]**; 30 pairs
   each, 0 errors. On par with Foul Play.
+- Preliminary model vs stock Foul Play, same setup and seeds (201–230, `batch.py --a hedge_bayes_mw --b stock
+  --workers 6 --streams 6`, branch `test/noregret-ladder`, 2026-11-17): **0.333 [0.231, 0.435]**, 30 pairs, 0 errors.
+- Preliminary model's exploitability, same adversary as below (`experiments.py ADVP`, in-engine, full information,
+  seeds 63,000,000+ shared with ADV, 50 pairs per cell, `results/experiments/ADVP.jsonl` on `test/noregret-ladder`;
+  target = the depth-2 RM+ equilibrium, 1000 iterations). Opponent's score, uniform prediction → predicting the rule:
+  top move 0.190 [0.119, 0.261] → 0.760 [0.690, 0.830], paired gain **+0.570 [+0.455, +0.685]**; sampled 0.370
+  [0.282, 0.458] → 0.560 [0.475, 0.645], gain **+0.190 [+0.069, +0.311]**.
 - Later (user-reported, 2026-11-17, not in the logged batches): the final bot reached Elo 2308, reportedly top 50 on the
   Gen 9 Random Battles ladder. Paper and deck mark this as reported.
 - Five interrupted attempts with unknown outcomes (connection loss) are excluded from W–L; the server rating fell
@@ -677,12 +681,6 @@ Paper: final5.tex "On the public ladder" (`sec:exp-ladder`); deck: "Out in the w
 - Stratified sampling (worlds grouped by the active opponent's effective item and ability) changes finite-sample
   coverage, not the prior: in a 5000-draw Dragalge diagnostic, plain 4-world sampling omitted Choice Specs 33.8% of the
   time, stratified sampling never.
-- Ladder audit of the Hedge agent: its pure-maximin expert minimised columns of the averaged matrix Ā and picked a
-  strictly worse per-world security action in 495 of 2,951 decisions (16.8%); the corrected per-world version
-  (`argmax_a Σ_k w_k min_b M_k[a,b]`) still went 25–25.
-
-- Paper/deck report the two rows of each model combined: preliminary model 77–73 (150 games, 1577 → 1470); Bayesian
-  model 99–51 (150 games, 1470 → 2090, peak 2141; stratified worlds from game 51).
 - Price of determinism (final5.tex, Proposition `prop:det`): a policy that puts probability ≥ 1−ρ on one action loses at
   least g_t − ρΔ_t per turn to the myopic exploiter, g_t = value − best pure guarantee of the true stage game. Brute
   force: `scratchpad/verify_det/det.py` (602 random games, worst slack 0, sometimes tight) and `det_rho.py` (597 games,

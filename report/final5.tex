@@ -183,7 +183,7 @@ Any fixed opponent's advantage over the game value bounds exploitability from be
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/fig_main.pdf}
-\caption{Exploitability and regret against the proved bounds (dashed). (a) Exact exploitability of our three matrix bots against the bound of \cref{thm:A} (22 bot--seat rows, 4 abstracted endgames); all lie above $y=x$. (b) RM$^+$ duality gap over payoff range on 35 in-engine stage matrices (median, min--max band). (c) Hedge regret per counted turn, 10 real-Showdown matches against Foul Play (thin: matches; thick: median). (d) Memory log-loss regret against the best style and the regret bound~\eqref{eq:bayeshedge} (median, 25--75\% band, 9 matches).}
+\caption{Each panel plots a measured quantity (solid) against the bound we prove for it (dashed). (a) Exact exploitability of our three matrix bots on 4 abstracted endgames (one dot per bot and seat with exploitability above $10^{-3}$) against the bound of \cref{thm:A}; every dot lies above $y=x$, so the bound holds, loose by 7--155$\times$. (b) Solver error: RM$^+$ distance to the stage equilibrium, as a fraction of the payoff range, on 35 in-engine stage matrices (median, min--max band). (c) Hedge's regret per turn against its best fixed expert, over turns with feedback, in 10 real-Showdown matches against Foul Play (thin: matches; thick: median). (d) The memory's log-loss regret against the best fixed opponent style and its bound \eqref{eq:bayeshedge} (median, 25--75\% band, 9 matches).}
 \label{fig:main}
 \end{figure*}
 
@@ -193,37 +193,34 @@ Any fixed opponent's advantage over the game value bounds exploitability from be
 
 \paragraph{Opponent memory.}
 \label{sec:exp-belief}
-On the matches of \cref{fig:main}(d), the posterior's final regret is $\ln5$ up to logging precision, as~\eqref{eq:bayeshedge} gives once the posterior concentrates ($\ln\Pi_T\to0$).
-
-\paragraph{Per-world style likelihood.} It lowers next-action log loss by 0.30 [0.28, 0.31] nats per counted turn, but its win-rate gain did not replicate ($+0.06$, then $+0.01$, LB $-0.04$). Restricting the likelihood to each world's legal actions accounts for nearly all of the gain.
+On the matches of \cref{fig:main}(d), the posterior's final regret is $\ln5$ up to logging precision, as~\eqref{eq:bayeshedge} gives once the posterior concentrates ($\ln\Pi_T\to0$). The per-world style likelihood lowers next-action log loss by 0.30 [0.28, 0.31] nats per turn, but its win-rate gain did not replicate ($+0.06$, then $+0.01$).
 
 \paragraph{Win rates.}
 \label{sec:exp-showdown}
-At matched time (about 70\,ms per move), MCTS beats both equilibrium bots in-engine (\cref{fig:wins}). Part of the gap is implementation speed (Python matrices, Rust MCTS); the rest is consistent with the evaluation error dominating~\eqref{eq:A}.
+At matched time (about 70\,ms per move), MCTS beats both equilibrium bots in-engine: 0.76 [0.68, 0.84] against sampled play and 0.65 [0.57, 0.73] against the top move. Part of the gap is implementation speed (Python matrices, Rust MCTS); the rest is consistent with the evaluation error dominating~\eqref{eq:A}.
 
-\paragraph{Bayesian LP vs PIMC averaging.} With sampled play, the Bayesian-LP agent beats PIMC averaging at equal compute in-engine and on real Showdown (\cref{fig:wins}).
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=\columnwidth]{figures/fig_wins.pdf}
-\caption{Score of the first-named bot [95\% CI] (real Showdown: 40--399 pairs, 60 per search time in the tournament; in-engine: 100--400 games).}
-\label{fig:wins}
-\end{figure}
-
-\paragraph{Against Foul Play.} The Bayesian-LP agent loses at every search time, with a downward trend from 25 to 1000\,ms per sampled battle and overlapping CIs (\cref{fig:wins}); in a nine-bot round robin Foul Play rates 135--192 Elo above it. PokaiTrainer~\cite{Yu26} found its equilibrium search no stronger than DUCT in play (51.7\%) but far harder to exploit; here too equilibrium play is harder to exploit, but weaker.
+\paragraph{Against Foul Play.} The Bayesian-LP agent loses at every search time, from 0.32 at 25\,ms to 0.23 at 1000\,ms per sampled battle (60 pairs each, overlapping CIs), and the preliminary model scores 0.33 [0.23, 0.44] (30 pairs); in a nine-bot round robin Foul Play rates 135--192 Elo above it. PokaiTrainer~\cite{Yu26} found its equilibrium search no stronger than DUCT in play (51.7\%) but far harder to exploit; here too equilibrium play is harder to exploit, but weaker.
 
 % =====================================================================
 \section{The Bayesian model}
 \label{sec:bayes}
-What our bounds and experiments point to is the evaluation error, not the solver, so the model we play keeps the belief over worlds of \cref{sec:method} and replaces the matrix and Hedge layer by search. Its $K=4$ worlds are \emph{stratified}: the active opponent's possible sets are grouped by item and ability, each group gets at least one world when there are at most $K$ groups (otherwise equal-weight systematic resampling), and the weights $\beta_k$ keep each group's probability. Averages over worlds stay unbiased and every group is represented (four plain draws missed a Choice Specs set 34\% of the time in a 5,000-draw test; stratified draws never did). In each world poke-engine's MCTS (DUCT, as in Foul Play) runs for 250\,ms, and the model plays $\arg\max_a\sum_k\beta_kn_k(a)/\sum_bn_k(b)$, $n_k(a)$ being world $k$'s root visits to legal action $a$. This is determinized UCT~\cite{Cow12} with a posterior over worlds; searching each world as if known, it trades strategy fusion and the solver guarantee for deeper search. Our bounds do not cover it: its worlds are not i.i.d.\ (\cref{thm:C}), its argmax has no bound on $\epss$ (\cref{thm:A}), and \cref{prop:det} applies with $\rho$ the chance that sampling and search noise change its argmax.
+What our bounds and experiments point to is the evaluation error, not the solver, so the model we play keeps the belief over worlds of \cref{sec:method} and replaces the matrix and Hedge layer by search. Its $K=4$ worlds are \emph{stratified}: the active opponent's possible sets are grouped by item and ability, each group gets at least one world when there are at most $K$ groups (otherwise equal-weight systematic resampling), and the weights $\beta_k$ keep each group's probability. Four plain draws missed a Choice Specs set 34\% of the time in a 5,000-draw test; stratified draws never did. In each world poke-engine's MCTS (DUCT, as in Foul Play) runs for 250\,ms, and the model plays $\arg\max_a\sum_k\beta_kn_k(a)/\sum_bn_k(b)$, $n_k(a)$ being world $k$'s root visits to legal action $a$. This is determinized UCT~\cite{Cow12} with a posterior over worlds. Our bounds do not cover it: its worlds are not i.i.d.\ (\cref{thm:C}), its argmax has no bound on $\epss$ (\cref{thm:A}), and \cref{prop:det} applies with $\rho$ the chance that sampling and search noise change its argmax.
 
 \paragraph{Strength.}
 \label{sec:exp-ladder}
-On the public ladder (rated batches, one account), our preliminary model went 77--73 over 150 games (Elo 1577 to 1470), and the Bayesian model went 99--51 over the next 150, climbing to 2090 in logged batches and since to 2308, reportedly top 50. Locally it rates $+203$ [$+135$, $+283$] Elo above the preliminary model and is on par with Foul Play: 0.60 [0.48, 0.72] at Foul Play's default settings and 0.48 [0.35, 0.62] at equal search time (30 pairs each).
+On the public ladder, the preliminary model went 64--36 over 100 games (Elo 1704); the Bayesian model went 66--34 over 100 games, from 1677 to 2090 (peak 2141), and has since reached 2308, reportedly top 50. Locally it beats the preliminary model 0.83 [0.75, 0.92] ($+203$ [$+135$, $+283$] Elo) and is on par with Foul Play, which the preliminary model is not (\cref{fig:models}a).
 
-\paragraph{Exploitability.} Exploitability asks how much an opponent who knows our policy can win from it. It cannot be computed here, but any opponent that uses that knowledge gives a lower bound: its score above $\frac12$, minus a confidence margin. Ours is the simplest such opponent: each turn it reruns our search on the current position to predict our move and plays the best reply in the depth-2 matrix. A uniform prediction with the same reply rule controls for the exploiter's own skill. With full information the model is MCTS playing its argmax; against a 5,000-iteration MCTS (far below the deployed $4\times250$\,ms) the predicting exploiter scores 0.70 [0.64, 0.76] in-engine (100 pairs; exploitability $\ge0.07$) and the uniform one 0.21, so predicting the move is worth $+0.49$ [$+0.40$, $+0.58$], as \cref{prop:det} predicts for deterministic play. Sampling the visit shares removes the gain but plays far worse.
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/fig_models.pdf}
+\caption{The preliminary and Bayesian models in local Showdown games and against an exploiter. (a) Score of the first-named model [95\% CI], 30 seat-swapped pairs each; Foul Play at its default settings unless noted. (b) Exploiter's score in-engine [95\% CI] when it guesses our move blindly (open) and when it runs our decision rule to predict it (filled), with the gain; the preliminary model is represented by its per-turn equilibrium, sampled (50 pairs per cell), the Bayesian model by MCTS playing its argmax (100 pairs).}
+\label{fig:models}
+\end{figure}
 
-\paragraph{Hedge over the Bayesian model.} Hedge over the Bayesian model's argmax, its sampled visit shares and the Bayesian-LP strategy (weights carried) loses to the plain Bayesian model in local Showdown games, 0.31 [0.22, 0.40] over 50 pairs, and rates only $+27$ [$-44$, $+105$] Elo above the preliminary model. Its regret is small (4--5 against a bound of about 28), but \cref{thm:hedge} measures it in the depth-2 matrices, where the LP expert was best on every stream, so Hedge moves 60--71\% of its weight there: a no-regret guarantee is only as good as the payoffs it is measured on, and ours carry the evaluation error that dominates~\eqref{eq:A}.
+\paragraph{Exploitability.} Any opponent that knows our policy bounds its exploitability from below by its score above $\frac12$, minus a confidence margin. Ours reruns our search each turn to predict our move and plays the best reply in the depth-2 matrix; the same reply to a uniform prediction controls for its own skill. With full information the model is MCTS playing its argmax; against a 5,000-iteration MCTS (far below the deployed $4\times250$\,ms) the predicting exploiter scores 0.70 [0.64, 0.76] in-engine (100 pairs; exploitability $\ge0.07$) and the uniform one 0.21, so predicting the move is worth $+0.49$ [$+0.40$, $+0.58$], as \cref{prop:det} predicts for deterministic play (\cref{fig:models}b). The same exploiter gains only $+0.19$ [$+0.07$, $+0.31$] against the preliminary model's per-turn equilibrium played sampled, the in-engine stand-in for its randomised play (Hedge itself needs the real-Showdown pipeline).
+
+\paragraph{Hedge over the Bayesian model.} Hedge over the Bayesian model's argmax, its sampled visit shares and the Bayesian-LP strategy loses to the plain Bayesian model, 0.31 [0.22, 0.40] over 50 pairs. Its regret stays small (4--5 against a bound of about 28) because it learns from the depth-2 matrices, where the LP expert looks best; by that measure Hedge is right to move 60--71\% of its weight onto LP, which the deeper search rates below the argmax.
 
 % =====================================================================
 \section{Conclusion}
@@ -245,9 +242,9 @@ Our guarantees hold in the estimated matrix, whose evaluation error more compute
 \bibitem{Tam14} O.~Tammelin. Solving large imperfect information games using CFR+. arXiv:1407.5042, 2014.
 \bibitem{BMS19} N.~Burch, M.~Morav\v{c}\'{\i}k, M.~Schmid. Revisiting CFR+ and alternating updates. JAIR 64, 2019.
 \bibitem{Tak14} M.~J.~W.~Tak, M.~Lanctot, M.~H.~M.~Winands. Monte Carlo tree search variants for simultaneous move games. IEEE CIG, 2014.
-\bibitem{Cow12} P.~I.~Cowling, E.~J.~Powley, D.~Whitehouse. Information set Monte Carlo tree search. \emph{IEEE Trans.\ Comput.\ Intell.\ AI Games} 4(2), 2012.
+\bibitem{Cow12} P.~I.~Cowling, E.~J.~Powley, D.~Whitehouse. Information set Monte Carlo tree search. \emph{IEEE TCIAIG} 4(2), 2012.
 \bibitem{Lon10} J.~Long, N.~R.~Sturtevant, M.~Buro, T.~Furtak. Understanding the success of PIMC sampling. AAAI, 2010.
-\bibitem{GS15} S.~Ganzfried, T.~Sandholm. Safe opponent exploitation. \emph{ACM Trans.\ Economics and Computation} 3(2):8, 2015.
+\bibitem{GS15} S.~Ganzfried, T.~Sandholm. Safe opponent exploitation. \emph{ACM TEAC} 3(2), 2015.
 \bibitem{KL02} S.~Kakade, J.~Langford. Approximately optimal approximate RL. ICML, 2002.
 \end{thebibliography}
 \endgroup

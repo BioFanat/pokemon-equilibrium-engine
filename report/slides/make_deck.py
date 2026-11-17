@@ -1,4 +1,4 @@
-"""Build deck.pptx: the 10-slide, ~4-minute CS535 final-project talk, in five sections.
+"""Build deck.pptx: the 11-slide, ~4-minute CS535 final-project talk, in five sections.
 
 Built on the user's template ("random template.pptx"): its master, theme, 16:9 size,
 title-slide style and its five-box section tracker, which lives in the template's
@@ -777,8 +777,57 @@ notes(s, "Here are the two bounds against measurements: the dashed line is what 
       "the right, Hedge across games: its regret per turn, how much better its best single expert would have done, "
       "falls toward zero and stays well under the guarantee.")
 
+# 4b. Limitations of the Hedge (preliminary) model: results, then where the bound puts the error
+s, S = content(4, "Limitations of the Hedge model")
+lw = (WIDTH - GAP) // 2
+LBH = Inches(3.0)
+S.header(LEFT, TOP, lw, HDR_H, [P("1. It loses", size=SECONDARY, b=True, align="ctr")], "Loses header")
+rows = [("", "Hedge model", "Bayesian model"),
+        ("Public ladder", "64–36, Elo 1704", "66–34, Elo 2090"),
+        ("vs Foul Play", "0.33", "0.60"),
+        ("Head to head", "0.17", "0.83"),
+        ("Exploiter's gain", "+0.19", "+0.49")]
+c0, c1 = Inches(1.75), (lw - Inches(1.75)) // 2
+ry, rh = TOP + HDR_H + Inches(0.2), Inches(0.42)
+for r, (a, b, c) in enumerate(rows):
+    y = ry + r * rh
+    if r == 0:
+        S.header(LEFT + c0, y, c1, rh, [P(b, size=14, b=True, align="ctr")], "Loses col 1")
+        S.header(LEFT + c0 + c1, y, c1, rh, [P(c, size=14, b=True, align="ctr")], "Loses col 2")
+        continue
+    S.header(LEFT, y, c0, rh, [P(a, size=14, b=True, align="ctr")], f"Loses row {r}")
+    S.box(LEFT + c0, y, c1, rh, [P(b, size=14, align="ctr")], f"Loses cell {r}1")
+    S.box(LEFT + c0 + c1, y, c1, rh, [P(c, size=14, align="ctr")], f"Loses cell {r}2")
+S.text(LEFT, ry + len(rows) * rh + Inches(0.1), lw, Inches(0.9), [
+    P("Harder to exploit, because it plays a mix, but much weaker.", size=14),
+    P("Scores: local paired games (0.5 = even). Exploiter: extra score from knowing our rule (Hedge model: its sampled equilibrium, in-engine).", size=11, i=True,
+      before=4),
+], "Loses note")
+rx = LEFT + lw + GAP
+S.header(rx, TOP, lw, HDR_H, [P("2. Why: where the bound puts the error", size=SECONDARY, b=True, align="ctr")],
+         "Why header")
+S.box(rx, TOP + HDR_H, lw, LBH, [
+    P("Each turn we fall short of the true game by", size=14, align="ctr"),
+    EQ_(r"δ = ε_s + 2ε_v", before=6),
+    P(("$", "ε_s"), " solver error ≤ 0.16: small", size=14, align="ctr", before=8),
+    P(("$", "ε_v"), " matrix error up to 0.7–1.0: large", size=14, align="ctr", before=4),
+    P("(measured on endgames we solved exactly; 1 = no better than a constant guess)", size=11, i=True,
+      align="ctr", before=2),
+    P("In real games the 2-turn payoffs mislead: Hedge, credited on them, favours the LP expert the deep search "
+      "rates worse", size=14, align="ctr", before=10),
+    P("More worlds (8 vs 4: 0.50) or a better opponent model do not help", size=14, align="ctr", before=6),
+], "Why box", anchor="t")
+notes(s, "So why move on from the Hedge model? First, it loses. On the public ladder it went 64 and 36 and peaked at "
+      "1704, against 2090 and later 2308 for the Bayesian model. Against Foul Play it scores 0.33, where the "
+      "Bayesian model scores 0.60, and head to head the Bayesian model wins 0.83. It is harder to exploit, because "
+      "it plays a mix, but it is much weaker. Second, our bound tells us why. Each turn we fall short by the solver "
+      "error plus twice the matrix error. On endgames we could solve exactly, the solver error is at most 0.16 but "
+      "the matrix error reaches 0.7 to 1, about as bad as a constant guess. In real games we see the same thing: "
+      "Hedge, credited on the two-turn payoffs, favours the LP expert even though deeper search rates it worse. And "
+      "the things that are not the payoffs, more worlds or a better opponent model, do not help.")
+
 # 5. The Bayesian model: from the preliminary model's weakness to deeper search per world
-s, S = content(4, "From the preliminary model to the Bayesian model")
+s, S = content(4, "The Bayesian model: fix the payoffs")
 
 
 def grid(x0, y0, cols, rows, widths, name, hh=Inches(0.45), rh=Inches(0.32), bold_cells=()):
@@ -800,23 +849,15 @@ def grid(x0, y0, cols, rows, widths, name, hh=Inches(0.45), rh=Inches(0.32), bol
 
 
 # Row 1: how the old model did -> its weakness -> the fix
-BH = Inches(1.15)
-story = [("Preliminary model: how it did", [
-              P("Ladder 77–73; Elo fell 1577 → 1470", size=14, align="ctr"),
-              P("Loses to Foul Play at every search time", size=14, align="ctr", before=4)]),
-         ("Its weakness: shallow payoffs", [
-              P("Payoffs: a 2-turn lookahead score", size=14, align="ctr"),
-              P("Our bound says this error limits it", size=14, align="ctr", before=4)]),
-         ("The Bayesian model: the fix", [
-              P("Keep: the belief over hidden sets", size=14, align="ctr"),
-              P("Replace: each matrix with deep MCTS", size=14, align="ctr", before=4)])]
+story = [("Keep: the belief over hidden sets", [
+              P("Bayes over the opponent's possible sets, as before", size=14, align="ctr")]),
+         ("Replace: 2-turn matrices with deep search", [
+              P("Each world gets a full MCTS search, then a weighted vote", size=14, align="ctr")])]
+BH = Inches(0.75)
 for k, (title, paras) in enumerate(story):
-    x = LEFT + k * (COL3 + GAP)
-    S.header(x, TOP, COL3, HDR_H, [P(title, size=SECONDARY, b=True, align="ctr")], f"Story {k + 1} header")
-    S.box(x, TOP + HDR_H, COL3, BH, paras, f"Story {k + 1} box")
-    if k < 2:
-        S.line(x + COL3 + Inches(0.05), TOP + HDR_H + BH // 2, x + COL3 + GAP - Inches(0.05), TOP + HDR_H + BH // 2,
-               f"Story arrow {k + 1}", arrow=True)
+    x = LEFT + k * (COL2 + GAP)
+    S.header(x, TOP, COL2, HDR_H, [P(title, size=SECONDARY, b=True, align="ctr")], f"Story {k + 1} header")
+    S.box(x, TOP + HDR_H, COL2, BH, paras, f"Story {k + 1} box")
 
 # Row 2: worked example (belief -> per-world search -> weighted vote)
 ey = TOP + HDR_H + BH + Inches(0.6)
@@ -843,15 +884,12 @@ S.text(LEFT, cy, WIDTH, Inches(0.6), [
       "belief-weighted share (Slack Off; World A alone would say Earthquake). Illustrative numbers.", size=12, i=True,
       align="ctr"),
 ], "Example caption")
-notes(s, "Here is how we got to the final model. Our preliminary model went 77 and 73 on the public "
-      "ladder and its rating fell from 1577 to 1470, and it loses to Foul Play at every search time. Our bound tells us "
-      "why: the per-world payoff matrices come from a shallow two-turn lookahead score, and that matrix error, not "
-      "the solver, is what holds it back. So the Bayesian model keeps the part that works, the belief over the "
-      "opponent's hidden sets, and replaces each world's shallow matrix with a deep Monte Carlo tree search of that "
-      "world. Below is an example. The belief: Sunflora used Sludge Bomb, so set C, which has no Sludge Bomb, drops "
-      "to zero, leaving 0.6 on set A and 0.4 on set B. Then we search each world deeply, giving each of our moves a "
-      "share of the search, and play the move with the highest belief-weighted share. World A alone would pick "
-      "Earthquake, but weighting in world B makes Slack Off the choice. The numbers are illustrative.")
+notes(s, "So the Bayesian model keeps what worked, the belief over the opponent's hidden sets, and fixes the "
+      "payoffs: instead of a shallow two-turn matrix, each world gets a full Monte Carlo tree search. Here is an "
+      "example. The belief: Sunflora used Sludge Bomb, so set C, which has no Sludge Bomb, drops to zero, leaving "
+      "0.6 on set A and 0.4 on set B. Then we search each world deeply, giving each of our moves a share of the "
+      "search, and play the move with the highest belief-weighted share. World A alone would pick Earthquake, but "
+      "weighting in world B makes Slack Off the choice. The numbers are illustrative.")
 
 # 12. The Bayesian model: results (exploitability explained on top; paired-games table left; exploitability plot right)
 from PIL import Image as _Im
@@ -864,7 +902,7 @@ S.text(LEFT, TOP - Inches(0.05), WIDTH, Inches(1.05), [
 ], "Exploitability explained")
 ty = TOP + Inches(1.15)
 S.text(LEFT, ty, Inches(5.6), Inches(0.75), [
-    P(("Public ladder: ", {"b": True}), "99–51 and Elo 1470 → 2090 in logged games; since then 2308, reportedly top 50",
+    P(("Public ladder: ", {"b": True}), "66–34, Elo 1677 → 2090 in logged games; since then 2308, reportedly top 50",
       size=14),
 ], "Ladder line")
 rows = [("Bayesian model vs", "Score [95% CI]"),
@@ -896,7 +934,7 @@ S.text(rx, ty + fh + Inches(0.05), fw, BOTTOM - ty - fh, [
     P("Knowing our rule lifts the opponent from 0.21 to 0.70: the Bayesian model always plays its top move, so it "
       "can be predicted. Randomising its choice removes this gap, but it then plays much worse.", size=14),
 ], "Exploit text")
-notes(s, "Here are the Bayesian model's results. Strength first. On the public ladder it went 99 and 51 and climbed to "
+notes(s, "Here are the Bayesian model's results. Strength first. On the public ladder it went 66 and 34 and climbed to "
       "2090 Elo in the games we logged, and it has since reached 2308, reportedly in the top 50. In local paired games "
       "it is on par with Foul Play, one of the strongest public bots: 0.60 at Foul Play's default settings and 0.48 at "
       "equal search time, and it beats our preliminary model 0.83. Then exploitability: how much more an opponent "
@@ -914,9 +952,8 @@ items = ["Per-turn equilibrium play and Hedge across games compose into a bound 
          "Spending compute where the bound points, on deeper search over the same Bayesian belief about the hidden "
          "team, gave our strongest agent, which reportedly reached the top 50 of the public ladder (Elo 2308). Its deterministic "
          "choice is the price: in-engine, an opponent who predicts it gains almost half a game.",
-         "A no-regret guarantee is only as good as the payoffs it is measured on: our learners stay inside their "
-         "bounds, but the bounds are measured on estimated payoffs, so better evaluation is what makes them count in "
-         "real games."]
+         "Hedge does what its bound promises, but it learns from the same shallow payoffs, so the guarantee holds in "
+         "our estimate of the game rather than in the game being played; better evaluation is what turns it into wins."]
 S.text(LEFT, TOP, WIDTH, Inches(4.0), [
     P(txt, number=True, size=18, before=0 if k == 0 else 14) for k, txt in enumerate(items)
 ], "Takeaways")
@@ -933,9 +970,9 @@ notes(s, "Three takeaways. First, per-turn equilibrium play and Hedge across gam
       "what limits the agent. Second, spending compute where the bound points, on deeper search over the same "
       "Bayesian belief about the hidden team, gave our strongest agent, which reportedly reached the top 50 of the "
       "public ladder; the price is that its deterministic choice can be predicted, and an opponent who does so gains "
-      "almost half a game. Third, a no-regret guarantee is only as good as the payoffs it is measured on: our "
-      "learners stay inside their bounds, but those bounds are measured on estimated payoffs, so better evaluation "
-      "is what makes them count in real games. Next, with more "
+      "almost half a game. Third, Hedge does what its bound promises, but it learns from the "
+      "same shallow payoffs, so the guarantee holds in our estimate of the game rather than in the game being "
+      "played, and better evaluation is what turns it into wins. Next, with more "
       "compute, we would learn a value function with reinforcement learning and solve positions more precisely, so "
       "that the payoffs our no-regret learners and bounds are measured on match real play. Then the guarantees would "
       "carry over to live games, Hedge could be merged into the Bayesian model without losing strength, and the agent "

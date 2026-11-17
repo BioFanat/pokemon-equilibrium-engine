@@ -74,7 +74,7 @@ def log_axis(ax, numticks=5):
 def panel_exploit(ax, eg):
     lim = (0.01, 100)
     ax.loglog(lim, lim, color=GRAY, lw=1.2, ls=(0, (4, 2)))
-    ax.scatter([r["expl"] for r in eg], [r["bound"] for r in eg], s=18, color=INK, alpha=0.55, lw=0, zorder=3)
+    ax.scatter([r["expl"] for r in eg], [r["bound"] for r in eg], s=20, color=INK, edgecolors="white", linewidths=0.6, zorder=3)
     lo, hi = min(r["ratio"] for r in eg), max(r["ratio"] for r in eg)
     ax.text(0.3, 0.12, "bound = actual", color=INK, rotation=0, va="center")
     ax.text(0.013, 150, f"all above the line: bound holds", color=INK, va="center")
@@ -84,7 +84,7 @@ def panel_exploit(ax, eg):
     log_axis(ax, 5)
     ax.set_xlabel("Measured exploitability (exact)")
     ax.set_ylabel("Our upper bound")
-    ax.set_title("Exploitability bound")
+    ax.set_title("Bound holds, loosely")
 
 
 def panel_rm(ax, rm):
@@ -103,7 +103,7 @@ def panel_rm(ax, rm):
     log_axis(ax, 5)
     ax.set_xlabel("RM$^{\\mathregular{+}}$ iterations $T$")
     ax.set_ylabel("Gap to equilibrium\n(payoff range)")
-    ax.set_title("RM$^{\\mathregular{+}}$ in a turn")
+    ax.set_title("Solver converges")
     return s_med
 
 
@@ -125,9 +125,9 @@ def panel_hedge(ax, hedge_curves):
     ax.set_xlim(1, Tmax); ax.set_ylim(3e-4, 5)
     ax.set_xticks([1, 10, 100, 1000])
     log_axis(ax, 5)
-    ax.set_xlabel("Counted turns $t$")
-    ax.set_ylabel("Regret per counted turn")
-    ax.set_title("Hedge over games")
+    ax.set_xlabel("Turns $t$")
+    ax.set_ylabel("Regret per turn")
+    ax.set_title("Hedge under bound")
 
 
 def panel_memory(ax, mem_curves):
@@ -145,9 +145,9 @@ def panel_memory(ax, mem_curves):
     ax.text(Tm * 0.9, 0.3, f"median, {len(M)} matches", color=INK, ha="right", va="center")
     ax.set_xlim(1, Tm); ax.set_ylim(0, 2)
     ax.set_xticks([1, 10, 100, 1000])
-    ax.set_xlabel("Counted turns $t$")
+    ax.set_xlabel("Turns $t$")
     ax.set_ylabel("Regret vs best style\n(nats)")
-    ax.set_title("Memory over games")
+    ax.set_title("Memory under bound")
     return len(M), Tm
 
 
