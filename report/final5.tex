@@ -59,7 +59,7 @@ We apply no-regret learning mainly across games, where the Hedge algorithm choos
 
 We measure how hard a policy is to beat by its \emph{exploitability}: how much an opponent who knows the policy can win from it, beyond what it could win from an equilibrium player~\cite{Zin07}. We bound our agent's exploitability over a whole battle (\cref{sec:theory}): each turn's solver and matrix errors add up over the turns played; more compute removes the solver error, but the matrix error includes the error of the evaluation formula that scores positions, which more compute does not reduce. Computing exploitability exactly would mean finding the best possible counter-strategy to our agent over every reachable battle, which is impossible at Pok\'emon's size; instead, our experiments (\cref{sec:exp}) play our agent against opponents that know its policy, and how much they win gives a lower bound. Sampled equilibrium play is much harder to exploit than deterministic play, the bound holds on every endgame we solved exactly, and our learners' regrets stay below their bounds.
 
-However, the agent still loses to Foul Play, and a better opponent model improves prediction but not win rate. These results point to the evaluation error, so we retain elements from our no-regret algorithm, specifically the belief over the opponent's hidden team, and search each sampled world more deeply instead of solving shallow matrices. The resulting \emph{Bayesian model} (\cref{sec:bayes}) reached the top 500 of the public ladder. Further attempts to wrap it in a no-regret algorithm such as Hedge were unsuccessful in improving winning performance, as we observe transferability of no-regret guarantees to live gameplay may depend heavily on the payoffs.
+However, the agent still loses to Foul Play, and a better opponent model improves prediction but not win rate. These results point to the evaluation error, so we retain elements from our no-regret algorithm, specifically the belief over the opponent's hidden team, and search each sampled world more deeply instead of solving shallow matrices. The resulting \emph{Bayesian model} (\cref{sec:bayes}) reportedly reached the top 500 of the public ladder. Further attempts to wrap it in a no-regret algorithm such as Hedge were unsuccessful in improving winning performance, as we observe transferability of no-regret guarantees to live gameplay may depend heavily on the payoffs.
 
 % =====================================================================
 \section{Background}
@@ -178,7 +178,7 @@ Assume \cref{asm:adv,asm:hor}, that only the opponent's team is hidden and is dr
 \label{sec:exp-engine}
 Any fixed opponent's advantage over the game value bounds exploitability from below~\cite{Zin07}, up to a Hoeffding margin. A depth-2 informed best response (informed BR) that knows the target's policy scores 0.87 against top move and 0.71 against sampled play (100 pairs), which with Hoeffding radius 0.12 gives exploitability lower bounds of 0.25 and 0.09 in score units.
 
-\paragraph{Exact endgames.} Of 6 endgames solved exactly (one Pok\'emon per side, move PP ignored, HP grouped into tenths or twentieths), every bot is unexploitable on 2, and on the other 4 every bot--seat row with exploitability above $10^{-3}$ and a finite bound satisfies the bound~\eqref{eq:A}, loose by 7--155$\times$ (\cref{fig:main}a). The largest $\epsv^{\rm aff}$ is 0.7--1.0 (1 is a constant fit) while $\epss\le0.15$, consistent with \cref{rem:leaf}: $\epsv$, not the solver, carries the error. Eight worlds did not beat four (0.50 [0.41, 0.58]).
+\paragraph{Exact endgames.} Of 6 endgames solved exactly (one Pok\'emon per side, move PP ignored, HP grouped into tenths or twentieths), every bot is unexploitable on 2, and on the other 4 every bot--seat row with exploitability above $10^{-3}$ and a finite bound satisfies the bound~\eqref{eq:A}, loose by 7--155$\times$ (\cref{fig:main}a). The largest $\epsv^{\rm aff}$ is 0.7--1.0 (1 is a constant fit) while $\epss\le0.16$ on reached states, consistent with \cref{rem:leaf}: $\epsv$, not the solver, carries the error. In-engine with top move, eight worlds did not beat four (0.50 [0.41, 0.58], 50 pairs).
 
 \begin{figure*}[t]
 \centering
@@ -195,7 +195,7 @@ Any fixed opponent's advantage over the game value bounds exploitability from be
 \label{sec:exp-belief}
 On the matches of \cref{fig:main}(d), the posterior's final regret is $\ln5$ up to logging precision, as~\eqref{eq:bayeshedge} gives once the posterior concentrates ($\ln\Pi_T\to0$).
 
-\paragraph{Per-world style likelihood.} It lowers next-action log loss by 0.30 [0.28, 0.31] nats per counted turn, but its win-rate gain did not replicate ($+0.06$, then $+0.01$, LB $-0.05$). Restricting the likelihood to each world's legal actions accounts for the whole gain.
+\paragraph{Per-world style likelihood.} It lowers next-action log loss by 0.30 [0.28, 0.31] nats per counted turn, but its win-rate gain did not replicate ($+0.06$, then $+0.01$, LB $-0.04$). Restricting the likelihood to each world's legal actions accounts for nearly all of the gain.
 
 \paragraph{Win rates.}
 \label{sec:exp-showdown}
@@ -210,7 +210,7 @@ At matched time (about 70\,ms per move), MCTS beats both equilibrium bots in-eng
 \label{fig:wins}
 \end{figure}
 
-\paragraph{Against Foul Play.} The Bayesian-LP agent loses at every search time, with a downward trend from 25 to 1000\,ms per sampled battle and overlapping CIs (\cref{fig:wins}); in a nine-bot round robin Foul Play rates 140--190 Elo above it. PokaiTrainer's finding that equilibrium search beats tree search does not transfer here.
+\paragraph{Against Foul Play.} The Bayesian-LP agent loses at every search time, with a downward trend from 25 to 1000\,ms per sampled battle and overlapping CIs (\cref{fig:wins}); in a nine-bot round robin Foul Play rates 135--192 Elo above it. PokaiTrainer's equilibrium search only matches tree search in VGC with a learned value net (51.7\%); ours has none.
 
 % =====================================================================
 \section{The Bayesian model}
@@ -221,14 +221,14 @@ What our bounds and experiments point to is the evaluation error, not the solver
 
 \paragraph{On the public ladder.}
 \label{sec:exp-ladder}
-Against human players, in sequential rated batches on one account, our preliminary model went 77--73 over 150 games (Elo 1577 to 1470); the Bayesian model then went 99--51 over 150 games (stratified worlds from game 51), climbing to 2090 (peak 2141, reported top 500). It is our strongest bot, as MCTS beat equilibrium play in-engine.
+Against public ladder opponents, in sequential rated batches on one account, our preliminary model went 77--73 over 150 games (Elo 1577 to 1470); the Bayesian model then went 99--51 over 150 games (stratified worlds from game 51), climbing to 2090 (peak 2141, reported top 500). It is our highest-rated bot, as MCTS beat equilibrium play in-engine.
 
 \paragraph{Hedge over the Bayesian model.} Hedge over the Bayesian model's argmax, its sampled visit shares and the Bayesian-LP strategy (weights carried) loses to the plain Bayesian model in local Showdown games, 0.31 [0.22, 0.40] over 50 pairs; fitting Elo to these and 30-pair matches against the preliminary model puts the Bayesian model $+203$ [$+135$, $+283$] and Hedge over it only $+27$ [$-44$, $+105$] above the preliminary model. Hedge's regret is small (4--5 against a bound of about 28 per stream), but \cref{thm:hedge} measures regret in the depth-2 matrices, where the LP expert is best by construction, and Hedge moves 60--71\% of its weight to it: a no-regret guarantee is only as good as the payoffs it is measured on, and ours carry the evaluation error that dominates~\eqref{eq:A}.
 
 % =====================================================================
 \section{Conclusion}
 \label{sec:discussion}
-Our guarantees hold in the estimated matrix, whose error includes that of the evaluation formula, which more compute does not reduce (\cref{rem:leaf}) and to which our experiments point; better beliefs do not move win rate. The same error makes Hedge over the Bayesian model lose: a no-regret guarantee is only as good as its payoffs. The Bayesian model, which spends compute on deeper search instead, reached the top 500, but its determinism makes it exploitable (\cref{prop:det}). Next: credit the experts with search values and train the evaluation on exact terminal values.
+Our guarantees hold in the estimated matrix, whose error includes that of the evaluation formula, which more compute does not reduce (\cref{rem:leaf}) and to which our experiments point; better beliefs do not move win rate. The same error makes Hedge over the Bayesian model lose: a no-regret guarantee is only as good as its payoffs. The Bayesian model, which spends compute on deeper search instead, reportedly reached the top 500, but its determinism makes it exploitable (\cref{prop:det}). Next: credit the experts with search values and train the evaluation on exact terminal values.
 
 \paragraph{Acknowledgement.} The proofs in Section~4 were developed with the assistance of Fable~5.2.
 

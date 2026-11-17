@@ -48,8 +48,8 @@ def rows():
         ("Hedge vs Bayesian LP", 0.458, 0.421, 0.496, COL["hedge_carried"]),
         ("Bayesian LP vs PIMC averaging", 0.559, 0.521, 0.597, COL["eq_sampled"])]
     engine = [
-        ("MCTS vs Bayesian LP, sampled", 0.760, 0.677, 0.843, COL["mcts"]),
-        ("MCTS vs Bayesian LP, top move", 0.650, 0.571, 0.729, COL["mcts"]),
+        ("MCTS vs equilibrium, sampled", 0.760, 0.677, 0.843, COL["mcts"]),
+        ("MCTS vs equilibrium, top move", 0.650, 0.571, 0.729, COL["mcts"]),
         ("MCTS (2,000 iter.) vs top move", 0.310, 0.235, 0.385, COL["mcts"]),
         ("Bayesian LP vs PIMC, sampled", 0.585, 0.540, 0.630, COL["eq_sampled"]),
         ("Bayesian LP vs PIMC, top move", 0.540, 0.452, 0.628, COL["eq_top"])]
