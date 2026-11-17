@@ -1,4 +1,4 @@
-"""Build deck.pptx: the 13-slide, ~4-minute CS535 final-project talk, in five sections.
+"""Build deck.pptx: the 14-slide, ~4-minute CS535 final-project talk, in five sections.
 
 Built on the user's template ("random template.pptx"): its master, theme, 16:9 size,
 title-slide style and its five-box section tracker, which lives in the template's
@@ -638,41 +638,83 @@ notes(s, "A few known results we build on. Multiplicative weights shrinks each e
       "exploitability and regret, and see whether the agent can still win.")
 
 # ===================== Section 2: Method =====================
-# 4. Each turn an equilibrium; across games Hedge over experts
-s, S = content(2, "Equilibrium each turn, Hedge across games")
-S.text(LEFT, TOP, WIDTH, Inches(1.55), [
-    P(("Each turn: ", {"b": True}), "sample 4 possible opponent teams (worlds ", ("$", "k"), ", matrices ",
-      ("$", "M_k"), ") and pick the one mixed strategy ", ("$", "x"),
-      " that does best on average when the opponent best-responds in every world (as PokaiTrainer does for VGC)"),
-    EQ_(E_BLP, before=6),
-], "Each turn")
-S.text(LEFT, TOP + Inches(1.6), WIDTH, Inches(0.45),
-       [P(("Across games: ", {"b": True}), "Hedge over four ways of playing ", ("$", "x"),
-          " on the averaged matrix ", ("$", r"\bar{A} = \sum_k{β_k M_k}"))], "Across games")
-experts = [("Top move", [P(("$", r"a = arg\max_i{x_i}"), size=SECONDARY, align="ctr")]),
-           ("Sampled", [P(("$", "a ∼ x"), size=SECONDARY, align="ctr")]),
-           ("Pure maximin", [P(("$", r"a = arg\max_i{\min_j{\bar{A}_{ij}}}"), size=SECONDARY, align="ctr")]),
-           ("ε-safe best response", [P("best reply to ", ("$", r"\hat{q}"), size=SECONDARY, align="ctr"),
-                                     P("with worst case ≥ ", ("$", "x"), "'s − ", ("$", "ε"), size=SECONDARY,
-                                       align="ctr")])]
-gy = TOP + Inches(2.15)
+# 4. Inside a turn: worlds -> matrices -> one strategy
+s, S = content(2, "Inside a turn: worlds, matrices, one strategy")
+steps = [("1. What we know", [P("the opponent's Pokémon, moves and items revealed so far", size=SECONDARY,
+                                align="ctr"),
+                              P("(the rest is hidden)", size=SECONDARY, i=True, align="ctr", before=6)]),
+         ("2. Sample 4 worlds", [P("each world is one full guess of the hidden team and sets, consistent with "
+                                   "what we saw", size=SECONDARY, align="ctr"),
+                                 P("weight ", ("$", "β_k"), size=SECONDARY, align="ctr", before=6)]),
+         ("3. A matrix per world", [P("rows: our ≤ 13 options; columns: theirs", size=SECONDARY, align="ctr"),
+                                    P("cell: our estimated value after a 2-turn lookahead", size=SECONDARY,
+                                      align="ctr", before=6),
+                                    P("→ ", ("$", "M_k"), size=SECONDARY, align="ctr", before=6)]),
+         ("4. One strategy x", [P("the mix that does best on average when the opponent best-responds in each "
+                                  "world", size=SECONDARY, align="ctr"),
+                                P("(one LP, as in PokaiTrainer)", size=SECONDARY, i=True, align="ctr", before=6)])]
+BH = Inches(1.95)
+for k, (name, paras) in enumerate(steps):
+    x = LEFT + k * (COL4 + GAP)
+    S.header(x, TOP, COL4, HDR_H, [P(name, size=SECONDARY, b=True, align="ctr")], f"Turn step {k + 1} header")
+    S.box(x, TOP + HDR_H, COL4, BH, paras, f"Turn step {k + 1} box")
+    if k < 3:
+        ym = TOP + HDR_H + BH // 2
+        S.line(x + COL4 + Inches(0.05), ym, x + COL4 + GAP - Inches(0.05), ym, f"Turn arrow {k + 1}", arrow=True)
+ty = TOP + HDR_H + BH + Inches(0.3)
+S.text(LEFT, ty, WIDTH, BOTTOM - ty, [
+    EQ_(E_BLP, size=20),
+    P("One ", ("$", "x"), " for all worlds, because we cannot tell which world we are in. Solving each world "
+      "separately and averaging (PIMC) plays as if we could.", size=18, bullet=True, before=10),
+    P("Three ways to play ", ("$", "x"), ": ", ("sampled", {"b": True}), " (draw from x), ", ("top move", {"b": True}),
+      " (most likely action), ", ("pure maximin", {"b": True}), " (safest single action)", size=18, bullet=True,
+      before=8),
+], "Turn notes")
+notes(s, "Here is what happens inside one turn. We know the opponent's Pokemon, moves and items revealed so far; the "
+      "rest of their team is hidden. So we sample four worlds: each world is one full guess of the hidden team and "
+      "sets that is consistent with what we have seen, with a weight beta-k. For each world the engine builds a "
+      "payoff matrix: rows are our up to 13 options, columns are the opponent's, and each cell is our estimated "
+      "value after looking two turns ahead and scoring the position with a heuristic evaluation. Then we pick one "
+      "mixed strategy x that does best on average when the opponent best-responds separately in each world. That "
+      "is a single linear program, the same formulation PokaiTrainer uses for VGC. We need one x for all worlds "
+      "because we cannot tell which world we are in; solving each world separately and averaging, which is PIMC, "
+      "plays as if we could. There are three ways to turn x into an action: sample from it, play its most likely "
+      "action, or play the single safest action.")
+
+# 5. Across games: Hedge over experts
+s, S = content(2, "Across games: Hedge over four experts")
+S.text(LEFT, TOP, WIDTH, Inches(0.9), [
+    P("Each turn Hedge holds weights over four ", ("experts", {"b": True}), ", each a way of turning the turn's "
+      "solution into play; we play their weighted mix.", size=18),
+], "Hedge intro")
+experts = [("Top move", [P("most likely action of x", size=SECONDARY, align="ctr")]),
+           ("Sampled", [P("draw an action from x", size=SECONDARY, align="ctr")]),
+           ("Pure maximin", [P("the single action with the best worst case", size=SECONDARY, align="ctr")]),
+           ("ε-safe best response", [P("best reply to the memory's prediction, giving up at most ε of x's "
+                                       "worst case", size=SECONDARY, align="ctr")])]
+gy = TOP + Inches(0.95)
+EBH = Inches(1.25)
 for k, (name, rule) in enumerate(experts):
     x = LEFT + k * (COL4 + GAP)
     S.header(x, gy, COL4, HDR_H, [P(name, size=SECONDARY, b=True, align="ctr")], f"Expert {k + 1} header")
-    S.box(x, gy + HDR_H, COL4, Inches(0.85), rule, f"Expert {k + 1} box")
-by = gy + HDR_H + Inches(0.85) + Inches(0.2)
+    S.box(x, gy + HDR_H, COL4, EBH, rule, f"Expert {k + 1} box")
+by = gy + HDR_H + EBH + Inches(0.3)
 S.text(LEFT, by, WIDTH, BOTTOM - by, [
-    P("Each expert is credited with what it would have earned against the observed action; weights carried "
-      "across a match", bullet=True),
+    P("After the opponent moves, each expert is credited with what it ", ("would have earned", {"b": True}),
+      " against that action, in the matrix of the most likely world containing it", size=18, bullet=True),
+    P("Rewards on a fixed payoff scale, so the opponent cannot shift our losses onto high-stakes turns",
+      size=18, bullet=True, before=10),
+    P("Weights carry across the games of a match, so Hedge learns which expert works against this opponent",
+      size=18, bullet=True, before=10),
 ], "Hedge bullets")
-notes(s, "Each turn, the agent samples four possible opponent teams. Each gives a payoff matrix M_k. It then picks one "
-      "mixed strategy x that does best on average when the opponent best-responds separately in each world: the "
-      "formula on the slide, a single linear program. PokaiTrainer solves the same problem for Pokemon VGC. Across "
-      "games, Hedge mixes four ways of playing this solution on the averaged matrix: top move plays x's most likely "
-      "action; sampled draws an action from x; pure maximin plays the single action with the best worst case; and "
-      "the epsilon-safe best response best-replies to the memory's prediction of the opponent while keeping its worst "
-      "case within epsilon, 0.3 percent of the payoff range, of x's. Each expert is credited with what it would have "
-      "earned against the observed action, and the weights carry across the games of a match.")
+notes(s, "Across games we use Hedge. Each turn it holds weights over four experts, each a way of turning the turn's "
+      "solution into play, and we play their weighted mix. Top move plays x's most likely action; sampled draws "
+      "from x; pure maximin plays the single action with the best worst case; and the epsilon-safe best response "
+      "best-replies to the opponent memory's prediction while giving up at most epsilon of x's worst case. After "
+      "the opponent moves, each expert is credited with what it would have earned against that action, in the "
+      "matrix of the most likely world that contains it. Rewards are on a fixed payoff scale, so an opponent cannot "
+      "push our losses onto the high-stakes turns, and the weights carry across the games of a match, so Hedge "
+      "learns which expert works against this particular opponent.")
 
 # 5. The Bayesian opponent memory
 s, S = content(2, "The Bayesian opponent memory")
