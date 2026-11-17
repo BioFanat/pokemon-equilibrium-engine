@@ -1,0 +1,181 @@
+% cs535.sty -- two-column course-report style derived from neurips_2026.sty
+% (Roman Garnett and the authors of nips15submit_e.sty).
+%
+% Kept from NeurIPS: Times/Helvetica text fonts, reduced-leading font sizes,
+% the title box with rules and the author block, section/paragraph headings,
+% caption spacing, footnote and list formatting.
+% Removed: line numbers, "Submitted to"/preprint notices, track and
+% anonymity options, the checklist macros, the ack environment and natbib
+% (the paper uses thebibliography with numeric \cite).
+% Changed: two columns with 0.75in margins; title and abstract span both
+% columns; slightly tighter paragraph and float spacing for two columns.
+%
+% Usage:  \documentclass[10pt]{article}  \usepackage{cs535}
+%         \title{...} \author{...}
+%         \begin{document} \maketitle \begin{abstract}...\end{abstract}
+% The abstract environment typesets the pending title and the abstract
+% together across both columns, so it must directly follow \maketitle.
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{cs535}[2026-11-16 CS535 two-column report style]
+
+% ---------- fonts ----------
+% T1 encoding is needed under XeTeX (tectonic): its default TU encoding has
+% no Times (ptm) shapes and would silently fall back to Latin Modern.
+\RequirePackage[T1]{fontenc}
+\renewcommand{\rmdefault}{ptm}
+\renewcommand{\sfdefault}{phv}
+
+% ---------- page geometry: two columns ----------
+\RequirePackage[letterpaper,left=0.75in,right=0.75in,top=0.65in,
+  bottom=0.75in,columnsep=0.25in,footskip=0.35in]{geometry}
+\twocolumn
+
+\widowpenalty=10000
+\clubpenalty=10000
+\flushbottom
+\sloppy
+
+% ---------- font sizes with reduced leading (NeurIPS) ----------
+\renewcommand{\normalsize}{%
+  \@setfontsize\normalsize\@xpt\@xipt
+  \abovedisplayskip      7\p@ \@plus 2\p@ \@minus 5\p@
+  \abovedisplayshortskip \z@ \@plus 3\p@
+  \belowdisplayskip      \abovedisplayskip
+  \belowdisplayshortskip 4\p@ \@plus 3\p@ \@minus 3\p@
+}
+\normalsize
+\renewcommand{\small}{%
+  \@setfontsize\small\@ixpt\@xpt
+  \abovedisplayskip      6\p@ \@plus 1.5\p@ \@minus 4\p@
+  \abovedisplayshortskip \z@  \@plus 2\p@
+  \belowdisplayskip      \abovedisplayskip
+  \belowdisplayshortskip 3\p@ \@plus 2\p@   \@minus 2\p@
+}
+\renewcommand{\footnotesize}{\fontsize{8pt}{9.5pt}\selectfont}
+\renewcommand{\scriptsize}{\fontsize{7pt}{8pt}\selectfont}
+\renewcommand{\tiny}{\fontsize{6pt}{7pt}\selectfont}
+\renewcommand{\large}{\@setfontsize\large\@xiipt{14}}
+\renewcommand{\Large}{\@setfontsize\Large\@xivpt{16}}
+\renewcommand{\LARGE}{\@setfontsize\LARGE\@xviipt{20}}
+\renewcommand{\huge}{\@setfontsize\huge\@xxpt{23}}
+\renewcommand{\Huge}{\@setfontsize\Huge\@xxvpt{28}}
+
+% ---------- headings (NeurIPS) ----------
+\renewcommand{\section}{%
+  \@startsection{section}{1}{\z@}%
+                {-2.0ex \@plus -0.5ex \@minus -0.2ex}%
+                { 1.5ex \@plus  0.3ex \@minus  0.2ex}%
+                {\large\bf\raggedright}%
+}
+\renewcommand{\subsection}{%
+  \@startsection{subsection}{2}{\z@}%
+                {-1.8ex \@plus -0.5ex \@minus -0.2ex}%
+                { 0.8ex \@plus  0.2ex}%
+                {\normalsize\bf\raggedright}%
+}
+\renewcommand{\subsubsection}{%
+  \@startsection{subsubsection}{3}{\z@}%
+                {-1.5ex \@plus -0.5ex \@minus -0.2ex}%
+                { 0.5ex \@plus  0.2ex}%
+                {\normalsize\bf\raggedright}%
+}
+\renewcommand{\paragraph}{%
+  \@startsection{paragraph}{4}{\z@}%
+                {0.5ex \@plus 0.3ex \@minus 0.2ex}%
+                {-1em}%
+                {\normalsize\bf}%
+}
+
+% ---------- floats and captions ----------
+\renewcommand{\topfraction      }{0.85}
+\renewcommand{\dbltopfraction   }{0.85}
+\renewcommand{\bottomfraction   }{0.4}
+\renewcommand{\textfraction     }{0.1}
+\renewcommand{\floatpagefraction}{0.7}
+\renewcommand{\dblfloatpagefraction}{0.7}
+\setlength{\textfloatsep}{10\p@ \@plus 2\p@ \@minus 4\p@}
+\setlength{\dbltextfloatsep}{\textfloatsep}
+\setlength{\floatsep}{8\p@ \@plus 2\p@ \@minus 2\p@}
+
+% captions sit 7pt from a figure; tables put the caption above with the
+% gap below it (NeurIPS swaps the two skips for tables)
+\setlength{\abovecaptionskip}{7\p@}
+\setlength{\belowcaptionskip}{\z@}
+\renewenvironment{table}
+  {\setlength{\abovecaptionskip}{\z@}\setlength{\belowcaptionskip}{7\p@}%
+   \@float{table}}
+  {\end@float}
+\renewenvironment{table*}
+  {\setlength{\abovecaptionskip}{\z@}\setlength{\belowcaptionskip}{7\p@}%
+   \@dblfloat{table}}
+  {\end@dblfloat}
+
+% ---------- footnotes ----------
+\setlength{\footnotesep }{6.65\p@}
+\setlength{\skip\footins}{9\p@ \@plus 4\p@ \@minus 2\p@}
+\renewcommand{\footnoterule}{\kern-3\p@ \hrule width 12pc \kern 2.6\p@}
+
+% ---------- paragraphs: no indent, small gap (NeurIPS uses 5.5pt) ----------
+\setlength{\parindent}{\z@}
+\setlength{\parskip  }{2.5\p@ \@plus 1\p@}
+
+% ---------- lists (NeurIPS) ----------
+\setlength{\topsep       }{4\p@ \@plus 1\p@   \@minus 2\p@}
+\setlength{\partopsep    }{1\p@ \@plus 0.5\p@ \@minus 0.5\p@}
+\setlength{\itemsep      }{2\p@ \@plus 1\p@   \@minus 0.5\p@}
+\setlength{\parsep       }{2\p@ \@plus 1\p@   \@minus 0.5\p@}
+\setlength{\leftmargin   }{2pc}
+\setlength{\leftmargini  }{\leftmargin}
+\setlength{\leftmarginii }{2em}
+\def\@listi  {\leftmargin\leftmargini}
+
+% ---------- title block (spans both columns) ----------
+\newif\if@titlepending
+\renewcommand{\maketitle}{\global\@titlependingtrue}
+
+% rules above and below the title
+\newcommand{\@toptitlebar}{\hrule height 4\p@ \vskip 0.14in \vskip -\parskip}
+\newcommand{\@bottomtitlebar}{%
+  \vskip 0.16in \vskip -\parskip \hrule height 1\p@ \vskip 0.02in}
+
+% title, rules and author block; \And and \AND separate authors
+\renewcommand{\@maketitle}{%
+  \vbox{%
+    \hsize\textwidth \linewidth\hsize
+    \@toptitlebar
+    \centering
+    {\LARGE\bf \@title\par}
+    \@bottomtitlebar
+    \def\And{\end{tabular}\hfil\linebreak[0]\hfil
+      \begin{tabular}[t]{c}\bf\rule{\z@}{20\p@}\ignorespaces}%
+    \def\AND{\end{tabular}\hfil\linebreak[4]\hfil
+      \begin{tabular}[t]{c}\bf\rule{\z@}{20\p@}\ignorespaces}%
+    \begin{tabular}[t]{c}\bf\rule{\z@}{20\p@}\@author\end{tabular}%
+    \vskip 0.1in
+  }%
+}
+
+% the abstract, centred and narrowed, under a bold heading
+\newcommand{\@abstractblock}[1]{%
+  \centerline{\large\bf Abstract}\vskip 0.5ex
+  {\leftskip 0.3in \rightskip 0.3in \noindent #1\par}
+  \vskip 2ex
+}
+
+% abstract: typesets the pending title with it across both columns
+\RequirePackage{environ}
+\RenewEnviron{abstract}{%
+  \if@titlepending
+    \twocolumn[{\@maketitle\@abstractblock{\BODY}}]%
+    \global\@titlependingfalse
+    \thispagestyle{plain}%
+    \begingroup
+      \renewcommand{\thefootnote}{\fnsymbol{footnote}}\@thanks
+    \endgroup
+  \else
+    \@abstractblock{\BODY}%
+  \fi
+}
+
+\endinput
