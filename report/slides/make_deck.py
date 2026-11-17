@@ -23,6 +23,7 @@ TEMPLATE = os.path.join(HERE, "random template.pptx")
 OUT = os.path.join(HERE, "deck.pptx")
 FIG_MAIN = os.path.join(HERE, "..", "figures", "fig_main.png")  # 1395 x 416 px, 4 panels
 FIG_WINS = os.path.join(HERE, "..", "figures", "fig_wins.png")  # 655 x 525 px
+GAME_PNG = os.path.join(HERE, "media", "game_intro.png")  # 493 x 290 px, battle view from the case-study game
 GIF = os.path.join(HERE, "media", "showdown_combined_slide.gif")  # 800 x 542 px case-study animation
 
 SECTIONS = ["Preliminaries", "Method", "Theory", "Experiments", "Conclusions"]
@@ -549,6 +550,29 @@ notes(s, "Hi, we are [Names]. PokaiTrainer showed that per-turn equilibrium play
       "can play Gen 9 Random Battles against Foul Play, the strongest public bot. Short answer: the pieces compose "
       "cleanly, but the agent stays below Foul Play, and our theory points to where it breaks.")
 
+# 1b. The game itself
+s, S = content(1, "Pokémon Showdown: the game")
+iw = Inches(6.2)
+ih = int(iw * 290 / 493)
+pic = s.shapes.add_picture(GAME_PNG, LEFT, TOP, iw, ih)
+pic.name = "Battle view"
+tx = LEFT + iw + Inches(0.3)
+S.text(tx, TOP, RIGHT - tx, BOTTOM - TOP, [
+    P("Each side has ", ("6 random Pokémon", {"b": True}), "; the opponent's team stays hidden until revealed",
+      bullet=True),
+    P("Each turn both players choose ", ("at the same time", {"b": True}), ": one of 4 moves or a switch "
+      "(up to 13 options with Terastallization)", bullet=True, before=SP),
+    P("Our Hippowdon here: Earthquake, Stone Edge, Slack Off or Curse, or switch to one of 5 teammates",
+      bullet=True, before=SP),
+    P("Damage is random; a Pokémon faints at 0 HP, and you lose when all six faint", bullet=True, before=SP),
+], "Game bullets")
+notes(s, "A quick picture of the game. Each player has six randomly generated Pokemon, and you only see the "
+      "opponent's as they are revealed. Every turn both players choose at the same time: one of the active "
+      "Pokemon's four moves, or a switch, plus a once-per-battle type change called Terastallization. In this real "
+      "game our Hippowdon could use Earthquake, Stone Edge, Slack Off or Curse, or switch out; the opponent, Foul "
+      "Play, has Sunflora in. Damage is random, a Pokemon faints at zero hit points, and you lose when all six have "
+      "fainted. So it is a two-player zero-sum game with simultaneous moves, chance and hidden information.")
+
 # 2. The game and the yardsticks
 s, S = content(1, "The game and the yardsticks")
 S.text(LEFT, TOP, WIDTH, BOTTOM - TOP, [
@@ -747,7 +771,7 @@ pic = s.shapes.add_picture(FIG_MAIN, LEFT, TOP, fw, fh)
 pic.name = "Exploitability and regret figure"
 pic._element.nvPicPr.cNvPr.set(
     "descr", "Four panels: exact exploitability against the whole-battle bound; RM+ distance from equilibrium over iterations; "
-             "Hedge regret per scored turn over 10 matches; memory regret against the bound ln 5")
+             "Hedge regret per counted turn over 10 matches; memory regret against the bound ln 5")
 by = TOP + fh + Inches(0.1)
 S.text(LEFT, by, WIDTH, BOTTOM - by, [
     P("Exploitability lower bounds: ", ("0.25", {"b": True}), " top move, ", ("0.09", {"b": True}),
