@@ -664,6 +664,8 @@ Paper: final5.tex "On the public ladder" (`sec:exp-ladder`); deck: "Out in the w
 - Final bot: `mcts_native`, `item_stratified` sampler, 4 worlds, 1000 ms total native search (250 ms per world),
   action = argmax of prior-weighted, per-world-normalised legal root-visit shares (deterministic). No Hedge, no
   equilibrium solve, no carried opponent memory. Top 500 was reported by the operator; the rank itself was not logged.
+- Later (user-reported, 2026-11-17, not in the logged batches): the final bot reached Elo 2308, reportedly top 50 on the
+  Gen 9 Random Battles ladder. Paper and deck mark this as reported.
 - Five interrupted attempts with unknown outcomes (connection loss) are excluded from W–L; the server rating fell
   1984 → 1920 during that gap and the endpoint above includes it.
 - Our theory does not cover this bot: Theorem 6 needs an ε_s-optimal stage strategy, and argmax of root visits is

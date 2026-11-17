@@ -60,10 +60,34 @@ def inplay():
     return fig
 
 
+def strength():
+    fig, a = plt.subplots(figsize=(6.6, 3.6))
+    dot_ci(a, [("Bayesian model", 203, 135, 283, ACCENT),
+               ("Hedge over it", 27, -44, 105, GREY),
+               ("Preliminary model", 0, None, None, INK)], ref=0)
+    a.set_xlabel("Local Elo vs preliminary model")
+    a.set_xlim(-80, 320)
+    a.tick_params(axis="y", length=0)
+    fig.savefig(os.path.join(HERE, "deck_strength.png"), bbox_inches="tight")
+    return fig
+
+
+def exploit():
+    fig, b = plt.subplots(figsize=(6.6, 3.0))
+    dot_ci(b, [("argmax\n(Bayesian rule)", 0.487, 0.399, 0.576, ACCENT),
+               ("sample\nvisit shares", 0.010, -0.039, 0.059, GREY)], ref=0)
+    b.set_xlabel("Gain from predicting our move")
+    b.set_xlim(-0.1, 0.65)
+    b.tick_params(axis="y", length=0)
+    fig.savefig(os.path.join(HERE, "deck_exploit.png"), bbox_inches="tight")
+    return fig
+
+
 if __name__ == "__main__":
     import sys
     sys.path.insert(0, "/Users/biofanat/.claude/skills/figure-style")
     fig = inplay()
+    strength(); exploit()
     try:
         from figcheck import check_figure
         check_figure(fig, min_pt=8, max_words=12)

@@ -1,4 +1,4 @@
-"""Build deck.pptx: the 12-slide, ~4-minute CS535 final-project talk, in five sections.
+"""Build deck.pptx: the 13-slide, ~4-minute CS535 final-project talk, in five sections.
 
 Built on the user's template ("random template.pptx"): its master, theme, 16:9 size,
 title-slide style and its five-box section tracker, which lives in the template's
@@ -891,43 +891,72 @@ notes(s, "Here is where the Bayesian part is. Start with a belief over the oppon
       "would pick Earthquake, but weighting in world B makes Slack Off the Bayes choice. The numbers are "
       "illustrative.")
 
-# 12. The Bayesian model in play: the ladder, and Hedge over it (H2H numbers from analyze_noregret_h2h.py)
+# 12. The Bayesian model: strength (plot left, results right)
 H2H_SCORE, H2H_CI, H2H_N = "0.31", "[0.22, 0.40]", "50 paired seeds"
-s, S = content(4, "The Bayesian model in play")
-S.text(LEFT, TOP, WIDTH, Inches(0.45), [
-    P(("Public ladder: ", {"b": True}), "the Bayesian model went 99–51 (Elo 1470 → 2090, reportedly top 500); the "
-      "preliminary model went 77–73", size=16),
-], "Ladder line")
-img_path = os.path.join(HERE, "..", "figures", "deck_inplay.png")
-iy = TOP + Inches(0.55)
 from PIL import Image as _Im
+s, S = content(4, "The Bayesian model: strength")
+img_path = os.path.join(HERE, "..", "figures", "deck_strength.png")
 _w, _h = _Im.open(img_path).size
-fw = int(WIDTH * 0.8)
+fw = int(WIDTH * 0.52)
 fh = int(fw * _h / _w)
-pic = s.shapes.add_picture(img_path, LEFT + (WIDTH - fw) // 2, iy, fw, fh)
-pic.name = "In-play figure"
-pic._element.nvPicPr.cNvPr.set(
-    "descr", "Left: local Elo relative to the preliminary model with 95% intervals: Bayesian model +203, Hedge over "
-             "it +27. Right: an adversary's gain from predicting the move, in-engine: +0.49 against the argmax, +0.01 "
-             "against sampling the visit shares")
-by = iy + fh + Inches(0.15)
-S.text(LEFT, by, WIDTH, BOTTOM - by, [
-    P("Hedge over it loses 0.31 head-to-head: credited on 2-turn matrices, it moves most weight to the LP expert",
-      size=16, bullet=True),
-    P("The argmax is predictable (price of determinism); sampling hides it but plays far worse", size=16,
+pic = s.shapes.add_picture(img_path, LEFT, TOP + Inches(0.3), fw, fh)
+pic.name = "Strength figure"
+pic._element.nvPicPr.cNvPr.set("descr", "Local Elo relative to the preliminary model with 95% intervals: Bayesian "
+                                        "model +203, Hedge over it +27")
+rx = LEFT + fw + GAP
+S.text(rx, TOP + Inches(0.2), RIGHT - rx, BOTTOM - TOP - Inches(0.2), [
+    P(("Public ladder", {"b": True}), size=18),
+    P("Bayesian model: 99–51, Elo 1470 → 2090 in logged batches, since 2308 (reportedly top 50)", size=16,
+      bullet=True, before=6),
+    P("Preliminary model: 77–73, Elo 1577 → 1470", size=16, bullet=True, before=6),
+    P(("Local paired games", {"b": True}), size=18, before=18),
+    P("Bayesian model +203 Elo over the preliminary model", size=16, bullet=True, before=6),
+    P(f"Hedge over it only +27, and loses {H2H_SCORE} head-to-head: credited on 2-turn matrices, it trusts the LP "
+      "expert", size=16, bullet=True, before=6),
+], "Strength text")
+notes(s, "First, strength. On the public ladder, in rated batches on one account, the preliminary model went 77 and 73 "
+      "and drifted down to 1470 Elo, while the Bayesian model went 99 and 51 and climbed to 2090 in the batches we "
+      "logged; it has since reached 2308, reportedly in the top 50. In local paired games it rates about 200 Elo above "
+      f"the preliminary model. Wrapping it in Hedge gave almost all of that back: Hedge over it loses {H2H_SCORE} "
+      "head-to-head and rates only 27 Elo above the preliminary model, because Hedge is credited on the two-turn "
+      "matrices, where the equilibrium expert looks best, and moves most of its weight there. A no-regret guarantee "
+      "is only as good as the payoffs it is measured on.")
+
+# 12b. The Bayesian model: exploitability (how we measure it left, plot right)
+s, S = content(4, "The Bayesian model: exploitability")
+lw = int(WIDTH * 0.46)
+S.header(LEFT, TOP, lw, HDR_H, [P("How we measure it", size=SECONDARY, b=True, align="ctr")], "Measure header")
+S.box(LEFT, TOP + HDR_H, lw, Inches(3.3), [
+    P("Exploitability: how much an opponent who knows our policy can win from it", size=15, number=True),
+    P("We cannot compute it, but any opponent that uses that knowledge gives a lower bound", size=15, number=True,
+      before=8),
+    P("Our adversary reruns our search to predict our move, then plays the best reply", size=15, number=True,
+      before=8),
+    P("The same reply rule with a uniform guess shows what the prediction alone is worth", size=15, number=True,
+      before=8),
+], "Measure box", anchor="t")
+img_path = os.path.join(HERE, "..", "figures", "deck_exploit.png")
+_w, _h = _Im.open(img_path).size
+rx = LEFT + lw + GAP
+fw = RIGHT - rx
+fh = int(fw * _h / _w)
+pic = s.shapes.add_picture(img_path, rx, TOP + Inches(0.1), fw, fh)
+pic.name = "Exploitability figure"
+pic._element.nvPicPr.cNvPr.set("descr", "Gain from predicting our move, in-engine: +0.49 against the argmax, +0.01 "
+                                        "against sampling the visit shares")
+S.text(rx, TOP + Inches(0.15) + fh, fw, BOTTOM - TOP - fh, [
+    P("In-engine, full information, against a 5,000-iteration MCTS:", size=14, i=True),
+    P("argmax: the adversary scores 0.70 (exploitability ≥ 0.07), as the price of determinism predicts", size=14,
       bullet=True, before=4),
-], "Play bullets")
-notes(s, "Here is the Bayesian model in play. On the public ladder, in sequential rated "
-      "batches, it went 99 and 51 and climbed from 1470 to 2090 Elo, peaking at 2141, reportedly in the top 500, while the "
-      "preliminary model went 77 and 73 and drifted down to 1470. We then wrapped the Bayesian model in our Hedge "
-      f"layer, over its argmax, its sampled visit shares and the equilibrium, and it lost to the plain Bayesian model, "
-      f"scoring {H2H_SCORE} over {H2H_N}. Hedge did not fail to learn: its regret is four to five against a bound "
-      "of about twenty-eight. But it is credited on the two-turn matrices, where the equilibrium expert looks best by "
-      "construction, so it moved most of its weight to the LP expert, whose matrices carry the evaluation error. A no-regret guarantee is only "
-      "as good as the payoffs it is measured on; our bound points to the evaluation error, and the Bayesian "
-      "model spends its compute on deeper search instead. Finally, in-engine with full information, an adversary that reruns a 5,000-iteration MCTS to predict its argmax scores 0.70, "
-      "a gain of almost half a game from predicting alone, as the price of determinism predicts; "
-      "sampling the visit shares hides the move but plays far worse.")
+    P("sampling the visit shares: no gain, but it plays far worse", size=14, bullet=True, before=4),
+], "Exploit text")
+notes(s, "Second, exploitability. Exploitability is how much an opponent who knows our policy can win from it. We "
+      "cannot compute it in a game this size, but any opponent that uses that knowledge gives a lower bound. Ours is "
+      "the simplest: each turn it reruns our search on the current position to predict our move and plays the best "
+      "reply. To separate the prediction from the exploiter's own skill, we give the same reply rule a uniform guess. "
+      "With full information, against a 5,000-iteration MCTS that plays its argmax, the predicting adversary scores "
+      "0.70 against 0.21 with a uniform guess, so predicting our move is worth almost half a game, as the price of "
+      "determinism predicts. Sampling the visit shares removes that gain, but plays far worse.")
 
 # ===================== Section 5: Conclusions =====================
 # 12. Takeaways and next steps
@@ -936,7 +965,7 @@ items = ["Per-turn equilibrium play and Hedge across games compose into a bound 
          "a whole battle, and the regrets we measured sit well inside it. The bound is most useful as a diagnosis: it "
          "shows that the error of our evaluation formula, not the solver, is what limits the agent.",
          "Spending compute where the bound points, on deeper search over the same Bayesian belief about the hidden "
-         "team, gave our strongest agent, which reportedly reached the top 500 of the public ladder. Its deterministic "
+         "team, gave our strongest agent, which reportedly reached the top 50 of the public ladder (Elo 2308). Its deterministic "
          "choice is the price: in-engine, an opponent who predicts it gains almost half a game.",
          "A no-regret guarantee is only as good as the payoffs it is measured on. Wrapped around the Bayesian model, "
          "Hedge learned faithfully from shallow matrices and gave back most of the model's strength, so guarantees and "
@@ -955,7 +984,7 @@ notes(s, "Three takeaways. First, per-turn equilibrium play and Hedge across gam
       "exploitable the agent is over a whole battle, and the regrets we measured sit well inside it. The bound turned "
       "out to be most useful as a diagnosis: it shows that the error of our evaluation formula, not the solver, is "
       "what limits the agent. Second, spending compute where the bound points, on deeper search over the same "
-      "Bayesian belief about the hidden team, gave our strongest agent, which reportedly reached the top 500 of the "
+      "Bayesian belief about the hidden team, gave our strongest agent, which reportedly reached the top 50 of the "
       "public ladder; the price is that its deterministic choice can be predicted, and an opponent who does so gains "
       "almost half a game. Third, a no-regret guarantee is only as good as the payoffs it is measured on: wrapped "
       "around the Bayesian model, Hedge learned faithfully from shallow matrices and gave back most of the model's "
