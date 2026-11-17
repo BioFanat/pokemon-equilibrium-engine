@@ -908,8 +908,9 @@ pic.name = "Exploitability figure"
 pic._element.nvPicPr.cNvPr.set("descr", "Extra wins an opponent gets from knowing the decision rule: about half a "
                                         "game against the Bayesian model, none against a randomised version")
 S.text(rx, ty + fh + Inches(0.05), fw, BOTTOM - ty - fh, [
-    P("Knowing the Bayesian model's rule is worth almost half a game, because it always picks the same move in the "
-      "same spot. A randomised version cannot be read this way, but it plays much worse.", size=14),
+    P("Knowing the rule is worth almost half a game, because the Bayesian model always plays its top move. The same "
+      "search picking at random, weighted by its preferences, gives an opponent nothing (≈ 0), but it wins far less.",
+      size=14),
 ], "Exploit text")
 notes(s, "Here are the Bayesian model's results. Strength first. On the public ladder it went 99 and 51 and climbed to "
       "2090 Elo in the games we logged, and it has since reached 2308, reportedly in the top 50. In local paired games "
@@ -918,8 +919,8 @@ notes(s, "Here are the Bayesian model's results. Strength first. On the public l
       "knew exactly how our bot decides, how much more could it win? We test this by handing an opponent our bot's "
       "decision rule, so each turn it predicts our move and plays the best answer, and compare it with the same "
       "opponent guessing blindly. Knowing the rule is worth almost half a game against the Bayesian model, because "
-      "it always picks the same move in the same spot. A randomised version cannot be read this way, but it plays "
-      "much worse. That trade-off between strength and predictability is what our theory says to expect.")
+      "it always picks the same move in the same spot. The same search, picking its move at random in proportion to how much "
+      "it liked each one, gives the opponent essentially nothing, but it wins far less. That trade-off between strength and predictability is what our theory says to expect.")
 
 # ===================== Section 5: Conclusions =====================
 # 12. Takeaways and next steps

@@ -74,8 +74,8 @@ def strength():
 
 def exploit():
     fig, b = plt.subplots(figsize=(6.4, 2.9))
-    dot_ci(b, [("Bayesian model", 0.487, 0.399, 0.576, ACCENT),
-               ("Randomised\nversion", 0.010, -0.039, 0.059, GREY)], ref=0)
+    dot_ci(b, [("Bayesian model\n(always top move)", 0.487, 0.399, 0.576, ACCENT),
+               ("Same search,\nrandom pick", 0.010, -0.039, 0.059, GREY)], ref=0)
     b.set_xlabel("Extra wins from knowing the rule")
     b.set_xlim(-0.1, 0.65)
     b.tick_params(axis="y", length=0)
