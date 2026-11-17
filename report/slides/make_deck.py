@@ -349,7 +349,7 @@ def EQ_(src, before=0, size=EQ):
 
 # ---------- the equations, one line each ----------
 E_REG = r"Regret_T = \sum_t{p^t·l^t} − \min_i{\sum_t{l_i^t}}"
-E_EXPL = r"expl(x) = val(A) − \min_y{x^⊤Ay}"
+E_EXPL = r"expl(x) = \max_{x′}{\min_y{x′^⊤Ay}} − \min_y{x^⊤Ay}"
 E_MWU = r"w_i^{t+1} = w_i^t(1 − ηl_i^t)"
 E_HEDGE = r"w_i^{t+1} = w_i^t e^{−ηl_i^t}"
 E_SOFTMAX = r"p_i^t ∝ \exp{(η\sum_{j<t}{r_i^j})}"
@@ -553,24 +553,25 @@ notes(s, "Hi, we are [Names]. PokaiTrainer showed that per-turn equilibrium play
 s, S = content(1, "The game and the yardsticks")
 S.text(LEFT, TOP, WIDTH, BOTTOM - TOP, [
     P("A battle is a zero-sum stochastic game: simultaneous moves, chance, hidden teams → a stage matrix each turn"),
-    P(("Regret", {"b": True}), "  our total loss minus the best expert's total loss in hindsight", before=22),
+    P(("Regret", {"b": True}), "  our total loss minus the best expert's total loss in hindsight", before=20),
     EQ_(E_REG, before=4),
-    P(("Exploitability", {"b": True}), "  how much less than the game value we earn against a best-responding "
-      "opponent", before=22),
+    P(("$", "n"), " experts, ", ("$", "T"), " rounds;  ", ("$", "p^t"), ": our probabilities over experts;  ",
+      ("$", "l_i^t ∈ [0,1]"), ": expert ", ("$", "i"), "'s loss in round ", ("$", "t"), size=SECONDARY, align="ctr",
+      before=4),
+    P(("Exploitability", {"b": True}), "  the best worst-case payoff any strategy can secure, minus our strategy's "
+      "worst case", before=20),
     EQ_(E_EXPL, before=4),
-    P(("Notation", {"b": True}), before=26),
-    P(("$", "A"), ": the turn's payoff matrix (our action × their action);  ", ("$", "x, y"),
-      ": mixed strategies (probabilities over actions)", bullet=True, before=6),
-    P(("$", "val(A) = \\max_x{\\min_y{x^⊤Ay}}"), ": the payoff we can guarantee, the game value", bullet=True, before=6),
-    P(("$", "n"), " experts, ", ("$", "T"), " rounds;  ", ("$", "p^t"), ": our probabilities over experts in round ",
-      ("$", "t"), ";  ", ("$", "l_i^t ∈ [0,1]"), ": expert ", ("$", "i"), "'s loss", bullet=True, before=6),
+    P(("$", "A"), ": the turn's payoff matrix (our action × theirs);  ", ("$", "x, y"),
+      ": mixed strategies;  first term = the game value; 0 exactly for an equilibrium strategy",
+      size=SECONDARY, align="ctr", before=4),
 ], "Definitions")
 notes(s, "A battle is a zero-sum stochastic game with simultaneous moves, chance and hidden teams, so each turn "
-      "we face a stage matrix A: rows are our actions, columns theirs. x and y are mixed strategies, and val(A), the "
-      "max over x of the min over y of x-transpose-A-y, is what we can guarantee. Regret, in the experts problem with "
-      "n experts over T rounds: we put probabilities p^t on the experts, each expert i suffers loss l_i^t, and regret is "
-      "our total loss minus the best expert's in hindsight; no-regret means it grows slower than T. Exploitability: how "
-      "much less than the game value we earn against a best-responding opponent.")
+      "we face a payoff matrix A: rows are our actions, columns theirs, and x and y are mixed strategies. Regret, in "
+      "the experts problem with n experts over T rounds: we put probabilities p^t on the experts, expert i suffers loss "
+      "l_i^t, and regret is our total loss minus the best expert's in hindsight; no-regret means it grows slower than T. "
+      "Exploitability: every strategy has a worst case, what it earns when the opponent best-responds. The best "
+      "achievable worst case is the game value. Exploitability is how far our strategy's worst case falls below it, "
+      "zero exactly for an equilibrium strategy.")
 
 # 3. MWU -> Hedge, and regret => equilibrium
 s, S = content(1, "MWU → Hedge, and regret ⇒ equilibrium")
