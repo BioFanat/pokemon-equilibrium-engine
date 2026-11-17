@@ -1,4 +1,4 @@
-"""Build deck.pptx: the 12-slide, ~4-minute CS535 final-project talk, in five sections.
+"""Build deck.pptx: the 13-slide, ~4-minute CS535 final-project talk, in five sections.
 
 Built on the user's template ("random template.pptx"): its master, theme, 16:9 size,
 title-slide style and its five-box section tracker, which lives in the template's
@@ -402,9 +402,9 @@ class Shapes:
         """Template slide-3 header box: light accent5 fill, tx1 outline, bold tx1 text."""
         return self.rect(x, y, w, h, paras, FILL_HEADER, name)
 
-    def box(self, x, y, w, h, paras, name):
+    def box(self, x, y, w, h, paras, name, anchor="ctr"):
         """Template slide-3 content box: bg2 fill, tx1 outline, tx1 text."""
-        return self.rect(x, y, w, h, paras, FILL_BOX, name)
+        return self.rect(x, y, w, h, paras, FILL_BOX, name, anchor)
 
     def text(self, x, y, w, h, paras, name, anchor="t"):
         return self._sp(lambda sid, body: (
@@ -573,60 +573,79 @@ notes(s, "A quick picture of the game. Each player has six randomly generated Po
       "Play, has Sunflora in. Damage is random, a Pokemon faints at zero hit points, and you lose when all six have "
       "fainted. So it is a two-player zero-sum game with simultaneous moves, chance and hidden information.")
 
-# 2. The game and the yardsticks
-s, S = content(1, "The game and the yardsticks")
-S.text(LEFT, TOP, WIDTH, BOTTOM - TOP, [
-    P("A battle is a zero-sum stochastic game: simultaneous moves, chance, hidden teams → a stage matrix each turn"),
-    P(("Regret", {"b": True}), "  our total loss minus the best expert's total loss in hindsight", before=20),
-    EQ_(E_REG, before=4),
-    P(("$", "n"), " experts, ", ("$", "T"), " rounds;  ", ("$", "p^t"), ": our probabilities over experts;  ",
-      ("$", "l_i^t ∈ [0,1]"), ": expert ", ("$", "i"), "'s loss in round ", ("$", "t"), size=SECONDARY, align="ctr",
-      before=4),
-    P(("Exploitability", {"b": True}), "  the best worst-case payoff any strategy can secure, minus our strategy's "
-      "worst case", before=20),
-    EQ_(E_EXPL, before=4),
-    P(("$", "A"), ": the turn's payoff matrix (our action × theirs);  ", ("$", "x, y"),
-      ": mixed strategies;  first term = the game value; 0 exactly for an equilibrium strategy",
-      size=SECONDARY, align="ctr", before=4),
-], "Definitions")
-notes(s, "A battle is a zero-sum stochastic game with simultaneous moves, chance and hidden teams, so each turn "
-      "we face a payoff matrix A: rows are our actions, columns theirs, and x and y are mixed strategies. Regret, in "
-      "the experts problem with n experts over T rounds: we put probabilities p^t on the experts, expert i suffers loss "
-      "l_i^t, and regret is our total loss minus the best expert's in hindsight; no-regret means it grows slower than T. "
-      "Exploitability: every strategy has a worst case, what it earns when the opponent best-responds. The best "
-      "achievable worst case is the game value. Exploitability is how far our strategy's worst case falls below it, "
-      "zero exactly for an equilibrium strategy.")
+# 2. The objective: hard to exploit, not just strong
+s, S = content(1, "Goal: hard to exploit, not just strong")
+S.text(LEFT, TOP, WIDTH, Inches(2.45), [
+    P("Strong bots are built to win on average: Foul Play searches a tree, RL agents learn a policy from "
+      "self-play. Neither is built to be safe.", size=18, bullet=True),
+    P("A fixed way of playing has habits, and an opponent who knows them can beat it, however strong it looks "
+      "against everyone else.", size=18, bullet=True, before=SP),
+    P(("Our goal: ", {"b": True}), "an agent built from no-regret learning that is ", ("hard to exploit", {"b": True}),
+      ", with a bound on how much a best-responding opponent can take from it, and to measure what that costs in "
+      "strength.", size=18, bullet=True, before=SP),
+], "Objective")
+by = TOP + Inches(2.85)
+BHT = Inches(1.55)
+yard = [("Exploitability: what we minimise", [
+            EQ_(E_EXPL, size=20),
+            P("best possible guarantee − our guarantee against a best response; 0 at equilibrium",
+              size=SECONDARY, align="ctr", before=8)]),
+        ("Regret: how our learners are judged", [
+            EQ_(E_REG, size=20),
+            P("our loss − the best fixed choice's, in hindsight; no-regret: ", ("$", "Regret_T/T → 0"),
+              size=SECONDARY, align="ctr", before=8)])]
+for k, (name, paras) in enumerate(yard):
+    x = LEFT + k * (COL2 + GAP)
+    S.header(x, by, COL2, HDR_H, [P(name, size=SECONDARY, b=True, align="ctr")], f"Yardstick {k + 1} header")
+    S.box(x, by + HDR_H, COL2, BHT, paras, f"Yardstick {k + 1} box")
+notes(s, "Why not just build another strong bot? The strongest bots are built to win on average: Foul Play runs "
+      "tree search over sampled teams, and RL agents learn a policy from self-play. Neither is built to be safe. "
+      "Any fixed way of playing has habits, and an opponent who knows them can beat it, no matter how well it does "
+      "against everyone else. So our goal is different: an agent built from no-regret learning that is hard to "
+      "exploit, with a bound on how much a best-responding opponent can take from it, and then to measure what that "
+      "safety costs in strength. Two yardsticks. Exploitability is what we try to make small: the best guarantee "
+      "any strategy can secure, minus what ours secures against a best response; it is zero at an equilibrium. "
+      "Regret is how our learners are judged: our total loss minus the best fixed choice's in hindsight, and "
+      "no-regret means the average goes to zero.")
 
-# 3. MWU -> Hedge, and regret => equilibrium
-s, S = content(1, "MWU → Hedge, and regret ⇒ equilibrium")
-ch = Inches(1.75)
-S.text(LEFT, TOP, COL2, ch, [
-    P("MWU", b=True),
-    EQ_(E_MWU, before=8),
-    P("linear in the loss", align="ctr", before=6),
-    EQ_(E_MWUB, before=6),
-], "MWU column")
-S.text(LEFT + COL2 + GAP, TOP, COL2, ch, [
-    P("Hedge (ours)", b=True),
-    EQ_(E_HEDGE, before=8),
-    EQ_(E_SOFTMAX, before=4),
-], "Hedge column")
-S.text(LEFT, TOP + ch + Inches(0.1), WIDTH, BOTTOM - TOP - ch - Inches(0.1), [
-    P("Exponential in the loss = a softmax of cumulative reward (the common factor cancels)", bullet=True),
-    P("Bayes = Hedge with ", ("$", "η = 1"), " on log loss", bullet=True, before=6),
-    P(("No-regret dynamics ⇒ minimax", {"b": True}), ("  (Freund & Schapire 1999)", {"size": SECONDARY}),
-      before=24),
-    P("both players no-regret, with average regrets ", ("$", "ϵ_R"), " and ", ("$", "ϵ_C"), ":", before=4),
-    EQ_(E_MINIMAX, before=6),
-    P("and the time-average play is an ε-coarse correlated equilibrium", align="ctr", before=6),
-], "Hedge and no-regret dynamics")
-notes(s, "Multiplicative weights updates linearly in the loss. We use Hedge, the exponential form of multiplicative "
-      "weights. With small steps it behaves like MWU, but it is the form the no-regret-in-games literature analyses, "
-      "its anytime version suits matches of unknown length, and Bayesian updating is exactly Hedge with step one, so "
-      "our opponent memory inherits the same no-regret guarantee. Inside a turn we use regret matching (RM-plus), as "
-      "CFR and PokaiTrainer do. The key result: if both players are no-regret, the average strategies are an "
-      "approximate minimax equilibrium, off by at most the sum of their average regrets, and time-average play is an "
-      "approximate coarse correlated equilibrium.")
+# 3. How the bounds come into play
+s, S = content(1, "How the bounds come into play")
+flow = [("1. Low regret", [P("Hedge across games, RM⁺ inside a turn:", size=SECONDARY, align="ctr"),
+                           P("average regret → 0", size=SECONDARY, align="ctr", before=4),
+                           P("Hedge = MWU's exponential form", size=CAPTION, i=True, align="ctr", before=8)]),
+        ("2. Near-equilibrium each turn", [P("two no-regret players' averages are", size=SECONDARY, align="ctr"),
+                                           P("within ", ("$", "ε_R + ε_C"), " of equilibrium", size=SECONDARY,
+                                             align="ctr", before=4),
+                                           P("Freund & Schapire 1999", size=CAPTION, i=True, align="ctr",
+                                             before=8)]),
+        ("3. Bounded over a battle", [P("per-turn losses add up over the turns:", size=SECONDARY, align="ctr"),
+                                      EQ_(r"expl(π) ≤ \bar{H}\bar{δ}", size=20, before=4),
+                                      P("our main theorem", size=CAPTION, i=True, align="ctr", before=4)])]
+BHF = Inches(1.45)
+for k, (name, paras) in enumerate(flow):
+    x = LEFT + k * (COL3 + GAP)
+    S.header(x, TOP, COL3, HDR_H, [P(name, size=SECONDARY, b=True, align="ctr")], f"Flow {k + 1} header")
+    S.box(x, TOP + HDR_H, COL3, BHF, paras, f"Flow {k + 1} box")
+    if k < 2:
+        ym = TOP + HDR_H + BHF // 2
+        S.line(x + COL3 + Inches(0.05), ym, x + COL3 + GAP - Inches(0.05), ym, f"Flow arrow {k + 1}", arrow=True)
+gy = TOP + HDR_H + BHF + Inches(0.4)
+S.header(LEFT, gy, WIDTH, HDR_H, [P("Goals: what we use the bounds for", size=SECONDARY, b=True, align="ctr")],
+         "Goals header")
+S.box(LEFT, gy + HDR_H, WIDTH, Inches(1.75), [
+    P("Characterise how exploitable the agent is over a whole battle, term by term", size=18, bullet=True),
+    P("Find which error limits it: the solver (shrinks with compute), the evaluation formula (does not), "
+      "or our beliefs about the hidden team", size=18, bullet=True, before=8),
+    P("Check the learners in practice: measured regrets against their bounds", size=18, bullet=True, before=8),
+], "Goals box", anchor="t")
+notes(s, "Here is how the pieces fit. First, our learners are no-regret: Hedge across games, and regret matching "
+      "plus inside each turn. Second, the classical result of Freund and Schapire: when both players are no-regret, "
+      "their average strategies are within the sum of their regrets of an equilibrium, so each turn we play close "
+      "to equilibrium of the matrix we built. Third, our main theorem adds these per-turn losses up over a battle. "
+      "The point of the bounds is not the number itself. We use them to characterise how exploitable the agent is "
+      "over a whole battle, term by term; to find which error is the limiting one, the solver, which more compute "
+      "removes, the evaluation formula, which it does not, or our beliefs about the hidden team; and to check that "
+      "the learners behave as the theory says, by measuring their regrets against the bounds.")
 
 # ===================== Section 2: Method =====================
 # 4. Each turn an equilibrium; across games Hedge over experts
@@ -735,32 +754,43 @@ notes(s, "This is a real Showdown game against Foul Play; the names at the top a
       "strategy, and the outlined cell is what we and Foul Play actually played.")
 
 # ===================== Section 3: Theory =====================
-# 7. The whole-battle bound, Hedge across games, RL exploiters
+# 8. The whole-battle bound
 s, S = content(3, "The whole-battle bound")
-S.text(LEFT, TOP, WIDTH, BOTTOM - TOP, [
-    P(("Exploitability = sum of per-turn losses", {"b": True}), "   ", ("$", E_LOSSES)),
-    P("each turn loses at most ", ("$", "ε_s + 2ε_v"), ", so", before=6),
-    EQ_(E_BOUND, before=4),
-    P(("$", r"\bar{H}"), ": expected turns against a best response;  ", ("$", r"\bar{δ}"),
-      ": average per-turn loss along its games", size=SECONDARY, align="ctr", before=6),
-    P(("$", "ε_s"), " (solver) vanishes with more iterations, ", ("$", "≤ ϵ_R + ϵ_C"), " for no-regret self-play;  ",
-      ("$", "ε_v"), " (evaluation formula) does not shrink with more compute", size=SECONDARY, align="ctr",
-      before=4),
-    P(("Hedge across games", {"b": True}), " (in our estimated matrices)", before=22),
-    P("Exploits: the best expert's payoff minus its regret", bullet=True, before=4),
-    P("Stays safe: within its regret of the equilibrium value", bullet=True, before=4),
-    P("Carried weights: per-game overhead → 0 over a match", bullet=True, before=4),
-    P(("RL best response = Hedge in every state", {"b": True}), " → RL exploiters lower-bound exploitability",
-      before=22),
-], "Bound, Hedge across games, RL")
-notes(s, "Exploitability equals the expected sum of per-turn losses against a best response, the game analogue of the "
-      "performance-difference lemma. Each turn loses at most epsilon-s plus two epsilon-v, so the battle loses at most "
-      "H-bar, the expected number of turns against a best response, times the average per-turn loss along its games. "
-      "The solver error epsilon-s vanishes with more iterations and is at most the summed regrets for no-regret "
-      "self-play; the matrix error epsilon-v comes from the evaluation formula and does not shrink with more compute. Hedge across games exploits, earning the best expert's payoff minus "
-      "its regret, and stays safe, within its regret of the equilibrium value; with carried weights the per-game "
-      "overhead vanishes over a match. These hold in our matrices; on Showdown only the first applies. And since "
-      "natural policy gradient is Hedge in every state, an RL exploiter's score lower-bounds exploitability.")
+S.text(LEFT, TOP, WIDTH, Inches(1.6), [
+    P("Each turn our strategy can lose at most ", ("$", "δ = ε_s + 2ε_v"), " against the true game, and "
+      "exploitability is the sum of these per-turn losses over the battle, so", size=18),
+    EQ_(E_BOUND.split(",")[0], before=6),
+], "Bound statement")
+by = TOP + Inches(1.7)
+BH3 = Inches(1.3)
+terms = [([("$", "ε_s"), (": solver error", {})], [P("how far we are from our matrix's equilibrium", size=SECONDARY, align="ctr"),
+                                P("shrinks with compute (≤ ", ("$", "ε_R + ε_C"), ")", size=SECONDARY, align="ctr",
+                                  before=4)]),
+         ([("$", "ε_v"), (": matrix error", {})], [P("how wrong our matrix is, mostly the evaluation formula", size=SECONDARY,
+                                  align="ctr"),
+                                P("more compute does not shrink it", size=SECONDARY, align="ctr", before=4)]),
+         ([("$", r"\bar{H}"), (": battle length", {})], [P("expected turns an exploiter plays", size=SECONDARY, align="ctr"),
+                               P("(δ̄: average δ along its games)", size=SECONDARY, align="ctr", before=4)])]
+for k, (name, paras) in enumerate(terms):
+    x = LEFT + k * (COL3 + GAP)
+    S.header(x, by, COL3, HDR_H, [P(*name, size=SECONDARY, b=True, align="ctr")], f"Term {k + 1} header")
+    S.box(x, by + HDR_H, COL3, BH3, paras, f"Term {k + 1} box")
+gy = by + HDR_H + BH3 + Inches(0.3)
+S.header(LEFT, gy, WIDTH, HDR_H, [P("Goal: use the bound to characterise exploitability", size=SECONDARY, b=True,
+                                    align="ctr")], "Goal header")
+S.box(LEFT, gy + HDR_H, WIDTH, Inches(1.05), [
+    P("Measure each term on real positions and see which one limits the agent", size=18, bullet=True),
+    P("Hedge across games adds its own regret on top; RL exploiters give lower bounds to check against", size=18,
+      bullet=True, before=6),
+], "Goal box", anchor="t")
+notes(s, "Our main result in one line. On each turn, our strategy can lose at most delta against the true game: the "
+      "solver error plus twice the matrix error. Exploitability is exactly the sum of per-turn losses against a best "
+      "response, so it is at most H-bar, the number of turns that exploiter plays, times the average delta along "
+      "its games. The solver error shrinks with compute, and for no-regret self-play it is at most the summed "
+      "regrets. The matrix error comes mostly from the evaluation formula, and more compute does not shrink it. Our "
+      "goal is to use this to characterise exploitability: measure each term on real positions and see which one "
+      "limits the agent. Hedge across games adds its own regret on top, and RL exploiters, which are Hedge in every "
+      "state, give lower bounds to check against.")
 
 # ===================== Section 4: Experiments =====================
 # 8. Exploitability
