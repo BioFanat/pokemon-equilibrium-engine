@@ -1,0 +1,98 @@
+{
+ "tag": "rr_prelim_hedge",
+ "A": "hedge_bayes_mw",
+ "B": "hedge_mcts",
+ "k": 4,
+ "seeds": "101-130",
+ "n_seeds": 30,
+ "n_pairs": 30,
+ "pair_score_A": {
+  "mean": 0.5333,
+  "sd": 0.3198,
+  "ci95": [
+   0.4139,
+   0.6528
+  ],
+  "per_seed": {
+   "101": 0.5,
+   "102": 1.0,
+   "103": 0.0,
+   "104": 0.5,
+   "105": 1.0,
+   "106": 0.5,
+   "107": 1.0,
+   "108": 0.5,
+   "109": 0.5,
+   "110": 0.5,
+   "111": 0.5,
+   "112": 1.0,
+   "113": 0.0,
+   "114": 0.0,
+   "115": 0.5,
+   "116": 0.5,
+   "117": 0.0,
+   "118": 0.5,
+   "119": 1.0,
+   "120": 0.5,
+   "121": 0.5,
+   "122": 1.0,
+   "123": 0.5,
+   "124": 0.5,
+   "125": 0.0,
+   "126": 0.5,
+   "127": 0.5,
+   "128": 1.0,
+   "129": 0.5,
+   "130": 0.5
+  }
+ },
+ "error_games": 0,
+ "errors": [],
+ "missing_games": [],
+ "nonzero_exit": {},
+ "mean_turns": 30.67,
+ "per_method": {
+  "hedge_bayes_mw": {
+   "decisions": 2104,
+   "wall_s_per_decision": 2.168,
+   "cpu_s_per_decision": 0.498,
+   "cpu_s_per_game": 17.47
+  },
+  "hedge_mcts": {
+   "decisions": 2123,
+   "wall_s_per_decision": 2.247,
+   "cpu_s_per_decision": 1.61,
+   "cpu_s_per_game": 56.98
+  }
+ },
+ "cpu_s_per_game": 78.31,
+ "streams": 6,
+ "learning": {
+  "hedge_bayes_mw": {
+   "feedback_turns": 2044,
+   "updates": 1625,
+   "skipped": 419,
+   "skipped_frac": 0.205,
+   "skipped_reasons": {
+    "not_in_worlds": 196,
+    "cant": 64,
+    "no_action": 41,
+    "fainted": 118
+   }
+  },
+  "hedge_mcts": {
+   "feedback_turns": 2081,
+   "updates": 1734,
+   "skipped": 347,
+   "skipped_frac": 0.1667,
+   "skipped_reasons": {
+    "not_in_worlds": 174,
+    "fainted": 99,
+    "cant": 35,
+    "no_action": 39
+   }
+  }
+ },
+ "batch_wall_s": 892.5,
+ "workers": 6
+}
