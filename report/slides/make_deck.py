@@ -72,7 +72,7 @@ def esc(s):
 # Spec syntax: x_i, x^2, x_{t,e}^{1}; \sum_{lo}^{hi}{body}; \frac{a}{b}; \sqrt{a};
 # \max_{x}{body}, \min_{y}{body} (name with the limit under it); \sup{body}, \ln{a}, \exp{a};
 # \bar{H}, \hat{q}; {...} groups. Spaces only separate tokens (OMML spaces itself).
-UPRIGHT = {"Regret", "MWU", "expl", "gap", "val", "E"}  # names set upright (E: expectation)
+UPRIGHT = {"Regret", "MWU", "expl", "gap", "val", "E", "arg"}  # names set upright (E: expectation)
 FUNCS = {"sup", "ln", "exp"}
 _TOKEN = re.compile(r"\\[A-Za-z]+|[A-Za-z]+|\d+|\s+|.")
 
@@ -607,33 +607,39 @@ notes(s, "Multiplicative weights updates linearly in the loss. We use Hedge, the
 # ===================== Section 2: Method =====================
 # 4. Each turn an equilibrium; across games Hedge over experts
 s, S = content(2, "Equilibrium each turn, Hedge across games")
-S.text(LEFT, TOP, WIDTH, Inches(1.3), [
-    P(("Each turn: ", {"b": True}), "solve one Bayesian matrix game over 4 sampled opponent worlds (LP or RM⁺)"),
+S.text(LEFT, TOP, WIDTH, Inches(1.55), [
+    P(("Each turn: ", {"b": True}), "sample 4 possible opponent teams (worlds ", ("$", "k"), ", matrices ",
+      ("$", "M_k"), ") and pick the one mixed strategy ", ("$", "x"),
+      " that does best on average when the opponent best-responds in every world (as PokaiTrainer does for VGC)"),
     EQ_(E_BLP, before=6),
 ], "Each turn")
-S.text(LEFT, TOP + Inches(1.4), WIDTH, Inches(0.45),
-       [P(("Across games: ", {"b": True}), "Hedge over four per-turn experts")], "Across games")
-experts = [("Top move", [P("argmax of ", ("$", "x"), size=SECONDARY, align="ctr")]),
-           ("Sampled", [P("play ", ("$", "x"), size=SECONDARY, align="ctr")]),
-           ("Pure maximin", [P("the security row", size=SECONDARY, align="ctr")]),
-           ("ε-safe best response", [P("to the prediction ", ("$", r"\hat{q}"), size=SECONDARY,
+S.text(LEFT, TOP + Inches(1.6), WIDTH, Inches(0.45),
+       [P(("Across games: ", {"b": True}), "Hedge over four ways of playing ", ("$", "x"),
+          " on the averaged matrix ", ("$", r"\bar{A} = \sum_k{β_k M_k}"))], "Across games")
+experts = [("Top move", [P(("$", r"a = arg\max_i{x_i}"), size=SECONDARY, align="ctr")]),
+           ("Sampled", [P(("$", "a ∼ x"), size=SECONDARY, align="ctr")]),
+           ("Pure maximin", [P(("$", r"a = arg\max_i{\min_j{\bar{A}_{ij}}}"), size=SECONDARY, align="ctr")]),
+           ("ε-safe best response", [P("best reply to ", ("$", r"\hat{q}"), size=SECONDARY, align="ctr"),
+                                     P("with worst case ≥ ", ("$", "x"), "'s − ", ("$", "ε"), size=SECONDARY,
                                        align="ctr")])]
-gy = TOP + Inches(1.95)
+gy = TOP + Inches(2.15)
 for k, (name, rule) in enumerate(experts):
     x = LEFT + k * (COL4 + GAP)
     S.header(x, gy, COL4, HDR_H, [P(name, size=SECONDARY, b=True, align="ctr")], f"Expert {k + 1} header")
-    S.box(x, gy + HDR_H, COL4, Inches(0.75), rule, f"Expert {k + 1} box")
-by = gy + HDR_H + Inches(0.75) + Inches(0.2)
+    S.box(x, gy + HDR_H, COL4, Inches(0.85), rule, f"Expert {k + 1} box")
+by = gy + HDR_H + Inches(0.85) + Inches(0.2)
 S.text(LEFT, by, WIDTH, BOTTOM - by, [
-    P("Each expert is credited with what it would have earned against the observed action", bullet=True),
-    P("Weights carried across the games of a match", bullet=True, before=SP),
+    P("Each expert is credited with what it would have earned against the observed action; weights carried "
+      "across a match", bullet=True),
 ], "Hedge bullets")
-notes(s, "Each turn, the agent samples four possible opponent teams and plays an equilibrium of one Bayesian matrix "
-      "game over them, solved as an LP or by RM-plus self-play. Solving each world separately and averaging, PIMC, "
-      "suffers strategy fusion. The learning happens across games: Hedge mixes four fixed rules applied to the "
-      "turn's solved game, top move, sampled, pure maximin and an epsilon-safe best response to the predicted "
-      "opponent. Each rule is credited with what it would have earned, and weights carry across the games of a "
-      "match, so Hedge competes with the best rule in hindsight.")
+notes(s, "Each turn, the agent samples four possible opponent teams. Each gives a payoff matrix M_k. It then picks one "
+      "mixed strategy x that does best on average when the opponent best-responds separately in each world: the "
+      "formula on the slide, a single linear program. PokaiTrainer solves the same problem for Pokemon VGC. Across "
+      "games, Hedge mixes four ways of playing this solution on the averaged matrix: top move plays x's most likely "
+      "action; sampled draws an action from x; pure maximin plays the single action with the best worst case; and "
+      "the epsilon-safe best response best-replies to the memory's prediction of the opponent while keeping its worst "
+      "case within epsilon, 0.3 percent of the payoff range, of x's. Each expert is credited with what it would have "
+      "earned against the observed action, and the weights carry across the games of a match.")
 
 # 5. The Bayesian opponent memory
 s, S = content(2, "The Bayesian opponent memory")
@@ -661,11 +667,11 @@ pic._element.nvPicPr.cNvPr.set(
     "descr", "Showdown replay against Foul Play above our agent's decision panel: a slice of the Bayesian "
              "matrix game, our mixed strategy as bars, estimated win chance in each cell")
 S.text(gx, TOP + gh + Inches(0.03), gw, Inches(0.47),
-       [P("A real Showdown game: each turn the agent solves the Bayesian matrix game over 4 sampled opponent teams; "
+       [P("A real Showdown game: each turn the agent picks one mixed strategy against 4 sampled opponent teams; "
           "bars show our mixed strategy, cells our estimated win chance.", size=CAPTION, i=True)],
        "Animation caption")
 notes(s, "This is a real Showdown game against Foul Play; the names at the top are the bots' account names. Each "
-      "turn the agent samples 4 possible opponent teams and solves one Bayesian matrix game over them. The panel shows "
+      "turn the agent samples 4 possible opponent teams and picks one mixed strategy that does best against all of them. The panel shows "
       "a slice: rows are our options, columns the opponent's, cells our estimated win chance. The bars are our mixed "
       "strategy, and the outlined cell is what we and Foul Play actually played.")
 
