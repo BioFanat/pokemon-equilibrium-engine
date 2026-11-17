@@ -354,8 +354,6 @@ E_SOFTMAX = r"p_t(e) ∝ \exp{(η\sum_{j<t}{r_{j,e}})}"
 E_FACT1 = r"ε = \frac{Reg_1 + Reg_2}{T}"
 E_BLP = r"\max_x{\sum_k{β_k \min_j{{(M_k^⊤x)}_j}}}"
 E_MIX = r"p_t = \sum_e{w_e q_e}"
-E_GAP_ROOT = r"gap = \frac{Reg^1 + Reg^2}{N}"
-E_GAP_N = r"gap(\bar{x}_N, \bar{y}_N) = \frac{Reg^1_N + Reg^2_N}{N}"
 E_BOUND = r"expl(π) ≤ \bar{H} · \sup{(ε_s + 2ε_v)}"
 E_HEDGE_BOUND = r"Reg_T ≤ \sqrt{T \ln{m_E} / 2}"
 E_ANYTIME = r"Reg_T ≤ \frac{3}{2}\sqrt{T \ln{m_E} / 2} + \sqrt{\ln{m_E} / 8}"
@@ -596,7 +594,7 @@ notes(s, "Lecture gave us multiplicative weights, a linear update on losses. Our
 
 # ===================== Section 2: Method =====================
 # 4. Where no-regret learning enters
-s, S = content(2, "Equilibrium Play and No-Regret Learning")
+s, S = content(2, "Equilibrium Play and Hedge")
 cols = [
     ("Each turn: play an equilibrium", [
         P("Solve the Bayesian matrix game over the sampled worlds: an LP, or RM⁺ self-play (no-regret dynamics, Fact 1)", before=8),
@@ -606,19 +604,18 @@ cols = [
     ("Across games: learn with Hedge", [
         P("Hedge over per-turn experts, learning from the opponent's observed actions", before=8),
         P("A Bayesian opponent memory, whose update is Hedge with η = 1", before=8)]),
-    ("Analysing search", [
-        P("A tree-search root, as in Foul Play, is bandit self-play (UCB1 / Exp3); its visit shares obey", before=8),
-        EQ_(E_GAP_ROOT, before=10)]),
 ]
 for k, (head, paras) in enumerate(cols):
-    S.text(LEFT + k * (COL3 + GAP), TOP, COL3, BOTTOM - TOP, [P(head, b=True)] + paras, f"{head} column")
+    S.text(LEFT + k * (COL2 + GAP), TOP, COL2, BOTTOM - TOP, [P(head, b=True)] + paras, f"{head} column")
+S.text(LEFT, BOTTOM - Inches(0.7), WIDTH, Inches(0.6),
+       [P("Foul Play's tree search is also self-play with a bandit at every node, but its visit counts need not "
+          "converge to an equilibrium (Lisý et al. 2013), so we solve each turn's game directly",
+          size=SECONDARY, i=True)], "Search note")
 notes(s, "Each turn, the agent plays an equilibrium of PokaiTrainer's Bayesian matrix game: one strategy x against "
       "an opponent that best-responds in each sampled world. On Showdown we solve it with an LP; in the engine we run "
       "RM-plus self-play, whose convergence is the regret-to-equilibrium fact. PIMC averaging instead solves each world "
       "separately and suffers strategy fusion. The actual learning happens across games: Hedge over per-turn experts, "
-      "and a Bayesian opponent memory whose update is Hedge with step one. Finally, we use the same view to analyse "
-      "search: Foul Play's tree-search root is two bandits playing each other, and the duality gap of the visit shares "
-      "equals their summed regret over N.")
+      "and a Bayesian opponent memory whose update is Hedge with step one.")
 
 # 5. Across games: an experts problem
 s, S = content(2, "Across games: an experts problem")
@@ -715,16 +712,12 @@ rows = [
      [P("stage exploitability ", ("$", "ε_s"), ", composed over a battle with the stage-matrix error ",
         ("$", "ε_v"), " by backward induction (Shapley)", size=SECONDARY)],
      [P(("$", E_BOUND), size=SECONDARY), P("whole-battle bound; adapted", size=SECONDARY, i=True)]),
-    (Inches(0.89),
-     [P("Self-play bound (Freund & Schapire 1999)", size=SECONDARY)],
-     [P("bandit feedback at the search root (cf. Lisý et al. 2013)", size=SECONDARY)],
-     [P(("$", E_GAP_N), size=SECONDARY), P("an identity, not an inequality; ours", size=SECONDARY, i=True)]),
     (Inches(0.92),
      [P("Hedge bound (Freund & Schapire 1997; Cesa-Bianchi & Lugosi 2006)", size=SECONDARY)],
      [P("anytime step, slightly tighter constant (FTRL); Bayes = Hedge with ", ("$", "η = 1"),
         " (Cesa-Bianchi & Lugosi 2006)", size=SECONDARY)],
      [P(("$", E_ANYTIME), size=SECONDARY),
-      P("FTRL constant (ext. report); ln 5: known", size=SECONDARY, i=True)]),
+      P("FTRL constant: standard argument; ln 5: known", size=SECONDARY, i=True)]),
     (Inches(0.9),
      [P("Fixed-comparator regret (Cesa-Bianchi & Lugosi 2006)", size=SECONDARY)],
      [P("a switching opponent: tracking via fixed share (Herbster & Warmuth 1998; Cesa-Bianchi & Lugosi 2006)",
@@ -739,11 +732,9 @@ for k, (h, *cells) in enumerate(rows):
     ry += h
 notes(s, "Our theory starts from two base results. Hedge's regret is at most root T log m over 2, from Freund and "
       "Schapire 1997 and Cesa-Bianchi and Lugosi; and no-regret self-play gives an epsilon-equilibrium with epsilon "
-      "the summed regret over T, from Freund and Schapire 1999 and the lecture. We adapt them four ways. Applied per "
+      "the summed regret over T, from Freund and Schapire 1999 and the lecture. We adapt them three ways. Applied per "
       "turn, the self-play bound gives the stage exploitability epsilon-s; composed over a battle with the stage-matrix "
-      "error by Shapley's backward induction, it gives our whole-battle bound. With bandit feedback at the search root "
-      "the inequality becomes an identity: the duality gap of the visit shares equals the summed regret over N; that "
-      "identity is ours, building on Lisy and colleagues. Across games we use Hedge's anytime version, with a slightly "
+      "error by Shapley's backward induction, it gives our whole-battle bound. Across games we use Hedge's anytime version, with a slightly "
       "tighter constant by the standard FTRL argument, and Bayes is Hedge with step one, so the memory's regret is at "
       "most log five; that is known. Against a switching opponent, tracking by fixed share, from Herbster and Warmuth, "
       "gives our detection-delay prediction, which we tested live.")
