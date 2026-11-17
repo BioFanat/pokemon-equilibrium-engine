@@ -1,4 +1,4 @@
-"""Build deck.pptx: the 11-slide, ~4-minute CS535 final-project talk, in five sections.
+"""Build deck.pptx: the 10-slide, ~4-minute CS535 final-project talk, in five sections.
 
 Built on the user's template ("random template.pptx"): its master, theme, 16:9 size,
 title-slide style and its five-box section tracker, which lives in the template's
@@ -617,35 +617,6 @@ notes(s, "Why not just build another strong bot? The strongest bots are built to
       "any strategy can secure, minus what ours secures against a best response; it is zero at an equilibrium. "
       "Regret is how our learners are judged: our total loss minus the best fixed choice's in hindsight, and "
       "no-regret means the average goes to zero.")
-
-# 3. Background theory and our goals
-s, S = content(1, "Background: no-regret theory")
-S.text(LEFT, TOP, WIDTH, Inches(3.3), [
-    P(("MWU", {"b": True}), " (Littlestone & Warmuth): shrink each expert's weight after a loss, ",
-      ("$", E_MWU), ";  ", ("$", r"Regret_T ≤ 2\sqrt{T \ln{n}}"), size=18, bullet=True),
-    P(("Hedge", {"b": True}), " (Freund & Schapire), the exponential form we use, ", ("$", E_HEDGE),
-      ";  its no-regret bound: ", ("$", r"Regret_T ≤ \frac{3}{2}\sqrt{\frac{T}{2}\ln{n}} + \sqrt{\frac{\ln{n}}{8}}"),
-      size=18, bullet=True, before=12),
-    P(("No-regret dynamics ⇒ minimax", {"b": True}), " (Freund & Schapire): if both players of a matrix game ",
-      ("$", "A"), " are no-regret, ", ("$", E_MINIMAX), size=18, bullet=True, before=12),
-    P(("No-regret dynamics ⇒ CCE:", {"b": True}), " in any finite game, time-average play is an ε-coarse "
-      "correlated equilibrium", size=18, bullet=True, before=12),
-], "Background results")
-gy = TOP + Inches(3.45)
-S.text(LEFT, gy, WIDTH, BOTTOM - gy, [
-    P("Our goals", b=True),
-    P("Use these bounds to characterise how exploitable our agent is over a whole battle", size=18, bullet=True,
-      before=4),
-    P("Check in practice: measure exploitability and regret", size=18, bullet=True, before=4),
-    P("See whether the agent can still win", size=18, bullet=True, before=4),
-], "Goals")
-notes(s, "A few known results we build on. Multiplicative weights shrinks each expert's weight after a loss, and "
-      "its regret grows like root T log n. Hedge is the exponential form, which we use; its no-regret bound "
-      "needs no horizon and has the same rate. When both players of a matrix game are no-regret, their average "
-      "strategies are within the sum of their average regrets of an equilibrium, which is the minimax theorem, and "
-      "in any finite game time-average play is a coarse correlated equilibrium. Our goals: use these bounds to "
-      "characterise how exploitable our agent is over a whole battle, check that in practice by measuring "
-      "exploitability and regret, and see whether the agent can still win.")
 
 # ===================== Section 2: Method =====================
 # 4. Preliminary model: worlds and matrices, one strategy x, then experts
