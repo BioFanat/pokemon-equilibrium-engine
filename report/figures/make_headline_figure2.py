@@ -24,8 +24,12 @@ import matplotlib.pyplot as plt
 from make_regret_figure import (OUT, ROOT, COL, GRAY, INK, LN5, MEM_EXCLUDED, RM_FIT_LO, check_figure,
                                 load_streams, analyse, rm_data, hedge_bound, slope)
 
-# One clean style for paper and deck: series keep their colours; all text (labels, annotations) is black Helvetica.
-INK = "#111111"
+# One clean style for paper and deck: series keep their colours; all text (labels, ticks, annotations) is black
+# Helvetica.
+INK = "#000000"
+plt.rcParams.update({"font.sans-serif": ["Helvetica", "Arial"], "text.color": INK, "axes.labelcolor": INK,
+                     "axes.titlecolor": INK, "xtick.color": INK, "ytick.color": INK, "xtick.labelcolor": INK,
+                     "ytick.labelcolor": INK, "axes.edgecolor": INK})
 plt.rcParams.update({"font.sans-serif": ["Helvetica", "Arial"], "text.color": INK, "axes.labelcolor": INK,
                      "xtick.color": INK, "ytick.color": INK, "axes.edgecolor": INK})
 
@@ -72,7 +76,7 @@ def panel_exploit(ax, eg):
     ax.loglog(lim, lim, color=GRAY, lw=1.2, ls=(0, (4, 2)))
     ax.scatter([r["expl"] for r in eg], [r["bound"] for r in eg], s=18, color=INK, alpha=0.55, lw=0, zorder=3)
     lo, hi = min(r["ratio"] for r in eg), max(r["ratio"] for r in eg)
-    ax.text(0.3, 0.12, "bound = measured", color=INK, rotation=0, va="center")
+    ax.text(0.3, 0.12, "bound = actual", color=INK, rotation=0, va="center")
     ax.text(0.013, 150, f"all above the line: bound holds", color=INK, va="center")
     ax.set_xlim(0.01, 3); ax.set_ylim(0.05, 300)
     ax.set_xticks([0.01, 0.1, 1])
@@ -166,7 +170,7 @@ def draw_deck(eg, rm, hedge_curves, mem_curves):
         panel_rm(axs[1], rm)
         panel_hedge(axs[2], hedge_curves)
         panel_memory(axs[3], mem_curves)
-        spec = [("Bound always holds", "Actual exploitability", "Our bound"),
+        spec = [("Exploitability bound", "Actual exploitability", "Our bound"),
                 ("Solver reaches equilibrium", "Solver iterations", "Distance from equilibrium"),
                 ("Hedge's regret shrinks", "Turns played", "Regret per turn"),
                 ("Prediction error is capped", "Turns played", "Total prediction regret")]
@@ -174,6 +178,9 @@ def draw_deck(eg, rm, hedge_curves, mem_curves):
             ax.set_title(t, loc="left")
             ax.set_xlabel(xl)
             ax.set_ylabel(yl)
+        for t in axs[0].texts:                      # deck: keep only the diagonal's label in panel a
+            if t.get_text().startswith("all above"):
+                t.remove()
         letters_and_titles(fig, axs, "abcd")
         fig.savefig(OUT / "fig_main_deck.png", dpi=200)
         plt.close(fig)

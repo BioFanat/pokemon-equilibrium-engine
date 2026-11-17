@@ -791,11 +791,14 @@ pic._element.nvPicPr.cNvPr.set("descr", "Four panels, each with the theoretical 
                                         "solid: exploitability bound vs actual exploitability on solved endgames; RM+ "
                                         "distance from equilibrium; Hedge regret per turn; opponent-model regret")
 notes_txt = [
-    "Each dot: one bot in a solved endgame. All sit above the line, so the whole-battle bound always holds, but it is "
-    "7–155× loose because of the evaluation error.",
-    "Inside a turn, the strategy we play ends about 5,000× closer to equilibrium than the guarantee requires.",
-    "Across games, Hedge's regret per turn falls toward zero, far below its guarantee: it nearly matches its best expert.",
-    "The opponent model's total prediction regret climbs to the proved cap, ln 5, and stays there.",
+    "Each dot: one bot on an endgame we solved exactly. Our bound is never below the actual exploitability, but it "
+    "is often far larger.",
+    "An equilibrium is a strategy that even an opponent who knows it cannot beat on average. Inside a turn our solver "
+    "ends within 0.01% of the turn's equilibrium.",
+    "Regret: how much better the best single expert would have done, per turn. Hedge's falls toward zero, under its "
+    "guarantee.",
+    "Prediction regret: how much worse our opponent model predicts moves than the best fixed style. It levels off at "
+    "the proved cap, ln 5.",
 ]
 cw = (WIDTH - 3 * Inches(0.15)) // 4
 ty = iy + fh + Inches(0.08)
