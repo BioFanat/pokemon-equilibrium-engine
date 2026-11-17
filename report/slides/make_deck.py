@@ -909,8 +909,8 @@ pic.name = "Exploitability figure"
 pic._element.nvPicPr.cNvPr.set("descr", "Extra wins an opponent gets from knowing the decision rule: about half a "
                                         "game against the Bayesian model, none against a randomised version")
 S.text(rx, ty + fh + Inches(0.05), fw, BOTTOM - ty - fh, [
-    P("Knowing our rule lifts the opponent from 0.21 to 0.70, because the Bayesian model always plays its top move. "
-      "The same search picking at random gives nothing away, but even the blind opponent beats it.", size=14),
+    P("Knowing our rule lifts the opponent from 0.21 to 0.70: the Bayesian model always plays its top move, so it "
+      "can be predicted. Randomising its choice removes this gap, but it then plays much worse.", size=14),
 ], "Exploit text")
 notes(s, "Here are the Bayesian model's results. Strength first. On the public ladder it went 99 and 51 and climbed to "
       "2090 Elo in the games we logged, and it has since reached 2308, reportedly in the top 50. In local paired games "
@@ -918,9 +918,8 @@ notes(s, "Here are the Bayesian model's results. Strength first. On the public l
       "equal search time, and it beats our preliminary model 0.83. Then exploitability: how much more an opponent "
       "wins if it knows exactly how our bot decides. We play our bot against a simple opponent that each turn picks "
       "its best answer to the move it expects from us, twice. Guessing our move blindly, it scores 0.21. Running our "
-      "rule to predict our move, it scores 0.70, because the Bayesian model always plays its top move. The same "
-      "search picking its move at random, weighted by its preferences, gives nothing away, but even the blind "
-      "opponent beats it. That trade-off between strength and predictability is what our theory says to expect.")
+      "rule to predict our move, it scores 0.70, because the Bayesian model always plays its top move. Randomising "
+      "its choice removes this gap, but it then plays much worse. That trade-off between strength and predictability is what our theory says to expect.")
 
 # ===================== Section 5: Conclusions =====================
 # 12. Takeaways and next steps

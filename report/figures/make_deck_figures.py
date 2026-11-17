@@ -74,9 +74,8 @@ def strength():
 
 def exploit():
     """Opponent's score (1 - target score, ADV table in RESULTS.md) when it guesses blindly vs when it knows our rule."""
-    rows = [("Bayesian model\n(always top move)", (0.213, 0.155, 0.270), (0.700, 0.641, 0.759), "+0.49", ACCENT),
-            ("Same search,\nrandom pick", (0.913, 0.873, 0.952), (0.923, 0.887, 0.958), "+0.01", GREY)]
-    fig, b = plt.subplots(figsize=(6.4, 3.1))
+    rows = [("Bayesian\nmodel", (0.213, 0.155, 0.270), (0.700, 0.641, 0.759), "+0.49", ACCENT)]
+    fig, b = plt.subplots(figsize=(6.4, 2.2))
     for k, (lab, blind, known, d, col) in enumerate(rows):
         y = len(rows) - 1 - k
         for (v, lo, hi), filled in ((blind, False), (known, True)):
@@ -90,7 +89,7 @@ def exploit():
             b.text(known[0] - 0.03, y + 0.3, d, ha="center", va="bottom", color=INK)
     b.set_yticks(range(len(rows)))
     b.set_yticklabels([r[0] for r in rows][::-1])
-    b.set_ylim(-0.6, len(rows) - 0.1)
+    b.set_ylim(-0.5, len(rows) - 0.2)
     b.axvline(0.5, color=LIGHT, lw=1.5, zorder=0)
     b.set_xlim(0, 1)
     b.set_xlabel("Opponent's score (0.5 = even)")
