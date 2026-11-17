@@ -413,7 +413,7 @@ class Shapes:
             f'<p:txBody><a:bodyPr wrap="square" rtlCol="0" anchor="{anchor}"><a:noAutofit/></a:bodyPr><a:lstStyle/>'
             f'{body}</p:txBody></p:sp>'), paras)
 
-    def line(self, x1, y1, x2, y2, name, colour="tx1", w=25400):
+    def line(self, x1, y1, x2, y2, name, colour="tx1", w=25400, arrow=False):
         """Template slide-3 straight connector: 2 pt tx1 line (w in EMU)."""
         sid = self._id()
         flip = ' flipV="1"' if y2 < y1 else ""
@@ -422,7 +422,7 @@ class Shapes:
             f'<p:cxnSp {NS}><p:nvCxnSpPr><p:cNvPr id="{sid}" name="{esc(name)}"/><p:cNvCxnSpPr/><p:nvPr/></p:nvCxnSpPr>'
             f'<p:spPr><a:xfrm{flip}><a:off x="{int(x)}" y="{int(y)}"/><a:ext cx="{int(abs(x2 - x1))}" cy="{int(abs(y2 - y1))}"/>'
             f'</a:xfrm><a:prstGeom prst="line"><a:avLst/></a:prstGeom><a:ln w="{w}"><a:solidFill>'
-            f'<a:schemeClr val="{colour}"/></a:solidFill></a:ln></p:spPr>{LINE_STYLE}</p:cxnSp>')
+            f'<a:schemeClr val="{colour}"/></a:solidFill>{"<a:tailEnd type=\"triangle\"/>" if arrow else ""}</a:ln></p:spPr>{LINE_STYLE}</p:cxnSp>')
 
     def slide_number(self, n):
         """Slide-number placeholder; position, size and font come from the layout."""
@@ -643,18 +643,53 @@ notes(s, "Each turn, the agent samples four possible opponent teams. Each gives 
 
 # 5. The Bayesian opponent memory
 s, S = content(2, "The Bayesian opponent memory")
-S.text(LEFT, TOP, WIDTH, BOTTOM - TOP, [
-    P("A posterior over five opponent styles, from equilibrium to uniform", bullet=True),
-    P("Bayes = Hedge with ", ("$", "η = 1"), " on log loss → regret at most ", ("$", r"\ln{5}"),
-      bullet=True, before=18),
-    P("Its prediction ", ("$", r"\hat{q}"), " feeds the ε-safe best response", bullet=True, before=18),
-    P("Forgetting ", ("$", "(λ < 1)"), " tracks a switching opponent", bullet=True, before=18),
-], "Opponent memory bullets")
-notes(s, "The opponent memory is Bayesian: a posterior over five behavioural styles, stage equilibrium, best response "
-      "to uniform, logit best response, cautious and uniform, scored on each sampled world's own legal actions. "
-      "Bayes is Hedge with step one on log loss, so its regret is at most log five. The prediction feeds the "
-      "epsilon-safe best response, which exploits while keeping the stage value minus 0.3 percent of the range. "
-      "Forgetting tracks an opponent that switches style.")
+steps = [("1. Observe", [P("the opponent plays ", ("$", "b_t"), size=SECONDARY, align="ctr")]),
+         ("2. Score styles", [P(("$", r"q_θ(b_t | M_k)"), size=SECONDARY, align="ctr"),
+                              P("each style ", ("$", "θ"), ", world ", ("$", "k"), size=SECONDARY, align="ctr", before=4),
+                              P("(0 if illegal there)", size=SECONDARY, align="ctr")]),
+         ("3. Update posterior", [P(("$", r"Π_t(θ) ∝ Π_{t−1}(θ)^λ ×"), size=SECONDARY, align="ctr"),
+                                  P(("$", r"\sum_k{β_k q_θ(b_t | M_k)}"), size=SECONDARY, align="ctr", before=4)]),
+         ("4. Predict, exploit", [P(("$", r"\hat{q} = \sum_θ{Π(θ) q_θ}"), size=SECONDARY, align="ctr"),
+                                  P("→ ε-safe best response", size=SECONDARY, align="ctr", before=4)])]
+BH = Inches(1.35)
+for k, (name, paras) in enumerate(steps):
+    x = LEFT + k * (COL4 + GAP)
+    S.header(x, TOP, COL4, HDR_H, [P(name, size=SECONDARY, b=True, align="ctr")], f"Step {k + 1} header")
+    S.box(x, TOP + HDR_H, COL4, BH, paras, f"Step {k + 1} box")
+    if k < 3:
+        ym = TOP + HDR_H + BH // 2
+        S.line(x + COL4 + Inches(0.05), ym, x + COL4 + GAP - Inches(0.05), ym, f"Arrow {k + 1}", arrow=True)
+y2 = TOP + HDR_H + BH + Inches(0.45)
+H2 = Inches(2.0)
+cols = [("Five styles", [P("stage equilibrium", size=SECONDARY, align="ctr"),
+                         P("best response to uniform", size=SECONDARY, align="ctr"),
+                         P("logit best response to our mix", size=SECONDARY, align="ctr"),
+                         P("cautious (maximin)", size=SECONDARY, align="ctr"),
+                         P("uniform", size=SECONDARY, align="ctr")]),
+        ("How we check it", [P("Bayes = Hedge (", ("$", "η = 1"), "):", size=SECONDARY, align="ctr"),
+                             P("regret ≤ ", ("$", r"\ln{5}"), ", measured ", ("$", r"\ln{5}"), size=SECONDARY,
+                               align="ctr"),
+                             P("Per-world scoring:", size=SECONDARY, align="ctr", before=8),
+                             P("≈ 0.3 nats/turn better", size=SECONDARY, align="ctr"),
+                             P("Switch delay = prediction (live)", size=SECONDARY, align="ctr", before=8)]),
+        ("Extension: sets × style jointly", [P(("$", r"Π_t(k, θ) ∝ Π_{t−1}(k, θ) q_θ(b_t | M_k)"),
+                                               size=SECONDARY, align="ctr"),
+                                             P("which team and how they play, updated together", size=SECONDARY,
+                                               align="ctr", before=6),
+                                             P("adds nothing measurable (+0.001 nats/turn)", size=SECONDARY,
+                                               align="ctr", before=6)])]
+for k, (name, paras) in enumerate(cols):
+    x = LEFT + k * (COL3 + GAP)
+    S.header(x, y2, COL3, HDR_H, [P(name, size=SECONDARY, b=True, align="ctr")], f"Memory {k + 1} header")
+    S.box(x, y2 + HDR_H, COL3, H2, paras, f"Memory {k + 1} box")
+notes(s, "Here is the opponent memory step by step. The opponent plays an action. For each of five styles and each "
+      "of our four sampled worlds, we ask how likely that action was under that style in that world, giving zero if "
+      "the action is illegal there. We average over worlds and multiply into the posterior over styles, with "
+      "forgetting lambda below one for a switching opponent. The posterior's prediction feeds the epsilon-safe best "
+      "response. We check it three ways: Bayes is Hedge with step one, so its log-loss regret is at most log five, "
+      "and we measure exactly log five; scoring styles world by world improves prediction by about 0.3 nats per turn; "
+      "and the delay after a style switch matches its predicted value in a live test. The extension tracks the team "
+      "and the style jointly, but it adds nothing measurable.")
 
 # 6. Case study: one turn of a real Showdown game
 s, S = content(2, "A turn, step by step")
