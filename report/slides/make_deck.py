@@ -651,19 +651,20 @@ end = world_table(tx, TOP - Inches(0.05), "One world: Sunflora has Earth Power",
 S.text(tx, end, tw, Inches(0.28), [P("illustrative values", size=10, i=True, align="ctr")], "Table caption")
 y2 = end + Inches(0.2)
 S.text(LEFT, y2, WIDTH, Inches(0.75), [
-    P(("2. One mix of moves for all worlds. ", {"b": True}), "We cannot tell which world is real, so we choose "
-      "probabilities for our moves (say Slack Off 60%, Earthquake 40%) that do best on average across worlds, even "
-      "if the opponent answers each world perfectly. One linear program finds it.", size=16),
+    P(("2. Strategy x. ", {"b": True}), "We cannot tell which world is real, so one linear program finds ",
+      ("$", "x"), ": probabilities over our moves (say Slack Off 60%, Earthquake 40%) that do best on average across "
+      "the worlds, even if the opponent answers each one perfectly. ", ("$", "x"), " is our safe baseline for the turn.",
+      size=16),
 ], "Step 2")
 y3 = y2 + Inches(1.0)
 S.text(LEFT, y3, WIDTH, Inches(0.45), [
-    P(("3. Experts. ", {"b": True}), "Each turns that mix into an actual move; Hedge learns which to trust across "
-      "games.", size=16),
+    P(("3. Experts. ", {"b": True}), "Each turns ", ("$", "x"), " into the move we actually play; Hedge learns which "
+      "to trust across games.", size=16),
 ], "Step 3")
-experts = [("Top move", "the mix's most likely move"),
-           ("Sampled", "draw a move at random from the mix"),
+experts = [("Top move", "x's most likely move"),
+           ("Sampled", "a random draw from x"),
            ("Pure maximin", "the single action with the best worst case"),
-           ("Predictive", "best reply to our prediction; worst case within ε of the mix")]
+           ("Predictive", "best reply to our prediction; worst case within ε of x's")]
 gy = y3 + Inches(0.5)
 EBH = Inches(0.9)
 for k, (name, rule) in enumerate(experts):
@@ -681,7 +682,7 @@ notes(s, "Our preliminary model, step by step. First, worlds and matrices: a wor
       "a heuristic score after a two-turn lookahead in each cell; these values are illustrative. Second, because "
       "we cannot tell which world is real, we choose probabilities for our moves, say Slack Off 60 percent and "
       "Earthquake 40 percent, that do best on average across the worlds even if the opponent answers each one "
-      "perfectly; one linear program finds this mix. Third, experts: each turns the mix into an actual move, by "
+      "perfectly; one linear program finds this mix, which we call strategy x, our safe baseline for the turn. Third, experts: each turns x into the move we actually play, by "
       "playing its most likely move, drawing a move at random from it, playing the single safest move, or, the predictive "
       "expert, best replying to the move we predict for the opponent while keeping its worst case within a small "
       "epsilon of the mix's, and Hedge learns which to trust. After the opponent moves, each expert is credited with what it "
