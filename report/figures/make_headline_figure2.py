@@ -116,8 +116,8 @@ def panel_hedge(ax, hedge_curves):
     ax.set_xlim(1, Tmax); ax.set_ylim(3e-4, 5)
     ax.set_xticks([1, 10, 100, 1000])
     log_axis(ax, 5)
-    ax.set_xlabel("Scored turns $t$")
-    ax.set_ylabel("Regret per scored turn")
+    ax.set_xlabel("Counted turns $t$")
+    ax.set_ylabel("Regret per counted turn")
     ax.set_title("Hedge over games")
 
 
@@ -136,7 +136,7 @@ def panel_memory(ax, mem_curves):
     ax.text(Tm * 0.9, 0.3, f"median, {len(M)} matches", color=c, ha="right", va="center")
     ax.set_xlim(1, Tm); ax.set_ylim(0, 2)
     ax.set_xticks([1, 10, 100, 1000])
-    ax.set_xlabel("Scored turns $t$")
+    ax.set_xlabel("Counted turns $t$")
     ax.set_ylabel("Regret vs best style\n(nats)")
     ax.set_title("Memory over games")
     return len(M), Tm

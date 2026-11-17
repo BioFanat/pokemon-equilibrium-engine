@@ -133,6 +133,17 @@ Every Bayesian LP and PIMC decision in E4's sampled play was logged: 46,890 deci
 - **Comparability:** it ran in a simpler setting than everything above, so it is a cost and
   learning-curve reference only.
 
+### Regret along real games (`report/figures/fig_regret_numbers.json`, `fig_main_numbers.json`; scripts `make_regret_figure.py`, `make_headline_figure2.py`, `make_wins_figure.py`)
+
+- **RM+ self-play on in-engine stage matrices.** On 35 stage matrices from the engine, the median gap divided by the payoff range is 7.0e-5 at T = 1000, against a bound of 0.38. The median gap decays with log-log slope −1.26 on T ∈ [10, 2000] and −1.05 on T ∈ [100, 2000].
+- **Hedge regret per match.** Regret against the best fixed expert is 6.8–8.6 per match, which is 0.13–0.16 of the anytime bound (3/2)√(T ln4/2) + √(ln4/8). Pooled over 17,305 updates it is 0.0045 per counted turn; the growth exponent on t ∈ [200, 1600] is 0.82.
+- **Memory (style posterior).** The final regret of the memory expert is 1.6094–1.6100 nats on 9 matches, equal to ln5 + lnΠ_T within 6.6e-4. Match 9 is excluded because 12 of its updates are unlogged.
+- **Exact endgames.** The Theorem bound is at least the exact exploitability on all 22 rows (`results/endgame/eps.jsonl`, `endgame_eps.py`); the ratio is 6.86–155.39.
+
+### No-regret dynamics: last iterate vs average (`theory/dynamics_directions.md` §2.4, `b3.out`)
+
+On 120 in-engine stage matrices (median 5×6, range 1), the average iterate of Hedge / OMWU (η = 0.1, 1,000 iterations) has median gap 0.032 / 0.032, and the last iterate has median 0.0087 / 0.0085 (p90 0.092 / 0.086). RM+ has median gap 0.0000. Most real stage matrices have pure saddles, which is why the last-iterate distribution is bimodal. For the Hedge-vs-equilibrium-expert comparison (E5, 0.4583 [0.4210, 0.4956], 300 pairs, inside the predicted band [0.45, 0.55]) see "Real-Showdown experiments" below (E5 row).
+
 ## Conclusions
 
 1. **Hidden information:** the Bayesian-LP agent beats PIMC averaging at equal compute,

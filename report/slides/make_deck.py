@@ -769,7 +769,7 @@ S.text(LEFT, TOP, WIDTH, BOTTOM - TOP, [
       bullet=True, before=SP),
     P("Across games: Hedge regret ", ("≈ 0.004", {"b": True}), " per turn vs Foul Play (13–16% of the bound); "
       "carried beat reset weights by ", ("+0.15", {"b": True}), bullet=True, before=SP),
-    P("Hedge vs the equilibrium agent: ", ("0.46", {"b": True}), " [0.42, 0.50], inside the pre-registered band",
+    P("Hedge vs the equilibrium agent: ", ("0.46", {"b": True}), " [0.42, 0.50], inside the range we predicted in advance",
       bullet=True, before=SP),
 ], "Dynamics bullets")
 notes(s, "Theory says no-regret players' averages are within the sum of their regrets of minimax. Measured: RM-plus "
@@ -777,7 +777,7 @@ notes(s, "Theory says no-regret players' averages are within the sum of their re
       "matrices, Hedge and optimistic Hedge averages stay within the bound on every one; the last iterate has a lower "
       "median, because 58 percent have a pure saddle, but a heavier tail. Across games, Hedge's regret against Foul "
       "Play is 13 to 16 percent of its bound, and carried weights beat reset weights, as the bounds order them. "
-      "Against the equilibrium agent Hedge scores 0.46, in the pre-registered band; theory bounds only the upper side.")
+      "Against the equilibrium agent Hedge scores 0.46, inside the range we predicted in advance; theory bounds only the upper side.")
 
 # 10. Opponent memory
 s, S = content(4, "Opponent memory: results")
@@ -789,7 +789,7 @@ S.text(LEFT, TOP, WIDTH, BOTTOM - TOP, [
     P("No win-rate gain: better prediction shrinks only the belief term", bullet=True, before=18),
 ], "Opponent memory bullets")
 notes(s, "The memory does what the theory says. Scoring styles on each sampled world's legal actions lowers log loss "
-      "by about 0.3 nats per turn, confirmed in a pre-registered replication. In the live detection-delay test each "
+      "by about 0.3 nats per turn, confirmed in a replication on fresh seeds planned in advance. In the live detection-delay test each "
       "match's delay matched its prediction, and doubling the pre-switch phase multiplied the delay by 2.1, inside the "
       "predicted range. Modelling sets and style jointly adds nothing measurable. But better prediction did not move "
       "win rate: it shrinks only the belief term, not the leaf error.")

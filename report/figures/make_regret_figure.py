@@ -188,8 +188,8 @@ def draw(rm, per, hedge_curves, mem_curves):
     ax.set_xticks([1, 10, 100, 1000])
     ax.yaxis.set_major_locator(matplotlib.ticker.LogLocator(numticks=5))
     ax.yaxis.set_minor_locator(matplotlib.ticker.NullLocator())
-    ax.set_xlabel("Scored turns $t$")
-    ax.set_ylabel("Regret per scored turn")
+    ax.set_xlabel("Counted turns $t$")
+    ax.set_ylabel("Regret per counted turn")
     ax.set_title("Across games: Hedge")
 
     # ---- c: opponent memory (median and range over matches, up to the shortest plotted match)
@@ -207,7 +207,7 @@ def draw(rm, per, hedge_curves, mem_curves):
     ax.text(Tm * 0.9, 0.3, f"median ({len(M)} matches)", color=c, ha="right", va="center")
     ax.set_xlim(1, Tm); ax.set_ylim(0, 2)
     ax.set_xticks([1, 10, 100, 1000])
-    ax.set_xlabel("Scored turns $t$")
+    ax.set_xlabel("Counted turns $t$")
     ax.set_ylabel("Log-loss regret (nats)")
     ax.set_title("Opponent memory")
     return fig, s_med
