@@ -103,18 +103,18 @@ def exploit():
 
 def delta_parts():
     """Contributions to the per-turn shortfall delta = eps_s + 2 eps_v on the exactly solved endgames (final5.tex,
-    'Exact endgames'): eps_s <= 0.16 on reached states; largest eps_v (affine) 0.7-1.0, so 2 eps_v = 1.4-2.0."""
-    fig, ax = plt.subplots(figsize=(6.0, 2.3))
-    ax.barh([1], [0.16], color=GREY, height=0.5)
-    ax.barh([0], [1.4], color="#404040", height=0.5)
-    ax.barh([0], [0.6], left=[1.4], color=LIGHT, height=0.5)
-    ax.text(0.16 + 0.04, 1, "≤ 0.16", va="center", color=INK)
-    ax.text(2.0 + 0.04, 0, "1.4–2.0", va="center", color=INK)
-    ax.set_yticks([0, 1])
-    ax.set_yticklabels(["Matrix error\n$2\\varepsilon_v$", "Solver error\n$\\varepsilon_s$"])
-    ax.set_xlim(0, 2.45)
-    ax.set_xlabel("Contribution to each turn's shortfall δ")
-    ax.tick_params(axis="y", length=0)
+    'Exact endgames'): eps_s <= 0.16 on reached states; largest eps_v (affine) 0.7-1.0, so 2 eps_v = 1.4-2.0
+    (bar at the midpoint, line = range)."""
+    fig, ax = plt.subplots(figsize=(4.6, 3.0))
+    ax.bar([0, 1], [0.16, 1.7], color=["#8C8C8C", "#404040"], width=0.55)
+    ax.plot([1, 1], [1.4, 2.0], color=INK, lw=1.5)
+    ax.text(0, 0.16 + 0.07, "≤ 0.16", ha="center", va="bottom", color=INK)
+    ax.text(1, 2.0 + 0.07, "1.4–2.0", ha="center", va="bottom", color=INK)
+    ax.set_xticks([0, 1])
+    ax.set_xticklabels(["Solver error\n$\\varepsilon_s$", "Matrix error\n$2\\varepsilon_v$"])
+    ax.set_ylim(0, 2.35)
+    ax.set_ylabel("Contribution to δ")
+    ax.tick_params(axis="x", length=0)
     fig.savefig(os.path.join(HERE, "deck_delta.png"), bbox_inches="tight")
     return fig
 

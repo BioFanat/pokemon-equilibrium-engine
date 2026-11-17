@@ -804,9 +804,9 @@ S.header(rx, TOP, lw, HDR_H, [P("2. Why: the bound points at the payoffs", size=
          "Why header")
 img = os.path.join(HERE, "..", "figures", "deck_delta.png")
 _w, _h = _Im.open(img).size
-fw = lw - Inches(0.2)
-fh = int(fw * _h / _w)
-pic = s.shapes.add_picture(img, rx + Inches(0.1), TOP + HDR_H + Inches(0.15), fw, fh)
+fh = Inches(2.5)
+fw = int(fh * _w / _h)
+pic = s.shapes.add_picture(img, rx + (lw - fw) // 2, TOP + HDR_H + Inches(0.15), fw, fh)
 pic.name = "Delta contributions"
 pic._element.nvPicPr.cNvPr.set("descr", "Contributions to each turn's shortfall: solver error at most 0.16, matrix "
                                         "error 1.4 to 2.0")
