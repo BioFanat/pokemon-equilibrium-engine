@@ -624,7 +624,7 @@ S.text(LEFT, TOP, WIDTH, Inches(3.3), [
     P(("MWU", {"b": True}), " (Littlestone & Warmuth): shrink each expert's weight after a loss, ",
       ("$", E_MWU), ";  ", ("$", r"Regret_T ≤ 2\sqrt{T \ln{n}}"), size=18, bullet=True),
     P(("Hedge", {"b": True}), " (Freund & Schapire), the exponential form we use, ", ("$", E_HEDGE),
-      ";  with our anytime step (standard FTRL argument), ", ("$", r"Regret_T ≤ \frac{3}{2}\sqrt{\frac{T}{2}\ln{n}} + \sqrt{\frac{\ln{n}}{8}}"),
+      ";  its no-regret bound: ", ("$", r"Regret_T ≤ \frac{3}{2}\sqrt{\frac{T}{2}\ln{n}} + \sqrt{\frac{\ln{n}}{8}}"),
       size=18, bullet=True, before=12),
     P(("No-regret dynamics ⇒ minimax", {"b": True}), " (Freund & Schapire): if both players of a matrix game ",
       ("$", "A"), " are no-regret, ", ("$", E_MINIMAX), size=18, bullet=True, before=12),
@@ -640,7 +640,7 @@ S.text(LEFT, gy, WIDTH, BOTTOM - gy, [
     P("See whether the agent can still win", size=18, bullet=True, before=4),
 ], "Goals")
 notes(s, "A few known results we build on. Multiplicative weights shrinks each expert's weight after a loss, and "
-      "its regret grows like root T log n. Hedge is the exponential form, which we use; with an anytime step it "
+      "its regret grows like root T log n. Hedge is the exponential form, which we use; its no-regret bound "
       "needs no horizon and has the same rate. When both players of a matrix game are no-regret, their average "
       "strategies are within the sum of their average regrets of an equilibrium, which is the minimax theorem, and "
       "in any finite game time-average play is a coarse correlated equilibrium. Our goals: use these bounds to "

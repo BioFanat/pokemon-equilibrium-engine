@@ -120,7 +120,7 @@ def panel_hedge(ax, hedge_curves):
     ax.plot(tm, np.where(medc > 0, medc / tm, np.nan), color=c, lw=1.8)
     ax.plot(t, hedge_bound(t) / t, color=GRAY, lw=1.2, ls=(0, (4, 2)))
     ax.set_xscale("log"); ax.set_yscale("log")
-    ax.text(3, hedge_bound(3) / 3 * 1.9, "anytime bound", color=INK, va="center")
+    ax.text(3, hedge_bound(3) / 3 * 1.9, "Hedge no-regret bound", color=INK, va="center")
     ax.text(1.5, 5e-4, "regret, 10 matches", color=INK, va="center")
     ax.set_xlim(1, Tmax); ax.set_ylim(3e-4, 5)
     ax.set_xticks([1, 10, 100, 1000])

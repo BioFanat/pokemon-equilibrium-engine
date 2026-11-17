@@ -729,6 +729,13 @@ preliminary model at 0: Bayesian model **+203** [+135, +283], Hedge over it **+2
 pairs, 400 resamples). Work dirs: scratchpad `rr_rr_prelim_bayes`, `rr_rr_prelim_hedge` (batch.py, 6 workers,
 `--streams 6`).
 
+**Trust-region LP over the Bayesian model (scratch prototype, 2026-11-17).** Agent-form LP on the depth-2 matrices,
+restricted to actions within δ = 0.01 of the argmax's belief-weighted search value (`OURBOT_TRUST_DELTA=0.01` on
+`mcts_native_sampled`, scratch copy in the brainstorm worktree), vs the Bayesian model (`mcts_native`, item_stratified,
+1000 ms): **0.477 [0.385, 0.570]** over 44 seat-swapped pairs (seeds 1–44, 0 error games); seeds 1–20 gave 0.575, seeds
+21–44 alone 0.396 [0.294, 0.498]. Reading: on par with the Bayesian model, not better; restricting the experts to
+near-argmax moves recovers the strength Hedge lost (0.31). Static expert only, no Hedge layer played.
+
 ## Open items (2026-11)
 
 Caveat for all earlier results: 33 games dropped as error games came from harness bugs that were later fixed, and they are not a random sample (see "Harness bugs and the error-game caveat" in the next section).
