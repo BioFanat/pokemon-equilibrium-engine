@@ -683,6 +683,38 @@ Paper: final5.tex "On the public ladder" (`sec:exp-ladder`); deck: "Out in the w
   ρ ∈ {0, 0.05, 0.2, 0.5}). On the 120 b3 stage matrices, 42% have g_t > 0 (no optimal pure strategy for us), median
   g_t = 0.024 of the payoff range (`scratchpad/verify_det/gap_stats.py`; all 1,477 matrices: 35%, median 0.022).
 
+## No-regret over the Bayesian model, and an adversary for it (branch `test/noregret-ladder`, 2026-11-17)
+
+**Hedge over the Bayesian model** (`hedge_mcts`: experts = Bayesian argmax, its visit shares, Bayesian-LP x on
+per-world depth-2 matrices; credited on the matrix of the highest-weight world containing the opponent's move,
+Δ̄ = 400; weights carried per stream) vs the Bayesian model (`mcts_native`, `item_stratified`, 1000 ms), local headless
+Showdown games, seat-swapped pairs, seeds 1–50, 5 streams (`engine/showdown/batch.py --tag h2h_hedge_mcts ...
+--workers 5 --streams 5`; the run was paused once after seed 30 and resumed, see the branch's
+`engine/results/noregret/`):
+
+- Score of `hedge_mcts`: **0.310 [0.218, 0.402]** (95% CI over 50 pairs, 100 games); lost both seats on 24 seeds.
+- Realised regret per stream 3.9–5.0 vs the anytime bound 26.9–28.7 (568–648 credited turns); best expert on every
+  stream: `lp_sampled`; final weights LP 0.60–0.71, argmax 0.23–0.33, shares 0.05–0.08.
+- Off-argmax probability per decision 0.33 in lost games vs 0.28 in won games; 64% of off-argmax plays are on turns
+  where the LP strategy is mixed.
+- Reading: Hedge is no-regret with respect to the depth-2 matrices, where the LP expert is optimal by construction, so
+  the guarantee points it at the weakest expert in real play (the evaluation error ε_v of the whole-battle bound).
+- Source: `analysis_h2h_hedge_mcts.json`, `h2h_hedge_mcts_summary.json` (analysis by
+  `engine/showdown/analyze_noregret_h2h.py`). The interrupted resume means each stream's carried weights include a few
+  partial-game updates.
+
+**Adversary** (`engine/experiments.py ADV`, in-engine, full information, 100 paired seeds per matchup, seeds
+63,000,000+, `results/experiments/ADV.jsonl` on the branch): a one-turn local best response that reruns the
+target's MCTS (5,000 iterations) to predict it.
+
+| Target | vs predicting exploiter | vs uniform-prediction exploiter | Gain from predicting (paired) |
+|---|---|---|---|
+| MCTS argmax (the Bayesian model, one world) | 0.300 [0.241, 0.359] | 0.787 [0.730, 0.845] | +0.487 [+0.399, +0.576] |
+| MCTS sampling its visit shares | 0.077 [0.042, 0.113] | 0.087 [0.048, 0.127] | +0.010 [−0.039, +0.059] |
+
+- Exploitability lower bound for the argmax: exploiter 0.70 − 0.5 − Hoeffding 0.12 = 0.08 (score units).
+- Sampling the visit shares removes the predictability (Proposition 9, price of determinism) but plays far worse.
+
 ## Open items (2026-11)
 
 Caveat for all earlier results: 33 games dropped as error games came from harness bugs that were later fixed, and they are not a random sample (see "Harness bugs and the error-game caveat" in the next section).

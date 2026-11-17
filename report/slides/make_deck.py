@@ -871,35 +871,41 @@ notes(s, "Here is where the Bayesian part is. Start with a belief over the oppon
       "illustrative.")
 
 # 12. The Bayesian model in play: the ladder, and Hedge over it (H2H numbers from analyze_noregret_h2h.py)
-H2H_SCORE, H2H_CI, H2H_N = "0.33", "[0.21, 0.45]", "31 paired seeds"
+H2H_SCORE, H2H_CI, H2H_N = "0.31", "[0.22, 0.40]", "50 paired seeds"
 s, S = content(4, "The Bayesian model in play")
-boxes = [("Public ladder vs humans", [P("Bayesian model ", ("99–51", {"b": True}), size=20, align="ctr"),
-                                     P("Elo 1470 → 2090, peak 2141, top 500", size=14, align="ctr", before=4),
-                                     P("preliminary model 77–73, Elo 1577 → 1470", size=14, align="ctr", before=10)]),
-         ("Hedge over the Bayesian model", [P(H2H_SCORE, size=40, b=True, align="ctr"),
-                                            P(f"vs the Bayesian model, {H2H_CI} (0.5 = even)", size=14, align="ctr",
-                                              before=4)])]
+boxes = [("Public ladder vs humans", [P("99–51", size=36, b=True, align="ctr"),
+                                     P("Elo 1470 → 2090, top 500", size=14, align="ctr", before=4),
+                                     P("(preliminary model 77–73)", size=12, i=True, align="ctr", before=4)]),
+         ("Hedge over it", [P(H2H_SCORE, size=36, b=True, align="ctr"),
+                            P(f"vs the Bayesian model {H2H_CI}", size=14, align="ctr", before=4)]),
+         ("Adversary predicting it", [P("0.70", size=36, b=True, align="ctr"),
+                                      P("vs its argmax, in-engine", size=14, align="ctr", before=4),
+                                      P("+0.49 from predicting the move", size=12, i=True, align="ctr", before=4)])]
 BH = Inches(1.75)
 for k, (name, paras) in enumerate(boxes):
-    x = LEFT + k * (COL2 + GAP)
-    S.header(x, TOP, COL2, HDR_H, [P(name, size=SECONDARY, b=True, align="ctr")], f"Play {k + 1} header")
-    S.box(x, TOP + HDR_H, COL2, BH, paras, f"Play {k + 1} box")
+    x = LEFT + k * (COL3 + GAP)
+    S.header(x, TOP, COL3, HDR_H, [P(name, size=SECONDARY, b=True, align="ctr")], f"Play {k + 1} header")
+    S.box(x, TOP + HDR_H, COL3, BH, paras, f"Play {k + 1} box")
 by = TOP + HDR_H + BH + Inches(0.35)
 S.text(LEFT, by, WIDTH, BOTTOM - by, [
-    P("Hedge has small regret (≈ 3 vs its bound ≈ 20), but it is credited on the 2-turn matrices, where the LP "
-      "expert looks best, so it shifts its weight to the weakest expert in play", size=18, bullet=True),
+    P("Hedge has small regret (4–5 vs its bound ≈ 28), but it is credited on the 2-turn matrices, where the LP "
+      "expert looks best, so it moves 60–71% of its weight to the weakest expert in play", size=18, bullet=True),
     P(("No-regret is only as good as its payoffs: ", {"b": True}), "the bound pointed to deeper search, which is "
       "why the Bayesian model wins", size=18, bullet=True, before=10),
+    P("Its argmax is predictable, as the price of determinism says; sampling its visit shares hides it but plays "
+      "far worse", size=18, bullet=True, before=10),
 ], "Play bullets")
 notes(s, "Here is the Bayesian model in play. On the public ladder against human players, in sequential rated "
       "batches, it went 99 and 51 and climbed from 1470 to 2090 Elo, peaking at 2141, in the top 500, while the "
       "preliminary model went 77 and 73 and drifted down to 1470. We then wrapped the Bayesian model in our Hedge "
       f"layer, over its argmax, its sampled visit shares and the equilibrium, and it lost to the plain Bayesian model, "
-      f"scoring {H2H_SCORE} over {H2H_N}. Hedge did not fail to learn: its regret is about three against a bound of "
-      "about twenty. But it is credited on the two-turn matrices, where the equilibrium expert looks best by "
+      f"scoring {H2H_SCORE} over {H2H_N}. Hedge did not fail to learn: its regret is four to five against a bound "
+      "of about twenty-eight. But it is credited on the two-turn matrices, where the equilibrium expert looks best by "
       "construction, so it moved its weight to the expert that is weakest in real play. A no-regret guarantee is only "
       "as good as the payoffs it is measured on; our bound pointed to deeper search, and that is why the Bayesian "
-      "model wins.")
+      "model wins. Finally, an adversary that reruns the Bayesian model's search to predict its move scores 0.70 "
+      "against it in-engine, a gain of almost half a game from predicting alone, exactly the price of determinism; "
+      "sampling the visit shares hides the move but plays far worse.")
 
 # ===================== Section 5: Conclusions =====================
 # 12. Takeaways and next steps
