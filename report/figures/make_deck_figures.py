@@ -73,11 +73,30 @@ def strength():
 
 
 def exploit():
-    fig, b = plt.subplots(figsize=(6.4, 2.9))
-    dot_ci(b, [("Bayesian model\n(always top move)", 0.487, 0.399, 0.576, ACCENT),
-               ("Same search,\nrandom pick", 0.010, -0.039, 0.059, GREY)], ref=0)
-    b.set_xlabel("Extra wins from knowing the rule")
-    b.set_xlim(-0.1, 0.65)
+    """Opponent's score (1 - target score, ADV table in RESULTS.md) when it guesses blindly vs when it knows our rule."""
+    rows = [("Bayesian model\n(always top move)", (0.213, 0.155, 0.270), (0.700, 0.641, 0.759), "+0.49", ACCENT),
+            ("Same search,\nrandom pick", (0.913, 0.873, 0.952), (0.923, 0.887, 0.958), "+0.01", GREY)]
+    fig, b = plt.subplots(figsize=(6.4, 3.1))
+    for k, (lab, blind, known, d, col) in enumerate(rows):
+        y = len(rows) - 1 - k
+        for (v, lo, hi), filled in ((blind, False), (known, True)):
+            b.plot([lo, hi], [y, y], color=col, lw=2.5, solid_capstyle="butt")
+            b.plot([v], [y], "o", ms=11, color=col, mfc=col if filled else "white", mew=2, zorder=3)
+        if known[0] - blind[0] > 0.1:
+            b.annotate("", xy=(known[0] - 0.03, y + 0.28), xytext=(blind[0] + 0.03, y + 0.28),
+                       arrowprops=dict(arrowstyle="->", color=INK, lw=1.3))
+            b.text((blind[0] + known[0]) / 2, y + 0.36, d, ha="center", va="bottom", color=INK)
+        else:
+            b.text(known[0] - 0.03, y + 0.3, d, ha="center", va="bottom", color=INK)
+    b.set_yticks(range(len(rows)))
+    b.set_yticklabels([r[0] for r in rows][::-1])
+    b.set_ylim(-0.6, len(rows) - 0.1)
+    b.axvline(0.5, color=LIGHT, lw=1.5, zorder=0)
+    b.set_xlim(0, 1)
+    b.set_xlabel("Opponent's score (0.5 = even)")
+    b.plot([], [], "o", ms=9, mfc="white", mec=INK, mew=2, ls="", label="guessing blindly")
+    b.plot([], [], "o", ms=9, color=INK, ls="", label="knowing our rule")
+    b.legend(loc="lower center", bbox_to_anchor=(0.5, 1.0), ncol=2, frameon=False, handletextpad=0.3)
     b.tick_params(axis="y", length=0)
     fig.savefig(os.path.join(HERE, "deck_exploit.png"), bbox_inches="tight")
     return fig
