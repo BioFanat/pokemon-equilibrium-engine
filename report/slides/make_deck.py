@@ -1,4 +1,4 @@
-"""Build deck.pptx: the 11-slide, ~4-minute CS535 final-project talk, in five sections.
+"""Build deck.pptx: the 12-slide, ~4-minute CS535 final-project talk, in five sections.
 
 Built on the user's template ("random template.pptx"): its master, theme, 16:9 size,
 title-slide style and its five-box section tracker, which lives in the template's
@@ -22,8 +22,9 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE = os.path.join(HERE, "random template.pptx")
 OUT = os.path.join(HERE, "deck.pptx")
 FIG = os.path.join(HERE, "..", "figures", "fig_gauntlet_col.png")
+GIF = os.path.join(HERE, "media", "showdown_combined_slide.gif")  # 800 x 542 px case-study animation
 
-SECTIONS = ["Preliminaries", "Method", "Experiments", "Theory", "Conclusions"]
+SECTIONS = ["Preliminaries", "Method", "Theory", "Experiments", "Conclusions"]
 # Template layout that highlights each section's tracker box (box 1 ... box 5).
 SECTION_LAYOUT = ["1_Title and Content", "2_Title and Content", "3_Title and Content",
                   "4_Title and Content", "5_Title and Content"]
@@ -668,54 +669,28 @@ notes(s, "The opponent model is Bayesian. A posterior over five behavioural type
       "response, which exploits while keeping the stage value minus 0.3 percent of the range. The per-world likelihood "
       "scores styles on each world's legal actions. Forgetting or fixed share tracks a switching opponent.")
 
-# ===================== Section 3: Experiments =====================
-# 7. Engine experiments
-s, S = content(3, "In the engine")
-S.text(LEFT, TOP, WIDTH, BOTTOM - TOP, [
-    P("MCTS at matched time beats equilibrium play: ", ("0.760", {"b": True}), " vs sampled, ",
-      ("0.650", {"b": True}), " vs top move", bullet=True),
-    P("95% lower confidence bounds on exploitability: ", ("0.250", {"b": True}), " for top move vs ",
-      ("0.090", {"b": True}), " for sampled play", bullet=True, before=18),
-    P("The Bayesian LP beats PIMC averaging: ", ("0.585", {"b": True}), " (sampled play, 400 games)",
-      bullet=True, before=18),
-    P("Exact endgames: the bound holds, loose by ", ("6.9–155×", {"b": True}),
-      "; consistent with the leaf evaluation error dominating", bullet=True, before=18),
-], "Engine results")
-notes(s, "In-engine results. At matched time, MCTS beats equilibrium play: 0.760 against sampled and 0.650 against "
-      "top move. An informed best response gives 95 percent lower confidence bounds on exploitability of 0.250 for top "
-      "move and 0.090 for sampled play, so randomising helps. The Bayesian LP beats PIMC averaging, 0.585 over 400 games. "
-      "On exact endgames the bound holds but is loose by 6.9 to 155 times.")
-
-# 8. Real Showdown
-s, S = content(3, "Real Showdown and pre-registered tests")
-fw = Inches(6.0)
-fh = int(fw * 450 / 680)  # 680 x 450 px figure
-pic = s.shapes.add_picture(FIG, LEFT, TOP, fw, fh)
-pic.name = "Round-robin ratings figure"
+# 7. Case study: one turn of a real Showdown game
+s, S = content(2, "A turn, step by step")
+gh = BOTTOM - TOP - Inches(0.5)  # room for a two-line caption
+gw = int(gh * 800 / 542)  # 800 x 542 px GIF
+gx = LEFT + (WIDTH - gw) // 2
+pic = s.shapes.add_picture(GIF, gx, TOP, gw, gh)
+pic.name = "Case-study animation"
 pic._element.nvPicPr.cNvPr.set(
-    "descr", "Round-robin Bradley-Terry ratings: Foul Play at all search times above Bayesian LP; "
-             "top move and PIMC near 0")
-S.text(LEFT, TOP + fh + Inches(0.05), fw, Inches(0.35),
-       [P("Round-robin tournament, 1,800 games; Elo-scale ratings, 95% CIs", size=CAPTION, i=True)],
-       "Figure caption")
-rx = LEFT + fw + GAP
-S.text(rx, TOP, RIGHT - rx, BOTTOM - TOP, [
-    P("Below Foul Play, even at its shortest search time", bullet=True),
-    P("Level with the other one-turn solvers", bullet=True, before=SP),
-    P("Hedge regret ", ("0.0044", {"b": True}), " per scored turn vs its best expert", bullet=True, before=SP),
-    P("Detection delay matches its prediction per match (ρ = ", ("0.86", {"b": True}), "); no prediction refuted",
-      bullet=True, before=SP),
-    P("Better opponent prediction (≈", ("0.3", {"b": True}), " nats per scored turn), no detectable win-rate "
-      "change (replicated)", bullet=True, before=SP),
-], "Showdown bullets")
-notes(s, "On real Showdown, a round-robin tournament of 1,800 games: Foul Play at every search time rates above "
-      "our Bayesian LP, which is level with the other one-turn solvers. Hedge's regret against its best expert is 0.0044 "
-      "per scored turn. The pre-registered detection-delay test refuted no prediction, rho 0.86. Better opponent "
-      "prediction, about 0.3 nats per scored turn, gave no detectable win-rate change, and the null replicated.")
+    "descr", "Showdown replay against Foul Play above our agent's decision panel: a slice of the Bayesian "
+             "matrix game, our mixed strategy as bars, estimated win chance in each cell")
+S.text(gx, TOP + gh + Inches(0.03), gw, Inches(0.47),
+       [P("A real Showdown game: each turn the agent solves the Bayesian matrix game over 4 sampled opponent teams; "
+          "bars show our mixed strategy, cells our estimated win chance.", size=CAPTION, i=True)],
+       "Animation caption")
+notes(s, "This is a real Showdown game against Foul Play; the names at the top are the bots' account names. Each "
+      "turn the agent samples 4 possible opponent teams and solves one Bayesian matrix game over them. The panel shows "
+      "a slice: rows are our options, columns the opponent's, cells our estimated win chance. The bars are our mixed "
+      "strategy, and the outlined cell is what we and Foul Play actually played.")
 
-# ===================== Section 4: Theory =====================
-# 9. Base bounds and how we adapt them
-s, S = content(4, "Base bounds and where they come from")
+# ===================== Section 3: Theory =====================
+# 8. Base bounds and how we adapt them
+s, S = content(3, "Base bounds and where they come from")
 bh = Inches(1.22)
 S.text(LEFT, TOP, COL2, bh, [
     P("Hedge regret (Freund & Schapire 1997; Cesa-Bianchi & Lugosi 2006)", size=SECONDARY, b=True),
@@ -771,8 +746,8 @@ notes(s, "Our theory starts from two base results. Hedge's regret is at most roo
       "most log five; that is known. Against a switching opponent, tracking by fixed share, from Herbster and Warmuth, "
       "gives our detection-delay prediction, which we tested live.")
 
-# 10. The whole-battle bound
-s, S = content(4, "The whole-battle bound")
+# 9. The whole-battle bound
+s, S = content(3, "The whole-battle bound")
 S.text(LEFT, TOP, WIDTH, Inches(3.0), [
     EQ_(E_BOUND),
     P("Shapley's backward induction over histories, one turn at a time; the core step is Lean-checked",
@@ -800,8 +775,55 @@ notes(s, "The headline theorem, adapted: exploitability is at most H-bar times t
       "CFR. Epsilon-v, the stage-matrix error from the heuristic evaluation, does not. H-bar, the length against a best "
       "response, is tight. Hedge and tracking come from Cesa-Bianchi and Lugosi, the Bayesian matrix game from PokaiTrainer.")
 
+# ===================== Section 4: Experiments =====================
+# 10. Engine experiments
+s, S = content(4, "In the engine")
+S.text(LEFT, TOP, WIDTH, BOTTOM - TOP, [
+    P("MCTS at matched time beats equilibrium play: ", ("0.760", {"b": True}), " vs sampled, ",
+      ("0.650", {"b": True}), " vs top move; Fact 1 holds only in the estimated matrix", bullet=True),
+    P("95% lower confidence bounds on exploitability: ", ("0.250", {"b": True}), " for top move vs ",
+      ("0.090", {"b": True}), " for sampled play", bullet=True, before=18),
+    P("The Bayesian LP beats PIMC averaging: ", ("0.585", {"b": True}), " (sampled play, 400 games)",
+      bullet=True, before=18),
+    P("Exact endgames: the bound (Thm. 3) holds, loose by ", ("6.9–155×", {"b": True}),
+      "; ", ("$", "ε_v"), " dominates (Remark 5)", bullet=True, before=18),
+], "Engine results")
+notes(s, "In-engine results. At matched time, MCTS beats equilibrium play: 0.760 against sampled and 0.650 against "
+      "top move. An informed best response gives 95 percent lower confidence bounds on exploitability of 0.250 for top "
+      "move and 0.090 for sampled play, so randomising helps. The Bayesian LP beats PIMC averaging, 0.585 over 400 games. "
+      "On exact endgames the bound holds but is loose by 6.9 to 155 times.")
+
+# 11. Real Showdown
+s, S = content(4, "Real Showdown and pre-registered tests")
+fw = Inches(6.0)
+fh = int(fw * 450 / 680)  # 680 x 450 px figure
+pic = s.shapes.add_picture(FIG, LEFT, TOP, fw, fh)
+pic.name = "Round-robin ratings figure"
+pic._element.nvPicPr.cNvPr.set(
+    "descr", "Round-robin Bradley-Terry ratings: Foul Play at all search times above Bayesian LP; "
+             "top move and PIMC near 0")
+S.text(LEFT, TOP + fh + Inches(0.05), fw, Inches(0.35),
+       [P("Round-robin tournament, 1,800 games; Elo-scale ratings, 95% CIs", size=CAPTION, i=True)],
+       "Figure caption")
+rx = LEFT + fw + GAP
+S.text(rx, TOP, RIGHT - rx, BOTTOM - TOP, [
+    P("Below Foul Play, even at its shortest search time", bullet=True),
+    P("Level with the other one-turn solvers", bullet=True, before=SP),
+    P("Hedge regret ", ("0.0044", {"b": True}), " per scored turn vs its best expert (Fact 2)", bullet=True,
+      before=SP),
+    P("Detection delay matches its prediction (Prop. 7) per match (ρ = ", ("0.86", {"b": True}),
+      "); no prediction refuted",
+      bullet=True, before=SP),
+    P("Better opponent prediction (≈", ("0.3", {"b": True}), " nats per scored turn), no detectable win-rate "
+      "change (replicated)", bullet=True, before=SP),
+], "Showdown bullets")
+notes(s, "On real Showdown, a round-robin tournament of 1,800 games: Foul Play at every search time rates above "
+      "our Bayesian LP, which is level with the other one-turn solvers. Hedge's regret against its best expert is 0.0044 "
+      "per scored turn. The pre-registered detection-delay test refuted no prediction, rho 0.86. Better opponent "
+      "prediction, about 0.3 nats per scored turn, gave no detectable win-rate change, and the null replicated.")
+
 # ===================== Section 5: Conclusions =====================
-# 11. Takeaways and next steps
+# 12. Takeaways and next steps
 s, S = content(5, "Takeaways and next steps")
 items = ["No-regret learning composes cleanly from the turn to the search root; the measured regrets are small",
          "Bound and experiments are consistent with the stage-matrix (leaf) error dominating; "
