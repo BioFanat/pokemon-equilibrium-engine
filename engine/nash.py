@@ -337,6 +337,8 @@ def target_strategy(M: np.ndarray, side: int, target: str, iters: int = 1000) ->
     if target.startswith("safex:"):
         p = np.clip(safex_strategy(M if side == 1 else -M.T, float(target.split(":")[1])), 0, None)
         return p / p.sum()
+    if target == "uniform":                         # non-exploiting baseline: predicts nothing about the target
+        return np.ones(M.shape[side - 1]) / M.shape[side - 1]
     if target == "safest":
         k = int(M.min(1).argmax()) if side == 1 else int(M.max(0).argmin())
         q = np.zeros(M.shape[side - 1]); q[k] = 1
