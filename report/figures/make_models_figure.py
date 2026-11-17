@@ -30,7 +30,7 @@ STRENGTH = [  # label, score, lo, hi, colour
     ("Bayesian vs preliminary", 0.833, 0.748, 0.919, BAYES),
 ]
 EXPLOIT = [  # label, (blind score, lo, hi), (knowing score, lo, hi), gain label, colour
-    ("Preliminary\n(equilibrium, sampled)", (0.370, 0.282, 0.458), (0.560, 0.475, 0.645), "+0.19", GREY),
+    ("Preliminary model", (0.370, 0.282, 0.458), (0.560, 0.475, 0.645), "+0.19", GREY),
     ("Bayesian model", (0.213, 0.155, 0.270), (0.700, 0.641, 0.759), "+0.49", BAYES),
 ]
 
