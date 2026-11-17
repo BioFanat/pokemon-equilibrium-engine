@@ -1,4 +1,4 @@
-"""Build deck.pptx: the 16-slide, ~4-minute CS535 final-project talk, in five sections.
+"""Build deck.pptx: the 14-slide, ~4-minute CS535 final-project talk, in five sections.
 
 Built on the user's template ("random template.pptx"): its master, theme, 16:9 size,
 title-slide style and its five-box section tracker, which lives in the template's
@@ -638,173 +638,98 @@ notes(s, "A few known results we build on. Multiplicative weights shrinks each e
       "exploitability and regret, and see whether the agent can still win.")
 
 # ===================== Section 2: Method =====================
-# 4. Inside a turn: worlds -> matrices -> one strategy
-s, S = content(2, "Inside a turn: worlds, matrices, one strategy")
-steps = [("1. What we know", [P("the opponent's Pokémon, moves and items revealed so far", size=SECONDARY,
-                                align="ctr"),
-                              P("(the rest is hidden)", size=SECONDARY, i=True, align="ctr", before=6)]),
-         ("2. Sample 4 worlds", [P("each world is one full guess of the hidden team and sets, consistent with "
-                                   "what we saw", size=SECONDARY, align="ctr"),
-                                 P("weight ", ("$", "β_k"), size=SECONDARY, align="ctr", before=6)]),
-         ("3. A matrix per world", [P("rows: our ≤ 13 options; columns: theirs", size=SECONDARY, align="ctr"),
-                                    P("cell: our estimated value after a 2-turn lookahead", size=SECONDARY,
-                                      align="ctr", before=6),
-                                    P("→ ", ("$", "M_k"), size=SECONDARY, align="ctr", before=6)]),
-         ("4. One strategy x", [P("the mix that does best on average when the opponent best-responds in each "
-                                  "world", size=SECONDARY, align="ctr"),
-                                P("(one LP, as in PokaiTrainer)", size=SECONDARY, i=True, align="ctr", before=6)])]
-BH = Inches(1.95)
+# 4. Preliminary model: worlds, per-turn equilibrium, experts
+s, S = content(2, "Preliminary model: worlds, equilibrium, experts")
+steps = [("1. Sample 4 worlds", [P("each a full guess of the hidden team and sets, consistent with what we saw; "
+                                   "weight ", ("$", "β_k"), size=SECONDARY, align="ctr")]),
+         ("2. A matrix per world", [P("rows: our options; columns: theirs; cell: our value after a 2-turn "
+                                      "lookahead → ", ("$", "M_k"), size=SECONDARY, align="ctr")]),
+         ("3. One strategy x", [P("best on average when the opponent best-responds in each world (one LP)",
+                                  size=SECONDARY, align="ctr")]),
+         ("4. Hedge over experts", [P("top move, sampled, pure maximin, ε-safe best response; weights carried "
+                                      "across games", size=SECONDARY, align="ctr")])]
+BH = Inches(1.6)
 for k, (name, paras) in enumerate(steps):
     x = LEFT + k * (COL4 + GAP)
-    S.header(x, TOP, COL4, HDR_H, [P(name, size=SECONDARY, b=True, align="ctr")], f"Turn step {k + 1} header")
-    S.box(x, TOP + HDR_H, COL4, BH, paras, f"Turn step {k + 1} box")
+    S.header(x, TOP, COL4, HDR_H, [P(name, size=SECONDARY, b=True, align="ctr")], f"Prelim step {k + 1} header")
+    S.box(x, TOP + HDR_H, COL4, BH, paras, f"Prelim step {k + 1} box")
     if k < 3:
         ym = TOP + HDR_H + BH // 2
-        S.line(x + COL4 + Inches(0.05), ym, x + COL4 + GAP - Inches(0.05), ym, f"Turn arrow {k + 1}", arrow=True)
-ty = TOP + HDR_H + BH + Inches(0.3)
+        S.line(x + COL4 + Inches(0.05), ym, x + COL4 + GAP - Inches(0.05), ym, f"Prelim arrow {k + 1}", arrow=True)
+ty = TOP + HDR_H + BH + Inches(0.2)
 S.text(LEFT, ty, WIDTH, BOTTOM - ty, [
     EQ_(E_BLP, size=20),
-    P("One ", ("$", "x"), " for all worlds, because we cannot tell which world we are in. Solving each world "
-      "separately and averaging (PIMC) plays as if we could.", size=18, bullet=True, before=10),
-    P("Three ways to play ", ("$", "x"), ": ", ("sampled", {"b": True}), " (draw from x), ", ("top move", {"b": True}),
-      " (most likely action), ", ("pure maximin", {"b": True}), " (safest single action)", size=18, bullet=True,
+    P("One ", ("$", "x"), " for all worlds, since we cannot tell which world we are in", size=18, bullet=True,
       before=8),
-], "Turn notes")
-notes(s, "Here is what happens inside one turn. We know the opponent's Pokemon, moves and items revealed so far; the "
-      "rest of their team is hidden. So we sample four worlds: each world is one full guess of the hidden team and "
-      "sets that is consistent with what we have seen, with a weight beta-k. For each world the engine builds a "
-      "payoff matrix: rows are our up to 13 options, columns are the opponent's, and each cell is our estimated "
-      "value after looking two turns ahead and scoring the position with a heuristic evaluation. Then we pick one "
-      "mixed strategy x that does best on average when the opponent best-responds separately in each world. That "
-      "is a single linear program, the same formulation PokaiTrainer uses for VGC. We need one x for all worlds "
-      "because we cannot tell which world we are in; solving each world separately and averaging, which is PIMC, "
-      "plays as if we could. There are three ways to turn x into an action: sample from it, play its most likely "
-      "action, or play the single safest action.")
+    P("Each expert is credited with what it would have earned against the opponent's actual move", size=18,
+      bullet=True, before=6),
+    P("Opponent memory: a posterior over 5 play styles, ", ("$", r"Π_t(θ) ∝ Π_{t−1}(θ)\sum_k{β_k q_θ(b_t | M_k)}"),
+      "; it is Hedge with ", ("$", "η = 1"), " and feeds the ε-safe expert", size=18, bullet=True, before=6),
+], "Preliminary notes")
+notes(s, "Our starting point. Each turn we sample four worlds, each a full guess of the opponent's hidden team and "
+      "sets consistent with what we have seen, with a weight. For each world the engine builds a payoff matrix: "
+      "our options against theirs, each cell our value after a two-turn lookahead. We pick one mixed strategy x "
+      "that does best on average when the opponent best-responds in each world, a single linear program, because "
+      "we cannot tell which world we are in. Across games, Hedge mixes four experts, four ways of playing x: its "
+      "top move, a sample from it, the single safest action, and an epsilon-safe best response to the opponent "
+      "memory's prediction. Each expert is credited with what it would have earned against the opponent's actual "
+      "move. The opponent memory is a posterior over five play styles, updated with each observed move; with no "
+      "forgetting it is exactly Hedge with step one on log loss, which is where its regret bound comes from. This "
+      "is the model our theorems cover.")
 
-# 5. Across games: Hedge over experts
-s, S = content(2, "Across games: Hedge over four experts")
-S.text(LEFT, TOP, WIDTH, Inches(0.9), [
-    P("Each turn Hedge holds weights over four ", ("experts", {"b": True}), ", each a way of turning the turn's "
-      "solution into play; we play their weighted mix.", size=18),
-], "Hedge intro")
-experts = [("Top move", [P("most likely action of x", size=SECONDARY, align="ctr")]),
-           ("Sampled", [P("draw an action from x", size=SECONDARY, align="ctr")]),
-           ("Pure maximin", [P("the single action with the best worst case", size=SECONDARY, align="ctr")]),
-           ("ε-safe best response", [P("best reply to the memory's prediction, giving up at most ε of x's "
-                                       "worst case", size=SECONDARY, align="ctr")])]
-gy = TOP + Inches(0.95)
-EBH = Inches(1.25)
-for k, (name, rule) in enumerate(experts):
-    x = LEFT + k * (COL4 + GAP)
-    S.header(x, gy, COL4, HDR_H, [P(name, size=SECONDARY, b=True, align="ctr")], f"Expert {k + 1} header")
-    S.box(x, gy + HDR_H, COL4, EBH, rule, f"Expert {k + 1} box")
-by = gy + HDR_H + EBH + Inches(0.3)
-S.text(LEFT, by, WIDTH, BOTTOM - by, [
-    P("After the opponent moves, each expert is credited with what it ", ("would have earned", {"b": True}),
-      " against that action, in the matrix of the most likely world containing it", size=18, bullet=True),
-    P("Rewards on a fixed payoff scale, so the opponent cannot shift our losses onto high-stakes turns",
-      size=18, bullet=True, before=10),
-    P("Weights carry across the games of a match, so Hedge learns which expert works against this opponent",
-      size=18, bullet=True, before=10),
-], "Hedge bullets")
-notes(s, "Across games we use Hedge. Each turn it holds weights over four experts, each a way of turning the turn's "
-      "solution into play, and we play their weighted mix. Top move plays x's most likely action; sampled draws "
-      "from x; pure maximin plays the single action with the best worst case; and the epsilon-safe best response "
-      "best-replies to the opponent memory's prediction while giving up at most epsilon of x's worst case. After "
-      "the opponent moves, each expert is credited with what it would have earned against that action, in the "
-      "matrix of the most likely world that contains it. Rewards are on a fixed payoff scale, so an opponent cannot "
-      "push our losses onto the high-stakes turns, and the weights carry across the games of a match, so Hedge "
-      "learns which expert works against this particular opponent.")
-
-# 5b. The final ladder model: stratified worlds + per-world MCTS
-s, S = content(2, "The final ladder model")
-S.text(LEFT, TOP, WIDTH, Inches(0.5), [
-    P("Same tracker and four worlds; the matrix and Hedge layer is replaced by search in each world", size=18),
-], "Final model intro")
-steps = [("1. What we know", [P("revealed Pokémon, moves, items", size=SECONDARY, align="ctr")]),
-         ("2. Stratified worlds", [P("group the active opponent's possible sets by item and ability; give each "
-                                     "group slots by probability", size=SECONDARY, align="ctr")]),
-         ("3. MCTS per world", [P("poke-engine's MCTS, 250 ms in each world", size=SECONDARY, align="ctr"),
-                                P("→ share of root visits per action", size=SECONDARY, align="ctr", before=6)]),
-         ("4. Pick the action", [P("argmax of the β-weighted visit shares", size=SECONDARY, align="ctr"),
-                                 P("(deterministic)", size=SECONDARY, i=True, align="ctr", before=6)])]
-sy = TOP + Inches(0.6)
-BH = Inches(1.55)
-for k, (name, paras) in enumerate(steps):
-    x = LEFT + k * (COL4 + GAP)
-    S.header(x, sy, COL4, HDR_H, [P(name, size=SECONDARY, b=True, align="ctr")], f"Final step {k + 1} header")
-    S.box(x, sy + HDR_H, COL4, BH, paras, f"Final step {k + 1} box")
-    if k < 3:
-        ym = sy + HDR_H + BH // 2
-        S.line(x + COL4 + Inches(0.05), ym, x + COL4 + GAP - Inches(0.05), ym, f"Final arrow {k + 1}", arrow=True)
-ty = sy + HDR_H + BH + Inches(0.3)
-S.text(LEFT, ty, WIDTH, BOTTOM - ty, [
-    P("Why stratify: with 4 plain draws, a rare but dangerous item can be missed by chance. In a test on one "
-      "Pokémon, plain sampling left out Choice Specs 34% of the time; stratified sampling never did, with the same "
-      "probabilities", size=18, bullet=True),
-    P("Why per-world visit shares: normalising inside each world keeps a fast world from outvoting the others",
-      size=18, bullet=True, before=10),
-    P("Not covered by our bounds: no equilibrium solve, no randomisation", size=18, bullet=True, before=10),
-], "Final model notes")
-notes(s, "This is the final model, the one we put on the public ladder. It keeps the same tracker and four sampled "
-      "worlds, but replaces the matrix and Hedge layer with search. First, the worlds are stratified: we group the "
-      "active opponent's possible sets by their item and ability and give each group slots in proportion to its "
-      "probability, with weights that keep each group's total probability. With four plain draws a rare but "
-      "dangerous item can be missed by chance; in a test on one Pokemon, plain sampling left out Choice Specs a "
-      "third of the time, stratified sampling never did. Then poke-engine's own MCTS searches each world for 250 "
-      "milliseconds. We turn each world's root visits into shares, so a world that searches faster cannot outvote "
-      "the others, weight them by the worlds' probabilities, and play the top action. It does not solve an "
-      "equilibrium and does not randomise, so our bounds do not cover it.")
-
-# 5. The Bayesian opponent memory
-s, S = content(2, "The Bayesian opponent memory")
-steps = [("1. Observe", [P("the opponent plays ", ("$", "b_t"), size=SECONDARY, align="ctr")]),
-         ("2. Score styles", [P(("$", r"q_θ(b_t | M_k)"), size=SECONDARY, align="ctr"),
-                              P("each style ", ("$", "θ"), ", world ", ("$", "k"), size=SECONDARY, align="ctr", before=4),
-                              P("(0 if illegal there)", size=SECONDARY, align="ctr")]),
-         ("3. Update posterior", [P(("$", r"Π_t(θ) ∝ Π_{t−1}(θ)^λ ×"), size=SECONDARY, align="ctr"),
-                                  P(("$", r"\sum_k{β_k q_θ(b_t | M_k)}"), size=SECONDARY, align="ctr", before=4)]),
-         ("4. Predict, exploit", [P(("$", r"\hat{q} = \sum_θ{Π(θ) q_θ}"), size=SECONDARY, align="ctr"),
-                                  P("→ ε-safe best response", size=SECONDARY, align="ctr", before=4)])]
-BH = Inches(1.35)
-for k, (name, paras) in enumerate(steps):
-    x = LEFT + k * (COL4 + GAP)
-    S.header(x, TOP, COL4, HDR_H, [P(name, size=SECONDARY, b=True, align="ctr")], f"Step {k + 1} header")
-    S.box(x, TOP + HDR_H, COL4, BH, paras, f"Step {k + 1} box")
-    if k < 3:
-        ym = TOP + HDR_H + BH // 2
-        S.line(x + COL4 + Inches(0.05), ym, x + COL4 + GAP - Inches(0.05), ym, f"Arrow {k + 1}", arrow=True)
-y2 = TOP + HDR_H + BH + Inches(0.45)
-H2 = Inches(2.0)
-cols = [("Five styles", [P("stage equilibrium", size=SECONDARY, align="ctr"),
-                         P("best response to uniform", size=SECONDARY, align="ctr"),
-                         P("logit best response to our mix", size=SECONDARY, align="ctr"),
-                         P("cautious (maximin)", size=SECONDARY, align="ctr"),
-                         P("uniform", size=SECONDARY, align="ctr")]),
-        ("How we check it", [P("Bayes = Hedge (", ("$", "η = 1"), "):", size=SECONDARY, align="ctr"),
-                             P("regret ≤ ", ("$", r"\ln{5}"), ", measured ", ("$", r"\ln{5}"), size=SECONDARY,
-                               align="ctr"),
-                             P("Per-world scoring:", size=SECONDARY, align="ctr", before=8),
-                             P("≈ 0.3 nats/turn better", size=SECONDARY, align="ctr"),
-                             P("Switch delay = prediction (live)", size=SECONDARY, align="ctr", before=8)]),
-        ("Extension: sets × style jointly", [P(("$", r"Π_t(k, θ) ∝ Π_{t−1}(k, θ) q_θ(b_t | M_k)"),
-                                               size=SECONDARY, align="ctr"),
-                                             P("which team and how they play, updated together", size=SECONDARY,
-                                               align="ctr", before=6),
-                                             P("adds nothing measurable (+0.001 nats/turn)", size=SECONDARY,
-                                               align="ctr", before=6)])]
-for k, (name, paras) in enumerate(cols):
-    x = LEFT + k * (COL3 + GAP)
-    S.header(x, y2, COL3, HDR_H, [P(name, size=SECONDARY, b=True, align="ctr")], f"Memory {k + 1} header")
-    S.box(x, y2 + HDR_H, COL3, H2, paras, f"Memory {k + 1} box")
-notes(s, "Here is the opponent memory step by step. The opponent plays an action. For each of five styles and each "
-      "of our four sampled worlds, we ask how likely that action was under that style in that world, giving zero if "
-      "the action is illegal there. We average over worlds and multiply into the posterior over styles, with "
-      "forgetting lambda below one for a switching opponent. The posterior's prediction feeds the epsilon-safe best "
-      "response. We check it three ways: Bayes is Hedge with step one, so its log-loss regret is at most log five, "
-      "and we measure exactly log five; scoring styles world by world improves prediction by about 0.3 nats per turn; "
-      "and the delay after a style switch matches its predicted value in a live test. The extension tracks the team "
-      "and the style jointly, but it adds nothing measurable.")
+# 5. Refinements: from the preliminary model to the final model, and where each sits in the theory
+s, S = content(2, "Refinements and where they sit in the theory")
+cols = [("Refinement", Inches(2.35)), ("What changes", Inches(3.05)), ("In the theory", Inches(3.3)),
+        ("Evidence", Inches(2.5))]
+gap = (WIDTH - sum(w for _, w in cols)) // (len(cols) - 1)
+xs, x = [], LEFT
+for _, w in cols:
+    xs.append(x)
+    x += w + gap
+y = TOP
+for (name, w), x in zip(cols, xs):
+    S.header(x, y, w, Inches(0.38), [P(name, size=14, b=True, align="ctr")], f"Refine col {name}")
+rows = [("Refining the matrix model: inside our bounds", None),
+        (["Exact values at game end"],
+         ["wins and losses scored exactly, not by the evaluation formula"],
+         [("removes part of ", {}), ("$", "ε_v"), (" (whole-battle bound)", {})],
+         ["exploitability cut on 2 of 3 exact endgames"]),
+        (["Per-world credit and safety"],
+         ["Hedge credit and the pure-maximin expert use each world's matrix"],
+         ["matches the LP's objective; Hedge's regret bound still holds"],
+         ["ladder 25–25: no gain"]),
+        ("Final model: outside our bounds", None),
+        (["Stratified worlds"],
+         ["4 worlds cover the opponent's item/ability groups, keeping their probabilities"],
+         ["targets the sampling error, but worlds are no longer i.i.d. (hidden-teams theorem)"],
+         ["Choice Specs missed 34% → 0%"]),
+        (["Per-world MCTS, argmax"],
+         ["search in each world replaces the matrix and Hedge layer"],
+         [("not ", {}), ("$", "ε_s"), ("-optimal in any matrix, not randomised; exploitability unmeasured", {})],
+         ["ladder 66–34, Elo 2090 (top 500)"])]
+y += Inches(0.45)
+RH = Inches(0.92)
+for row in rows:
+    if row[1] is None:
+        S.text(LEFT, y, WIDTH, Inches(0.35), [P(row[0], size=14, b=True, i=True)], f"Refine group {row[0][:20]}")
+        y += Inches(0.36)
+        continue
+    for (name, w), x, cell in zip(cols, xs, row):
+        bold = name == "Refinement"
+        S.box(x, y, w, RH, [P(*cell, size=14, b=bold, align="ctr")], f"Refine cell {name} {int(y)}")
+    y += RH + Inches(0.06)
+notes(s, "Here is how we built on the starting point, and where each change sits in the theory. Two refinements stay "
+      "inside the matrix model and inside our bounds. Scoring wins and losses exactly at the end of the game "
+      "removes part of the matrix error epsilon-v, and on exact endgames it cut exploitability on two of three. "
+      "Crediting Hedge's experts, and choosing the pure-maximin action, with each world's own matrix makes them match "
+      "the linear program's objective, and Hedge's regret bound still holds; on the ladder it made no difference. "
+      "The final model goes further and leaves the bounds. Stratified worlds cover the opponent's item and ability "
+      "groups while keeping their probabilities; plain draws missed Choice Specs a third of the time in one test, "
+      "stratified never. That targets the sampling error, but the worlds are no longer independent draws, so the "
+      "hidden-teams theorem does not apply as stated. And per-world MCTS with an argmax replaces the matrix and "
+      "Hedge layer entirely: it is not near-optimal in any matrix and does not randomise, so the whole-battle bound "
+      "does not cover it and its exploitability is unmeasured. That is the trade: the final model is far stronger "
+      "on the ladder, and our guarantees no longer apply to it.")
 
 # 6. Case study: one turn of a real Showdown game
 s, S = content(2, "A turn, step by step")

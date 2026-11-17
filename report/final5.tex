@@ -107,7 +107,7 @@ with $q_{\theta,t}(b\mid M_k)=0$ for $b\notin B_k$; the base agent uses $q_{\the
 \textstyle\sum_{t\le T}\big(\ln L_{\theta,t}(b_t)-\ln\qhat_t(b_t)\big)=\ln|\Theta|+\ln\Pi_T(\theta)\le\ln|\Theta|.
 \end{equation}
 
-\paragraph{The final ladder model.} Our strongest bot keeps the tracker and $K=4$ worlds but replaces the matrix and Hedge layer by poke-engine's MCTS in each world (250\,ms each), playing the argmax of the $\beta$-weighted shares of legal root visits. Its worlds are \emph{stratified}: the active opponent's possible sets are grouped by item and ability, with slots allotted by probability and weights that keep each group's mass, so a rare but dangerous item is not dropped by chance.
+\paragraph{The final ladder model.} Our strongest bot keeps the tracker and $K=4$ worlds but replaces the matrix and Hedge layer by poke-engine's MCTS in each world (250\,ms each), playing the argmax of the $\beta$-weighted shares of legal root visits. Its worlds are \emph{stratified}: the active opponent's possible sets are grouped by item and ability, with slots allotted by probability and weights that keep each group's mass, so a rare but dangerous item is not dropped by chance. Our bounds cover neither change: the worlds are not i.i.d.\ (\cref{thm:C}) and the argmax is not $\epss$-optimal in any matrix (\cref{thm:A}).
 
 
 % =====================================================================
@@ -184,7 +184,7 @@ which is negative for every $\theta\ne\theta_b$ once $d>\hat d=\max_{\theta\ne\t
 \label{sec:exp-engine}
 Any fixed opponent's advantage over the game value bounds exploitability from below~\cite{Zin07}, up to a Hoeffding margin. A one-turn local best response (LBR), scored by its gain over a non-exploiting opponent of the same strength, gains 0.18 [0.10, 0.27] against top move but only 0.03 [$-0.07$, 0.12] against sampled play. A depth-2 informed best response (informed BR) that knows the target's policy scores 0.87 against top move and 0.71 against sampled play (100 pairs), which with Hoeffding radius 0.12 gives exploitability lower bounds of 0.25 and 0.09 in score units.
 
-\paragraph{Exact endgames.} Of 6 endgames solved exactly (one Pok\'emon per side, move PP ignored, HP grouped into tenths or twentieths), every bot is unexploitable on 2, and on the other 4 every bot--seat row with exploitability above $10^{-3}$ and a finite bound satisfies the bound~\eqref{eq:A}, loose by 7--155$\times$ (\cref{fig:main}a). The largest $\epsv^{\rm aff}$ is 0.8--1.0 nearly everywhere while $\epss\approx0$, consistent with \cref{rem:leaf}: $\epsv$, not the solver, carries the error. Eight worlds did not beat four (0.50 [0.41, 0.58]), so sampling is not binding.
+\paragraph{Exact endgames.} Of 6 endgames solved exactly (one Pok\'emon per side, move PP ignored, HP grouped into tenths or twentieths), every bot is unexploitable on 2, and on the other 4 every bot--seat row with exploitability above $10^{-3}$ and a finite bound satisfies the bound~\eqref{eq:A}, loose by 7--155$\times$ (\cref{fig:main}a). The largest $\epsv^{\rm aff}$ is 0.8--1.0 nearly everywhere while $\epss\approx0$, consistent with \cref{rem:leaf}: $\epsv$, not the solver, carries the error. Exact terminal scoring cut exploitability on 2 of 3 endgames, and eight worlds did not beat four (0.50 [0.41, 0.58]).
 
 \begin{figure*}[t]
 \centering
@@ -204,7 +204,7 @@ This part checks \cref{fact:hedge,fact:selfplay,cor:solver,thm:hedge} and the re
 \label{sec:exp-belief}
 This part tests the regret bound~\eqref{eq:bayeshedge}, the delay~\eqref{eq:delay}, and whether better prediction, which none of our bounds rewards, improves play; it does not.
 
-\paragraph{Bayes as Hedge.} On the matches of \cref{fig:main}(d), the posterior's final regret is $\ln5$ up to logging precision, as~\eqref{eq:bayeshedge} gives once the posterior concentrates ($\ln\Pi_T\to0$; one match lacks 12 logged updates). Yet the style posterior did not change the score detectably relative to Hedge ($+0.02$ [$-0.02$, $+0.07$]). Against single-style bots, three of five advance predictions held; the final-style and identification-speed predictions failed.
+\paragraph{Bayes as Hedge.} On the matches of \cref{fig:main}(d), the posterior's final regret is $\ln5$ up to logging precision, as~\eqref{eq:bayeshedge} gives once the posterior concentrates ($\ln\Pi_T\to0$; one match lacks 12 logged updates). Yet the style posterior did not change the score detectably relative to Hedge ($+0.02$ [$-0.02$, $+0.07$]).
 
 \paragraph{Live test of the detection delay.} In this test of~\eqref{eq:delay} (predictions written in advance; 30 matches; cautious to uniform style), no prediction was refuted: each match's delay matches its posterior's prediction (median ratio 1.06, inside [0.7, 1.4]), and doubling the pre-switch phase multiplies the delay by 2.1 (predicted 1.5--2.7).
 
@@ -227,7 +227,7 @@ At matched time (about 70\,ms per move), MCTS beats both equilibrium bots in-eng
 
 \paragraph{On the public ladder.}
 \label{sec:exp-ladder}
-Against human players, in sequential rated batches on one account, two versions of our Hedge agent went 77--73 over 150 games (Elo 1577 to 1470). The final ladder model went 33--17 without stratified worlds (to 1677) and 66--34 with them, reaching 2090 (peak 2141, reported top 500). It is our strongest bot, as MCTS beat equilibrium play in-engine, but it is deterministic, outside our bounds, and its exploitability is unmeasured.
+Against human players, in sequential rated batches on one account, two versions of our Hedge agent (the second scoring experts per world) went 77--73 over 150 games (Elo 1577 to 1470). The final ladder model went 33--17 without stratified worlds (to 1677) and 66--34 with them, reaching 2090 (peak 2141, reported top 500). It is our strongest bot, as MCTS beat equilibrium play in-engine; its exploitability is unmeasured.
 
 % =====================================================================
 \section{Conclusion}
