@@ -780,7 +780,7 @@ notes(s, "Our main result in one line. On each turn, our strategy can lose at mo
       "limits the agent. And a new lower bound: a deterministic policy loses at least the gap between each turn's "
       "game value and its best pure guarantee, on every turn where no pure strategy is optimal, which is 42 percent "
       "of our stage matrices. That is the price our Bayesian model's argmax pays. Hedge across games adds its own "
-      "regret on top, and RL exploiters, which are Hedge in every state, give lower bounds to check against.")
+      "regret on top.")
 
 # ===================== Section 4: Experiments =====================
 # 8. Exploitability
