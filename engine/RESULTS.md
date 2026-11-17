@@ -660,7 +660,7 @@ A with a 95% CI over pairs (normal); match-clustered CIs use only 10 matches per
 What was run: a ladder-style round-robin tournament of nine bots (G1), a live test of the style-posterior switching theory (T5), a live
 test of the style posterior with the per-world style likelihood (`hedge_bayes_mw`) with a replication, offline measurements of a joint
 set x style posterior, and an engine-simulation test of a planner that updates the posterior inside the lookahead (S1) with measurements of scouting
-and concealment value. All runs are local. After the harness fixes below, every run listed here has 0 error games
+and concealment value. All new runs are local (the two-sided regret analysis reuses an earlier Modal run). After the harness fixes below, every new run listed here has 0 error games
 (G1: 0 in 1,800). Full write-ups are under `research/`; sources are cited per subsection.
 
 ### Round-robin tournament G1 (`engine/showdown/results/gauntlet/G1_ratings.{md,json}`, `research/gauntlet_fp_iterations.md`)
@@ -800,6 +800,29 @@ which the matched frozen-posterior control credits to both arms, so E1 measures 
 none. E4's merging happened but bought no soft information. The clairvoyance bound at the children (A0L - A1) is mean
 0.35 %, median 0. Decision (2026-11-16): accept the null. Do not port S1 live and do not build S2; damage-roll
 branching is a large engine change for at most the 0.35 % bound, and no principled alternative control was found.
+
+### Two-sided regrets along real games (`research/cce/cce_two_sided.md`, `research/cce/verification.md`)
+
+The LOG run (hedge_bayes vs Foul Play, Modal, `OURBOT_LOG_ABAR=1`, 599 games, 17,271 usable decisions; one error game,
+LOG-s4-g2, excluded) logs Ā_t, our mixture, the four experts, the five opponent styles and the realised opponent
+column, so both sides' regrets are computable in our estimated stage games (units: Hedge's 400-point reward scale, per
+turn).
+
+| quantity | LOG (vs Foul Play) |
+|---|---|
+| our regret vs best fixed expert (top) | 0.0044 ± 0.0002 |
+| opponent regret vs our equilibrium style | 0.0213 ± 0.0006 (positive in 10/10 matches); negative vs the other four styles |
+| per-turn best-response regrets | 0.030 (ours, vs the realised column), 0.041 (theirs, vs our mixture); not a symmetric pair |
+| our mean stage exploitability | 0.014 |
+| Hedge worst-case bound at the per-match horizons | about 0.04 |
+
+σ_T is a coarse correlated equilibrium of the realised sequence of estimated stage games only with respect to these
+small comparator classes. A control in which the opponent literally plays its own maximin (CEQ, local) shows the same
+0.021 ± 0.001, almost all of it model mismatch (+0.025 ± 0.001; sampling −0.001 ± 0.001; TV(y, q_eq) = 0.44; the two
+sides' stage values differ by about 15 engine units). So ε_C measured through our model does not identify Foul Play's
+regret; other statistics through the same model (posterior style weights, log loss, dynamic regret) do separate Foul
+Play from the literal equilibrium player. ε-safe opponents (CSS, local) show a lower gap of 0.011–0.015. Every number
+was recomputed independently in `verification.md`; use only its "Allowed wording".
 
 ### Harness bugs and the error-game caveat (`research/harness_bugs.md`)
 

@@ -1111,8 +1111,8 @@ The three figures below show real Showdown positions from the logged run (LOG): 
 
 This round ran a round-robin tournament of nine bots (G1), a live test of the switching result T5, a live test of a per-world style likelihood
 style posterior with a replication, offline measurements of a joint set $\times$ style posterior, and an engine-simulation
-test of a planner that updates the posterior inside the lookahead (S1) with measurements of scouting and concealment value. All runs are local. After
-the harness fixes of \cref{sec:bench-harness}, every run in this section has 0 error games (G1: 0 in 1,800). Here
+test of a planner that updates the posterior inside the lookahead (S1) with measurements of scouting and concealment value. All new runs are local (the two-sided regret analysis reuses an earlier Modal run). After
+the harness fixes of \cref{sec:bench-harness}, every new run in this section has 0 error games (G1: 0 in 1,800). Here
 ``Foul Play at $N$ ms'' is Foul Play with \texttt{search\_time\_ms}$\,=N$, which is a search time per sampled battle: Foul Play
 searches 2--4 sampled battles per decision (4 at half that time early in a game, when at most three opponent Pok\'emon are revealed, before the opponent's active
 Pok\'emon has revealed a move).
@@ -1316,6 +1316,24 @@ estimated matrices, not for the true game. The valid-model strategy is the explo
 (median 0.9\%) of range against a best-responding omniscient opponent, while the current assumption loses mean 0.948\%
 (median 0) against one solver-picked opponent equilibrium. These two numbers are descriptive; the safe-side claim rests on
 \cref{prop:maxmin}, not on their comparison.
+
+\subsection{Two-sided regrets along real games}\label{sec:bench-cce}
+
+The LOG run (hedge\_bayes vs Foul Play, 599 games, 17,271 usable decisions; run on Modal, with one error game
+excluded) logs $\bar A_t$, our mixture, the four experts, the five opponent styles and the realised opponent column.
+This makes both sides' regrets computable in our estimated stage games. Against fixed comparators, our regret vs the
+best expert is $0.0044\pm0.0002$ per turn. The opponent's regret vs our LP-equilibrium style is $0.0213\pm0.0006$
+(positive in 10/10 matches) and is negative against the other four styles. Against per-turn best responses the
+regrets are 0.030 (ours, against the realised column) and 0.041 (theirs, against our mixture). Our mean stage
+exploitability is 0.014. Equivalently, $\sigma_T$ is a coarse correlated equilibrium of the realised sequence of
+estimated stage games only with respect to these small comparator classes. Hedge's worst-case guarantee at these
+per-match horizons is about 0.04 per turn. A control in which the opponent literally plays its own maximin (CEQ)
+shows the same $0.021\pm0.001$. Almost all of it is mismatch: the true mixture's cost in our model exceeds our
+$q_{\rm eq}$'s by $+0.025\pm0.001$, sampling contributes $-0.001\pm0.001$, $\mathrm{TV}(y,q_{\rm eq})=0.44$, and the
+two sides' stage values differ by about 15 engine units. So $\epsilon_C$ measured through our model does not identify
+the opponent's regret. Other statistics through the same model (posterior style weights, log loss, dynamic regret) do
+separate Foul Play from the literal equilibrium player. $\varepsilon$-safe opponents (CSS) show a lower gap of
+0.011--0.015 (\src{research/cce/cce_two_sided.md}, \src{research/cce/verification.md}).
 
 \subsection{Harness bugs and the error-game caveat}\label{sec:bench-harness}
 

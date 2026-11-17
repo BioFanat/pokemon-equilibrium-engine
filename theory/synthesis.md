@@ -111,20 +111,29 @@ real dynamics exist at exactly three places, and all three are measured:
    or agent form) does not learn in the meta-game; what oscillates in this project is the Bayesian posterior
    (§3.2), not the Hedge weights.
 
-**What cannot be computed from the logs.** The opponent's side of Lecture 7's identity needs its counterfactual
-payoffs $p_t^\top\bar A_t[:,j]$ for every column $j$. No run logs $\bar A_t$ (only `abar_shape`; schema map of the
-decision records), so the opponent's payoff regret vs any comparator class (fixed column labels, the five styles, or
-the stage best response) is **not computable** from E2/E5/BH. The one-sided statements above are all the logs support.
-A log-only rerun that writes $\bar A_t$ and the five style vectors $q_{s,t}$ (already written in BH) would make the
-two-sided surrogate identity $\bar g_T-\bar v_T=\epsilon_C^{\rm opp}-\epsilon_R^{\rm us}$ along the real trajectory
-computable at zero theory cost (≈ \$0.7 Modal or 1 CPU-h per tag). That is the smallest fix for "we never measure a
-two-sided Lecture 7 quantity above the node level".
+**What cannot be computed from the E2/E5/BH logs, and what the LOG run adds.** The opponent's side of Lecture 7's
+identity needs its counterfactual payoffs $p_t^\top\bar A_t[:,j]$ for every column $j$. E2, E5 and BH do not log
+$\bar A_t$ (only `abar_shape`; schema map of the decision records), so from E2/E5/BH the opponent's payoff regret vs
+any comparator class (fixed column labels, the five styles, or the stage best response) is **not computable**.
+*Updated 2026-11-16:* the LOG run (hedge_bayes vs Foul Play, 599 games, `OURBOT_LOG_ABAR=1`) does log $\bar A_t$, the
+labels, our mixture, the four experts, the five styles and the realised column on every decision where we have at
+least 2 legal options, so both sides are computable along real games (17,271 usable decisions). Measured in our
+estimated stage games: our regret vs the best fixed expert 0.0044 ± 0.0002 per turn; the opponent's regret vs our
+equilibrium style 0.0213 ± 0.0006 (positive in 10/10 streams), negative vs the other four styles. A control in which
+the opponent literally plays its own maximin (CEQ) shows the same 0.021 ± 0.001, almost all of it model mismatch, so
+this number does not identify Foul Play's regret. σ_T is a CCE of the estimated stage games only with respect to these
+small comparator classes. Write-up, corrections and allowed wording: `research/cce/cce_two_sided.md`,
+`research/cce/verification.md`.
 
 **CCE specifically.** In a zero-sum game a CCE's marginals are maximin and its deviation gain equals the external
 regret (theory_map §5.1), so "CCE" adds nothing to the minimax statement except as a *correlation* diagnostic
-($\mathrm{TV}(J_N,\bar x_N\bar y_N^\top)$, U-fin). The only correlation measurement is the H4 probe: at $10^3$–$10^4$
-iterations the engine root's joint visits are indistinguishable from the product of marginals. The report should say
-"CCE = minimax here; the only CCE-specific object is correlation, which we measured and found absent at practical budgets".
+($\mathrm{TV}(J_N,\bar x_N\bar y_N^\top)$, U-fin). The only test of learning-induced correlation is the H4 probe: at
+$10^3$–$10^4$ iterations the engine root's joint visits are indistinguishable from the product of marginals.
+`research/cce/` §4 also computes a meta-level TV of the time-averaged joint play along real games, but its
+permutation null is uninformative (any time average of varying per-turn products is non-product, and the test rejects
+even against the stateless CEQ opponent), so it shows nothing about learning-induced correlation. The report should
+say "CCE = minimax here; the only CCE-specific object is correlation, which H4 measured within a node and found absent
+at practical budgets".
 
 ### 3.2 Regret curve of the Bayesian posterior (fixed: computed)
 

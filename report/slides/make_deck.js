@@ -321,7 +321,7 @@ pres.addSection({ title: "Closing" });
   const items = [
     ["1", "No-regret learning composes cleanly across the three levels", C.accent1],
     ["2", "The bound is consistent with the stage-matrix (leaf) error dominating; better beliefs don't move win rate", C.accent2],
-    ["3", "Next: a learned evaluation function, trained on exact terminal values", C.accent5],
+    ["3", "Next: an evaluation function trained on exact terminal values", C.accent5],
   ];
   items.forEach(([n, txt, col], i) => {
     const y = 1.35 + i * 1.0;
@@ -329,12 +329,12 @@ pres.addSection({ title: "Closing" });
     s.addText(txt, { x: 1.5, y: y - 0.1, w: 7.9, h: 0.8, fontSize: 20, color: C.background1, valign: "middle",
       margin: 0, isTextBox: true, objectName: `Takeaway ${n} text` });
   });
-  s.addText("Also: joint set×style belief and scouting nulls; case study in the paper", { x: 0.5, y: 4.65, w: 9.0,
+  s.addText("Also: joint set×style belief and lookahead-posterior nulls; case study in the paper", { x: 0.5, y: 4.65, w: 9.0,
     h: 0.35, fontSize: 13, italic: true, color: C.accent3, margin: 0, isTextBox: true, objectName: "Also line" });
   s.addNotes("Three takeaways. First, no-regret learning composes cleanly across a turn, a match and a search root. " +
     "Second, the whole-battle bound points at the stage-matrix error from the leaf evaluation, and our evidence is " +
-    "consistent with it dominating: better beliefs improve prediction, not win rate. So, third, the next step is a " +
-    "learned evaluation function trained on exact terminal values. The paper also has the joint belief, the nulls and a case study. Thank you.");
+    "consistent with it dominating: better beliefs improve prediction, not win rate. So, third, the next step is " +
+    "an evaluation function trained on exact terminal values. The paper also has the joint belief, the nulls and a case study. Thank you.");
 }
 
 (async () => {
